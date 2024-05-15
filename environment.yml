@@ -1,0 +1,13 @@
+name: 2inf
+channels:
+    - defaults
+dependencies:
+    - python=3.12
+    - numpy
+    - pandas
+    - matplotlib
+    - tqdm
+    - astropy
+    - pip
+    - pip:
+        - vice>=1.3.1
