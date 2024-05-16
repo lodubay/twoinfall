@@ -1,5 +1,6 @@
 # Don't track TeX temporaries
 *latexindent*
 
-# Don't track TeX PDF
+# Don't track LaTeX products
 *.pdf
+*.synctex.gz
