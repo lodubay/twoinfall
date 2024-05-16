@@ -1,0 +1,269 @@
+% For TeXworks
+\makeatletter
+\declare@file@substitution{revtex4-1.cls}{revtex4-2.cls}
+\makeatother
+
+% Define document class
+\documentclass[twocolumn,twocolappendix,linenumbers]{aastex631}
+
+\usepackage{showyourwork}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+% \usepackage{layouts}
+\usepackage{xcolor}
+% \usepackage{upgreek}
+\let\tablenum\relax
+\usepackage{siunitx}
+\usepackage{xspace}
+
+% user-defined commands
+% \newcommand{\yes}{\textcolor{green}{\checkmark}\xspace}
+% \newcommand{\meh}{\textcolor{black}{$\sim$}\xspace}
+% \newcommand{\no}{\textcolor{red}{$\times$}\xspace}
+\newcommand{\osuaffil}{Department of Astronomy, The Ohio State University, 140 W. 18th Ave, Columbus OH 43210, USA}
+\newcommand{\ccappaffil}{Center for Cosmology and AstroParticle Physics, The Ohio State University, 191 W. Woodruff Ave., Columbus OH 43210, USA}
+\newcommand{\aFe}{[$\alpha$/Fe]\xspace}
+\newcommand{\vice}{{\tt VICE}\xspace}
+% \newcommand{\hydro}{{\tt h277}\xspace}
+\newcommand{\todo}[1]{{\color{red}#1}}
+
+% Citation aliases
+% \defcitealias{Johnson2021-Migration}{J21}
+% \defcitealias{Leung2023-Ages}{L23}
+
+\shorttitle{Two-Infall in VICE}
+\shortauthors{Dubay et al.}
+% \linespread{1.8}
+
+\begin{document}
+
+% Title
+\title{A Two-Infall Star Formation History with Outflows and Radial Migration}
+
+% Author list
+\author[0000-0003-3781-0747]{Liam O.\ Dubay}
+\affiliation{\osuaffil}
+\affiliation{\ccappaffil}
+\author[0000-0001-7258-1834]{Jennifer A.\ Johnson}
+\affiliation{\osuaffil}
+\affiliation{\ccappaffil}
+\author[0000-0002-6534-8783]{James W.\ Johnson}
+\affiliation{Observatories of the Carnegie Institution for Science, 813 Santa Barbara St., Pasadena CA 91101, USA}
+\affiliation{\osuaffil}
+\affiliation{\ccappaffil}
+% \author[0000-0001-7775-7261]{David H. Weinberg}
+
+\correspondingauthor{Liam O.\ Dubay}
+\email{dubay.11@osu.edu}
+
+\begin{abstract}
+    Abstract.
+\end{abstract}
+
+\section{Introduction}
+
+
+
+\section{Methods}
+\label{sec:methods}
+
+\begin{deluxetable*}{Cccl}
+    \tablecaption{A summary of parameters and their fiducial values for our chemical evolution models (see discussion in Section \ref{sec:methods}). We omit some parameters that are unchanged from \citetalias{Johnson2021-Migration}; see their Table 1 for details.\label{tab:multizone-parameters}}
+    \tablehead{
+        \colhead{Quantity} & \colhead{Fiducial Value(s)} & \colhead{Section} & \colhead{Description}
+    }
+    \startdata
+        % Multi-zone model parameters
+        R_{\rm gal}     & [0, 20] kpc   & \ref{sec:multizone-results} & Galactocentric radius \\
+        \delta R_{\rm gal}  & 100 pc    & \ref{sec:multizone-results} & Width of each concentric ring \\
+        \Delta R_{\rm gal}  & N/A       & \ref{app:migration} & Change in orbital radius due to stellar migration \\
+        p(\Delta R_{\rm gal}|\tau,R_{\rm form}) & Equation \ref{eq:radial-migration}    & \ref{app:migration} & Probability density function of radial migration distance \\
+        z                   & [-3, 3] kpc                & \ref{app:migration} & Distance from Galactic midplane at present day \\
+        p(z|\tau,R_{\rm final}) & Equation \ref{eq:sech-pdf}            & \ref{app:migration} & Probability density function of Galactic midplane distance\\
+        \Delta t        & 10 Myr    & \ref{sec:multizone-results} & Time-step size \\
+        t_{\rm max}     & 13.2 Gyr  & \ref{sec:multizone-results} & Disk lifetime \\
+        n               & 8         & \ref{sec:multizone-results} & Number of stellar populations formed per ring per time-step \\
+        R_{\rm SF}      & 15.5 kpc  & \ref{sec:multizone-results} & Maximum radius of star formation \\
+        M_{g,0}   & 0         & \ref{sec:sfh}     & Initial gas mass \\
+        \dot M_r    & continuous    & \ref{sec:multizone-results} & Recycling rate \citep[][Equation 2]{JohnsonWeinberg2020-Starbursts} \\
+        \hline
+        % DTD
+        R_{\rm Ia}(t)   & Equation \ref{eq:dtd-function}    & \ref{sec:dtd-models}  & delay-time distribution of Type Ia supernovae \\
+        t_D             & 40 Myr    & \ref{sec:dtd-models}  & Minimum SN Ia delay time \\
+        N_{\rm Ia}/M_\star  & $2.2\times10^{-3}$ M$_\odot^{-1}$ & \ref{sec:yields}  & SNe Ia per unit mass of stars formed \citep{MaozMannucci2012-SNeIaReview} \\
+        \hline
+        % Nucleosynthetic yields
+        y_{\rm O}^{\rm CC}  & 0.015     & \ref{sec:yields}  & CCSN yield of O    \\
+        y_{\rm Fe}^{\rm CC} & 0.0012    & \ref{sec:yields}  & CCSN yield of Fe   \\
+        y_{\rm O}^{\rm Ia}  & 0         & \ref{sec:yields}  & SN Ia yield of O       \\
+        y_{\rm Fe}^{\rm Ia} & 0.00214   & \ref{sec:yields}  & SN Ia yield of Fe \\
+        \hline
+        % Star formation histories
+        f_{\rm IO}(t|R_{\rm gal})   & Equation \ref{eq:insideout-sfh}   & \ref{sec:sfh} & Time-dependence of the inside-out SFR \\
+        f_{\rm LB}(t|R_{\rm gal})   & Equation \ref{eq:lateburst-sfh}   & \ref{sec:sfh} & Time-dependence of the late-burst SFR \\
+        \tau_{\rm rise}             & 2 Gyr     & \ref{sec:sfh} & SFR rise timescale for inside-out and early-burst models \\
+        \tau_{\rm EB}(t)          & Equation \ref{eq:earlyburst-taustar}  & \ref{sec:sfh}   & Time-dependence of the early-burst SFE timescale \\
+        f_{\rm EB}(t|R_{\rm gal})   & Equation \ref{eq:earlyburst-ifr}  & \ref{sec:sfh} & Time-dependence of the early-burst infall rate \\
+        f_{\rm TI}(t|R_{\rm gal})   & Equation \ref{eq:twoinfall-ifr}   & \ref{sec:sfh} & Time-dependence of the two-infall infall rate \\
+        \hline
+        % One-zone parameters
+        \tau_\star                    & 2 Gyr & \ref{sec:onezone-results} & SFE timescale in one-zone models \\
+        \eta(R_{\rm gal}=8\,{\rm kpc})  & 2.15  & \ref{sec:onezone-results} & Outflow mass-loading factor at the solar annulus \\
+        \tau_{\rm sfh}(R_{\rm gal}=8\,{\rm kpc})    & 15.1 Gyr  & \ref{sec:sfh} & SFH timescale at the solar annulus \\
+    \enddata
+\end{deluxetable*}
+\vspace{-24pt}
+
+\subsection{Nucleosynthetic Yields}
+\label{sec:yields}
+
+\subsection{The SN Ia Delay-Time Distribution}
+\label{sec:dtd}
+
+\subsection{The Two-Infall Star Formation History}
+\label{sec:sfh}
+
+\todo{Copied from last paper.} First proposed by \citet{Chiappini1997-TwoInfall}, this model parameterizes the infall rate as two successive, exponentially declining bursts to explain the origin of the high- and low-$\alpha$ disk populations:
+\begin{equation}
+    \label{eq:twoinfall-ifr}
+    f_{\rm TI}(t|R_{\rm gal}) = N_1(R_{\rm gal}) e^{-t/\tau_1} + N_2(R_{\rm gal}) e^{-(t-t_{\rm on})/\tau_2},
+\end{equation}
+% In this model, the first infall produces the thick disk and the second infall produces the thin disk. 
+where $\tau_1=1$ Gyr and $\tau_2=4$ Gyr are the exponential timescales of the first and second infall, respectively, and $t_{\rm on}=4$ Gyr is the onset time of the second infall \citep[based on typical values in, e.g.,][]{Chiappini1997-TwoInfall,Spitoni2020-TwoInfall,Spitoni2021-TwoInfall}. $N_1$ and $N_2$ are the normalizations of the first and second infall, respectively, and their ratio $N_2/N_1$ is calculated so that the thick-to-thin-disk surface density ratio $f_\Sigma(R)=\Sigma_2(R)/\Sigma_1(R)$ is given by
+\begin{equation}
+    f_\Sigma(R) = f_\Sigma(0) e^{R(1/R_2 - 1/R_1)}.
+\end{equation}
+Following \citet{BlandHawthornGerhard2016-MilkyWayReview}, we adopt values for the thick disk scale radius $R_1=2.0$ kpc, thin disk scale radius $R_2=2.5$ kpc, and $f_\Sigma(0)=0.27$.
+We note that most previous studies which use the two-infall model \citep[e.g.,][]{Chiappini1997-TwoInfall,Matteucci2006-BimodalDTDConsequences,Matteucci2009-DTDModels,Spitoni2019-TwoInfall} do not consider gas outflows and instead adjust the nucleosynthetic yields to reproduce the solar abundance. We adopt radially-dependent outflows as in \citetalias{Johnson2021-Migration} (see their Section 2.4 for details) for all our SFHs, including two-infall. We discuss the implications of this difference in Section \ref{sec:two-infall-discussion}.
+
+\subsection{Observational Sample}
+\label{sec:observational-sample}
+
+\begin{table*}
+    \centering
+    \caption{Sample selection parameters and median uncertainties from APOGEE DR17 (see Section \ref{sec:observational-sample}).}
+    \label{tab:sample}
+    \begin{tabular}{lll}
+        \hline\hline
+        \multicolumn{1}{c}{Parameter} & \multicolumn{1}{c}{Range or Value} & \multicolumn{1}{c}{Notes} \\
+        \hline
+        $\log g$            & $1.0 < \log g < 3.8$          & Select giants only \\
+        $T_{\rm eff}$       & $3500 < T_{\rm eff} < 5500$ K & Reliable temperature range \\
+        $S/N$               & $S/N > 80$                    & Required for accurate stellar parameters \\
+        ASPCAPFLAG Bits     & $\notin$ 23                   & Remove stars flagged as bad \\
+        EXTRATARG Bits      & $\notin$ 0, 1, 2, 3, or 4     & Select main red star sample only \\
+        Age                 & $\sigma_{\rm Age} < 40\%$     & Age uncertainty from \citetalias{Leung2023-Ages} \\
+        \hline
+        $\sigma({\rm [Fe/H]})$ & $9.2\times10^{-3}$ & Median uncertainty in [Fe/H] \\
+        $\sigma({\rm [O/Fe]})$ & $1.8\times10^{-2}$ & Median uncertainty in [O/Fe] \\
+        $\sigma($log(Age/Gyr)) & $0.10$ & Median age uncertainty \citepalias{Leung2023-Ages} \\
+        \hline
+    \end{tabular}
+\end{table*}
+
+\todo{Copied from last paper.}
+We compare our model results to abundance measurements from the final data release \citep[DR17;][]{Abdurro'uf2022-SDSSIV-DR17} of the Apache Point Observatory Galactic Evolution Experiment \citep[APOGEE;][]{Majewski2017-APOGEE}. APOGEE used infrared spectrographs \citep{Wilson2019-APOGEE-Spectrographs} mounted on two telescopes: the 2.5-meter Sloan Foundation Telescope \citep{Gunn2006-SloanTelescope} at Apache Point Observatory in the Northern Hemisphere, and the Ir{\'e}n{\'e}e DuPont Telescope \citep{BowenVaughan1973-DuPontTelescope} at Las Campanas Observatory in the Southern Hemisphere. After the spectra were passed through the data reduction pipeline \citep{Nidever2015-APOGEE-DataReduction}, the APOGEE Stellar Parameter and Chemical Abundance Pipeline \citep[ASPCAP;][]{Holtzmann2015-ASPCAP,GarciaPerez2016-ASPCAP} extracted chemical abundances using the model grids and interpolation method described by \citet{Jonsson2020-APOGEE-DR16}.
+
+We restrict our sample to red giant branch and red clump stars with high-quality spectra. Table \ref{tab:sample} lists our selection criteria, which largely follow from \citet{Hayden2015-ChemicalCartography}. This produces a final sample of \variable{output/sample_size.txt}stars with [O/Fe] and [Fe/H] abundance measurements. APOGEE stars are matched with their Bailer-Jones photo-geometric distance estimate from \textit{Gaia} Early Data Release 3 \citep{Gaia2016-Mission,Gaia2021-EDR3}, which we use to calculate galactocentric radius $R_{\rm gal}$ and midplane distance $z$.
+
+We use estimated ages from \citet[][hereafter \citetalias{Leung2023-Ages}]{Leung2023-Ages}, who use a variational encoder-decoder network which is trained on asteroseismic data to retrieve age estimates for APOGEE giants without contamination from age-abundance correlations. Importantly, the \citetalias{Leung2023-Ages} ages do not plateau beyond $\sim10$ Gyr as they do in astroNN \citep{Mackereth2019-astroNN-Ages}. We use an age uncertainty cut of 40\% per the recommendations of \citetalias{Leung2023-Ages}, which produces a total sample of \variable{output/age_sample_size.txt}APOGEE stars with age estimates. We note that we use the full sample of \variable{output/sample_size.txt}APOGEE stars unless we explicitly compare to age estimates. Table \ref{tab:sample} also presents the median uncertainties in the data for [Fe/H], [O/Fe], and age.
+
+\section{One-Zone Models}
+\label{sec:onezone-results}
+
+\section{Multi-Zone Models}
+\label{sec:multizone-results}
+
+\section{Discussion}
+\label{sec:discussion}
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+\section*{Acknowledgements}
+
+\todo{Personal acknowledgements.}
+
+LOD and JAJ acknowledge support from National Science Foundation grant no.\ AST-2307621. JAJ and JWJ acknowledge support from National Science Foundation grant no.\ AST-1909841.
+LOD acknowledges financial support from an Ohio State University Fellowship.
+JWJ acknowledges financial support from an Ohio State University Presidential Fellowship and a Carnegie Theoretical Astrophysics Center postdoctoral fellowship. \todo{Update grants and fellowships.}
+
+Funding for the Sloan Digital Sky 
+Survey IV has been provided by the 
+Alfred P.\ Sloan Foundation, the U.S.\ 
+Department of Energy Office of 
+Science, and the Participating 
+Institutions. 
+
+SDSS-IV acknowledges support and 
+resources from the Center for High 
+Performance Computing  at the 
+University of Utah. The SDSS 
+website is \url{www.sdss4.org}.
+
+SDSS-IV is managed by the 
+Astrophysical Research Consortium 
+for the Participating Institutions 
+of the SDSS Collaboration including 
+the Brazilian Participation Group, 
+the Carnegie Institution for Science, 
+Carnegie Mellon University, Center for 
+Astrophysics | Harvard \& 
+Smithsonian, the Chilean Participation 
+Group, the French Participation Group, 
+Instituto de Astrof\'isica de 
+Canarias, The Johns Hopkins 
+University, Kavli Institute for the 
+Physics and Mathematics of the 
+Universe (IPMU) / University of 
+Tokyo, the Korean Participation Group, 
+Lawrence Berkeley National Laboratory, 
+Leibniz Institut f\"ur Astrophysik 
+Potsdam (AIP),  Max-Planck-Institut 
+f\"ur Astronomie (MPIA Heidelberg), 
+Max-Planck-Institut f\"ur 
+Astrophysik (MPA Garching), 
+Max-Planck-Institut f\"ur 
+Extraterrestrische Physik (MPE), 
+National Astronomical Observatories of 
+China, New Mexico State University, 
+New York University, University of 
+Notre Dame, Observat\'ario 
+Nacional / MCTI, The Ohio State 
+University, Pennsylvania State 
+University, Shanghai 
+Astronomical Observatory, United 
+Kingdom Participation Group, 
+Universidad Nacional Aut\'onoma 
+de M\'exico, University of Arizona, 
+University of Colorado Boulder, 
+University of Oxford, University of 
+Portsmouth, University of Utah, 
+University of Virginia, University 
+of Washington, University of 
+Wisconsin, Vanderbilt University, 
+and Yale University.
+
+This work has made use of data from the European Space Agency (ESA) mission
+{\it Gaia} (\url{https://www.cosmos.esa.int/gaia}), processed by the {\it Gaia}
+Data Processing and Analysis Consortium (DPAC,
+\url{https://www.cosmos.esa.int/web/gaia/dpac/consortium}). Funding for the DPAC
+has been provided by national institutions, in particular the institutions
+participating in the {\it Gaia} Multilateral Agreement.
+
+% From the Center for Belonging and Social Change, https://cbsc.osu.edu/about-us/land-acknowledgement
+We would like to acknowledge the land that The Ohio State University occupies is the ancestral and contemporary territory of the Shawnee, Potawatomi, Delaware, Miami, Peoria, Seneca, Wyandotte, Ojibwe and many other Indigenous peoples. Specifically, the university resides on land ceded in the 1795 Treaty of Greeneville and the forced removal of tribes through the Indian Removal Act of 1830. As a land grant institution, we want to honor the resiliency of these tribal nations and recognize the historical contexts that has and continues to affect the Indigenous peoples of this land.
+
+\software{\vice \citep{JohnsonWeinberg2020-Starbursts}, Astropy \citep{astropy2013,astropy2018,astropy2022}, scikit-learn \citep{Pedregosa2011-ScikitLearn}, SciPy \citep{2020SciPy-NMeth}, Matplotlib \citep{Hunter2007-Matplotlib}}
+
+\appendix
+
+\section{Reproducibility}
+\label{app:reproducibility}
+
+\todo{Blah.}
+
+\bibliography{bib}
+
+\end{document}
