@@ -2,19 +2,14 @@
 Functions used by many plotting scripts.
 """
 
-# import math as m
-from pathlib import Path
 import numpy as np
 from numpy.random import default_rng
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize, BoundaryNorm, LogNorm
-# from matplotlib.ticker import MultipleLocator
 from matplotlib.cm import ScalarMappable
 from astropy.table import Table
-import vice
-import paths
-from _globals import ZONE_WIDTH, RANDOM_SEED
+from _globals import RANDOM_SEED
 
 
 # =============================================================================
