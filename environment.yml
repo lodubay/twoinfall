@@ -8,6 +8,7 @@ dependencies:
     - matplotlib
     - tqdm
     - astropy
+    - jupyterlab
     - pip
     - pip:
         - vice>=1.3.1
