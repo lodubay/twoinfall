@@ -9,5 +9,4 @@ from .broken_powerlaw import broken_powerlaw
 from .plateau import plateau
 from .greggio05_single import greggio05_single
 from .greggio05_double import greggio05_double
-from .greggio05_approximate import greggio05_approximate
 from .triple import triple
