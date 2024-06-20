@@ -4,12 +4,11 @@ Johnson et al. (2021).
 """
 
 from .earlyburst_tau_star import earlyburst_tau_star
-from ..._globals import MAX_SF_RADIUS, END_TIME, M_STAR_MW
+from ..._globals import MAX_SF_RADIUS, END_TIME, M_STAR_MW, \
+    THIN_DISK_SCALE_RADIUS, THICK_DISK_SCALE_RADIUS, THICK_TO_THIN_RATIO
 import vice
 from vice.toolkit import J21_sf_law
 import math as m
-from .gradient import THIN_DISK_SCALE_RADIUS, THICK_DISK_SCALE_RADIUS, \
-    THICK_TO_THIN_RATIO
 
 
 def normalize(time_dependence, radial_gradient, radius, dt = 0.01, dr = 0.1,

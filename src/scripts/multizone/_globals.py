@@ -29,3 +29,8 @@ NSTARS = 8
 
 # The minimum SN Ia delay time in Gyr
 MIN_RIA_DELAY = 0.04
+
+# Disk component parameters (Bland-Hawthorn & Gerhard 2016)
+THIN_DISK_SCALE_RADIUS = 2.5 # kpc
+THICK_DISK_SCALE_RADIUS = 2.0 # kpc
+THICK_TO_THIN_RATIO = 0.27 # at r = 0

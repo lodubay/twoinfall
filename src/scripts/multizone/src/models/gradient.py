@@ -4,10 +4,8 @@ late times in the Johnson et al. (2021) models.
 """
 
 import math as m
-
-THIN_DISK_SCALE_RADIUS = 2.5 # kpc
-THICK_DISK_SCALE_RADIUS = 2.0 # kpc
-THICK_TO_THIN_RATIO = 0.27 # at r = 0
+from ..._globals import THIN_DISK_SCALE_RADIUS, THICK_DISK_SCALE_RADIUS, \
+    THICK_TO_THIN_RATIO
 
 
 def gradient(radius):

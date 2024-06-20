@@ -2,6 +2,7 @@
 Functions used by many plotting scripts.
 """
 
+from numbers import Number
 import numpy as np
 from numpy.random import default_rng
 import pandas as pd
@@ -9,8 +10,83 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize, BoundaryNorm, LogNorm
 from matplotlib.cm import ScalarMappable
 from astropy.table import Table
+import vice
 from _globals import RANDOM_SEED
 
+
+# =============================================================================
+# GENERIC CLASSES
+# =============================================================================
+    
+class Exponential:
+    """
+    A generic class for exponential functions.
+    
+    Attributes
+    ----------
+    scale : float
+        The exponential scale factor.
+    coeff : float
+        The pre-factor for the exponential function.
+    """
+    def __init__(self, scale=1, coeff=1):
+        """
+        Parameters
+        ----------
+        scale : float, optional
+            The exponential scale factor. If positive, produces exponential 
+            growth; if negative, produces exponential decay. The default is 1.
+        coeff : float, optional
+            The pre-factor for the exponential function. The default is 1.
+        """
+        self.scale = scale
+        self.coeff = coeff
+        
+    def __call__(self, x):
+        """
+        Evaluate the exponential at the given value(s).
+
+        Parameters
+        ----------
+        x : float or array-like
+
+        Returns
+        -------
+        float or numpy.ndarray
+        """
+        return self.coeff * np.exp(x / self.scale)
+                    
+    @property
+    def scale(self):
+        """
+        Type: float
+            The exponential scale factor.
+        """
+        return self._scale
+    
+    @scale.setter
+    def scale(self, value):
+        if isinstance(value, Number):
+            self._scale = float(value)
+        else:
+            raise TypeError('Attribute `scale` must be a number. Got: %s.' % 
+                            type(value))
+                        
+    @property
+    def coeff(self):
+        """
+        Type: float
+            Pre-factor for the exponential function.
+        """
+        return self._coeff
+    
+    @coeff.setter
+    def coeff(self, value):
+        if isinstance(value, Number):
+            self._coeff = float(value)
+        else:
+            raise TypeError('Attribute `coeff` must be a number. Got: %s.' % 
+                            type(value))
 
 # =============================================================================
 # DATA UTILITY FUNCTIONS
@@ -656,5 +732,4 @@ def gaussian_smooth(hist, bins, width):
 # =============================================================================
 # SCIENCE FUNCTIONS
 # =============================================================================
-
 
