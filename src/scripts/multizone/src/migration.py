@@ -343,4 +343,20 @@ class gaussian_migration:
         if scale <= 0.:
             raise ValueError("The scale height must be positive.")
         return -scale * m.log(1/cdf - 1)
+
+
+def no_migration(zone, tform, time):
+    """
+    Star particles do not migrate from their birth zone.
+
+    Parameters
+    ----------
+    zone : int
+        Birth zone of the star.
+    tform : float
+        Formation time of the star in Gyr (not used).
+    time : float
+        Current simulation time in Gyr (not used).
+    """
+    return zone
         

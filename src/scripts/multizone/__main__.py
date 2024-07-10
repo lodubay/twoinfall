@@ -10,7 +10,7 @@ from . import _globals
 from . import src
 
 _MIGRATION_MODELS_ = ["diffusion", "linear", "post-process", "sudden", 
-                      "gaussian"]
+                      "gaussian", "none"]
 _EVOLUTION_MODELS_ = ["static", "insideout", "lateburst", "outerburst",
                       "twoinfall", "earlyburst"]
 _DELAY_MODELS_ = ["powerlaw", "plateau", "prompt", "exponential", "triple",
@@ -64,7 +64,7 @@ underscores. (Default: '')",
 
     parser.add_argument("--nstars",
         help = """Number of stellar populations per zone per timestep. \
-(Default: 2)""",
+(Default: 8)""",
         type = int,
         default = _globals.NSTARS)
 
