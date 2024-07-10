@@ -15,11 +15,14 @@ SECOND_ONSET = 4. # Gyr
 
 class twoinfall(double_exponential):
 
-    def __init__(self, radius, dt = 0.01, dr = 0.1):
+    def __init__(self, radius, onset=SECOND_ONSET, 
+                 first_timescale=FIRST_TIMESCALE, 
+                 second_timescale=SECOND_TIMESCALE,
+                 dt = 0.01, dr = 0.1):
         super().__init__() # dummy initial parameters
-        self.onset = SECOND_ONSET
-        self.first.timescale = FIRST_TIMESCALE 
-        self.second.timescale = SECOND_TIMESCALE 
+        self.onset = onset
+        self.first.timescale = first_timescale 
+        self.second.timescale = second_timescale 
         self.ratio = twoinfall_ampratio(self, radius, onset=self.onset, 
                                         dr = dr, dt = dt)
         prefactor = normalize_ifrmode(self, gradient, radius, dt = dt,

@@ -1,5 +1,5 @@
 r"""
-This file implements the normalization calculation in Appendix A of
+This file implements the normalization calculation in Appendix B of
 Johnson et al. (2021).
 """
 
