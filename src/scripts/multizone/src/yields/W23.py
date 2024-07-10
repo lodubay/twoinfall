@@ -23,7 +23,6 @@ mmgcc=mocc*SolarMg/SolarO                               # CCSN magnesium
 # for a constant SFR, will evolve to afeeq at late times
 afeeq=0.05
 mfeIa=mfecc*(10.**(afecc-afeeq) - 1.)
-print(mfeIa)
 
 vice.yields.ccsne.settings["o"] = mocc
 vice.yields.ccsne.settings["mg"] = mmgcc
