@@ -345,18 +345,74 @@ class gaussian_migration:
         return -scale * m.log(1/cdf - 1)
 
 
-def no_migration(zone, tform, time):
-    """
-    Star particles do not migrate from their birth zone.
+class no_migration:
+
+    r"""
+    A class which effects no migration but produces a similar output format to
+    the `diskmigration` class.
 
     Parameters
     ----------
+    radbins : array-like
+        The bins in galactocentric radius in kpc corresponding to each annulus.
+    filename : ``str`` [default : "stars.out"]
+        The name of the file to write the extra star particle data to.
+
+    Attributes
+    ----------
+    write : ``bool`` [default : False]     
+        A boolean describing whether or not to write to an output file when
+        the object is called. The ``multizone`` object, and by extension the
+        ``milkyway`` object, automatically switch this attribute to True at the
+        correct time to record extra data.
+    
+    Calling
+    -------
+    Returns the star's current zone at the given time, which is a constant.
     zone : int
         Birth zone of the star.
     tform : float
-        Formation time of the star in Gyr (not used).
+        Formation time of the star in Gyr.
     time : float
-        Current simulation time in Gyr (not used).
+        Current simulation time in Gyr.
     """
-    return zone
+
+    def __init__(self, radbins, filename = "stars.out", **kwargs):
+        if isinstance(filename, str):
+            self._file = open(filename, 'w')
+            self._file.write("# zone_origin\ttime_origin\tanalog_id\tzfinal\n")
+        else:
+            raise TypeError("Filename must be a string. Got: %s" % (
+                type(filename)))
+
+        # Multizone object automatically swaps this to True in setting up
+        # its stellar population zone histories
+        self.write = False
+
+    def __call__(self, zone, tform, time):
+        return zone
+
+    def close_file(self):
+        r"""
+        Closes the output file - should be called after the multizone model
+        simulation runs.
+        """
+        self._file.close()
+
+    @property
+    def write(self):
+        r"""
+        Type : bool
+
+        Whether or not to write out to the extra star particle data output
+        file. For internal use by the vice.multizone object only.
+        """
+        return self._write
+
+    @write.setter
+    def write(self, value):
+        if isinstance(value, bool):
+            self._write = value
+        else:
+            raise TypeError("Must be a boolean. Got: %s" % (type(value)))
         
