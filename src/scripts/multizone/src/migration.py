@@ -428,11 +428,11 @@ class no_migration:
          19,
          20]
         """
-        return self.radial_bins
+        return self._radial_bins
 
     @radial_bins.setter
     def radial_bins(self, value):
-        self.radial_bins = value
+        self._radial_bins = value
 
     @property
     def write(self):
