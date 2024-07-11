@@ -378,6 +378,7 @@ class no_migration:
     """
 
     def __init__(self, radbins, filename = "stars.out", **kwargs):
+        self.radial_bins = radbins
         if isinstance(filename, str):
             self._file = open(filename, 'w')
             self._file.write("# zone_origin\ttime_origin\tanalog_id\tzfinal\n")
@@ -398,6 +399,40 @@ class no_migration:
         simulation runs.
         """
         self._file.close()
+    
+    
+    @property
+    def radial_bins(self):
+        r"""
+        Type : list [elements are positive real numbers]
+
+        The bins in galactocentric radius in kpc describing the disk model.
+        Must extend from 0 to at least 20 kpc. Need not be sorted in any way
+        when assigned.
+
+        Example Code
+        ------------
+        >>> from vice.toolkit.hydrodisk import hydrodiskstars
+        >>> import numpy as np
+        >>> example = hydrodiskstars([0, 5, 10, 15, 20])
+        >>> example.radial_bins
+        [0, 5, 10, 15, 20]
+        >>> example.radial_bins = list(range(31))
+        >>> example.radial_bins
+        [0,
+         1,
+         2,
+         ...
+         17,
+         18,
+         19,
+         20]
+        """
+        return self.radial_bins
+
+    @radial_bins.setter
+    def radial_bins(self, value):
+        self.radial_bins = value
 
     @property
     def write(self):
