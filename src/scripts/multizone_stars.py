@@ -13,8 +13,6 @@ import paths
 from _globals import ZONE_WIDTH, RANDOM_SEED
 from utils import sample_dataframe, box_smooth
 
-SOLAR_Z_TOTAL = 0.014
-
 def main():
     pass
 
