@@ -391,6 +391,13 @@ class no_migration:
         self.write = False
 
     def __call__(self, zone, tform, time):
+        if tform == time:
+            if self.write:
+                finalz = 0
+                analog_id = -1
+                self._file.write("%d\t%.2f\t%d\t%.2f\n" % (zone, tform,
+                    analog_id, finalz))
+            else: pass
         return zone
 
     def close_file(self):
