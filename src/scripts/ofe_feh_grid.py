@@ -53,8 +53,9 @@ def plot_ofe_feh_grid(mzs, apogee_data, tracks=True, apogee_contours=True,
         for j, ax in enumerate(row):
             galr_lim = (GALR_BINS[j], GALR_BINS[j+1])
             subset = mzs.region(galr_lim, absz_lim)
-            subset.scatter_plot(ax, '[fe/h]', '[o/fe]', color='galr_origin',
-                                cmap=cmap, norm=cbar.norm)
+            if subset.nstars:
+                subset.scatter_plot(ax, '[fe/h]', '[o/fe]', color='galr_origin',
+                                    cmap=cmap, norm=cbar.norm)
             if tracks:
                 zone = int(0.5 * (galr_lim[0] + galr_lim[1]) / ZONE_WIDTH)
                 zone_path = str(mzs.fullpath / ('zone%d' % zone))

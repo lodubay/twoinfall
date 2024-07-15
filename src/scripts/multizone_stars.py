@@ -641,6 +641,14 @@ class MultizoneStars:
         """
         return self.stars['formation_time']
     
+    @property
+    def nstars(self):
+        """
+        int
+            Total number of stars in multizone output.
+        """
+        return self.stars.shape[0]
+    
     @staticmethod
     def mean_stellar_mass(age, imf=vice.imf.kroupa, mlr=vice.mlr.larson1974,
                           m_lower=0.08, m_upper=100, dm=0.01):
