@@ -15,7 +15,7 @@ def main(style='paper'):
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, ax = plt.subplots(tight_layout=True)
     
-    rbins = np.arange(0, 20.1, 0.1)
+    rbins = np.arange(0, 20., 0.1)
     rbin_centers = get_bin_centers(rbins)
     
     # Plot expected gradients
@@ -26,10 +26,27 @@ def main(style='paper'):
     ax.plot(rbin_centers, mw_disk.thin_disk(rbin_centers), 'k--', label='Thin disk')
     ax.plot(rbin_centers, mw_disk.thick_disk(rbin_centers), 'k:', label='Thick disk')
     
+    # Two-infall SFH with no migration
+    nomig = MultizoneStars.from_output('nomigration/twoinfall/plateau_width10/diskmodel')
+    densities = surface_density_gradient(nomig, rbins)
+    ax.plot(rbin_centers[:154], densities[:154], 'g-', label='No migration')
+    
+    nomig_thick = nomig.filter({'formation_time': (0, 4.)})
+    densities = surface_density_gradient(nomig_thick, rbins)
+    ax.plot(rbin_centers[:154], densities[:154], 'g:')
+    
     # Two-infall SFH with Gaussian migration scheme
     twoinfall = MultizoneStars.from_output('gaussian/twoinfall/plateau_width10/diskmodel')
     densities = surface_density_gradient(twoinfall, rbins)
     ax.plot(rbin_centers, densities, 'r-', label='Gaussian migration')
+    
+    # Two-infall components
+    twoinfall_thick = twoinfall.filter({'formation_time': (0, 4.)})
+    densities = surface_density_gradient(twoinfall_thick, rbins)
+    ax.plot(rbin_centers, densities, 'r:')
+    twoinfall_thin = twoinfall.filter({'formation_time': (4., None)})
+    densities = surface_density_gradient(twoinfall_thin, rbins)
+    ax.plot(rbin_centers, densities, 'r--')
     
     # Inside-out SFH with analog migration scheme
     analog = MultizoneStars.from_output('diffusion/insideout/powerlaw_slope11/diskmodel')
@@ -42,7 +59,7 @@ def main(style='paper'):
     ax.xaxis.set_minor_locator(MultipleLocator(1))
     ax.legend(loc='upper right', frameon=False)
     
-    plt.savefig(paths.figures / 'density_gradient.png')
+    plt.savefig(paths.figures / 'density_gradient')
     plt.close()
 
 
