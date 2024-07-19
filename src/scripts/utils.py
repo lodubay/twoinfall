@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize, BoundaryNorm, LogNorm
 from matplotlib.cm import ScalarMappable
 from astropy.table import Table
+import astropy.units as u
+import astropy.coordinates as coords
 import vice
 from _globals import RANDOM_SEED
 
@@ -731,5 +733,47 @@ def gaussian_smooth(hist, bins, width):
 
 # =============================================================================
 # SCIENCE FUNCTIONS
-# =============================================================================
+# =============================================================================    
 
+def galactic_to_galactocentric(l, b, distance):
+    r"""
+    Use astropy's SkyCoord to convert Galactic (l, b, distance) coordinates
+    to galactocentric (r, phi, z) coordinates.
+
+    Parameters
+    ----------
+    l : array-like
+        Galactic longitude in degrees
+    b : array-like
+        Galactic latitude in degrees
+    distance : array-like
+        Distance (from Sun) in kpc
+
+    Returns
+    -------
+    galr : numpy array
+        Galactocentric radius in kpc
+    galphi : numpy array
+        Galactocentric phi-coordinates in degrees
+    galz : numpy arraay
+        Galactocentric z-height in kpc
+    """
+    l = np.array(l)
+    b = np.array(b)
+    d = np.array(distance)
+    if l.shape == b.shape == d.shape:
+        if not isinstance(l, u.quantity.Quantity):
+            l *= u.deg
+        if not isinstance(b, u.quantity.Quantity):
+            b *= u.deg
+        if not isinstance(d, u.quantity.Quantity):
+            d *= u.kpc
+        galactic = coords.SkyCoord(l=l, b=b, distance=d, frame=coords.Galactic())
+        galactocentric = galactic.transform_to(frame=coords.Galactocentric())
+        galactocentric.representation_type = 'cylindrical'
+        galr = galactocentric.rho.to(u.kpc).value
+        galphi = galactocentric.phi.to(u.deg).value
+        galz = galactocentric.z.to(u.kpc).value
+        return galr, galphi, galz
+    else:
+        raise ValueError('Arrays must be of same length.')
