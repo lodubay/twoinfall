@@ -13,7 +13,7 @@ from matplotlib.lines import Line2D
 import numpy as np
 import vice
 from multizone_stars import MultizoneStars
-from apogee_tools import import_apogee, gen_kde
+from apogee_sample import APOGEESample
 # from mwm_tools import import_mwm
 from scatter_plot_grid import setup_axes, setup_colorbar
 # from utils import kde2D
@@ -25,7 +25,7 @@ OFE_LIM = (-0.15, 0.65)
 
 def main(output_name, uncertainties=True, **kwargs):
     # Import APOGEE data
-    apogee_data = import_apogee()
+    apogee_data = APOGEESample.load()
     # Import multioutput stars data
     mzs = MultizoneStars.from_output(output_name)
     # Model observational uncertainties
@@ -63,14 +63,8 @@ def plot_ofe_feh_grid(mzs, apogee_data, tracks=True, apogee_contours=True,
                 ax.plot(hist['[fe/h]'], hist['[o/fe]'], c=ism_track_color, ls='-', 
                         linewidth=ism_track_width)
             if apogee_contours:
-                xx, yy, logz = gen_kde(apogee_data, bandwidth=0.02,
-                                       galr_lim=galr_lim, absz_lim=absz_lim)
-                # scale the linear density to the max value
-                scaled_density = np.exp(logz) / np.max(np.exp(logz))
-                # contour levels at 1, 2, and 3 sigma
-                levels = np.exp(-0.5 * np.array([2, 1])**2)
-                ax.contour(xx, yy, scaled_density, levels, colors='r',
-                           linewidths=0.5, linestyles=['--', '-'])
+                apogee_subset = apogee_data.region(galr_lim, absz_lim)
+                apogee_subset.plot_kde2D_contours(ax, 'FE_H', 'O_FE')
     
     # Set x-axis ticks
     axs[0,0].xaxis.set_major_locator(MultipleLocator(0.5))

@@ -6,7 +6,7 @@ stellar migration.
 import numpy as np
 import matplotlib.pyplot as plt
 from multizone_stars import MultizoneStars
-from apogee_tools import import_apogee, apogee_region, apogee_mdf
+from apogee_sample import APOGEESample
 import paths
 import _globals
 from utils import get_bin_centers
@@ -18,7 +18,7 @@ def main(style='paper', smooth_width=0.2, xlim=(-1.7, 0.7), nbins=100):
                                      2/3 * _globals.TWO_COLUMN_WIDTH))
     # fig.subplots_adjust(left=0.1, right=0.8, bottom=0.1, top=0.95)
     
-    apogee_data = import_apogee()
+    apogee_data = APOGEESample.load()
     mzs_mig = MultizoneStars.from_output('gaussian/twoinfall/plateau_width10/diskmodel')
     mzs_nomig = MultizoneStars.from_output('nomigration/twoinfall/plateau_width10/diskmodel')
     
@@ -37,9 +37,9 @@ def main(style='paper', smooth_width=0.2, xlim=(-1.7, 0.7), nbins=100):
                                                smoothing=smooth_width)
         ax.plot(get_bin_centers(mdf_bins), nomig_mdf, c='k', ls='--',
                 label='Without migration')
-        apogee_subset = apogee_region(apogee_data, galr_lim=galr_lim, absz_lim=(0, 2))
-        data_mdf, mdf_bins = apogee_mdf(apogee_subset, col='FE_H', bins=nbins,
-                                        range=xlim, smoothing=smooth_width)
+        apogee_subset = apogee_data.region(galr_lim=galr_lim, absz_lim=(0, 2))
+        data_mdf, mdf_bins = apogee_subset.mdf(col='FE_H', bins=nbins,
+                                               range=xlim, smoothing=smooth_width)
         ax.plot(get_bin_centers(mdf_bins), data_mdf, c='r', ls='-',
                 label='APOGEE DR17')
     

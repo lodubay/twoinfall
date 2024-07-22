@@ -4,32 +4,35 @@ handling the APOGEE sample and related datasets. If run as a script, it will
 re-generate the main sample file at src/data/APOGEE/sample.csv.
 """
 
+from numbers import Number
 from pathlib import Path
 import numpy as np
 import pandas as pd
 import paths
 from utils import fits_to_pandas, box_smooth, kde2D, galactic_to_galactocentric
 
+# Sample galactocentric coordinate bounds
+GALR_LIM = (3., 15.)
+ABSZ_LIM = (0., 2.)
 # Data file names
 ALLSTAR_FNAME = 'allStarLite-dr17-synspec_rev1.fits'
 LEUNG23_FNAME = 'nn_latent_age_dr17.csv'
 # List of columns to include in the final sample
 SAMPLE_COLS = ['APOGEE_ID', 'RA', 'DEC', 'GALR', 'GALPHI', 'GALZ', 'SNREV',
                'TEFF', 'TEFF_ERR', 'LOGG', 'LOGG_ERR', 'FE_H', 'FE_H_ERR',
-               'O_FE', 'O_FE_ERR', 'LATENT_AGE', 'LATENT_AGE_ERR', 
-               'LOG_LATENT_AGE', 'LOG_LATENT_AGE_ERR']
+               'O_FE', 'O_FE_ERR', 'AGE', 'AGE_ERR', 'LOG_AGE', 'LOG_AGE_ERR']
+
+def main():
+    sample = APOGEESample.load(overwrite=True, verbose=True)
 
 class APOGEESample:
     """
     Contains data from the APOGEE sample and related functions.
     
-    Parameters
-    ----------
-    data : pandas.DataFrame
-        The APOGEE sample data.
-    data_dir : str or pathlib.Path, optional
-        The parent directory containing APOGEE data files. The default is
-        '../data/APOGEE/'.
+    Note
+    ----
+    In almost all instances, the user should initialize with the
+    APOGEESample.load() classmethod.
     
     Attributes
     ----------
@@ -37,17 +40,34 @@ class APOGEESample:
         The APOGEE sample data.
     data_dir : pathlib.Path
         Path to the directory containing APOGEE sample and data files.
+    galr_lim : tuple of floats
+        The minimum and maximum galactocentric radius of the sample in kpc.
+    absz_lim : tuple of floats
+        The minimjm and maximum absolute midplane distance of the sample in kpc.
     
     Calling
     -------
+    cols : str or list of strings, optional
+        If an empty list, returns the entire DataFrame. If a string, returns
+        that column of the DataFrame. If a list of strings, returns a subset
+        of those columns in the DataFrame. The default is [].
     
-    Functions
-    ---------
+    Methods
+    -------
+    mdf(col='FE_H', bins=100, range=None, smoothing=0.)
+        Calculate the metallicity distribution function (MDF).
+    plot_kde2D_contours(ax, xcol, ycol, enclosed=[0.8, 0.3], c='r', lw=0.5, 
+                        ls=['--', '-'], **kwargs)
+        Plot contours representing a 2D kernel density estimate.
     region(galr_lim=(3, 15), absz_lim=(0, 2), inplace=False)
+        Select targets within the given Galactocentric region.
     """
-    def __init__(self, data, data_dir=paths.data/'APOGEE'):
+    def __init__(self, data, data_dir=paths.data/'APOGEE',
+                 galr_lim=GALR_LIM, absz_lim=ABSZ_LIM):
         self.data = data
         self.data_dir = data_dir
+        self.galr_lim = galr_lim
+        self.absz_lim = absz_lim
     
     def __call__(self, cols=[]):
         """
@@ -56,8 +76,8 @@ class APOGEESample:
         Parameters
         ----------
         cols : str or list of strings, optional
-            If an empty list, return the entire DataFrame. If a string, return
-            that column of the DataFrame. If a list of strings, return a subset
+            If an empty list, returns the entire DataFrame. If a string, returns
+            that column of the DataFrame. If a list of strings, returns a subset
             of those columns in the DataFrame. The default is [].
             
         Returns
@@ -84,10 +104,94 @@ class APOGEESample:
                 raise TypeError('Parameter "cols" must be a string or list ' +\
                                 'of strings.')
             return self.data[cols]
+        
+    def plot_kde2D_contours(self, ax, xcol, ycol, enclosed=[0.8, 0.3],
+                            c='r', lw=0.5, ls=['--', '-'],
+                            **kwargs):
+        """
+        Plot 2D density contours from the kernel density estimate for the
+        given columns.
+        
+        Parameters
+        ----------
+        ax : matplotlib.axes.Axes
+            Axes object on which to draw the scatter plot.
+        xcol : str
+            Name of column to plot on the x-axis.
+        ycol : str
+            Name of column to plot on the y-axis.
+        enclosed : list, optional
+            List of probabilities enclosed by the contour levels, ordered
+            from highest probability (lowest contour level) to lowest (highest).
+            The default is [0.8, 0.3].
+        c : str or matplotlib color or list of previous, optional
+            Color(s) of each contour line. The default is 'r'.
+        lw : float or list of floats, optional
+            Line widths corresponding to each contour line. The default is 0.5.
+        ls : str or list of str, optional
+            Line styles of each contour. If a list, length must be equal
+            to the length of 'enclosed'. The default is ['--', '-'].
+        **kwargs passed to `kde2D()`.
+        """
+        xx, yy, logz = self.kde2D(xcol, ycol, **kwargs)
+        # scale the linear density to the max value
+        scaled_density = np.exp(logz) / np.max(np.exp(logz))
+        # contour levels at 1 and 2 sigma
+        levels = contour_levels_2D(scaled_density, enclosed=enclosed)
+        ax.contour(xx, yy, scaled_density, levels, colors=c,
+                   linewidths=lw, linestyles=ls)
+        
+
+    def kde2D(self, xcol, ycol, bandwidth=0.03, overwrite=False):
+        """
+        Generate 2-dimensional kernel density estimate (KDE) of APOGEE data, 
+        or import previously saved KDE if it already exists.
+        
+        Parameters
+        ----------
+        xcol : str
+            Name of column with x-axis data
+        ycol : str
+            Name of column with y-axis data
+        bandwidth : float
+            Kernel density estimate bandwidth. A larger number will produce
+            smoother contour lines. The default is 0.03.
+        overwrite : bool
+            If True, force re-generate the 2D KDE and save the output.
+        
+        Returns
+        -------
+        xx, yy, logz: tuple of numpy.array
+            Outputs of utils.kde2D()
+        """    
+        # Path to save 2D KDE for faster plot times
+        path = self.kde2D_path(xcol, ycol)
+        if path.exists() and not overwrite:
+            xx, yy, logz = read_kde(path)
+        else:
+            xx, yy, logz = kde2D(self.data['FE_H'], self.data['O_FE'], bandwidth)
+            save_kde(xx, yy, logz, path)
+        return xx, yy, logz
+
+    def kde2D_path(self, xcol, ycol):
+        """
+        Generate file name for the KDE of the given region.
+        
+        Parameters
+        ---------
+        xcol : str
+            Name of column with x-axis data
+        ycol : str
+            Name of column with y-axis data
+        """
+        kde_dir = '_'.join([''.join(xcol.split('_')).lower(),
+                            ''.join(ycol.split('_')).lower()])
+        filename = 'r%s-%s_z%s-%s.dat' % (self.galr_lim + self.absz_lim)
+        return self.data_dir / 'kde' / kde_dir / filename
     
     def mdf(self, col='FE_H', bins=100, range=None, smoothing=0.):
         """
-        Calculate the MDF in [Fe/H] of a region of APOGEE data.
+        Calculate the metallicity distribution function (MDF).
         
         Parameters
         ----------
@@ -147,8 +251,11 @@ class APOGEESample:
         subset.reset_index(inplace=True, drop=True)
         if inplace:
             self.data = subset
+            self.galr_lim = galr_lim
+            self.absz_lim = absz_lim
         else:
-            return APOGEESample(subset, data_dir=self.data_dir)
+            return APOGEESample(subset, data_dir=self.data_dir, 
+                                galr_lim=galr_lim, absz_lim=absz_lim)
         
     @property
     def data(self):
@@ -187,6 +294,50 @@ class APOGEESample:
         else:
             raise TypeError('Attribute data_dir must be a string or path.' +
                             'Got: %s' % type(value))
+            
+    @property
+    def galr_lim(self):
+        """
+        tuple
+            Minimum and maximum bounds on the Galactic radius in kpc.
+        """
+        return self._galr_lim
+    
+    @galr_lim.setter
+    def galr_lim(self, value):
+        if isinstance(value, (tuple, list)):
+            if len(value) == 2:
+                if all([isinstance(x, Number) for x in value]):
+                    self._galr_lim = tuple(value)
+                else:
+                    raise TypeError('Each item in "galr_lim" must be a number.')
+            else:
+                raise ValueError('Attribute "galr_lim" must have length 2.')
+        else:
+            raise TypeError('Attribute "galr_lim" must be a tuple or list. Got:',
+                            type(value))
+            
+    @property
+    def absz_lim(self):
+        """
+        tuple
+            Minimum and maximum bounds on the absolute z-height in kpc.
+        """
+        return self._absz_lim
+    
+    @absz_lim.setter
+    def absz_lim(self, value):
+        if isinstance(value, (tuple, list)):
+            if len(value) == 2:
+                if all([isinstance(x, Number) for x in value]):
+                    self._absz_lim = tuple(value)
+                else:
+                    raise TypeError('Each item in "absz_lim" must be a number.')
+            else:
+                raise ValueError('Attribute "absz_lim" must have length 2.')
+        else:
+            raise TypeError('Attribute "absz_lim" must be a tuple. Got:',
+                            type(value))
     
     @classmethod
     def load(cls, name='sample.csv', data_dir=paths.data/'APOGEE', 
@@ -227,7 +378,7 @@ class APOGEESample:
             data.to_csv(sample_file_path, index=False)
             if verbose:
                 print('Done.')
-        return cls(data, data_dir=data_dir)
+        return cls(data, data_dir=data_dir, galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
 
     @staticmethod
     def generate(data_dir=paths.data/'APOGEE', verbose=False):
@@ -276,8 +427,10 @@ class APOGEESample:
         sample['GALPHI'] = galphi # deg
         sample['GALZ'] = galz # kpc
         # Limit by galactocentric radius and z-height
-        sample = sample[(sample['GALR'] > 3.) & (sample['GALR'] < 15.) &
-                        (sample['GALZ'].abs() < 2)]
+        sample = sample[(sample['GALR'] >= GALR_LIM[0]) & 
+                        (sample['GALR'] < GALR_LIM[1]) &
+                        (sample['GALZ'].abs() >= ABSZ_LIM[0]) &
+                        (sample['GALZ'].abs() < ABSZ_LIM[1])]
         sample.reset_index(inplace=True, drop=True)
         # Drop unneeded columns
         return sample[SAMPLE_COLS].copy()
@@ -301,10 +454,10 @@ class APOGEESample:
         """
         cols = ['LogAge', 'LogAge_Error', 'Age', 'Age_Error']
         latent_ages = leung23_df[cols].copy()
-        latent_ages.columns = ['LOG_LATENT_AGE', 'LOG_LATENT_AGE_ERR', 
-                               'LATENT_AGE', 'LATENT_AGE_ERR']
+        latent_ages.columns = ['LOG_AGE', 'LOG_AGE_ERR', 
+                               'AGE', 'AGE_ERR']
         # Limit to stars with <40% age uncertainty per recommendation
-        frac_err = latent_ages['LATENT_AGE_ERR'] / latent_ages['LATENT_AGE']
+        frac_err = latent_ages['AGE_ERR'] / latent_ages['AGE']
         latent_ages.where(frac_err < 0.4, inplace=True)
         joined = apogee_df.join(latent_ages)
         return joined
@@ -341,7 +494,56 @@ class APOGEESample:
         return df
 
 
-def url_write(url, savedir=paths.data/'APOGEE'):
+def contour_levels_2D(arr2d, enclosed=[0.8, 0.3]):
+    """
+    Calculate the contour levels which contain the given enclosed probabilities.
+    
+    Parameters
+    ----------
+    arr2d : np.ndarray
+        2-dimensional array of densities.
+    enclosed : list, optional
+        List of enclosed probabilities of the contour levels. The default is
+        [0.8, 0.3].
+    """
+    levels = []
+    l = 0.
+    i = 0
+    while l < 1 and i < len(enclosed):
+        frac_enclosed = np.sum(arr2d[arr2d > l]) / np.sum(arr2d)
+        if frac_enclosed <= enclosed[i] + 0.01:
+            levels.append(l)
+            i += 1
+        l += 0.01
+    return levels
+
+
+def read_kde(path):
+    """
+    Read a text file generated by save_kde()
+    """
+    arr2d = np.genfromtxt(path)
+    nrows = int(arr2d.shape[0]/3)
+    xx = arr2d[:nrows]
+    yy = arr2d[nrows:2*nrows]
+    logz = arr2d[2*nrows:]
+    return xx, yy, logz
+
+
+def save_kde(xx, yy, logz, path):
+    """
+    Generate a text file containing the KDE of the given region along with its
+    corresponding x and y coordinates.
+    """
+    if not path.parents[0].is_dir():
+        path.parents[0].mkdir(parents=True)
+    with open(path, 'w') as f:
+        for arr in [xx, yy, logz]:
+            f.write('#\n')
+            np.savetxt(f, arr)
+
+
+def url_write(url, savedir=paths.data):
     """
     Retrieve a text file from the provided URL, decompressing if necessary.
     
@@ -364,4 +566,8 @@ def url_write(url, savedir=paths.data/'APOGEE'):
         fname = fname[:-3]
     with open(Path(savedir) / fname, 'wb') as f:
         f.write(resp)
+        
+
+if __name__ == '__main__':
+    main()
     
