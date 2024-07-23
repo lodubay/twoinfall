@@ -11,6 +11,9 @@ import vice
 SolarO=7.33e-3
 SolarMg=6.71e-4
 SolarFe=1.37e-3
+vice.solar_z['o'] = SolarO
+vice.solar_z['mg'] = SolarMg
+vice.solar_z['fe'] = SolarFe
 
 # IMF-averaged CCSN yields
 # yield calibration is based on Weinberg++ 2023, eq. 11
