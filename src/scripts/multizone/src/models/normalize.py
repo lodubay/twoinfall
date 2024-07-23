@@ -113,8 +113,8 @@ def twoinfall_ampratio(time_dependence, radius, onset = 4,
         mgas += time_dependence(time) * dt * 1.e9 # yr-Gyr conversion
         mgas -= sfr * dt * (1 + eta - recycling)
         mstar += sfr * dt * (1 - recycling)
-        if mstar_at_onset is None and time >= onset: mstar_at_onset = mstar
         time += dt
+        if mstar_at_onset is None and time >= onset: mstar_at_onset = mstar
     thick_to_thin = THICK_TO_THIN_RATIO * m.exp(
         radius * (1 / THIN_DISK_SCALE_RADIUS - 1 / THICK_DISK_SCALE_RADIUS))
     return mstar / (mstar - mstar_at_onset) * (1 + thick_to_thin)**-1
