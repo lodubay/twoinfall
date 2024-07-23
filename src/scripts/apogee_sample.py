@@ -19,11 +19,12 @@ ALLSTAR_FNAME = 'allStarLite-dr17-synspec_rev1.fits'
 LEUNG23_FNAME = 'nn_latent_age_dr17.csv'
 # List of columns to include in the final sample
 SAMPLE_COLS = ['APOGEE_ID', 'RA', 'DEC', 'GALR', 'GALPHI', 'GALZ', 'SNREV',
-               'TEFF', 'TEFF_ERR', 'LOGG', 'LOGG_ERR', 'FE_H', 'FE_H_ERR',
-               'O_FE', 'O_FE_ERR', 'AGE', 'AGE_ERR', 'LOG_AGE', 'LOG_AGE_ERR']
+               'TEFF', 'TEFF_ERR', 'LOGG', 'LOGG_ERR', 'O_H', 'O_H_ERR', 
+               'FE_H', 'FE_H_ERR', 'O_FE', 'O_FE_ERR', 'AGE', 'AGE_ERR', 
+               'LOG_AGE', 'LOG_AGE_ERR']
 
 def main():
-    sample = APOGEESample.generate(verbose=True)
+    APOGEESample.generate(verbose=True)
 
 class APOGEESample:
     """
@@ -32,7 +33,7 @@ class APOGEESample:
     Notes
     -----
     In almost all instances, the user should initialize with the
-    APOGEESample.load() classmethod.
+    APOGEESample.load() or APOGEESample.generate() classmethods.
     
     Attributes
     ----------
@@ -46,6 +47,8 @@ class APOGEESample:
         The minimum and maximum absolute midplane distance of the sample in kpc.
     nstars : int
         Total number of stars in the sample.
+    nstars_ages : int
+        Number of stars in the sample with age estimates.
     
     Calling
     -------
@@ -172,6 +175,9 @@ class APOGEESample:
         sample['GALR'] = galr # kpc
         sample['GALPHI'] = galphi # deg
         sample['GALZ'] = galz # kpc
+        # Add column for [O/H]
+        sample['O_H'] = sample['O_FE'] + sample['FE_H']
+        sample['O_H_ERR'] = sample['O_FE_ERR'] # [X/Fe] and [X/H] errors are the same
         # Limit by galactocentric radius and z-height
         sample = sample[(sample['GALR'] >= GALR_LIM[0]) & 
                         (sample['GALR'] < GALR_LIM[1]) &
@@ -450,6 +456,14 @@ class APOGEESample:
             Total number of stars in the sample.
         """
         return self.data.shape[0]
+                    
+    @property
+    def nstars_ages(self):
+        """
+        int
+            Number of stars in the sample with age estimates.
+        """
+        return self.data[self.data['AGE'].notna()].shape[0]
     
     @staticmethod
     def join_latent_ages(apogee_df, leung23_df):

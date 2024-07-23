@@ -4,19 +4,15 @@ src/tex/output/sample_size.txt as well as the size of the sample with
 ages from Leung et al. (2023) to src/tex/output/age_sample_size.txt
 """
 
-import pandas as pd
-from apogee_tools import import_apogee
+from apogee_sample import APOGEESample
 import paths
 
-data = import_apogee()
+data = APOGEESample.load()
 
 # Write file with full sample size
 with open(paths.output / 'sample_size.txt', 'w') as f:
-    f.write('\\num{%s}' % str(data.shape[0]))
-
-# Select data with non-NA ages
-ages = data[data['LATENT_AGE'].notna()]
+    f.write('\\num{%s}' % str(data.nstars))
 
 # Write file with age sample size
 with open(paths.output / 'age_sample_size.txt', 'w') as f:
-    f.write('\\num{%s}' % str(ages.shape[0]))
+    f.write('\\num{%s}' % str(data.nstars_ages))
