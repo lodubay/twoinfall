@@ -8,14 +8,19 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from multizone_stars import MultizoneStars
 from utils import get_bin_centers, Exponential
+from multizone.src.models.normalize import twoinfall_ampratio
+from multizone.src.models.gradient import gradient
+from multizone.src.models.twoinfall import twoinfall
 import paths
 import _globals
+import vice
 
 def main(style='paper'):    
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, ax = plt.subplots(tight_layout=True)
     
-    rbins = np.arange(0, 20., 0.1)
+    dr = 0.1
+    rbins = np.arange(0, 20., dr)
     rbin_centers = get_bin_centers(rbins)
     
     # Plot expected gradients
@@ -34,24 +39,48 @@ def main(style='paper'):
     nomig_thick = nomig.filter({'formation_time': (0, 4.)})
     densities = surface_density_gradient(nomig_thick, rbins)
     ax.plot(rbin_centers[:154], densities[:154], 'g:')
+    print(densities - mw_disk.thick_disk(rbins[:-1]))
+    
+    nomig_thin = nomig.filter({'formation_time': (4., None)})
+    densities = surface_density_gradient(nomig_thin, rbins)
+    ax.plot(rbin_centers[:154], densities[:154], 'g--')
+    
+    # Similar but using vice.history instead
+    # nomig_out = vice.multioutput('../data/multizone/nomigration/twoinfall/plateau_width10/diskmodel')
+    # thick_sigma = []
+    # total_sigma = []
+    # for i in range(154):
+    #     zone = nomig_out.zones['zone%s' % i]
+    #     mstar = zone.history['mstar']
+    #     area = np.pi * (((i+1)*dr)**2 - (i*dr)**2)
+    #     thick_sigma.append(mstar[399] / area)
+    #     total_sigma.append(mstar[-1] / area)
+    # ax.plot(rbin_centers[:154], total_sigma, 'r--', label='Zone-based')
+    # ax.plot(rbin_centers[:154], thick_sigma, 'r:')
+    
+    # Plot BHG16 gradient
+    # grad = np.array([gradient(r) for r in rbins])
+    # integral = np.sum(grad * 2 * np.pi * rbins * 0.1)
+    # grad *= _globals.M_STAR_MW / integral
+    # ax.plot(rbins, grad, 'r:', label='BHG16')
     
     # Two-infall SFH with Gaussian migration scheme
-    twoinfall = MultizoneStars.from_output('gaussian/twoinfall/plateau_width10/diskmodel')
-    densities = surface_density_gradient(twoinfall, rbins)
-    ax.plot(rbin_centers, densities, 'r-', label='Gaussian migration')
+    # twoinfall = MultizoneStars.from_output('gaussian/twoinfall/plateau_width10/diskmodel')
+    # densities = surface_density_gradient(twoinfall, rbins)
+    # ax.plot(rbin_centers, densities, 'r-', label='Gaussian migration')
     
     # Two-infall components
-    twoinfall_thick = twoinfall.filter({'formation_time': (0, 4.)})
-    densities = surface_density_gradient(twoinfall_thick, rbins)
-    ax.plot(rbin_centers, densities, 'r:')
-    twoinfall_thin = twoinfall.filter({'formation_time': (4., None)})
-    densities = surface_density_gradient(twoinfall_thin, rbins)
-    ax.plot(rbin_centers, densities, 'r--')
+    # twoinfall_thick = twoinfall.filter({'formation_time': (0, 4.)})
+    # densities = surface_density_gradient(twoinfall_thick, rbins)
+    # ax.plot(rbin_centers, densities, 'r:')
+    # twoinfall_thin = twoinfall.filter({'formation_time': (4., None)})
+    # densities = surface_density_gradient(twoinfall_thin, rbins)
+    # ax.plot(rbin_centers, densities, 'r--')
     
     # Inside-out SFH with analog migration scheme
-    analog = MultizoneStars.from_output('diffusion/insideout/powerlaw_slope11/diskmodel')
-    densities = surface_density_gradient(analog, rbins)
-    ax.plot(rbin_centers, densities, 'b-', label='Analog migration')
+    # analog = MultizoneStars.from_output('diffusion/insideout/powerlaw_slope11/diskmodel')
+    # densities = surface_density_gradient(analog, rbins)
+    # ax.plot(rbin_centers, densities, 'b-', label='Analog migration')
     
     ax.set_xlabel(r'$R_{\rm gal}$ [kpc]')
     ax.set_ylabel(r'$\Sigma_\star$ [M$_\odot$ kpc$^{-2}$]')
@@ -60,6 +89,27 @@ def main(style='paper'):
     ax.legend(loc='upper right', frameon=False)
     
     plt.savefig(paths.figures / 'density_gradient')
+    plt.close()
+    
+    # Plot amplitude ratio, expected vs modeled
+    fig, ax = plt.subplots(tight_layout=True)
+    nomig_out = vice.multioutput('../data/multizone/nomigration/twoinfall/plateau_width10/diskmodel')
+    ampratio = []
+    for i in range(155):
+        zone = nomig_out.zones['zone%s' % i]
+        ifr = zone.history['ifr']
+        ampratio.append(ifr[400] / ifr[0])
+    ax.plot(rbin_centers[:155], ampratio, 'g-', label='Output')
+    # Expected amplitude ratio
+    ampratio = []
+    for i, r in enumerate(rbins[:155]):
+        ifr = twoinfall(r)
+        ampratio.append(ifr.ratio)
+    ax.plot(rbin_centers[:155], ampratio[:155], 'k-', label='Input')
+    ax.set_xlabel('Rgal')
+    ax.set_ylabel('Amplitude ratio')
+    ax.legend()
+    plt.savefig(paths.figures / 'ampratio')
     plt.close()
 
 
@@ -90,6 +140,18 @@ class TwoComponentDisk:
     A model for the Milky Way stellar disk consisting of a thick and a thin
     exponential disk.
     
+    Parameters
+    ----------
+    ratio : float, optional
+        Ratio of thick disk to thin disk surface mass density at R=0. The
+        default is 0.27.
+    mass : float, optional
+        Total mass of the disk in Msun. The default is 5.17e10.
+    rs_thin : float, optional
+        Thin disk scale radius in kpc. The default is 2.5.
+    rs_thick : float, optional
+        Thick disk scale radius in kpc. The default is 2.
+    
     Attributes
     ----------
     thin_disk : exponential
@@ -106,19 +168,6 @@ class TwoComponentDisk:
                  mass=_globals.M_STAR_MW, 
                  rs_thin=_globals.THIN_DISK_SCALE_RADIUS,
                  rs_thick=_globals.THICK_DISK_SCALE_RADIUS):
-        """
-        Parameters
-        ----------
-        ratio : float, optional
-            Ratio of thick disk to thin disk surface mass density at R=0. The
-            default is 0.27.
-        mass : float, optional
-            Total mass of the disk in Msun. The default is 5.17e10.
-        rs_thin : float, optional
-            Thin disk scale radius in kpc. The default is 2.5.
-        rs_thick : float, optional
-            Thick disk scale radius in kpc. The default is 2.
-        """
         self.thin_disk = Exponential(scale=-rs_thin)
         self.thick_disk = Exponential(scale=-rs_thick, coeff=ratio)
         norm = self.normalize()
