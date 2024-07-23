@@ -23,14 +23,14 @@ SAMPLE_COLS = ['APOGEE_ID', 'RA', 'DEC', 'GALR', 'GALPHI', 'GALZ', 'SNREV',
                'O_FE', 'O_FE_ERR', 'AGE', 'AGE_ERR', 'LOG_AGE', 'LOG_AGE_ERR']
 
 def main():
-    sample = APOGEESample.load(overwrite=True, verbose=True)
+    sample = APOGEESample.generate(verbose=True)
 
 class APOGEESample:
     """
     Contains data from the APOGEE sample and related functions.
     
-    Note
-    ----
+    Notes
+    -----
     In almost all instances, the user should initialize with the
     APOGEESample.load() classmethod.
     
@@ -43,7 +43,9 @@ class APOGEESample:
     galr_lim : tuple of floats
         The minimum and maximum galactocentric radius of the sample in kpc.
     absz_lim : tuple of floats
-        The minimjm and maximum absolute midplane distance of the sample in kpc.
+        The minimum and maximum absolute midplane distance of the sample in kpc.
+    nstars : int
+        Total number of stars in the sample.
     
     Calling
     -------
@@ -54,13 +56,24 @@ class APOGEESample:
     
     Methods
     -------
-    mdf(col='FE_H', bins=100, range=None, smoothing=0.)
+    generate : classmethod
+        Generate the APOGEE sample from scratch with selection cuts and ages.
+    load : classmethod
+        Load the APOGEE sample from the data directory.
+    kde2D : instancemethod
+        Generate a 2-dimensional kernel density estimate (KDE).
+    kde2D_path : instancemethod
+        File name for saving the 2-D KDE.
+    mdf : instancemethod
         Calculate the metallicity distribution function (MDF).
-    plot_kde2D_contours(ax, xcol, ycol, enclosed=[0.8, 0.3], c='r', lw=0.5, 
-                        ls=['--', '-'], **kwargs)
+    plot_kde2D_contours : instancemethod
         Plot contours representing a 2D kernel density estimate.
-    region(galr_lim=(3, 15), absz_lim=(0, 2), inplace=False)
+    region : instancemethod
         Select targets within the given Galactocentric region.
+    join_latent_ages : staticmethod
+        Join APOGEE sample with ages from Leung et al. (2023).
+    quality_cuts : staticmethod
+        Apply sample quality cuts to APOGEE data.
     """
     def __init__(self, data, data_dir=paths.data/'APOGEE',
                  galr_lim=GALR_LIM, absz_lim=ABSZ_LIM):
@@ -104,43 +117,98 @@ class APOGEESample:
                 raise TypeError('Parameter "cols" must be a string or list ' +\
                                 'of strings.')
             return self.data[cols]
-        
-    def plot_kde2D_contours(self, ax, xcol, ycol, enclosed=[0.8, 0.3],
-                            c='r', lw=0.5, ls=['--', '-'],
-                            **kwargs):
+
+    @classmethod
+    def generate(cls, name='sample.csv', data_dir=paths.data/'APOGEE', 
+                 verbose=False):
         """
-        Plot 2D density contours from the kernel density estimate for the
-        given columns.
+        Generate the APOGEE sample with selection cuts and ages.
         
         Parameters
         ----------
-        ax : matplotlib.axes.Axes
-            Axes object on which to draw the scatter plot.
-        xcol : str
-            Name of column to plot on the x-axis.
-        ycol : str
-            Name of column to plot on the y-axis.
-        enclosed : list, optional
-            List of probabilities enclosed by the contour levels, ordered
-            from highest probability (lowest contour level) to lowest (highest).
-            The default is [0.8, 0.3].
-        c : str or matplotlib color or list of previous, optional
-            Color(s) of each contour line. The default is 'r'.
-        lw : float or list of floats, optional
-            Line widths corresponding to each contour line. The default is 0.5.
-        ls : str or list of str, optional
-            Line styles of each contour. If a list, length must be equal
-            to the length of 'enclosed'. The default is ['--', '-'].
-        **kwargs passed to `kde2D()`.
+        name : str, optional
+            Name of CSV file containing sample data. The default is 'sample.csv'.
+        data_dir : str or pathlib.Path, optional
+            The parent directory containing APOGEE data files. The default is
+            '../data/APOGEE/'.
+        verbose : bool, optional
+            Whether to print verbose output to terminal. The default is False.
         """
-        xx, yy, logz = self.kde2D(xcol, ycol, **kwargs)
-        # scale the linear density to the max value
-        scaled_density = np.exp(logz) / np.max(np.exp(logz))
-        # contour levels at 1 and 2 sigma
-        levels = contour_levels_2D(scaled_density, enclosed=enclosed)
-        ax.contour(xx, yy, scaled_density, levels, colors=c,
-                   linewidths=lw, linestyles=ls)
+        if verbose:
+            print('Importing APOGEE catalogs and generating sample...')
+        # Make data directory if needed
+        if not Path(data_dir).is_dir():
+            data_dir.mkdir(parents=True)
+        # Get APOGEE data from the DR17 allStar file
+        apogee_catalog_path = data_dir / ALLSTAR_FNAME
+        if not apogee_catalog_path.is_file():
+            # Download DR17 allStar file from SDSS server
+            if verbose: 
+                print('Downloading allStar file (this will take a few minutes)...')
+            # get_allStar_dr17()
+            url_write('https://data.sdss.org/sas/dr17/apogee/spectro/aspcap/dr17/synspec_rev1/%s' \
+                      % ALLSTAR_FNAME, savedir=data_dir)
+        if verbose: print('Importing allStar file...')
+        apogee_catalog = fits_to_pandas(apogee_catalog_path, hdu=1)
+        # Add ages from row-matched datasets BEFORE any cuts
+        # Add ages from Leung et al. (2023)
+        leung23_catalog_path = data_dir / LEUNG23_FNAME
+        if not leung23_catalog_path.is_file():
+            # Download Leung+ 2023 data from GitHub
+            if verbose:
+                print('Downloading Leung et al. (2023) age data...')
+            # get_Leung2023_ages()
+            url_write('https://raw.githubusercontent.com/henrysky/astroNN_ages/main/%s.gz' \
+                      % LEUNG23_FNAME, savedir=data_dir)
+        if verbose: print('Joining with latent age catalog...')
+        leung23_catalog = pd.read_csv(leung23_catalog_path)
+        full_catalog = APOGEESample.join_latent_ages(apogee_catalog, leung23_catalog)
+        if verbose: print('Implementing quality cuts...')
+        sample = APOGEESample.quality_cuts(full_catalog)
+        # Calculate galactocentric coordinates based on galactic l, b and Gaia dist
+        galr, galphi, galz = galactic_to_galactocentric(
+            sample['GLON'], sample['GLAT'], sample['GAIAEDR3_R_MED_PHOTOGEO']/1000
+        )
+        sample['GALR'] = galr # kpc
+        sample['GALPHI'] = galphi # deg
+        sample['GALZ'] = galz # kpc
+        # Limit by galactocentric radius and z-height
+        sample = sample[(sample['GALR'] >= GALR_LIM[0]) & 
+                        (sample['GALR'] < GALR_LIM[1]) &
+                        (sample['GALZ'].abs() >= ABSZ_LIM[0]) &
+                        (sample['GALZ'].abs() < ABSZ_LIM[1])]
+        sample.reset_index(inplace=True, drop=True)
+        # Drop unneeded columns
+        data = sample[SAMPLE_COLS].copy()
+        # Write sample to csv file
+        sample_file_path = data_dir / name
+        if verbose:
+            print('Saving sample data to %s...' % sample_file_path)
+        data.to_csv(sample_file_path, index=False)
+        if verbose:
+            print('Done.')
+        return cls(data, data_dir=data_dir, galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
+    
+    @classmethod
+    def load(cls, name='sample.csv', data_dir=paths.data/'APOGEE'):
+        """
+        Load the APOGEE sample from the data directory.
         
+        Parameters
+        ----------
+        name : str, optional
+            Name of CSV file containing sample data. The default is 'sample.csv'.
+        data_dir : str or pathlib.Path, optional
+            The parent directory containing APOGEE data files. The default is
+            '../data/APOGEE/'.
+
+        Returns
+        -------
+        APOGEESample instance
+        """
+        sample_file_path = data_dir / name
+        data = pd.read_csv(sample_file_path)
+        return cls(data, data_dir=data_dir, galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)        
 
     def kde2D(self, xcol, ycol, bandwidth=0.03, overwrite=False):
         """
@@ -221,6 +289,42 @@ class APOGEESample:
         if smoothing > 0.:
             mdf = box_smooth(mdf, bin_edges, smoothing)
         return mdf, bin_edges
+        
+    def plot_kde2D_contours(self, ax, xcol, ycol, enclosed=[0.8, 0.3],
+                            c='r', lw=0.5, ls=['--', '-'],
+                            **kwargs):
+        """
+        Plot 2D density contours from the kernel density estimate for the
+        given columns.
+        
+        Parameters
+        ----------
+        ax : matplotlib.axes.Axes
+            Axes object on which to draw the scatter plot.
+        xcol : str
+            Name of column to plot on the x-axis.
+        ycol : str
+            Name of column to plot on the y-axis.
+        enclosed : list, optional
+            List of probabilities enclosed by the contour levels, ordered
+            from highest probability (lowest contour level) to lowest (highest).
+            The default is [0.8, 0.3].
+        c : str or matplotlib color or list of previous, optional
+            Color(s) of each contour line. The default is 'r'.
+        lw : float or list of floats, optional
+            Line widths corresponding to each contour line. The default is 0.5.
+        ls : str or list of str, optional
+            Line styles of each contour. If a list, length must be equal
+            to the length of 'enclosed'. The default is ['--', '-'].
+        **kwargs passed to `kde2D()`.
+        """
+        xx, yy, logz = self.kde2D(xcol, ycol, **kwargs)
+        # scale the linear density to the max value
+        scaled_density = np.exp(logz) / np.max(np.exp(logz))
+        # contour levels at 1 and 2 sigma
+        levels = contour_levels_2D(scaled_density, enclosed=enclosed)
+        ax.contour(xx, yy, scaled_density, levels, colors=c,
+                   linewidths=lw, linestyles=ls)
     
     def region(self, galr_lim=(3, 15), absz_lim=(0, 2), inplace=False):
         """
@@ -338,102 +442,14 @@ class APOGEESample:
         else:
             raise TypeError('Attribute "absz_lim" must be a tuple. Got:',
                             type(value))
-    
-    @classmethod
-    def load(cls, name='sample.csv', data_dir=paths.data/'APOGEE', 
-             verbose=False, overwrite=False):
+                        
+    @property
+    def nstars(self):
         """
-        Load the APOGEE sample from the data directory, or generate from scratch.
-        
-        Parameters
-        ----------
-        name : str, optional
-            Name of CSV file containing sample data. The default is 'sample.csv'.
-        data_dir : str or pathlib.Path, optional
-            The parent directory containing APOGEE data files. The default is
-            '../data/APOGEE/'.
-        verbose : bool, optional
-            Whether to print verbose output to terminal. The default is False.
-        overwrite : bool, optional
-            If True, re-generates the sample file even if it already exists.
-            The default is False.
-
-        Returns
-        -------
-        APOGEESample instance
+        int
+            Total number of stars in the sample.
         """
-        sample_file_path = data_dir / name
-        if sample_file_path.exists() and not overwrite:
-            if verbose:
-                print('Reading APOGEE sample from', sample_file_path)
-            data = pd.read_csv(sample_file_path)
-        else:
-            if verbose:
-                print('Sample file at', sample_file_path, 'not found.\n' + \
-                      'Importing APOGEE catalog and generating sample...')
-            # Make data directory if needed
-            if not Path(data_dir).is_dir():
-                data_dir.mkdir(parents=True)
-            data = cls.generate(verbose=verbose)
-            data.to_csv(sample_file_path, index=False)
-            if verbose:
-                print('Done.')
-        return cls(data, data_dir=data_dir, galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
-
-    @staticmethod
-    def generate(data_dir=paths.data/'APOGEE', verbose=False):
-        """
-        Generate the APOGEE sample with selection cuts and ages.
-        
-        Parameters
-        ----------
-        data_dir : str or pathlib.Path, optional
-            The parent directory containing APOGEE data files. The default is
-            '../data/APOGEE/'.
-        verbose : bool, optional
-            Whether to print verbose output to terminal. The default is False.
-        """
-        # Get APOGEE data from the DR17 allStar file
-        apogee_catalog_path = data_dir / ALLSTAR_FNAME
-        if not apogee_catalog_path.is_file():
-            # Download DR17 allStar file from SDSS server
-            if verbose: 
-                print('Downloading allStar file (this will take a few minutes)...')
-            # get_allStar_dr17()
-            url_write('https://data.sdss.org/sas/dr17/apogee/spectro/aspcap/dr17/synspec_rev1/%s' \
-                      % ALLSTAR_FNAME, savedir=data_dir)
-        if verbose: print('Importing allStar file...')
-        apogee_catalog = fits_to_pandas(apogee_catalog_path, hdu=1)
-        # Add ages from row-matched datasets BEFORE any cuts
-        # Add ages from Leung et al. (2023)
-        leung23_catalog_path = data_dir / LEUNG23_FNAME
-        if not leung23_catalog_path.is_file():
-            # Download Leung+ 2023 data from GitHub
-            if verbose:
-                print('Downloading Leung et al. (2023) age data...')
-            # get_Leung2023_ages()
-            url_write('https://raw.githubusercontent.com/henrysky/astroNN_ages/main/%s.gz' \
-                      % LEUNG23_FNAME, savedir=data_dir)
-        if verbose: print('Joining with latent age catalog...')
-        leung23_catalog = pd.read_csv(leung23_catalog_path)
-        full_catalog = APOGEESample.join_latent_ages(apogee_catalog, leung23_catalog)
-        if verbose: print('Implementing quality cuts...')
-        sample = APOGEESample.quality_cuts(full_catalog)
-        # Calculate galactocentric coordinates based on galactic l, b and Gaia dist
-        galr, galphi, galz = galactic_to_galactocentric(
-            sample['GLON'], sample['GLAT'], sample['GAIAEDR3_R_MED_PHOTOGEO']/1000
-        )
-        sample['GALR'] = galr # kpc
-        sample['GALPHI'] = galphi # deg
-        sample['GALZ'] = galz # kpc
-        # Limit by galactocentric radius and z-height
-        sample = sample[(sample['GALR'] >= GALR_LIM[0]) & 
-                        (sample['GALR'] < GALR_LIM[1]) &
-                        (sample['GALZ'].abs() >= ABSZ_LIM[0]) &
-                        (sample['GALZ'].abs() < ABSZ_LIM[1])]
-        sample.reset_index(inplace=True, drop=True)
-        # Drop unneeded columns
-        return sample[SAMPLE_COLS].copy()
+        return self.data.shape[0]
     
     @staticmethod
     def join_latent_ages(apogee_df, leung23_df):
