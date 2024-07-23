@@ -20,8 +20,8 @@ LEUNG23_FNAME = 'nn_latent_age_dr17.csv'
 # List of columns to include in the final sample
 SAMPLE_COLS = ['APOGEE_ID', 'RA', 'DEC', 'GALR', 'GALPHI', 'GALZ', 'SNREV',
                'TEFF', 'TEFF_ERR', 'LOGG', 'LOGG_ERR', 'O_H', 'O_H_ERR', 
-               'FE_H', 'FE_H_ERR', 'O_FE', 'O_FE_ERR', 'AGE', 'AGE_ERR', 
-               'LOG_AGE', 'LOG_AGE_ERR']
+               'FE_H', 'FE_H_ERR', 'O_FE', 'O_FE_ERR', 'FE_O', 'FE_O_ERR',
+               'AGE', 'AGE_ERR', 'LOG_AGE', 'LOG_AGE_ERR']
 
 def main():
     APOGEESample.generate(verbose=True)
@@ -178,6 +178,9 @@ class APOGEESample:
         # Add column for [O/H]
         sample['O_H'] = sample['O_FE'] + sample['FE_H']
         sample['O_H_ERR'] = sample['O_FE_ERR'] # [X/Fe] and [X/H] errors are the same
+        # Add column for [Fe/O]
+        sample['FE_O'] = -sample['O_FE']
+        sample['FE_O_ERR'] = sample['O_FE_ERR']
         # Limit by galactocentric radius and z-height
         sample = sample[(sample['GALR'] >= GALR_LIM[0]) & 
                         (sample['GALR'] < GALR_LIM[1]) &
