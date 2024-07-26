@@ -22,5 +22,5 @@ ONEZONE_DEFAULTS = {
     'tau_star': 2,
     'dt': 0.01,
     'bins': [i*0.01 - 3 for i in range(401)],
-    'Mg0': 0.
+    'Mg0': 1e6
 }

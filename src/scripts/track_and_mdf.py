@@ -13,7 +13,7 @@ from _globals import ONE_COLUMN_WIDTH
 
 def plot_vice_onezone(output, fig=None, axs=[], label=None, color=None,
                       marker_labels=False, mdf_smoothing=0.02, 
-                      markersize=9, **kwargs):
+                      markersize=9, xcol='[fe/h]', ycol='[o/fe]', **kwargs):
     """
     Wrapper for plot_track_and_mdf given a VICE onezone output.
 
@@ -38,6 +38,10 @@ def plot_vice_onezone(output, fig=None, axs=[], label=None, color=None,
         in data units. The default is 0.02 dex.
     markersize : float, optional
         Size of time markers. The default is 9.
+    xcol : str, optional
+        Column with x-axis data. The default is '[fe/h]'.
+    ycol : str, optional
+        Column with y-axis data. The default is '[o/fe]'.
     **kwargs passed to matplotlib.plot
     style_kw : dict, optional
         Dict of style-related keyword arguments to pass to both
@@ -54,18 +58,18 @@ def plot_vice_onezone(output, fig=None, axs=[], label=None, color=None,
     mdf = vice.mdf(output)
     mdf_bins = mdf['bin_edge_left'] + mdf['bin_edge_right'][-1:]
     # Plot abundance tracks on main panel
-    axs[0].plot(hist['[fe/h]'], hist['[o/fe]'], label=label, color=color, 
+    axs[0].plot(hist[xcol], hist[ycol], label=label, color=color, 
                 **kwargs)
     # Apply same color to marginal plots
     if color == None:
         color = axs[0].lines[-1].get_color()
-    plot_mdf_curve(axs[1], mdf['dn/d[fe/h]'], mdf_bins, smoothing=mdf_smoothing,
+    plot_mdf_curve(axs[1], mdf['dn/d%s' % xcol], mdf_bins, smoothing=mdf_smoothing,
                    color=color, **kwargs)
-    plot_mdf_curve(axs[2], mdf['dn/d[o/fe]'], mdf_bins, smoothing=mdf_smoothing,
+    plot_mdf_curve(axs[2], mdf['dn/d%s' % ycol], mdf_bins, smoothing=mdf_smoothing,
                    orientation='horizontal', color=color, **kwargs)
     # Time markers should have same z-order as lines
     zorder = axs[0].lines[-1].get_zorder()
-    plot_time_markers(hist['time'], hist['[fe/h]'], hist['[o/fe]'], axs[0],
+    plot_time_markers(hist['time'], hist[xcol], hist[ycol], axs[0],
                       color=color, show_labels=marker_labels, zorder=zorder,
                       markersize=markersize)
     return fig, axs
@@ -208,7 +212,8 @@ def setup_figure(width=ONE_COLUMN_WIDTH, **kwargs):
     return fig, axs
 
 
-def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), ylabel=True):
+def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), ylabel=True,
+               xname='[Fe/H]', yname='[O/Fe]'):
     """
     Create three axes: the main abundance track axis plus two
     side panels for [Fe/H] and [O/Fe] distribution functions.
@@ -225,6 +230,10 @@ def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), ylabel=True):
         Bounds on y-axis.
     ylabel : bool, optional
         If False, remove y-axis labels and tick labels.
+    xname : str, optional
+        Abundance label for the x-axis. The default is '[Fe/H]'.
+    yname : str, optional
+        Abundance label for the y-axis. THe default is '[O/Fe]'.
 
     Returns
     -------
@@ -244,9 +253,9 @@ def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), ylabel=True):
     ax_main.xaxis.set_minor_locator(MultipleLocator(0.1))
     ax_main.yaxis.set_major_locator(MultipleLocator(0.1))
     ax_main.yaxis.set_minor_locator(MultipleLocator(0.02))
-    ax_main.set_xlabel('[Fe/H]')
+    ax_main.set_xlabel(xname)
     if ylabel:
-        ax_main.set_ylabel('[O/Fe]', labelpad=-2)
+        ax_main.set_ylabel(yname, labelpad=-2)
     else:
         ax_main.yaxis.set_ticklabels([])
         gs.update(left=0.02)
@@ -258,7 +267,7 @@ def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), ylabel=True):
     ax_mdf.tick_params(axis='y', which='both', left=False, right=False, 
                        labelleft=False)
     if ylabel:
-        ax_mdf.set_ylabel(r'$P($[Fe/H]$)$', size=small_label_size)
+        ax_mdf.set_ylabel(r'$P($%s$)$' % xname, size=small_label_size)
     # Add plot title
     ax_mdf.set_title(title, loc='left', x=0.05, y=0.8, va='top', pad=0)
     # Add panel to the right for MDF in [O/Fe]
@@ -266,6 +275,6 @@ def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), ylabel=True):
     ax_odf.tick_params(axis='y', labelleft=False)
     ax_odf.tick_params(axis='x', which='both', bottom=False, top=False, 
                        labelbottom=False)
-    ax_odf.set_xlabel(r'$P($[O/Fe]$)$', size=small_label_size)
+    ax_odf.set_xlabel(r'$P($%s$)$' % yname, size=small_label_size)
     axs = [ax_main, ax_mdf, ax_odf]
     return axs

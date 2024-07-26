@@ -11,7 +11,7 @@ class plateau(broken_powerlaw):
     A normalized delay-time distribution which consists of a flat plateau
     followed by a declining power-law.
     """
-    def __init__(self, width=0.2, slope=-1.1, tmin=0.04, tmax=END_TIME):
+    def __init__(self, width=1.0, slope=-1.1, tmin=0.04, tmax=END_TIME):
         super().__init__(tsplit=width+tmin, slope1=0, slope2=slope, tmin=tmin,
                          tmax=tmax)
         self._name = 'plateau_width{:03d}_slope{:02d}'.format(
