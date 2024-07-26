@@ -32,9 +32,9 @@ def main(style='paper'):
     ax.plot(rbin_centers, mw_disk.thick_disk(rbin_centers), 'k:', label='Thick disk')
     
     # Two-infall SFH with no migration
-    nomig = MultizoneStars.from_output('nomigration/twoinfall/plateau_width10/diskmodel')
+    nomig = MultizoneStars.from_output('nomigration/diskmodel')
     densities = surface_density_gradient(nomig, rbins)
-    ax.plot(rbin_centers[:154], densities[:154], 'g-', label='No migration')
+    ax.plot(rbin_centers[:154], densities[:154], 'g-', label='dt=0.01')
     
     nomig_thick = nomig.filter({'formation_time': (0, 4.)})
     densities = surface_density_gradient(nomig_thick, rbins)
@@ -44,6 +44,20 @@ def main(style='paper'):
     nomig_thin = nomig.filter({'formation_time': (4., None)})
     densities = surface_density_gradient(nomig_thin, rbins)
     ax.plot(rbin_centers[:154], densities[:154], 'g--')
+    
+    # Two-infall SFH with no migration
+    nomig = MultizoneStars.from_output('nomigration_coarse_dt/diskmodel')
+    densities = surface_density_gradient(nomig, rbins)
+    ax.plot(rbin_centers[:154], densities[:154], 'b-', label='dt=0.1')
+    
+    nomig_thick = nomig.filter({'formation_time': (0, 4.)})
+    densities = surface_density_gradient(nomig_thick, rbins)
+    ax.plot(rbin_centers[:154], densities[:154], 'b:')
+    print(densities - mw_disk.thick_disk(rbins[:-1]))
+    
+    nomig_thin = nomig.filter({'formation_time': (4., None)})
+    densities = surface_density_gradient(nomig_thin, rbins)
+    ax.plot(rbin_centers[:154], densities[:154], 'b--')
     
     # Similar but using vice.history instead
     # nomig_out = vice.multioutput('../data/multizone/nomigration/twoinfall/plateau_width10/diskmodel')
@@ -92,25 +106,25 @@ def main(style='paper'):
     plt.close()
     
     # Plot amplitude ratio, expected vs modeled
-    fig, ax = plt.subplots(tight_layout=True)
-    nomig_out = vice.multioutput('../data/multizone/nomigration/twoinfall/plateau_width10/diskmodel')
-    ampratio = []
-    for i in range(155):
-        zone = nomig_out.zones['zone%s' % i]
-        ifr = zone.history['ifr']
-        ampratio.append(ifr[400] / ifr[0])
-    ax.plot(rbin_centers[:155], ampratio, 'g-', label='Output')
-    # Expected amplitude ratio
-    ampratio = []
-    for i, r in enumerate(rbins[:155]):
-        ifr = twoinfall(r)
-        ampratio.append(ifr.ratio)
-    ax.plot(rbin_centers[:155], ampratio[:155], 'k-', label='Input')
-    ax.set_xlabel('Rgal')
-    ax.set_ylabel('Amplitude ratio')
-    ax.legend()
-    plt.savefig(paths.figures / 'ampratio')
-    plt.close()
+    # fig, ax = plt.subplots(tight_layout=True)
+    # nomig_out = vice.multioutput('../data/multizone/nomigration_coarse_dt/diskmodel')
+    # ampratio = []
+    # for i in range(155):
+    #     zone = nomig_out.zones['zone%s' % i]
+    #     ifr = zone.history['ifr']
+    #     ampratio.append(ifr[40] / ifr[0])
+    # ax.plot(rbin_centers[:155], ampratio, 'g-', label='Output')
+    # # Expected amplitude ratio
+    # ampratio = []
+    # for i, r in enumerate(rbins[:155]):
+    #     ifr = twoinfall(r)
+    #     ampratio.append(ifr.ratio)
+    # ax.plot(rbin_centers[:155], ampratio[:155], 'k-', label='Input')
+    # ax.set_xlabel('Rgal')
+    # ax.set_ylabel('Amplitude ratio')
+    # ax.legend()
+    # plt.savefig(paths.figures / 'ampratio')
+    # plt.close()
 
 
 def surface_density_gradient(mzs, rbins):
