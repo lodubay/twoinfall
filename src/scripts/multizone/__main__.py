@@ -44,7 +44,7 @@ def parse():
         help = "The SN Ia delay-time distribution to assume (Default: powerlaw)",
         type = str,
         choices = _DELAY_MODELS_,
-        default = "powerlaw")
+        default = "plateau")
 
     parser.add_argument("--RIa-params",
         help = "Parameters for the SN Ia delay-time distribution separated by \
