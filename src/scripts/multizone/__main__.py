@@ -29,19 +29,19 @@ def parse():
         action = "store_true")
 
     parser.add_argument("--migration",
-        help = "The migration model to assume. (Default: diffusion)",
+        help = "The migration model to assume. (Default: gaussian)",
         type = str,
         choices = _MIGRATION_MODELS_,
-        default = "diffusion")
+        default = "gaussian")
 
     parser.add_argument("--evolution",
-        help = "The evolutionary history to assume (Default: insideout)",
+        help = "The evolutionary history to assume (Default: twoinfall)",
         type = str,
         choices = _EVOLUTION_MODELS_,
-        default = "insideout")
+        default = "twoinfall")
 
     parser.add_argument("--RIa",
-        help = "The SN Ia delay-time distribution to assume (Default: powerlaw)",
+        help = "The SN Ia delay-time distribution to assume (Default: plateau)",
         type = str,
         choices = _DELAY_MODELS_,
         default = "plateau")
@@ -69,9 +69,9 @@ underscores. (Default: '')",
         default = _globals.NSTARS)
 
     parser.add_argument("--name",
-        help = "The name of the output simulations (Default: 'milkway')",
+        help = "The name of the output simulations (Default: 'diskmodel')",
         type = str,
-        default = 'milkyway')
+        default = '../data/multizone/diskmodel')
 
     parser.add_argument("--elements",
         help = """Elements to simulation the enrichment for separated by \
