@@ -29,8 +29,9 @@
 \newcommand{\todo}[1]{{\color{red}#1}}
 
 % Citation aliases
-% \defcitealias{Johnson2021-Migration}{J21}
-% \defcitealias{Leung2023-Ages}{L23}
+\defcitealias{johnson_stellar_2021}{J21}
+\defcitealias{leung_variational_2023}{L23}
+\defcitealias{dubay_galactic_2024}{D24}
 
 \shorttitle{Two-Infall in VICE}
 \shortauthors{Dubay et al.}
@@ -69,7 +70,7 @@
 \label{sec:methods}
 
 \begin{deluxetable*}{Cccl}
-    \tablecaption{A summary of parameters and their fiducial values for our chemical evolution models (see discussion in Section \ref{sec:methods}). We omit some parameters that are unchanged from \citetalias{Johnson2021-Migration}; see their Table 1 for details.\label{tab:multizone-parameters}}
+    \tablecaption{A summary of parameters and their fiducial values for our chemical evolution models (see discussion in Section \ref{sec:methods}). We omit some parameters that are unchanged from \citetalias{johnson_stellar_2021}; see their Table 1 for details.\label{tab:multizone-parameters}}
     \tablehead{
         \colhead{Quantity} & \colhead{Fiducial Value(s)} & \colhead{Section} & \colhead{Description}
     }
@@ -130,12 +131,12 @@
     f_{\rm TI}(t|R_{\rm gal}) = N_1(R_{\rm gal}) e^{-t/\tau_1} + N_2(R_{\rm gal}) e^{-(t-t_{\rm on})/\tau_2},
 \end{equation}
 % In this model, the first infall produces the thick disk and the second infall produces the thin disk. 
-where $\tau_1=1$ Gyr and $\tau_2=4$ Gyr are the exponential timescales of the first and second infall, respectively, and $t_{\rm on}=4$ Gyr is the onset time of the second infall \citep[based on typical values in, e.g.,][]{Chiappini1997-TwoInfall,Spitoni2020-TwoInfall,Spitoni2021-TwoInfall}. $N_1$ and $N_2$ are the normalizations of the first and second infall, respectively, and their ratio $N_2/N_1$ is calculated so that the thick-to-thin-disk surface density ratio $f_\Sigma(R)=\Sigma_2(R)/\Sigma_1(R)$ is given by
+where $\tau_1=1$ Gyr and $\tau_2=4$ Gyr are the exponential timescales of the first and second infall, respectively, and $t_{\rm on}=4$ Gyr is the onset time of the second infall \citep[based on typical values in, e.g.,][]{chiappini_chemical_1997,spitoni_galactic_2020,spitoni_apogee_2021}. $N_1$ and $N_2$ are the normalizations of the first and second infall, respectively, and their ratio $N_2/N_1$ is calculated so that the thick-to-thin-disk surface density ratio $f_\Sigma(R)=\Sigma_2(R)/\Sigma_1(R)$ is given by
 \begin{equation}
     f_\Sigma(R) = f_\Sigma(0) e^{R(1/R_2 - 1/R_1)}.
 \end{equation}
-Following \citet{BlandHawthornGerhard2016-MilkyWayReview}, we adopt values for the thick disk scale radius $R_1=2.0$ kpc, thin disk scale radius $R_2=2.5$ kpc, and $f_\Sigma(0)=0.27$.
-We note that most previous studies which use the two-infall model \citep[e.g.,][]{Chiappini1997-TwoInfall,Matteucci2006-BimodalDTDConsequences,Matteucci2009-DTDModels,Spitoni2019-TwoInfall} do not consider gas outflows and instead adjust the nucleosynthetic yields to reproduce the solar abundance. We adopt radially-dependent outflows as in \citetalias{Johnson2021-Migration} (see their Section 2.4 for details) for all our SFHs, including two-infall. We discuss the implications of this difference in Section \ref{sec:two-infall-discussion}.
+Following \citet{bland-hawthorn_galaxy_2016}, we adopt values for the thick disk scale radius $R_1=2.0$ kpc, thin disk scale radius $R_2=2.5$ kpc, and $f_\Sigma(0)=0.27$.
+We note that most previous studies which use the two-infall model \citep[e.g.][]{chiappini_chemical_1997,matteucci_new_2006,matteucci_effect_2009,spitoni_galactic_2019} do not consider gas outflows and instead adjust the nucleosynthetic yields to reproduce the solar abundance. We adopt radially-dependent outflows as in \citetalias{johnson_stellar_2021} (see their Section 2.4 for details) for all our SFHs, including two-infall. We discuss the implications of this difference in Section \ref{sec:two-infall-discussion}.
 
 \subsection{Observational Sample}
 \label{sec:observational-sample}
@@ -153,21 +154,21 @@ We note that most previous studies which use the two-infall model \citep[e.g.,][
         $S/N$               & $S/N > 80$                    & Required for accurate stellar parameters \\
         ASPCAPFLAG Bits     & $\notin$ 23                   & Remove stars flagged as bad \\
         EXTRATARG Bits      & $\notin$ 0, 1, 2, 3, or 4     & Select main red star sample only \\
-        Age                 & $\sigma_{\rm Age} < 40\%$     & Age uncertainty from \citetalias{Leung2023-Ages} \\
+        Age                 & $\sigma_{\rm Age} < 40\%$     & Age uncertainty from \citetalias{leung_variational_2023} \\
         \hline
         $\sigma({\rm [Fe/H]})$ & $9.2\times10^{-3}$ & Median uncertainty in [Fe/H] \\
         $\sigma({\rm [O/Fe]})$ & $1.8\times10^{-2}$ & Median uncertainty in [O/Fe] \\
-        $\sigma($log(Age/Gyr)) & $0.10$ & Median age uncertainty \citepalias{Leung2023-Ages} \\
+        $\sigma($log(Age/Gyr)) & $0.10$ & Median age uncertainty \citepalias{leung_variational_2023} \\
         \hline
     \end{tabular}
 \end{table*}
 
 \todo{Copied from last paper.}
-We compare our model results to abundance measurements from the final data release \citep[DR17;][]{Abdurro'uf2022-SDSSIV-DR17} of the Apache Point Observatory Galactic Evolution Experiment \citep[APOGEE;][]{Majewski2017-APOGEE}. APOGEE used infrared spectrographs \citep{Wilson2019-APOGEE-Spectrographs} mounted on two telescopes: the 2.5-meter Sloan Foundation Telescope \citep{Gunn2006-SloanTelescope} at Apache Point Observatory in the Northern Hemisphere, and the Ir{\'e}n{\'e}e DuPont Telescope \citep{BowenVaughan1973-DuPontTelescope} at Las Campanas Observatory in the Southern Hemisphere. After the spectra were passed through the data reduction pipeline \citep{Nidever2015-APOGEE-DataReduction}, the APOGEE Stellar Parameter and Chemical Abundance Pipeline \citep[ASPCAP;][]{Holtzmann2015-ASPCAP,GarciaPerez2016-ASPCAP} extracted chemical abundances using the model grids and interpolation method described by \citet{Jonsson2020-APOGEE-DR16}.
+We compare our model results to abundance measurements from the final data release \citep[DR17;][]{abdurrouf_seventeenth_2022} of the Apache Point Observatory Galactic Evolution Experiment \citep[APOGEE;][]{majewski_apache_2017}. APOGEE used infrared spectrographs \citep{wilson_apache_2019} mounted on two telescopes: the 2.5-meter Sloan Foundation Telescope \citep{gunn_25_2006} at Apache Point Observatory in the Northern Hemisphere, and the Ir{\'e}n{\'e}e DuPont Telescope \citep{bowen_optical_1973} at Las Campanas Observatory in the Southern Hemisphere. After the spectra were passed through the data reduction pipeline \citep{nidever_data_2015}, the APOGEE Stellar Parameter and Chemical Abundance Pipeline \citep[ASPCAP;][]{holtzman_abundances_2015,garcia_perez_aspcap_2016} extracted chemical abundances using the model grids and interpolation method described by \citet{jonsson_apogee_2020}.
 
-We restrict our sample to red giant branch and red clump stars with high-quality spectra. Table \ref{tab:sample} lists our selection criteria, which largely follow from \citet{Hayden2015-ChemicalCartography}. This produces a final sample of \input{output/sample_size.txt}stars with [O/Fe] and [Fe/H] abundance measurements. APOGEE stars are matched with their Bailer-Jones photo-geometric distance estimate from \textit{Gaia} Early Data Release 3 \citep{Gaia2016-Mission,Gaia2021-EDR3}, which we use to calculate galactocentric radius $R_{\rm gal}$ and midplane distance $z$.
+We restrict our sample to red giant branch and red clump stars with high-quality spectra. Table \ref{tab:sample} lists our selection criteria, which largely follow from \citet{Hayden2015-ChemicalCartography}. This produces a final sample of \input{output/sample_size.txt}stars with [O/Fe] and [Fe/H] abundance measurements. APOGEE stars are matched with their Bailer-Jones photo-geometric distance estimate from \textit{Gaia} Early Data Release 3 \citep{gaia_collaboration_gaia_2016,gaia_collaboration_gaia_2021}, which we use to calculate galactocentric radius $R_{\rm gal}$ and midplane distance $z$.
 
-We use estimated ages from \citet[][hereafter \citetalias{Leung2023-Ages}]{Leung2023-Ages}, who use a variational encoder-decoder network which is trained on asteroseismic data to retrieve age estimates for APOGEE giants without contamination from age-abundance correlations. Importantly, the \citetalias{Leung2023-Ages} ages do not plateau beyond $\sim10$ Gyr as they do in astroNN \citep{Mackereth2019-astroNN-Ages}. We use an age uncertainty cut of 40\% per the recommendations of \citetalias{Leung2023-Ages}, which produces a total sample of \input{output/age_sample_size.txt}APOGEE stars with age estimates. We note that we use the full sample of \input{output/sample_size.txt}APOGEE stars unless we explicitly compare to age estimates. Table \ref{tab:sample} also presents the median uncertainties in the data for [Fe/H], [O/Fe], and age.
+We use estimated ages from \citet[][hereafter \citetalias{leung_variational_2023}]{leung_variational_2023}, who use a variational encoder-decoder network which is trained on asteroseismic data to retrieve age estimates for APOGEE giants without contamination from age-abundance correlations. Importantly, the \citetalias{leung_variational_2023} ages do not plateau beyond $\sim10$ Gyr as they do in astroNN \citep{Mackereth2019-astroNN-Ages}. We use an age uncertainty cut of 40\% per the recommendations of \citetalias{leung_variational_2023}, which produces a total sample of \input{output/age_sample_size.txt}APOGEE stars with age estimates. We note that we use the full sample of \input{output/sample_size.txt}APOGEE stars unless we explicitly compare to age estimates. Table \ref{tab:sample} also presents the median uncertainties in the data for [Fe/H], [O/Fe], and age.
 
 \section{One-Zone Models}
 \label{sec:onezone-results}
@@ -255,7 +256,7 @@ participating in the {\it Gaia} Multilateral Agreement.
 % From the Center for Belonging and Social Change, https://cbsc.osu.edu/about-us/land-acknowledgement
 We would like to acknowledge the land that The Ohio State University occupies is the ancestral and contemporary territory of the Shawnee, Potawatomi, Delaware, Miami, Peoria, Seneca, Wyandotte, Ojibwe and many other Indigenous peoples. Specifically, the university resides on land ceded in the 1795 Treaty of Greeneville and the forced removal of tribes through the Indian Removal Act of 1830. As a land grant institution, we want to honor the resiliency of these tribal nations and recognize the historical contexts that has and continues to affect the Indigenous peoples of this land.
 
-\software{\vice \citep{johnson_impact_2020}, Astropy \citep{astropy2013,astropy2018,astropy2022}, scikit-learn \citep{Pedregosa2011-ScikitLearn}, SciPy \citep{2020SciPy-NMeth}, Matplotlib \citep{Hunter2007-Matplotlib}}
+\software{\vice \citep{johnson_impact_2020}, Astropy \citep{astropy_collaboration_astropy_2013,astropy_collaboration_astropy_2018,astropy_collaboration_astropy_2022}, scikit-learn \citep{pedregosa_scikit-learn_2011}, SciPy \citep{virtanen_scipy_2020}, Matplotlib \citep{hunter_matplotlib_2007}}
 
 \appendix
 
