@@ -24,6 +24,9 @@ from .models.gradient import gradient
 import math as m
 import sys
 
+_SECONDS_PER_GYR_ = 3.1536e16
+_KPC_PER_KM_ = 3.24e-17
+
 
 class diskmodel(vice.milkyway):
 
@@ -75,6 +78,10 @@ class diskmodel(vice.milkyway):
 
     RIa_kwargs : ``dict`` [default: {}]
         Keyword arguments to pass to the delay-time distribution initialization
+    seed : ``int`` [default: 42]
+        Random number generator seed.
+    radial_gas_velocity : ``float`` [default: 0]
+        Radial gas flow velocity in km/s. Positive denotes an outward gas flow.
     kwargs : varying types
         Other keyword arguments to pass ``vice.milkyway``.
 
@@ -83,7 +90,8 @@ class diskmodel(vice.milkyway):
 
     def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "static",
         verbose = True, migration_mode = "diffusion", yields="J21",
-        delay = 0.04, RIa = "powerlaw", RIa_kwargs={}, seed=42, **kwargs):
+        delay = 0.04, RIa = "powerlaw", RIa_kwargs={}, seed=42, 
+        radial_gas_velocity = 0., **kwargs):
         super().__init__(zone_width = zone_width, name = name,
             verbose = verbose, **kwargs)
         if self.zone_width <= 0.2 and self.dt <= 0.02 and self.n_stars >= 6:
@@ -137,6 +145,21 @@ class diskmodel(vice.milkyway):
                 #         mean_radius)
                 else:
                     self.zones[i].tau_star = J21_sf_law(area, mode = self.mode)
+        
+        # CONSTANT GAS VELOCITY
+        if radial_gas_velocity != 0:
+            radial_gas_velocity *= _SECONDS_PER_GYR_
+            radial_gas_velocity *= _KPC_PER_KM_ # vrad now in kpc / Gyr
+            for i in range(self.n_zones):
+                for j in range(self.n_zones):
+                    if i - 1 == j:
+                        # normalized to 10 Myr time interval
+                        numerator = radial_gas_velocity**2 * 0.01**2
+                        numerator -= 2 * i * zone_width * radial_gas_velocity * 0.01
+                        denominator = zone_width**2 * (2 * i + 1)
+                        self.migration.gas[i][j] = numerator / denominator
+                    else:
+                        self.migration.gas[i][j] = 0
 
     def run(self, *args, **kwargs):
         out = super().run(*args, **kwargs)

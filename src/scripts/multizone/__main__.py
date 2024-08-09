@@ -94,6 +94,11 @@ underscores. (Default: \"fe_o\")""",
                         help = "Seed for the random number generator.",
                         type = int,
                         default = _globals.RANDOM_SEED)
+    
+    parser.add_argument("--gasvelocity",
+                        help = "Radial gas velocity in km/s.",
+                        type = float,
+                        default = 0.)
 
     return parser
 
@@ -126,7 +131,8 @@ def model(args):
         RIa_kwargs = RIa_kwargs,
         delay = args.minimum_delay,
         yields = args.yields,
-        seed = args.seed
+        seed = args.seed,
+        radial_gas_velocity = args.gasvelocity
     )
     if args.migration == "post-process":
         kwargs["simple"] = True
