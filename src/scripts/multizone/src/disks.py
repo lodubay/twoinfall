@@ -94,7 +94,8 @@ class diskmodel(vice.milkyway):
         analogdata_filename = "%s_analogdata.out" % name
         if migration_mode == "gaussian":
             self.migration.stars = gaussian_migration(self.annuli, seed = seed,
-                    zone_width = zone_width, filename = analogdata_filename)
+                    zone_width = zone_width, filename = analogdata_filename,
+                    post_process = self.simple)
         elif migration_mode == "none":
             self.migration.stars = no_migration(self.annuli, 
                                                 filename=analogdata_filename)

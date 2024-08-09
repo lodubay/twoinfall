@@ -136,13 +136,15 @@ class gaussian_migration:
         Current simulation time in Gyr.
     """
     def __init__(self, radbins, zone_width=ZONE_WIDTH, end_time=END_TIME,
-                 filename="stars.out", absz_max=3., seed=RANDOM_SEED):
+                 filename="stars.out", absz_max=3., seed=RANDOM_SEED,
+                 post_process=False):
         # Random number seed
         random.seed(seed)
         self.radial_bins = radbins
         self.zone_width = zone_width
         self.end_time = end_time
         self.absz_max = absz_max
+        self.post_process = post_process
         # super().__init__(radbins, mode=None, filename=filename, **kwargs)
         if isinstance(filename, str):
             self._file = open(filename, 'w')
@@ -188,9 +190,17 @@ class gaussian_migration:
                 pass
             return zone
         else: 
-            # Interpolate between Rform and Rfinal at current time
-            R = self.interpolator(Rform, Rform + self.dR, tform, time)
-            return int(R / self.zone_width)
+            if self.post_process:
+                # Hold off on migrating stars until the end of the simulation
+                if time < self.end_time:
+                    return zone
+                else:
+                    R = Rform + self.dR
+                    return int((R / self.zone_width))
+            else:
+                # Interpolate between Rform and Rfinal at current time
+                R = self.interpolator(Rform, Rform + self.dR, tform, time)
+                return int(R / self.zone_width)
 
     def close_file(self):
         r"""
