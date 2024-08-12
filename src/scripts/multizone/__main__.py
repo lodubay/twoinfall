@@ -99,6 +99,10 @@ underscores. (Default: \"fe_o\")""",
                         help = "Radial gas velocity in km/s.",
                         type = float,
                         default = 0.)
+    
+    parser.add_argument("--no-outflows",
+                        help = "Disable mass-loaded outflows.",
+                        action = "store_true")
 
     return parser
 
@@ -132,7 +136,8 @@ def model(args):
         delay = args.minimum_delay,
         yields = args.yields,
         seed = args.seed,
-        radial_gas_velocity = args.gasvelocity
+        radial_gas_velocity = args.gasvelocity,
+        outflows = not args.no_outflows
     )
     if args.migration == "post-process":
         kwargs["simple"] = True
