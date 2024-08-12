@@ -91,7 +91,7 @@ class diskmodel(vice.milkyway):
     def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "static",
         verbose = True, migration_mode = "diffusion", yields="J21",
         delay = 0.04, RIa = "powerlaw", RIa_kwargs={}, seed=42, 
-        radial_gas_velocity = 0., **kwargs):
+        radial_gas_velocity = 0., outflows=True, **kwargs):
         super().__init__(zone_width = zone_width, name = name,
             verbose = verbose, **kwargs)
         if self.zone_width <= 0.2 and self.dt <= 0.02 and self.n_stars >= 6:
@@ -118,6 +118,8 @@ class diskmodel(vice.milkyway):
             from vice.yields.presets import JW20
         elif yields == "C22":
             from .yields import C22
+        elif yields == "F04":
+            from .yields import F04
         else:
             from .yields import J21
             # from vice.yields.presets import JW20
@@ -145,6 +147,9 @@ class diskmodel(vice.milkyway):
                 #         mean_radius)
                 else:
                     self.zones[i].tau_star = J21_sf_law(area, mode = self.mode)
+            # Outflows
+            if not outflows:
+                self.zones[i].eta = 0.
         
         # CONSTANT GAS VELOCITY
         if radial_gas_velocity != 0:
@@ -193,10 +198,6 @@ class diskmodel(vice.milkyway):
         model.bins = config.bins
         model.elements = config.elements
         return model
-    
-    @staticmethod
-    def no_outflow_mass_loading(rgal):
-        return 0.
 
 
 class star_formation_history:
