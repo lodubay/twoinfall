@@ -28,7 +28,7 @@ integral /= np.sum([m * vice.imf.kroupa(m) * 0.1 for m in np.arange(0.1, 100.1, 
 # Assign yields
 vice.yields.ccsne.settings['mg'] = integral[0]
 vice.yields.ccsne.settings['si'] = integral[1]
-# vice.yields.ccsne.settings['fe'] = integral[2]
+vice.yields.ccsne.settings['fe'] = integral[2]
 
 # SNe Ia
 from vice.yields.sneia import iwamoto99
