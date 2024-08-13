@@ -21,7 +21,7 @@ def main(style='paper', smooth_width=0.2, xlim=(-1.7, 0.7), nbins=100):
     apogee_data = APOGEESample.load()
     mzs_mig = MultizoneStars.from_output('gaussian/diskmodel')
     mzs_nomig = MultizoneStars.from_output('nomigration/diskmodel')
-    mzs_post = MultizoneStars.from_output('nomigration/diskmodel')
+    mzs_post = MultizoneStars.from_output('post-process/diskmodel')
     
     for i, ax in enumerate(axs.flatten()):
         galr_lim = (_globals.GALR_BINS[i], _globals.GALR_BINS[i+1])

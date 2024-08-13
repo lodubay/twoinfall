@@ -6,12 +6,15 @@ star particle data from VICE multizone simulation outputs.
 import math as m
 from numbers import Number
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import vice
+
 import paths
-from _globals import ZONE_WIDTH, RANDOM_SEED
-from utils import sample_dataframe, box_smooth
+from _globals import RANDOM_SEED, ZONE_WIDTH
+from utils import box_smooth, sample_dataframe
+
 
 def main():
     pass
@@ -129,18 +132,19 @@ class MultizoneStars:
             # Error handling
             if isinstance(cols, str):
                 if cols not in self.stars.columns:
-                    raise ValueError('Parameter "cols" must be an element ' + \
-                                     'of stars.columns.')
+                    raise ValueError(
+                        "Not a column in the stars dataframe:" + cols
+                    )
             elif isinstance(cols, list):
                 if all([isinstance(c, str) for c in cols]):
                     if not all([c in self.stars.columns for c in cols]):
-                        raise ValueError('Each element of "cols" must be ' + \
-                                         'an element of stars.columns.')
+                        raise ValueError("All elements must be column names.")
                 else:
-                    raise TypeError('Each element of "cols" must be a string.')
+                    raise TypeError(
+                        "Each element of ``cols`` must be a string."
+                    )
             else:
-                raise TypeError('Parameter "cols" must be a string or list ' +\
-                                'of strings.')
+                raise TypeError("Must be a string or list of strings.")
             return self.stars[cols]
         
     def copy(self):
@@ -214,8 +218,7 @@ class MultizoneStars:
     def region(self, galr_lim=(0, 20), absz_lim=(0, 3), min_mass=1.0, 
                origin=False, inplace=False):
         """
-        Slice DataFrame of stars within a given Galactic region of radius and
-        z-height.
+        Slice DataFrame of stars within a given Galactic region.
 
         Parameters
         ----------
