@@ -22,7 +22,7 @@ from _globals import RANDOM_SEED
     
 class Exponential:
     """
-    A generic class for exponential functions.
+    A numpy-friendly generic class for exponential functions.
     
     Attributes
     ----------

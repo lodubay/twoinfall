@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 import vice
+
 from utils import get_bin_centers, gaussian_smooth
 from _globals import ONE_COLUMN_WIDTH
 
@@ -182,7 +183,8 @@ def plot_mdf_curve(ax, mdf, bins, smoothing=0., orientation='vertical', **kwargs
     **kwargs passed to matplotlib.plot
     """
     bin_centers = get_bin_centers(bins)
-    if smoothing > 0:
+    bin_width = bins[1] - bins[0]
+    if smoothing > bin_width:
         mdf = gaussian_smooth(mdf, bins, smoothing)
     if orientation == 'horizontal':
         ax.plot(mdf, bin_centers, **kwargs)
