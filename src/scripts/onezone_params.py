@@ -26,24 +26,25 @@ LABELS = {
     'second_timescale': '\\tau_2',
     'onset': 't_{\\rm on}'
 }
+XLIM = (-2, 0.8)
+YLIM = (-0.16, 0.54)
 
 def main():
     plt.style.use(paths.styles / 'paper.mplstyle')
+    plt.rcParams['axes.prop_cycle'] = plt.cycler('color', paultol.vibrant.colors)
     fig = plt.figure(figsize=(TWO_COLUMN_WIDTH, 0.36*TWO_COLUMN_WIDTH))
     gs = fig.add_gridspec(7, 22, wspace=0.)
-    # subfigs = fig.subfigures(1, 3, wspace=0.)
     subfigs = [fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))]
-    # tau1_axs = first_timescale(subfigs[0])
     axs0 = vary_param(subfigs[0], first_timescale=[0.1, 0.3, 1, 3],
                       second_timescale=4, onset=3,
-                      xlim=(-1.9, 1.2), ylim=(-0.2, 0.54))
-    axs1 = vary_param(subfigs[1], second_timescale=[1, 3, 10],
+                      xlim=XLIM, ylim=YLIM)
+    axs1 = vary_param(subfigs[1], second_timescale=[1, 3, 10, 30],
                       first_timescale=1, onset=3,
-                      xlim=(-1.9, 0.9), ylim=(-0.2, 0.54), ylabel=False,
+                      xlim=XLIM, ylim=YLIM, ylabel=False,
                       label_index=1)
     axs2 = vary_param(subfigs[2], onset=[1, 2, 3, 4],
                       first_timescale=1, second_timescale=4,
-                      xlim=(-1.9, 0.9), ylim=(-0.2, 0.54), ylabel=False,
+                      xlim=XLIM, ylim=YLIM, ylabel=False,
                       label_index=2)
     plt.subplots_adjust(bottom=0.13, top=0.98, left=0.16, right=0.98, wspace=0.5)
     fig.savefig(paths.figures / 'onezone_params', dpi=300)
@@ -88,15 +89,14 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
             other_params += '$%s=%s$ Gyr\n' % (LABELS[param], value)
     if var is None:
         raise ValueError('Please specify one variable parameter.')
-    multiline_title = '$\\tau_2=%s$ Gyr,' % second_timescale + '\n' + '$t_{\\rm on}=%s$ Gyr' % onset
+    multiline_title = '$\\tau_2=%s$ Gyr,' % second_timescale + '\n' + \
+        '$t_{\\rm on}=%s$ Gyr' % onset
     axs = setup_axes(subfig, title='', **kwargs)
 
     dt = ONEZONE_DEFAULTS['dt']
     simtime = np.arange(0, END_TIME + dt, dt)
     
     dtd = dtds.plateau(width=1, tmin=ONEZONE_DEFAULTS['delay'])
-    # dtd = dtds.exponential(timescale=1.5, tmin=ONEZONE_DEFAULTS['delay'])
-    # dtd = dtds.powerlaw(slope=-1.1, tmin=ONEZONE_DEFAULTS['delay'])
 
     for i, val in enumerate(values):
         param_dict[var] = val
@@ -110,6 +110,9 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
                              func=ifr, 
                              mode='ifr',
                              **ONEZONE_DEFAULTS)
+        sz.schmidt = True
+        sz.schmidt_index = 0.5
+        sz.MgSchmidt = 1e8
         sz.run(simtime, overwrite=True)
         plot_vice_onezone(name, 
                           fig=subfig, axs=axs, 
@@ -127,47 +130,6 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
     # Label other param values
     axs[0].text(0.95, 0.95, other_params, ha='right', va='top',
                 transform=axs[0].transAxes)
-
-    return axs
-
-
-def first_timescale(subfig, timescales=[0.1, 0.3, 1, 3], tau2=4, onset=3):
-    multiline_title = r'$\tau_2=%s$ Gyr,' % tau2 + '\n' + r'$t_{\rm on}=%s$ Gyr' % onset
-    axs = setup_axes(subfig, xlim=(-1.9, 1.1), ylim=(-0.24, 0.52), 
-                     title=multiline_title)
-
-    dt = ONEZONE_DEFAULTS['dt']
-    simtime = np.arange(0, END_TIME + dt, dt)
-    
-    # dtd = dtds.plateau(width=1, tmin=ONEZONE_DEFAULTS['delay'])
-    dtd = dtds.exponential(timescale=1.5, tmin=ONEZONE_DEFAULTS['delay'])
-
-    for i, tau1 in enumerate(timescales):
-        # Run one-zone model
-        name = output_name(tau1, tau2, onset)
-        # Note: the amplitude ratio calculation assumes the J21 star formation
-        # law, but this should only affect it at the 1% level
-        ifr = models.twoinfall(RADIUS, dt=dt,
-                               first_timescale=tau1,
-                               second_timescale=tau2,
-                               onset=onset)
-        sz = vice.singlezone(name=name,
-                             RIa=dtd,
-                             func=ifr, 
-                             mode='ifr',
-                             **ONEZONE_DEFAULTS)
-        sz.run(simtime, overwrite=True)
-        plot_vice_onezone(name, 
-                          fig=subfig, axs=axs, 
-                          linestyle='-', 
-                          color=None, 
-                          label=f'{tau1:.1f}', 
-                          marker_labels=(i==0))
-
-    # Adjust axis limits
-    axs[1].set_ylim(bottom=0)
-    axs[2].set_xlim(left=0)
-    axs[0].legend(frameon=False, title=r'$\tau_1$ [Gyr]', loc='lower left')
 
     return axs
 

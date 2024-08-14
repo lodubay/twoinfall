@@ -123,14 +123,7 @@ def plot_time_markers(time, feh, ofe, ax, loc=[0.1, 0.3, 1, 3, 10],
                 ypad = 0.008
             ax.text(feh[idx] + xpad, ofe[idx] + ypad, label, 
                     fontsize=default_font_size * 7/8,
-                    ha='left', va='bottom', zorder=10,
-                    # bbox={
-                    #     'facecolor': 'w',
-                    #     'edgecolor': 'none',
-                    #     'boxstyle': 'round',
-                    #     'pad': 0.05,
-                    #     'alpha': 0.8,
-                    # },
+                    ha='left', va='bottom', zorder=10
             )
 
 
@@ -187,9 +180,9 @@ def plot_mdf_curve(ax, mdf, bins, smoothing=0., orientation='vertical', **kwargs
     if smoothing > bin_width:
         mdf = gaussian_smooth(mdf, bins, smoothing)
     if orientation == 'horizontal':
-        ax.plot(mdf, bin_centers, **kwargs)
+        ax.plot(mdf / mdf.max(), bin_centers, **kwargs)
     else:
-        ax.plot(bin_centers, mdf, **kwargs)
+        ax.plot(bin_centers, mdf / mdf.max(), **kwargs)
         
 
 def setup_figure(width=ONE_COLUMN_WIDTH, **kwargs):
@@ -243,10 +236,6 @@ def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), ylabel=True,
     axs : list of matplotlib.axes.Axes
         Ordered [ax_main, ax_mdf, ax_odf]
     """
-    # Get default axis label size
-    default_label_size = plt.rcParams['axes.labelsize']
-    # small_label_size = default_label_size * 0.7
-    small_label_size = 'small'
     gs = fig.add_gridspec(2, 2, width_ratios=(4, 1), height_ratios=(1, 4),
                           wspace=0., hspace=0.)
     # Start with the center panel for [Fe/H] vs [O/Fe]
@@ -266,17 +255,21 @@ def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), ylabel=True,
     # Add panel above for MDF in [Fe/H]
     ax_mdf = fig.add_subplot(gs[0,0], sharex=ax_main)
     ax_mdf.tick_params(axis='x', labelbottom=False)
-    ax_mdf.tick_params(axis='y', which='both', left=False, right=False, 
-                       labelleft=False)
+    ax_mdf.tick_params(axis='y', labelsize='small')
+    ax_mdf.set_ylim((0, 1.2))
+    ax_mdf.yaxis.set_minor_locator(MultipleLocator(0.2))
     if ylabel:
-        ax_mdf.set_ylabel(r'$P($%s$)$' % xname, size=small_label_size)
+        ax_mdf.set_ylabel(r'$P($%s$)$' % xname, size='small')
+    else:
+        ax_mdf.yaxis.set_ticklabels([])
     # Add plot title
     ax_mdf.set_title(title, loc='left', x=0.05, y=0.8, va='top', pad=0)
     # Add panel to the right for MDF in [O/Fe]
     ax_odf = fig.add_subplot(gs[1,1], sharey=ax_main)
     ax_odf.tick_params(axis='y', labelleft=False)
-    ax_odf.tick_params(axis='x', which='both', bottom=False, top=False, 
-                       labelbottom=False)
-    ax_odf.set_xlabel(r'$P($%s$)$' % yname, size=small_label_size)
+    ax_odf.tick_params(axis='x', labelsize='small')
+    ax_odf.set_xlabel(r'$P($%s$)$' % yname, size='small')
+    ax_odf.set_xlim((0, 1.2))
+    ax_odf.xaxis.set_minor_locator(MultipleLocator(0.2))
     axs = [ax_main, ax_mdf, ax_odf]
     return axs

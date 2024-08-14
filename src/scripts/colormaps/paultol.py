@@ -22,7 +22,7 @@ highcontrast = ListedColormap(
     name='paultol_highcontrast')
 # Vibrant: for TensorBoard
 vibrant = ListedColormap(
-    ['#EE7733', '#0077BB', '#33BBEE', '#EE3377', '#CC3311', '#009988',
+    ['#0077BB', '#EE7733', '#009988', '#CC3311', '#33BBEE', '#EE3377',
      '#BBBBBB'],
     name='paultol_vibrant')
 # Muted: for more colors
