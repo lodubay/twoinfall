@@ -41,7 +41,8 @@ def main(style='paper'):
     plt.close()
 
 
-def radial_gradient(multioutput, parameter, index=-1):
+def radial_gradient(multioutput, parameter, index=-1, Rmax=15.5,
+                    zone_width=_globals.ZONE_WIDTH):
     """
     Return the value of the given model parameter at all zones.
     
@@ -54,13 +55,18 @@ def radial_gradient(multioutput, parameter, index=-1):
     index : int, optional
         Index to select for each zone. The default is -1, which corresponds
         to the last simulation timestep or the present day.
+    Rmax : float, optional
+        Maximum radius in kpc. The default is 15.5.
+    zone_width : float, optional
+        Annular zone width in kpc. The default is 0.1.
         
     Returns
     -------
     list
         Parameter values at each zone at the given time index.
     """
-    return [multioutput.zones[z].history[index][parameter] for z in multioutput.zones.keys()]
+    return [multioutput.zones['zone%i' % z].history[index][parameter] 
+            for z in range(int(Rmax/zone_width))]
 
 
 if __name__ == '__main__':
