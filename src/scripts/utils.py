@@ -228,7 +228,7 @@ def get_bin_centers(bin_edges):
         raise ValueError('The length of bin_edges must be at least 2.')
 
 
-def sample_dataframe(df, n, weights=None, reset=True, seed=RANDOM_SEED):
+def sample_rows(df, n, weights=None, reset=True, seed=RANDOM_SEED):
     """
     Randomly sample n unique rows from a pandas DataFrame.
 

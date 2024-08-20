@@ -6,7 +6,7 @@ plots, e.g., showing [O/Fe] vs [Fe/H] over a range of Galactic regions.
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize, LogNorm, BoundaryNorm
 from matplotlib.cm import ScalarMappable
-from utils import sample_dataframe
+from utils import sample_rows
 from _globals import GALR_BINS, ABSZ_BINS, TWO_COLUMN_WIDTH
 
 
@@ -45,7 +45,7 @@ def plot_vice_sample(ax, stars, xcol, ycol, zcol='galr_origin',
     if sampled:
         # weight random sample by particle mass
         sample_weights = stars['mass'] / stars['mass'].sum()
-        sample = sample_dataframe(stars, nsamples, weights=sample_weights)
+        sample = sample_rows(stars, nsamples, weights=sample_weights)
     else:
         sample = stars.copy()
     # If zcol is not a valid column, don't color-code points

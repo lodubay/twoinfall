@@ -13,7 +13,7 @@ import vice
 
 import paths
 from _globals import RANDOM_SEED, ZONE_WIDTH
-from utils import box_smooth, sample_dataframe
+from utils import box_smooth, sample_rows
 
 
 def main():
@@ -328,8 +328,8 @@ class MultizoneStars:
             N samples of full DataFrame.
         """
         sample_weights = self.stars['mstar'] / self.stars['mstar'].sum()
-        sample = sample_dataframe(self.stars.copy(), N, weights=sample_weights,
-                                  seed=seed)
+        sample = sample_rows(self.stars.copy(), N, weights=sample_weights,
+                             seed=seed)
         return sample
     
     def resample_zheight(self, N, apogee_data=None, seed=RANDOM_SEED,
@@ -372,8 +372,8 @@ class MultizoneStars:
         bin_cuts = pd.cut(absz_final, bins=bin_edges, labels=False, 
                           include_lowest=True)
         sample_weights = absz_weights[bin_cuts] / absz_weights[bin_cuts].sum()
-        resample = sample_dataframe(self.stars.copy(), N, 
-                                    weights=sample_weights, seed=seed)
+        resample = sample_rows(self.stars.copy(), N, 
+                               weights=sample_weights, seed=seed)
         if inplace:
             self.stars = resample
         else:
