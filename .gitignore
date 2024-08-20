@@ -11,6 +11,9 @@ ms.synctex.gz
 # Figure output
 src/tex/figures/*
 
+# Spyder project directory
+.spyproject/
+
 # Miscellaneous
 __pycache__
 .virtual_documents/
