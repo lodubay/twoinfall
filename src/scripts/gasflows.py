@@ -20,15 +20,25 @@ def main(style='paper'):
                                            2 * _globals.ONE_COLUMN_WIDTH),
                             tight_layout=True)
     
-    mout_flow = vice.output(str(paths.simulation_outputs / 'gasflow/diskmodel'))
-    axs[0].plot(radial_gradient(mout_flow, '[o/h]'), 'r-', label='Radial flows')
+    mout_flow = vice.output(str(paths.simulation_outputs / 'gasflow_no_outflow/diskmodel'))
+    axs[0].plot(radial_gradient(mout_flow, '[o/h]'), 'r-', label='Inward radial flows')
     axs[1].plot(radial_gradient(mout_flow, '[fe/h]'), 'r-')
     axs[2].plot(radial_gradient(mout_flow, '[o/fe]'), 'r-')
     
     mout_noflow = vice.output(str(paths.simulation_outputs / 'gaussian/diskmodel'))
-    axs[0].plot(radial_gradient(mout_noflow, '[o/h]'), 'k--', label='No flows')
-    axs[1].plot(radial_gradient(mout_noflow, '[fe/h]'), 'k--')
-    axs[2].plot(radial_gradient(mout_noflow, '[o/fe]'), 'k--')
+    axs[0].plot(radial_gradient(mout_noflow, '[o/h]'), 'b-', label='Exponential outflows')
+    axs[1].plot(radial_gradient(mout_noflow, '[fe/h]'), 'b-')
+    axs[2].plot(radial_gradient(mout_noflow, '[o/fe]'), 'b-')
+    
+    mout_noflow = vice.output(str(paths.simulation_outputs / 'no_outflow/diskmodel'))
+    axs[0].plot(radial_gradient(mout_noflow, '[o/h]'), 'k-', label='Neither')
+    axs[1].plot(radial_gradient(mout_noflow, '[fe/h]'), 'k-')
+    axs[2].plot(radial_gradient(mout_noflow, '[o/fe]'), 'k-')
+    
+    mout_noflow = vice.output(str(paths.simulation_outputs / 'gasflow/diskmodel'))
+    axs[0].plot(radial_gradient(mout_noflow, '[o/h]'), ls='-', c='purple', label='Both')
+    axs[1].plot(radial_gradient(mout_noflow, '[fe/h]'), ls='-', c='purple')
+    axs[2].plot(radial_gradient(mout_noflow, '[o/fe]'), ls='-', c='purple')
     
     axs[0].set_ylabel('[O/H]')
     axs[1].set_ylabel('[Fe/H]')
