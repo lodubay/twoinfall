@@ -13,8 +13,9 @@ from _globals import ONE_COLUMN_WIDTH
 
 
 def plot_vice_onezone(output, fig=None, axs=[], label=None, color=None,
-                      marker_labels=False, mdf_smoothing=0.02, 
-                      markersize=9, xcol='[fe/h]', ycol='[o/fe]', **kwargs):
+                      markers=[0.1, 0.3, 1, 3, 10], marker_labels=False, 
+                      mdf_smoothing=0.02, markersize=9, 
+                      xcol='[fe/h]', ycol='[o/fe]', **kwargs):
     """
     Wrapper for plot_track_and_mdf given a VICE onezone output.
 
@@ -72,7 +73,7 @@ def plot_vice_onezone(output, fig=None, axs=[], label=None, color=None,
     zorder = axs[0].lines[-1].get_zorder()
     plot_time_markers(hist['time'], hist[xcol], hist[ycol], axs[0],
                       color=color, show_labels=marker_labels, zorder=zorder,
-                      markersize=markersize)
+                      markersize=markersize, loc=markers)
     return fig, axs
 
 
