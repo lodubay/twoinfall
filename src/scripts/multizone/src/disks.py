@@ -120,10 +120,10 @@ class diskmodel(vice.milkyway):
             from .yields import C22
         elif yields == "F04":
             from .yields import F04
+        elif yields == "W23":
+            from .yields import W23
         else:
             from .yields import J21
-            # from vice.yields.presets import JW20
-            # vice.yields.sneia.settings['fe'] *= 10**0.1
         # Set the SF mode - infall vs star formation rate
         if spec.lower() in ["twoinfall", "earlyburst"]:
             self.mode = "ifr"
@@ -146,7 +146,10 @@ class diskmodel(vice.milkyway):
                 #     self.zones[i].tau_star = models.twoinfall_tau_star(area, 
                 #         mean_radius)
                 else:
-                    self.zones[i].tau_star = J21_sf_law(area, mode = self.mode)
+                    # Simplified SF law, single power-law with cutoff
+                    self.zones[i].tau_star = J21_sf_law(area, mode = self.mode,
+                                                        index1=1.5, index2=1.5,
+                                                        Sigma_g2=1e8)
             # Outflows
             if not outflows:
                 self.zones[i].eta = 0.

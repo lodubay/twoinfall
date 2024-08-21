@@ -5,12 +5,15 @@ of the different two-infall model parameters - timescales and onset time.
 
 import numpy as np
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 import vice
+from vice.toolkit import J21_sf_law
 import paths
 # from multizone.src.yields import J21
-from vice.yields.presets import JW20
+# from vice.yields.presets import JW20
+from multizone.src.yields import W23
 from multizone.src import models, dtds
-from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH
+from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH, ZONE_WIDTH
 from colormaps import paultol
 from track_and_mdf import setup_axes, plot_vice_onezone
 
@@ -35,13 +38,16 @@ def main():
     fig = plt.figure(figsize=(TWO_COLUMN_WIDTH, 0.36*TWO_COLUMN_WIDTH))
     gs = fig.add_gridspec(7, 22, wspace=0.)
     subfigs = [fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))]
+    print('First timescale')
     axs0 = vary_param(subfigs[0], first_timescale=[0.1, 0.3, 1, 3],
                       second_timescale=4, onset=3,
                       xlim=XLIM, ylim=YLIM)
+    print('Second timescale')
     axs1 = vary_param(subfigs[1], second_timescale=[1, 3, 10, 30],
                       first_timescale=1, onset=3,
                       xlim=XLIM, ylim=YLIM, ylabel=False,
                       label_index=1)
+    print('Onset time')
     axs2 = vary_param(subfigs[2], onset=[1, 2, 3, 4],
                       first_timescale=1, second_timescale=4,
                       xlim=XLIM, ylim=YLIM, ylabel=False,
@@ -96,9 +102,14 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
     dt = ONEZONE_DEFAULTS['dt']
     simtime = np.arange(0, END_TIME + dt, dt)
     
+    # Star formation law
+    # Single power-law with k=1.5 and high-mass cutoff
+    area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
+    sf_law = J21_sf_law(area, mode='ifr', index1=1.5, index2=1.5, Sigma_g2=1e8)
+    
     dtd = dtds.plateau(width=1, tmin=ONEZONE_DEFAULTS['delay'])
 
-    for i, val in enumerate(values):
+    for i, val in tqdm(enumerate(values)):
         param_dict[var] = val
         # Run one-zone model
         name = output_name(*param_dict.values())
@@ -110,9 +121,10 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
                              func=ifr, 
                              mode='ifr',
                              **ONEZONE_DEFAULTS)
-        sz.schmidt = True
-        sz.schmidt_index = 0.5
-        sz.MgSchmidt = 1e8
+        sz.tau_star = sf_law
+        # sz.schmidt = True
+        # sz.schmidt_index = 0.5
+        # sz.MgSchmidt = 1e8
         sz.run(simtime, overwrite=True)
         plot_vice_onezone(name, 
                           fig=subfig, axs=axs, 

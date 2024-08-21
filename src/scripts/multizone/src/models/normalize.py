@@ -78,7 +78,7 @@ def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
     tau_star = {
         'default': J21_sf_law,
         'earlyburst': earlyburst_tau_star,
-    }[which_tau_star.lower()](area, mode = 'ifr')
+    }[which_tau_star.lower()](area, mode = 'ifr', index1=1.5, index2=1.5, Sigma_g2=1e8)
     if outflows:
         eta = vice.milkyway.default_mass_loading(radius)
     else:
@@ -102,7 +102,7 @@ def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
 def twoinfall_ampratio(time_dependence, radius, onset = 4,
                        dt = 0.01, dr = 0.1, recycling = 0.4):
     area = m.pi * ((radius + dr)**2 - radius**2)
-    tau_star = J21_sf_law(area)
+    tau_star = J21_sf_law(area, mode='ifr', index1=1.5, index2=1.5, Sigma_g2=1e8)
     eta = vice.milkyway.default_mass_loading(radius)
     mgas = 0
     time = 0
