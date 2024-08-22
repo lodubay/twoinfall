@@ -4,6 +4,7 @@ Johnson et al. (2021).
 """
 
 from .earlyburst_tau_star import earlyburst_tau_star
+from .twoinfall_sf_law import twoinfall_sf_law
 from ..._globals import MAX_SF_RADIUS, END_TIME, M_STAR_MW, \
     THIN_DISK_SCALE_RADIUS, THICK_DISK_SCALE_RADIUS, THICK_TO_THIN_RATIO
 import vice
@@ -78,7 +79,8 @@ def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
     tau_star = {
         'default': J21_sf_law,
         'earlyburst': earlyburst_tau_star,
-    }[which_tau_star.lower()](area, mode = 'ifr', index1=1.5, index2=1.5, Sigma_g2=1e8)
+        'twoinfall': twoinfall_sf_law,
+    }[which_tau_star.lower()](area)
     if outflows:
         eta = vice.milkyway.default_mass_loading(radius)
     else:
@@ -102,7 +104,7 @@ def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
 def twoinfall_ampratio(time_dependence, radius, onset = 4,
                        dt = 0.01, dr = 0.1, recycling = 0.4):
     area = m.pi * ((radius + dr)**2 - radius**2)
-    tau_star = J21_sf_law(area, mode='ifr', index1=1.5, index2=1.5, Sigma_g2=1e8)
+    tau_star = twoinfall_sf_law(area, onset=onset)
     eta = vice.milkyway.default_mass_loading(radius)
     mgas = 0
     time = 0

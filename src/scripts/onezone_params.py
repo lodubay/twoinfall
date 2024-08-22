@@ -7,7 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import vice
-from vice.toolkit import J21_sf_law
+# from vice.toolkit import J21_sf_law
+from multizone.src.models import twoinfall_sf_law
 import paths
 # from multizone.src.yields import J21
 # from vice.yields.presets import JW20
@@ -32,7 +33,7 @@ LABELS = {
     'onset': 't_{\\rm on}'
 }
 XLIM = (-1.7, 0.7)
-YLIM = (-0.12, 0.54)
+YLIM = (-0.14, 0.54)
 
 def main():
     plt.style.use(paths.styles / 'paper.mplstyle')
@@ -111,7 +112,7 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
     # Star formation law
     # Single power-law with k=1.5 and high-mass cutoff
     area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
-    sf_law = J21_sf_law(area, mode='ifr', index1=1.5, index2=1.5, Sigma_g2=1e8)
+    sf_law = twoinfall_sf_law(area)
     
     dtd = dtds.plateau(width=1, tmin=ONEZONE_DEFAULTS['delay'])
 
@@ -119,15 +120,13 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
         param_dict[var] = val
         # Run one-zone model
         name = output_name(*param_dict.values())
-        # Note: the amplitude ratio calculation assumes the J21 star formation
-        # law, but this should only affect it at the 1% level
         ifr = models.twoinfall(RADIUS, dt=dt, **param_dict)
         sz = vice.singlezone(name=name,
                              RIa=dtd,
                              func=ifr, 
                              mode='ifr',
                              **ONEZONE_DEFAULTS)
-        sz.tau_star = sf_law
+        sz.tau_star = twoinfall_sf_law(area, onset=param_dict['onset'])
         sz.eta = eta
         # sz.schmidt = True
         # sz.schmidt_index = 0.5
