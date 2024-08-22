@@ -70,13 +70,14 @@ class twoinfall_sf_law(J21_sf_law):
         super().__init__(area, mode="ifr", index1=index, index2=index, 
                          Sigma_g2=Sigma_g_break, **kwargs)
         self.onset = onset
+        self.factor = factor
     
     def __call__(self, time, mgas):
         if time < self.onset:
-            factor = 0.5
+            prefactor = self.factor
         else:
-            factor = 1.
-        return factor * super().__call__(time, mgas)
+            prefactor = 1.
+        return prefactor * super().__call__(time, mgas)
         
     @property
     def onset(self):
