@@ -54,6 +54,7 @@
 \affiliation{\osuaffil}
 \affiliation{\ccappaffil}
 % \author[0000-0001-7775-7261]{David H. Weinberg}
+\author{coauthors}
 
 \correspondingauthor{Liam O.\ Dubay}
 \email{dubay.11@osu.edu}
@@ -64,7 +65,7 @@
 
 \section{Introduction}
 
-
+The two-infall model has long been proposed to explain the high- and low-$\alpha$ sequences observed in the Milky Way disk. 
 
 \section{Methods}
 \label{sec:methods}
@@ -119,13 +120,20 @@
 \subsection{Nucleosynthetic Yields}
 \label{sec:yields}
 
+\begin{table*}
+    \centering
+    \caption{Yields.}
+    \label{tab:yields}
+    \include{output/yields.tex}
+\end{table*}
+
 \subsection{The SN Ia Delay-Time Distribution}
 \label{sec:dtd}
 
 \subsection{The Two-Infall Star Formation History}
 \label{sec:sfh}
 
-\todo{Copied from last paper.} First proposed by \citet{Chiappini1997-TwoInfall}, this model parameterizes the infall rate as two successive, exponentially declining bursts to explain the origin of the high- and low-$\alpha$ disk populations:
+\todo{Copied from last paper.} First proposed by \citet{chiappini_chemical_1997}, this model parameterizes the infall rate as two successive, exponentially declining bursts to explain the origin of the high- and low-$\alpha$ disk populations:
 \begin{equation}
     \label{eq:twoinfall-ifr}
     f_{\rm TI}(t|R_{\rm gal}) = N_1(R_{\rm gal}) e^{-t/\tau_1} + N_2(R_{\rm gal}) e^{-(t-t_{\rm on})/\tau_2},
@@ -137,6 +145,26 @@ where $\tau_1=1$ Gyr and $\tau_2=4$ Gyr are the exponential timescales of the fi
 \end{equation}
 Following \citet{bland-hawthorn_galaxy_2016}, we adopt values for the thick disk scale radius $R_1=2.0$ kpc, thin disk scale radius $R_2=2.5$ kpc, and $f_\Sigma(0)=0.27$.
 We note that most previous studies which use the two-infall model \citep[e.g.][]{chiappini_chemical_1997,matteucci_new_2006,matteucci_effect_2009,spitoni_galactic_2019} do not consider gas outflows and instead adjust the nucleosynthetic yields to reproduce the solar abundance. We adopt radially-dependent outflows as in \citetalias{johnson_stellar_2021} (see their Section 2.4 for details) for all our SFHs, including two-infall. We discuss the implications of this difference in Section \ref{sec:two-infall-discussion}.
+
+The star formation law follows a single power-law prescription: $\dot\Sigma_\star\propto\Sigma_g^N$, with $N=1.5$ following \citet{kennicutt_global_1998}. Previous work with this GCE model \citep[e.g.,][]{johnson_stellar_2021,dubay_galactic_2024} assumed a three-component power-law, but we adopt a simpler prescription to allow for a more direct comparison with previous two-infall studies \citep[e.g.,][]{spitoni_remind_2024}. In detail, we calculate the star formation efficiency (SFE) timescale $\tau_\star\equiv\Sigma_g/\dot\Sigma_\star$ according to the following:
+\begin{equation}
+    \label{eq:sf-law}
+    \tau_\star = 
+    \begin{cases}
+        \epsilon(t) \tau_{\rm mol}(t),   & \Sigma_g \ge \Sigma_{g,0} \\
+        \epsilon(t) \tau_{\rm mol}(t) \Big(\frac{\Sigma_g}{\Sigma_{g,0}}\Big)^{-1/2}, & \Sigma_g < \Sigma_{g,0}
+    \end{cases}
+\end{equation}
+where $\Sigma_{g,0} = 10^8\,{\rm M}_\odot\,{\rm kpc}^{-2}$ and $\tau_{\rm mol}(t)=\tau_{\rm mol,0}(t/t_0)^\gamma$ with $\gamma=1/2$ and $\tau_{\rm mol,0}=2$ Gyr. Previous two-infall studies \citep[e.g.,][]{nissen_high-precision_2020} have adopted a higher SFE during the first infall epoch than during the second, which we emulate through the pre-factor $\epsilon$:
+\begin{equation}
+    \label{eq:sfe-prefactor}
+    \epsilon(t) = 
+    \begin{cases}
+        0.5, & t < t_{\rm on} \\
+        1.0, & t \ge t_{\rm on}.
+    \end{cases}
+\end{equation}
+\todo{Talk about the implications of this prefactor or reference a future section which discusses this.}
 
 \subsection{Observational Sample}
 \label{sec:observational-sample}
