@@ -2,8 +2,8 @@
 **/.snakemake
 **/.showyourwork*
 
-# Showyourwork output files
-/*.pdf
+# Latex output files
+ms.pdf
 report.html
 arxiv.tar.gz
 ms.synctex.gz

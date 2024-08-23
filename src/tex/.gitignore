@@ -2,5 +2,5 @@
 *latexindent*
 
 # Don't track LaTeX products
-*.pdf
-*.synctex.gz
+ms.pdf
+ms.synctex.gz
