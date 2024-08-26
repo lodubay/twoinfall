@@ -15,7 +15,7 @@ _EVOLUTION_MODELS_ = ["static", "insideout", "lateburst", "outerburst",
                       "twoinfall", "earlyburst"]
 _DELAY_MODELS_ = ["powerlaw", "plateau", "prompt", "exponential", "triple",
                   "greggio05_single", "greggio05_double"]
-_YIELD_SETS_ = ["F04", "JW20", "J21", "C22"]
+_YIELD_SETS_ = ["F04", "JW20", "J21", "C22", "W23"]
 
 def parse():
     r"""
