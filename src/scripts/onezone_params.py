@@ -16,6 +16,7 @@ from multizone.src.yields import W23
 vice.yields.sneia.settings['fe'] *= (1.1/1.2)
 # from multizone.src.yields import F04
 from multizone.src import models, dtds
+from multizone.src.disks import equilibrium_mass_loading
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH, ZONE_WIDTH
 from colormaps import paultol
 from track_and_mdf import setup_axes, plot_vice_onezone
@@ -33,7 +34,7 @@ LABELS = {
     'onset': 't_{\\rm on}'
 }
 XLIM = (-1.7, 0.7)
-YLIM = (-0.14, 0.54)
+YLIM = (-0.16, 0.54)
 
 def main():
     plt.style.use(paths.styles / 'paper.mplstyle')
@@ -42,7 +43,8 @@ def main():
     gs = fig.add_gridspec(7, 22, wspace=0.)
     subfigs = [fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))]
     # Outflow mass-loading factor
-    eta = mass_loading_factor(tau_sfh=10., tau_star=2.)
+    eta_func = equilibrium_mass_loading(alpha_h_eq=0.1, tau_sfh=10., tau_star=2.)
+    eta = eta_func(RADIUS)
     # eta = 1.
     print('Mass-loading factor: ', eta)
     print('First timescale')
@@ -108,13 +110,7 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
 
     dt = ONEZONE_DEFAULTS['dt']
     simtime = np.arange(0, END_TIME + dt, dt)
-    
-    # Star formation law
-    # Single power-law with k=1.5 and high-mass cutoff
     area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
-    sf_law = twoinfall_sf_law(area)
-    
-    dtd = dtds.plateau(width=1, tmin=ONEZONE_DEFAULTS['delay'])
 
     for i, val in tqdm(enumerate(values)):
         param_dict[var] = val
@@ -122,15 +118,11 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
         name = output_name(*param_dict.values())
         ifr = models.twoinfall(RADIUS, dt=dt, **param_dict)
         sz = vice.singlezone(name=name,
-                             RIa=dtd,
                              func=ifr, 
                              mode='ifr',
                              **ONEZONE_DEFAULTS)
         sz.tau_star = twoinfall_sf_law(area, onset=param_dict['onset'])
         sz.eta = eta
-        # sz.schmidt = True
-        # sz.schmidt_index = 0.5
-        # sz.MgSchmidt = 1e8
         sz.run(simtime, overwrite=True)
         plot_vice_onezone(name, 
                           fig=subfig, axs=axs, 
@@ -151,35 +143,6 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
                 transform=axs[0].transAxes)
 
     return axs
-
-
-def mass_loading_factor(tau_sfh=4., tau_star=2., xh_eq=0.2, element='o', recycling=0.4):
-    """
-    Calculate the mass-loading factor required to achieve solar metallicity.
-    
-    Based on Equation 15 of Weinberg et al. (2023). Note that a constant
-    tau_star can be a sufficient approximation to a Kennicutt-Schmidt relation.
-    
-    Parameters
-    ----------
-    tau_sfh : float, optional
-        Timescale of the star formation history in Gyr. The default is 4.
-    tau_star : float, optional
-        The star formation efficiency timescale in Gyr. The default is 2.
-    element : str, optional
-        Element for which to compare the CCSN yields and Solar abundance.
-        The default is 'o'.
-    recycling : float, optional
-        Instant recycling approximation coeffient. The default is 0.4.
-    
-    Returns
-    -------
-    float
-        Value of eta which produces a solar metallicity ISM at equilibrium.
-    """
-    Zeq = vice.solar_z[element] * 10 ** xh_eq
-    yield_ratio = vice.yields.ccsne.settings[element] / Zeq
-    return yield_ratio - 1 + recycling + tau_star / tau_sfh
 
 
 def output_name(tau1, tau2, onset, parent_dir=paths.data/'onezone'/'params'):

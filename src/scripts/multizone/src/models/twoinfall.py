@@ -10,7 +10,7 @@ from .gradient import gradient
 import math as m
 
 FIRST_TIMESCALE = 1. # Gyr
-SECOND_TIMESCALE = 4. # Gyr
+SECOND_TIMESCALE = 10. # Gyr
 SECOND_ONSET = 4. # Gyr
 
 class twoinfall(double_exponential):
@@ -26,6 +26,6 @@ class twoinfall(double_exponential):
         self.ratio = twoinfall_ampratio(self, radius, onset=self.onset, 
                                         dr = dr, dt = dt)
         prefactor = normalize_ifrmode(self, gradient, radius, dt = dt,
-            dr = dr)
+            dr = dr, which_tau_star = 'twoinfall')
         self.first.norm *= prefactor
         self.second.norm *= prefactor

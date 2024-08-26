@@ -36,7 +36,7 @@ for el in ["o", "mg", "si", "fe"]:
 # population averaged SNIa Fe yield, integrated to t=infty
 # for a constant SFR, will evolve to afeeq at late times
 afeeq = -0.1
-tau_sfh = 15
+tau_sfh = 10
 tau_Ia = 1.5
 mu = tau_sfh / (tau_sfh - tau_Ia) # assuming tau_sfh >> minimum SN Ia delay time
 Ria = (Rcc / mu) * (mfecc / mfeia) * (10 ** (afecc["o"] - afeeq) - 1.)
