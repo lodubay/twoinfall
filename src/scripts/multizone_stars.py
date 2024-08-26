@@ -84,7 +84,7 @@ class MultizoneStars:
         -------
         MultizoneStars instance
         """
-        fullpath = paths.simulation_outputs / (name + '.vice')
+        fullpath = paths.multizone / (name + '.vice')
         # Import star tracer data
         if verbose: 
             print('Importing VICE multizone data from', str(fullpath))

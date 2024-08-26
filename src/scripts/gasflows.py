@@ -5,40 +5,46 @@ radial gas flows.
 
 import numpy as np
 import matplotlib.pyplot as plt
-# from multizone_stars import MultizoneStars
 import vice
 import paths
 import _globals
-from utils import get_bin_centers
 
 def main(style='paper'):
-    # mzs_flows = vice.output(str(paths.simulation_outputs / 'gasflow/diskmodel'))
-    # mzs_noflows = vice.output(str(paths.simulation_outputs / 'gaussian/diskmodel'))
     plt.style.use(paths.styles / f'{style}.mplstyle')
     
     fig, axs = plt.subplots(3, 1, figsize=(_globals.ONE_COLUMN_WIDTH, 
                                            2 * _globals.ONE_COLUMN_WIDTH),
                             tight_layout=True)
+                            
+    mout = vice.output(str(paths.multizone / 'no_outflow/diskmodel'))
+    axs[0].plot(radial_gradient(mout, '[o/h]'), 'k-', label=r'0 km/s | $\eta=0$')
+    axs[1].plot(radial_gradient(mout, '[fe/h]'), 'k-')
+    axs[2].plot(radial_gradient(mout, '[o/fe]'), 'k-')
     
-    mout_flow = vice.output(str(paths.simulation_outputs / 'gasflow_no_outflow/diskmodel'))
-    axs[0].plot(radial_gradient(mout_flow, '[o/h]'), 'r-', label='Inward radial flows')
-    axs[1].plot(radial_gradient(mout_flow, '[fe/h]'), 'r-')
-    axs[2].plot(radial_gradient(mout_flow, '[o/fe]'), 'r-')
+    mout = vice.output(str(paths.multizone / 'gasflow_1kms_no_outflow/diskmodel'))
+    axs[0].plot(radial_gradient(mout, '[o/h]'), 'r-', label='1 km/s | $\eta=0$')
+    axs[1].plot(radial_gradient(mout, '[fe/h]'), 'r-')
+    axs[2].plot(radial_gradient(mout, '[o/fe]'), 'r-')
     
-    mout_noflow = vice.output(str(paths.simulation_outputs / 'gaussian/diskmodel'))
-    axs[0].plot(radial_gradient(mout_noflow, '[o/h]'), 'b-', label='Exponential outflows')
-    axs[1].plot(radial_gradient(mout_noflow, '[fe/h]'), 'b-')
-    axs[2].plot(radial_gradient(mout_noflow, '[o/fe]'), 'b-')
+    mout = vice.output(str(paths.multizone / 'gasflow_2kms_no_outflow/diskmodel'))
+    axs[0].plot(radial_gradient(mout, '[o/h]'), 'b-', label='2 km/s | $\eta=0$')
+    axs[1].plot(radial_gradient(mout, '[fe/h]'), 'b-')
+    axs[2].plot(radial_gradient(mout, '[o/fe]'), 'b-')
     
-    mout_noflow = vice.output(str(paths.simulation_outputs / 'no_outflow/diskmodel'))
-    axs[0].plot(radial_gradient(mout_noflow, '[o/h]'), 'k-', label='Neither')
-    axs[1].plot(radial_gradient(mout_noflow, '[fe/h]'), 'k-')
-    axs[2].plot(radial_gradient(mout_noflow, '[o/fe]'), 'k-')
+    mout = vice.output(str(paths.multizone / 'gaussian/diskmodel'))
+    axs[0].plot(radial_gradient(mout, '[o/h]'), 'k--', label=r'0 km/s | $\eta\propto e^R$')
+    axs[1].plot(radial_gradient(mout, '[fe/h]'), 'k--')
+    axs[2].plot(radial_gradient(mout, '[o/fe]'), 'k--')
     
-    mout_noflow = vice.output(str(paths.simulation_outputs / 'gasflow/diskmodel'))
-    axs[0].plot(radial_gradient(mout_noflow, '[o/h]'), ls='-', c='purple', label='Both')
-    axs[1].plot(radial_gradient(mout_noflow, '[fe/h]'), ls='-', c='purple')
-    axs[2].plot(radial_gradient(mout_noflow, '[o/fe]'), ls='-', c='purple')
+    mout = vice.output(str(paths.multizone / 'gasflow_1kms/diskmodel'))
+    axs[0].plot(radial_gradient(mout, '[o/h]'), 'r--', label=r'1 km/s | $\eta\propto e^R$')
+    axs[1].plot(radial_gradient(mout, '[fe/h]'), 'r--')
+    axs[2].plot(radial_gradient(mout, '[o/fe]'), 'r--')
+    
+    mout = vice.output(str(paths.multizone / 'gasflow_2kms/diskmodel'))
+    axs[0].plot(radial_gradient(mout, '[o/h]'), 'b--', label=r'2 km/s | $\eta\propto e^R$')
+    axs[1].plot(radial_gradient(mout, '[fe/h]'), 'b--')
+    axs[2].plot(radial_gradient(mout, '[o/fe]'), 'b--')
     
     axs[0].set_ylabel('[O/H]')
     axs[1].set_ylabel('[Fe/H]')

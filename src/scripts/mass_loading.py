@@ -27,6 +27,7 @@ def main():
     ax.set_ylabel(r"$\eta\equiv\dot\Sigma_{\rm out}/\dot\Sigma_\star$")
     
     plt.savefig(paths.figures / "mass_loading")
+    plt.close()
     
 
 if __name__ == "__main__":

@@ -52,6 +52,7 @@ def main():
     plot_vice_onezone(name, fig=fig, axs=axs)
     
     plt.savefig(paths.figures / 'onezone_eta')
+    plt.close()
     
 
 if __name__ == "__main__":
