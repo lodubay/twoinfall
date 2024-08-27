@@ -26,6 +26,11 @@ def main(style='paper'):
     axs[1].plot(radial_gradient(mout, '[fe/h]'), 'r-')
     axs[2].plot(radial_gradient(mout, '[o/fe]'), 'r-')
     
+    # mout = vice.output(str(paths.multizone / 'gasflow_1kms_maxsf_13kpc/diskmodel'))
+    # axs[0].plot(radial_gradient(mout, '[o/h]'), 'r:', label='1 km/s | $\eta=0$')
+    # axs[1].plot(radial_gradient(mout, '[fe/h]'), 'r:')
+    # axs[2].plot(radial_gradient(mout, '[o/fe]'), 'r:')
+    
     mout = vice.output(str(paths.multizone / 'gasflow_2kms_no_outflow/diskmodel'))
     axs[0].plot(radial_gradient(mout, '[o/h]'), 'b-', label='2 km/s | $\eta=0$')
     axs[1].plot(radial_gradient(mout, '[fe/h]'), 'b-')
