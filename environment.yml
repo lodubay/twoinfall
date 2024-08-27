@@ -1,9 +1,10 @@
-name: 2inf
+name: twoinfall
 channels:
     - defaults
+    - conda-forge
 dependencies:
     - python==3.12
-    - numpy==2.0
+    - numpy>=2.0
     - pandas
     - matplotlib
     - tqdm
