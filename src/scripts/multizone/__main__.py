@@ -27,6 +27,10 @@ def parse():
     parser.add_argument("-f", "--force",
         help = "Force overwrite existing VICE outputs of the same name.",
         action = "store_true")
+    
+    parser.add_argument("-p", "--pickle",
+        help = "Save functional attributes along with VICE output.",
+        action = "store_true")
 
     parser.add_argument("--migration",
         help = "The migration model to assume. (Default: gaussian)",
@@ -155,7 +159,7 @@ def main():
     model_ = model(args)
     model_.run([_ * model_.dt for _ in range(round(
         _globals.END_TIME / model_.dt) + 1)],
-        overwrite = args.force, pickle = True)
+        overwrite = args.force, pickle = args.pickle())
 
 
 if __name__ == "__main__": 
