@@ -6,8 +6,10 @@ Run ``python -m multizone.py --help`` for more info.
 """
 
 import argparse
+
 from . import _globals
 from . import src
+import paths
 
 _MIGRATION_MODELS_ = ["diffusion", "linear", "post-process", "sudden", 
                       "gaussian", "none"]
@@ -75,7 +77,7 @@ underscores. (Default: '')",
     parser.add_argument("--name",
         help = "The name of the output simulations (Default: 'diskmodel')",
         type = str,
-        default = '../data/multizone/diskmodel')
+        default = "diskmodel")
 
     parser.add_argument("--elements",
         help = """Elements to simulation the enrichment for separated by \
@@ -133,7 +135,7 @@ def model(args):
         elements = args.elements.split('_')
     )
     kwargs = dict(
-        name = args.name,
+        name = str(paths.multizone / args.name),
         spec = args.evolution,
         RIa = args.RIa,
         RIa_kwargs = RIa_kwargs,
@@ -159,7 +161,7 @@ def main():
     model_ = model(args)
     model_.run([_ * model_.dt for _ in range(round(
         _globals.END_TIME / model_.dt) + 1)],
-        overwrite = args.force, pickle = args.pickle())
+        overwrite = args.force, pickle = args.pickle)
 
 
 if __name__ == "__main__": 

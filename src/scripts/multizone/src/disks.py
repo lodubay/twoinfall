@@ -122,8 +122,6 @@ class diskmodel(vice.milkyway):
             from .yields import F04
         elif yields == "W23":
             from .yields import W23
-            # Mass-loading factor calibrated for equilibrium metallicity
-            self.mass_loading = equilibrium_mass_loading()
         else:
             from .yields import J21
         # Set the SF mode - infall vs star formation rate
@@ -132,6 +130,8 @@ class diskmodel(vice.milkyway):
             for zone in self.zones: zone.Mg0 = 0
         else:
             self.mode = "sfr"
+        # Mass-loading factor calibrated for equilibrium metallicity
+        eta_equil = equilibrium_mass_loading()
         # Set the Type Ia delay time distribution
         dtd = delay_time_distribution(dist = RIa, tmin = delay, **RIa_kwargs)
         for i in range(self.n_zones):
@@ -154,6 +154,8 @@ class diskmodel(vice.milkyway):
             # Outflows
             if not outflows:
                 self.zones[i].eta = 0.
+            elif yields == "W23":
+                self.zones[i].eta = eta_equil(mean_radius)
         
         # CONSTANT GAS VELOCITY
         if radial_gas_velocity != 0:
