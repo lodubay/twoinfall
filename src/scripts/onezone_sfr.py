@@ -45,7 +45,7 @@ def main():
     
     simtime = np.arange(0, 13.21, 0.01)
     
-    eta_func = equilibrium_mass_loading(tau_star=2., tau_sfh=10., alpha_h_eq=0.1)
+    eta_func = equilibrium_mass_loading(tau_star=2., tau_sfh=10., alpha_h_eq=0.2)
     
     area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
     
@@ -71,7 +71,7 @@ def main():
                    s=[20*h for h in hist['sfr'][::10]])
     # Mark every Gyr
     axs[0].scatter(hist['[fe/h]'][::100], hist['[o/fe]'][::100], 
-                   s=[20*h for h in hist['sfr'][::100]], c='k', zorder=10)
+                   s=[5*h for h in hist['sfr'][::100]], c='w', zorder=10)
     
     plt.savefig(paths.figures / 'onezone_sfr')
     plt.close()
