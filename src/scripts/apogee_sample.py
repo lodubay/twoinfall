@@ -306,7 +306,7 @@ apogee_sample.py`` to generate it first.')
         
     def plot_kde2D_contours(self, ax, xcol, ycol, enclosed=[0.8, 0.3],
                             c='r', lw=0.5, ls=['--', '-'],
-                            **kwargs):
+                            plot_kwargs={}, **kwargs):
         """
         Plot 2D density contours from the kernel density estimate for the
         given columns.
@@ -338,7 +338,7 @@ apogee_sample.py`` to generate it first.')
         # contour levels at 1 and 2 sigma
         levels = contour_levels_2D(scaled_density, enclosed=enclosed)
         ax.contour(xx, yy, scaled_density, levels, colors=c,
-                   linewidths=lw, linestyles=ls)
+                   linewidths=lw, linestyles=ls, **plot_kwargs)
     
     def region(self, galr_lim=(3, 15), absz_lim=(0, 2), inplace=False):
         """

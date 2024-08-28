@@ -18,13 +18,25 @@ from utils import get_bin_centers
 from _globals import ONEZONE_DEFAULTS, ZONE_WIDTH
 
 RADIUS = 8.
-ONSET = 4. # Gyr
+ONSET = 3.5 # Gyr
 FEH_LIM = (-1.3, 0.6)
 OFE_LIM = (-0.12, 0.48)
 
 def main():
     plt.style.use(paths.styles / "paper.mplstyle")
     fig, axs = setup_figure(xlim=FEH_LIM, ylim=OFE_LIM)
+
+    # Plot underlying APOGEE contours
+    apogee_data = APOGEESample.load()
+    apogee_solar = apogee_data.region(galr_lim=(7, 9), absz_lim=(0, 2))
+    apogee_solar.plot_kde2D_contours(axs[0], 'FE_H', 'O_FE', c='k', lw=1,
+                                     plot_kwargs={'zorder': 1})
+    feh_df, bin_edges = apogee_solar.mdf(col='FE_H', range=FEH_LIM, 
+                                         smoothing=0.2)
+    axs[1].plot(get_bin_centers(bin_edges), feh_df / max(feh_df), 'k-')
+    ofe_df, bin_edges = apogee_solar.mdf(col='O_FE', range=OFE_LIM, 
+                                         smoothing=0.05)
+    axs[2].plot(ofe_df / max(ofe_df), get_bin_centers(bin_edges), 'k-')
     
     output_dir = paths.data / "onezone" / "eta"
     if not output_dir.exists():
@@ -52,21 +64,14 @@ def main():
     sz.tau_star = twoinfall_sf_law(area, onset=ONSET)
     sz.run(simtime, overwrite=True)
     
-    plot_vice_onezone(name, fig=fig, axs=axs, marker_labels=True, 
-                      markers=[0.3, 1, 3, 10])
+    plot_vice_onezone(name, fig=fig, axs=axs, markers=[])
     # Weight by SFR
     hist = vice.history(name)
     axs[0].scatter(hist['[fe/h]'][::10], hist['[o/fe]'][::10], 
-                   s=[50*h for h in hist['sfr'][::10]])
-    
-    # Plot APOGEE contours
-    apogee_data = APOGEESample.load()
-    apogee_solar = apogee_data.region(galr_lim=(7, 9), absz_lim=(0, 2))
-    apogee_solar.plot_kde2D_contours(axs[0], 'FE_H', 'O_FE')
-    feh_df, bin_edges = apogee_solar.mdf(col='FE_H', range=FEH_LIM, smoothing=0.2)
-    axs[1].plot(get_bin_centers(bin_edges), feh_df / max(feh_df), 'r-')
-    ofe_df, bin_edges = apogee_solar.mdf(col='O_FE', range=OFE_LIM, smoothing=0.05)
-    axs[2].plot(ofe_df / max(ofe_df), get_bin_centers(bin_edges), 'r-')
+                   s=[20*h for h in hist['sfr'][::10]])
+    # Mark every Gyr
+    axs[0].scatter(hist['[fe/h]'][::100], hist['[o/fe]'][::100], 
+                   s=[20*h for h in hist['sfr'][::100]], c='k', zorder=10)
     
     plt.savefig(paths.figures / 'onezone_sfr')
     plt.close()
