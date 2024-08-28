@@ -241,7 +241,7 @@ class equilibrium_mass_loading:
         - eta : float
             The mass-loading factor at the given radius.
     """
-    def __init__(self, alpha_h_eq=0., recycling=0.4, tau_star=2., tau_sfh=10.,
+    def __init__(self, alpha_h_eq=0.2, recycling=0.4, tau_star=2., tau_sfh=10.,
                  gradient=-0.08):
         # Calculate eta for exponential SFH to reach desired equilibrium [O/H]
         Z_alpha_eq = vice.solar_z["o"] * 10 ** alpha_h_eq
