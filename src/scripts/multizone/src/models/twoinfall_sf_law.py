@@ -6,7 +6,7 @@ import numbers
 from vice.toolkit import J21_sf_law
 
 class twoinfall_sf_law(J21_sf_law):
-    """
+    r"""
     The star formation law for the two-infall model.
     
     Inherits functionality from ``vice.toolkit.J21_sf_law``.
