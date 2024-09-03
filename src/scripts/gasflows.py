@@ -16,45 +16,37 @@ def main(style='paper'):
                                            2 * _globals.ONE_COLUMN_WIDTH),
                             tight_layout=True)
                             
-    mout = vice.output(str(paths.multizone / 'no_outflow/diskmodel'))
-    axs[0].plot(radial_gradient(mout, '[o/h]'), 'k-', label=r'0 km/s | $\eta=0$')
-    axs[1].plot(radial_gradient(mout, '[fe/h]'), 'k-')
-    axs[2].plot(radial_gradient(mout, '[o/fe]'), 'k-')
-    
-    mout = vice.output(str(paths.multizone / 'gasflow_1kms_no_outflow/diskmodel'))
-    axs[0].plot(radial_gradient(mout, '[o/h]'), 'r-', label='1 km/s | $\eta=0$')
-    axs[1].plot(radial_gradient(mout, '[fe/h]'), 'r-')
-    axs[2].plot(radial_gradient(mout, '[o/fe]'), 'r-')
+    plot_radial_gradient('no_outflow/diskmodel', axs, 
+                         label=r'0 km/s | $\eta=0$',
+                         color='k', linestyle='-')
+    plot_radial_gradient('gasflow_1kms_no_outflow/diskmodel', axs,
+                         label=r'1 km/s | $\eta=0$',
+                         color='r', linestyle='-')
+    plot_radial_gradient('gasflow_1kms_maxsf_13kpc/diskmodel', axs,
+                         label=r'1 km/s | $\eta=0$ | $R_{\rm max}=13$ kpc',
+                         color='r', linestyle=':')
+    plot_radial_gradient('gasflow_2kms_no_outflow/diskmodel', axs,
+                         label=r'2 km/s | $\eta=0$',
+                         color='b', linestyle='-')
+    plot_radial_gradient('gaussian/diskmodel', axs,
+                         label=r'0 km/s | $\eta\propto e^R$',
+                         color='k', linestyle='--')
+    plot_radial_gradient('gasflow_1kms/diskmodel', axs,
+                         label=r'1 km/s | $\eta\propto e^R$',
+                         color='r', linestyle='--')
+    plot_radial_gradient('gasflow_2kms/diskmodel', axs,
+                         label=r'2 km/s | $\eta\propto e^R$',
+                         color='b', linestyle='--')
     
     # mout = vice.output(str(paths.multizone / 'gasflow_1kms_maxsf_13kpc/diskmodel'))
     # axs[0].plot(radial_gradient(mout, '[o/h]'), 'r:', label='1 km/s | $\eta=0$')
     # axs[1].plot(radial_gradient(mout, '[fe/h]'), 'r:')
     # axs[2].plot(radial_gradient(mout, '[o/fe]'), 'r:')
     
-    mout = vice.output(str(paths.multizone / 'gasflow_2kms_no_outflow/diskmodel'))
-    axs[0].plot(radial_gradient(mout, '[o/h]'), 'b-', label='2 km/s | $\eta=0$')
-    axs[1].plot(radial_gradient(mout, '[fe/h]'), 'b-')
-    axs[2].plot(radial_gradient(mout, '[o/fe]'), 'b-')
-    
-    mout = vice.output(str(paths.multizone / 'gaussian/diskmodel'))
-    axs[0].plot(radial_gradient(mout, '[o/h]'), 'k--', label=r'0 km/s | $\eta\propto e^R$')
-    axs[1].plot(radial_gradient(mout, '[fe/h]'), 'k--')
-    axs[2].plot(radial_gradient(mout, '[o/fe]'), 'k--')
-    
-    mout = vice.output(str(paths.multizone / 'gasflow_1kms/diskmodel'))
-    axs[0].plot(radial_gradient(mout, '[o/h]'), 'r--', label=r'1 km/s | $\eta\propto e^R$')
-    axs[1].plot(radial_gradient(mout, '[fe/h]'), 'r--')
-    axs[2].plot(radial_gradient(mout, '[o/fe]'), 'r--')
-    
-    mout = vice.output(str(paths.multizone / 'gasflow_2kms/diskmodel'))
-    axs[0].plot(radial_gradient(mout, '[o/h]'), 'b--', label=r'2 km/s | $\eta\propto e^R$')
-    axs[1].plot(radial_gradient(mout, '[fe/h]'), 'b--')
-    axs[2].plot(radial_gradient(mout, '[o/fe]'), 'b--')
-    
     axs[0].set_ylabel('[O/H]')
     axs[1].set_ylabel('[Fe/H]')
     axs[2].set_ylabel('[O/Fe]')
-    axs[2].set_xlabel('Zone')
+    axs[2].set_xlabel('Radius [kpc]')
     
     axs[0].legend()
     
@@ -62,7 +54,20 @@ def main(style='paper'):
     plt.close()
 
 
-def radial_gradient(multioutput, parameter, index=-1, Rmax=15.5,
+def plot_radial_gradient(name, axs, label='', color=None, linestyle='-'):
+    mout = vice.output(str(paths.multizone / name))
+    xarr = np.arange(0, _globals.MAX_SF_RADIUS, _globals.ZONE_WIDTH)
+    axs[0].plot(xarr, radial_gradient(mout, '[o/h]'), 
+                marker=None, linestyle=linestyle, color=color,
+                label=label)
+    axs[1].plot(xarr, radial_gradient(mout, '[fe/h]'), 
+                marker=None, linestyle=linestyle, color=color)
+    axs[2].plot(xarr, radial_gradient(mout, '[o/fe]'), 
+                marker=None, linestyle=linestyle, color=color)
+
+
+def radial_gradient(multioutput, parameter, index=-1, 
+                    Rmax=_globals.MAX_SF_RADIUS,
                     zone_width=_globals.ZONE_WIDTH):
     """
     Return the value of the given model parameter at all zones.
