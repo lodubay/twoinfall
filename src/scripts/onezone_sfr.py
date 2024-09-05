@@ -16,10 +16,11 @@ from apogee_sample import APOGEESample
 import paths
 from utils import get_bin_centers
 from _globals import ONEZONE_DEFAULTS, ZONE_WIDTH
+from colormaps import paultol
 
 RADIUS = 8.
 ONSET = 3.5 # Gyr
-FEH_LIM = (-1.3, 0.6)
+FEH_LIM = (-1.4, 0.6)
 OFE_LIM = (-0.12, 0.48)
 
 def main():
@@ -29,8 +30,16 @@ def main():
     # Plot underlying APOGEE contours
     apogee_data = APOGEESample.load()
     apogee_solar = apogee_data.region(galr_lim=(7, 9), absz_lim=(0, 2))
-    apogee_solar.plot_kde2D_contours(axs[0], 'FE_H', 'O_FE', c='k', lw=1,
-                                     plot_kwargs={'zorder': 1})
+    # apogee_solar.plot_kde2D_contours(axs[0], 'FE_H', 'O_FE', c='k', lw=1,
+    #                                  plot_kwargs={'zorder': 1})
+    pcm = axs[0].hexbin(apogee_solar('FE_H'), apogee_solar('O_FE'),
+                  gridsize=50, bins='log',
+                  extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]],
+                  cmap='Greys', linewidths=0.2)
+    cax = axs[0].inset_axes([0.05, 0.05, 0.05, 0.8])
+    fig.colorbar(pcm, cax=cax, orientation='vertical')
+    
+    # APOGEE abundance distributions
     feh_df, bin_edges = apogee_solar.mdf(col='FE_H', range=FEH_LIM, 
                                          smoothing=0.2)
     axs[1].plot(get_bin_centers(bin_edges), feh_df / max(feh_df), 'k-')
@@ -64,11 +73,14 @@ def main():
     sz.tau_star = twoinfall_sf_law(area, onset=ONSET)
     sz.run(simtime, overwrite=True)
     
-    plot_vice_onezone(name, fig=fig, axs=axs, markers=[])
+    model_color = paultol.bright.colors[0]
+    plot_vice_onezone(name, fig=fig, axs=axs, markers=[], 
+                      color=model_color)
     # Weight by SFR
     hist = vice.history(name)
     axs[0].scatter(hist['[fe/h]'][::10], hist['[o/fe]'][::10], 
-                   s=[20*h for h in hist['sfr'][::10]])
+                   s=[20*h for h in hist['sfr'][::10]],
+                   c=model_color)
     # Mark every Gyr
     axs[0].scatter(hist['[fe/h]'][::100], hist['[o/fe]'][::100], 
                    s=[5*h for h in hist['sfr'][::100]], c='w', zorder=10)
