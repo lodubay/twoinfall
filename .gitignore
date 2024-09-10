@@ -14,3 +14,7 @@ ms.synctex.gz
 # Miscellaneous
 __pycache__
 .virtual_documents/
+
+# Mac nonsense
+**.DS_STORE
+
