@@ -19,9 +19,9 @@ def main(style='paper', smooth_width=0.2, xlim=(-1.7, 0.7), nbins=100):
     # fig.subplots_adjust(left=0.1, right=0.8, bottom=0.1, top=0.95)
     
     apogee_data = APOGEESample.load()
-    mzs_mig = MultizoneStars.from_output('gaussian/diskmodel')
-    mzs_nomig = MultizoneStars.from_output('nomigration/diskmodel')
-    mzs_post = MultizoneStars.from_output('post-process/diskmodel')
+    mzs_mig = MultizoneStars.from_output('gaussian/outflow/no_gasflow/J21/twoinfall/diskmodel')
+    mzs_nomig = MultizoneStars.from_output('nomigration/outflow/no_gasflow/J21/twoinfall/diskmodel')
+    mzs_post = MultizoneStars.from_output('post-process/outflow/no_gasflow/J21/twoinfall/diskmodel')
     
     for i, ax in enumerate(axs.flatten()):
         galr_lim = (_globals.GALR_BINS[i], _globals.GALR_BINS[i+1])
@@ -31,13 +31,18 @@ def main(style='paper', smooth_width=0.2, xlim=(-1.7, 0.7), nbins=100):
         mig_subset = mzs_mig.region(galr_lim, absz_lim=(0, 2))
         mig_mdf, mdf_bins = mig_subset.mdf('[fe/h]', bins=nbins, range=xlim,
                                            smoothing=smooth_width)
-        ax.plot(get_bin_centers(mdf_bins), mig_mdf, c='k', ls='-',
+        ax.plot(get_bin_centers(mdf_bins), mig_mdf, c='b', ls='-',
                 label='With migration')
         nomig_subset = mzs_nomig.region(galr_lim, absz_lim=(0, 2))
         nomig_mdf, mdf_bins = nomig_subset.mdf('[fe/h]', bins=nbins, range=xlim,
                                                smoothing=smooth_width)
         ax.plot(get_bin_centers(mdf_bins), nomig_mdf, c='k', ls='--',
                 label='Without migration')
+        post_subset = mzs_post.region(galr_lim, absz_lim=(0, 2), origin=True)
+        post_mdf, mdf_bins = post_subset.mdf('[fe/h]', bins=nbins, range=xlim,
+                                               smoothing=smooth_width)
+        ax.plot(get_bin_centers(mdf_bins), post_mdf, c='k', ls=':',
+                label='Post-process (origin)')
         apogee_subset = apogee_data.region(galr_lim=galr_lim, absz_lim=(0, 2))
         data_mdf, mdf_bins = apogee_subset.mdf(col='FE_H', bins=nbins,
                                                range=xlim, smoothing=smooth_width)

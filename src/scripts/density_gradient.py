@@ -2,18 +2,22 @@
 This script plots stellar density as a function of Galactocentric radius.
 """
 
+import math as m
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from multizone_stars import MultizoneStars
+import vice
+
 from utils import get_bin_centers, Exponential
 from multizone.src.models.normalize import twoinfall_ampratio
 from multizone.src.models.gradient import gradient
 from multizone.src.models.twoinfall import twoinfall
+from multizone.src.models.twoinfall_sf_law import twoinfall_sf_law
 import paths
 import _globals
-import vice
 
 def main(style='paper'):    
     plt.style.use(paths.styles / f'{style}.mplstyle')
@@ -31,33 +35,47 @@ def main(style='paper'):
     ax.plot(rbin_centers, mw_disk.thin_disk(rbin_centers), 'k--', label='Thin disk')
     ax.plot(rbin_centers, mw_disk.thick_disk(rbin_centers), 'k:', label='Thick disk')
     
+    # Plot output from ampratio
+    # thin_disk_predict = []
+    # thick_disk_predict = []
+    # total_disk_predict = []
+    # for r in rbins:
+    #     ifr = twoinfall(r)
+    #     area = np.pi * ((r+dr)**2 - r**2)
+    #     mthick, mtot = test_ampratio(ifr, r, onset=ifr.onset)
+    #     thick_disk_predict.append(mthick / area)
+    #     thin_disk_predict.append((mtot - mthick) / area)
+    #     total_disk_predict.append(mtot / area)
+    # ax.plot(rbins, total_disk_predict, 'r-', label='Predicted ampratio')
+    # ax.plot(rbins, thin_disk_predict, 'r--')
+    # ax.plot(rbins, thick_disk_predict, 'r:')
+    
     # Two-infall SFH with no migration
-    nomig = MultizoneStars.from_output('nomigration/diskmodel')
+    nomig = MultizoneStars.from_output('nomigration/outflow/no_gasflow/J21/twoinfall/diskmodel')
     densities = surface_density_gradient(nomig, rbins)
-    ax.plot(rbin_centers[:154], densities[:154], 'g-', label='dt=0.01')
+    ax.plot(rbin_centers[:154], densities[:154], 'g-', label='No migration')
     
     nomig_thick = nomig.filter({'formation_time': (0, 4.)})
     densities = surface_density_gradient(nomig_thick, rbins)
     ax.plot(rbin_centers[:154], densities[:154], 'g:')
-    print(densities - mw_disk.thick_disk(rbins[:-1]))
     
     nomig_thin = nomig.filter({'formation_time': (4., None)})
     densities = surface_density_gradient(nomig_thin, rbins)
     ax.plot(rbin_centers[:154], densities[:154], 'g--')
     
     # Two-infall SFH with no migration
-    nomig = MultizoneStars.from_output('nomigration_coarse_dt/diskmodel')
-    densities = surface_density_gradient(nomig, rbins)
-    ax.plot(rbin_centers[:154], densities[:154], 'b-', label='dt=0.1')
+    # nomig = MultizoneStars.from_output('nomigration_coarse_dt/diskmodel')
+    # densities = surface_density_gradient(nomig, rbins)
+    # ax.plot(rbin_centers[:154], densities[:154], 'b-', label='dt=0.1')
     
-    nomig_thick = nomig.filter({'formation_time': (0, 4.)})
-    densities = surface_density_gradient(nomig_thick, rbins)
-    ax.plot(rbin_centers[:154], densities[:154], 'b:')
-    print(densities - mw_disk.thick_disk(rbins[:-1]))
+    # nomig_thick = nomig.filter({'formation_time': (0, 4.)})
+    # densities = surface_density_gradient(nomig_thick, rbins)
+    # ax.plot(rbin_centers[:154], densities[:154], 'b:')
+    # print(densities - mw_disk.thick_disk(rbins[:-1]))
     
-    nomig_thin = nomig.filter({'formation_time': (4., None)})
-    densities = surface_density_gradient(nomig_thin, rbins)
-    ax.plot(rbin_centers[:154], densities[:154], 'b--')
+    # nomig_thin = nomig.filter({'formation_time': (4., None)})
+    # densities = surface_density_gradient(nomig_thin, rbins)
+    # ax.plot(rbin_centers[:154], densities[:154], 'b--')
     
     # Similar but using vice.history instead
     # nomig_out = vice.multioutput('../data/multizone/nomigration/twoinfall/plateau_width10/diskmodel')
@@ -79,17 +97,17 @@ def main(style='paper'):
     # ax.plot(rbins, grad, 'r:', label='BHG16')
     
     # Two-infall SFH with Gaussian migration scheme
-    # twoinfall = MultizoneStars.from_output('gaussian/twoinfall/plateau_width10/diskmodel')
-    # densities = surface_density_gradient(twoinfall, rbins)
-    # ax.plot(rbin_centers, densities, 'r-', label='Gaussian migration')
+    twoinfall = MultizoneStars.from_output('gaussian/outflow/no_gasflow/J21/twoinfall/diskmodel')
+    densities = surface_density_gradient(twoinfall, rbins)
+    ax.plot(rbin_centers, densities, 'b-', label='Gaussian migration')
     
     # Two-infall components
-    # twoinfall_thick = twoinfall.filter({'formation_time': (0, 4.)})
-    # densities = surface_density_gradient(twoinfall_thick, rbins)
-    # ax.plot(rbin_centers, densities, 'r:')
-    # twoinfall_thin = twoinfall.filter({'formation_time': (4., None)})
-    # densities = surface_density_gradient(twoinfall_thin, rbins)
-    # ax.plot(rbin_centers, densities, 'r--')
+    twoinfall_thick = twoinfall.filter({'formation_time': (0, 4.)})
+    densities = surface_density_gradient(twoinfall_thick, rbins)
+    ax.plot(rbin_centers, densities, 'b:')
+    twoinfall_thin = twoinfall.filter({'formation_time': (4., None)})
+    densities = surface_density_gradient(twoinfall_thin, rbins)
+    ax.plot(rbin_centers, densities, 'b--')
     
     # Inside-out SFH with analog migration scheme
     # analog = MultizoneStars.from_output('diffusion/insideout/powerlaw_slope11/diskmodel')
@@ -127,7 +145,29 @@ def main(style='paper'):
     # plt.close()
 
 
-def surface_density_gradient(mzs, rbins):
+def test_ampratio(time_dependence, radius, onset = 4,
+                       dt = 0.01, dr = 0.1, recycling = 0.4):
+    area = m.pi * ((radius + dr)**2 - radius**2)
+    tau_star = twoinfall_sf_law(area, onset=onset)
+    eta = vice.milkyway.default_mass_loading(radius)
+    mgas = 0
+    time = 0
+    mstar = 0
+    mstar_at_onset = None
+    while time < _globals.END_TIME:
+        sfr = mgas / tau_star(time, mgas) # msun / Gyr
+        mgas += time_dependence(time) * dt * 1.e9 # yr-Gyr conversion
+        mgas -= sfr * dt * (1 + eta - recycling)
+        mstar += sfr * dt * (1 - recycling)
+        time += dt
+        if mstar_at_onset is None and time >= onset: mstar_at_onset = mstar
+    thick_to_thin = _globals.THICK_TO_THIN_RATIO * m.exp(
+        radius * (1 / _globals.THIN_DISK_SCALE_RADIUS - 1 / _globals.THICK_DISK_SCALE_RADIUS))
+    return mstar_at_onset, mstar
+    # return mstar / (mstar - mstar_at_onset) * (1 + thick_to_thin)**-1
+
+
+def surface_density_gradient(mzs, rbins, origin=False):
     """
     Calculate the stellar surface mass density gradient for the given VICE
     multi-zone model output.
@@ -136,6 +176,8 @@ def surface_density_gradient(mzs, rbins):
     ----------
     mzs : MultizoneStars
     rbins : array
+    origin : bool, optional
+        If True, sort stars by birth radius instead of final. Default is False.
     
     Returns
     -------
@@ -143,7 +185,11 @@ def surface_density_gradient(mzs, rbins):
         Stellar surface mass densities in each radius bin [Msun kpc^-2].
     """
     stars = mzs.stars.copy()
-    masses = stars.groupby(pd.cut(stars['galr_final'], rbins), 
+    if origin:
+        rcol = 'galr_origin'
+    else:
+        rcol = 'galr_final'
+    masses = stars.groupby(pd.cut(stars[rcol], rbins), 
                            observed=False)['mstar'].sum()
     areas = [np.pi * (rbins[i+1]**2 - rbins[i]**2) for i in range(len(rbins)-1)]
     return masses / np.array(areas)
