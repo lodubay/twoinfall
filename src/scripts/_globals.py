@@ -19,7 +19,7 @@ ONEZONE_DEFAULTS = {
     'elements': ELEMENTS,
     'eta': 2.15,
     'recycling': 'continuous',
-    'RIa': plateau(width=1., slope=-1.1),
+    'RIa': plateau(width=1., slope=-1.1, tmin=MIN_RIA_DELAY),
     'delay': MIN_RIA_DELAY,
     'tau_star': 2,
     'dt': 0.01,

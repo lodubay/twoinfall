@@ -219,12 +219,14 @@ class double_exponential:
 
     r"""
     A double exponential decay function.
+
     Parameters
     ----------
     onset : real number [default : 0]
         The attribute ``onset``. See below.
     ratio : real number [default : 1]
         The attribute ``ratio``. See below.
+
     Attributes
     ----------
     first : ``exponential``
@@ -236,6 +238,7 @@ class double_exponential:
         units.
     ratio : real number [default : 1]
         The amplitude ratio of the second to the first exponential decay.
+
     Calling
     -------
     Call this object as you would any other function of time.
@@ -252,6 +255,7 @@ class double_exponential:
                 respectively, :math:`t_o` is the attribute ``onset``,
                 :math:`H` is the Heaviside step function, and :math:`X` is
                 the attribute ``ratio``.
+
     Notes
     -----
     This object makes use of composition to store the two individual

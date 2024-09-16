@@ -9,3 +9,4 @@ from .twoinfall import twoinfall, twoinfall_var
 from .twoinfall_sf_law import twoinfall_sf_law
 from .earlyburst_ifr import earlyburst_ifr
 from .earlyburst_tau_star import earlyburst_tau_star
+from .diskmodel import two_component_disk
