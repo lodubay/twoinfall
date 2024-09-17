@@ -54,6 +54,22 @@ class two_component_disk(double_exponential):
         norm = self.normalize(rmax)
         self.first.norm *= mass * norm
         self.second.norm *= mass * norm
+        
+    def thick_to_thin(self, radius):
+        """
+        Calculate the ratio of surface mass density between the components.
+        
+        Parameters
+        ----------
+        radius : float
+            Galactic radius in kpc.
+        
+        Returns
+        -------
+        float
+            The thick disk surface mass density divided by the thin disk.
+        """
+        return self.first(radius) / (self.ratio * self.second(radius))
     
     def normalize(self, rmax, dr=0.1):
         """

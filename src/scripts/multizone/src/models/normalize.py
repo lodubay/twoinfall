@@ -5,6 +5,7 @@ Johnson et al. (2021).
 
 from .earlyburst_tau_star import earlyburst_tau_star
 from .twoinfall_sf_law import twoinfall_sf_law
+from .mass_loading import equilibrium_mass_loading
 from ..._globals import MAX_SF_RADIUS, END_TIME, M_STAR_MW, \
     THIN_DISK_SCALE_RADIUS, THICK_DISK_SCALE_RADIUS, THICK_TO_THIN_RATIO
 import vice
@@ -70,7 +71,7 @@ def normalize(time_dependence, radial_gradient, radius, dt = 0.01, dr = 0.1,
 
 def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
                       dr = 0.1, recycling = 0.4, which_tau_star='default',
-                      outflows = True):
+                      outflows = 'default'):
     r"""
     Performs essentially the same thing as ``normalize`` but for models ran in
     infall mode.
@@ -81,42 +82,76 @@ def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
         'earlyburst': earlyburst_tau_star,
         'twoinfall': twoinfall_sf_law,
     }[which_tau_star.lower()](area)
-    if outflows:
-        eta = vice.milkyway.default_mass_loading(radius)
-    else:
-        eta = 0
-    mgas = 0
-    time = 0
-    sfh = []
-    times = []
-    while time < END_TIME:
-        sfr = mgas / tau_star(time, mgas) # msun / Gyr
-        mgas += time_dependence(time) * dt * 1.e9 # yr-Gyr conversion
-        mgas -= sfr * dt * (1 + eta - recycling)
-        sfh.append(1.e-9 * sfr)
-        times.append(time)
-        time += dt
+    eta = {
+        'default': vice.milkyway.default_mass_loading(radius),
+        'equilibrium': equilibrium_mass_loading()(radius),
+        'none': 0
+    }[outflows]
+    times, sfh = integrate_infall(time_dependence, tau_star, eta, 
+                                  recycling=recycling, dt=dt)
     sfh = vice.toolkit.interpolation.interp_scheme_1d(times, sfh)
     return normalize(sfh, radial_gradient, radius, dt = dt, dr = dr,
         recycling = recycling)
 
 
-def twoinfall_ampratio(time_dependence, radius, onset = 4,
+def twoinfall_ampratio(time_dependence, radius, onset = 4, outflows='default',
                        dt = 0.01, dr = 0.1, recycling = 0.4):
     area = m.pi * ((radius + dr)**2 - radius**2)
     tau_star = twoinfall_sf_law(area, onset=onset)
-    eta = vice.milkyway.default_mass_loading(radius)
-    mgas = 0
-    time = 0
-    mstar = 0
-    mstar_at_onset = None
-    while time < END_TIME:
-        sfr = mgas / tau_star(time, mgas) # msun / Gyr
-        mgas += time_dependence(time) * dt * 1.e9 # yr-Gyr conversion
-        mgas -= sfr * dt * (1 + eta - recycling)
-        mstar += sfr * dt * (1 - recycling)
-        time += dt
-        if mstar_at_onset is None and time >= onset: mstar_at_onset = mstar
+    if outflows not in ['default', 'equilibrium', 'none']:
+        raise ValueError('Parameter ``outflows`` must be one of "default", \
+"equilibrium", or "none".')
+    eta = {
+        'default': vice.milkyway.default_mass_loading(radius),
+        'equilibrium': equilibrium_mass_loading()(radius),
+        'none': 0
+    }[outflows]
+    times, sfh = integrate_infall(time_dependence, tau_star, eta, 
+                                  recycling=recycling, dt=dt)
+    sfh_to_mstar = dt * 1e9 * (1 - recycling)
+    mstar_final = sum(sfh) * sfh_to_mstar
+    mstar_onset = sum(sfh[:int(onset/dt)]) * sfh_to_mstar
     thick_to_thin = THICK_TO_THIN_RATIO * m.exp(
         radius * (1 / THIN_DISK_SCALE_RADIUS - 1 / THICK_DISK_SCALE_RADIUS))
-    return mstar / (mstar - mstar_at_onset) * (1 + thick_to_thin)**-1
+    # return mstar_final / (mstar_final - mstar_onset) * (1 + thick_to_thin)**-1
+    return thick_to_thin**-1 * mstar_onset / (mstar_final - mstar_onset)
+
+
+def integrate_infall(time_dependence, tau_star, eta, recycling=0.4, dt=0.01):
+    r"""
+    Calculate the star formation history from a prescribed infall rate history.
+    
+    Parameters
+    ----------
+    time_dependence : <function>
+        Time-dependence of the infall rate. Accepts one parameter: time in Gyr.
+    tau_star : <function>
+        Star formation efficiency timescale. Accepts two parameters: 
+        time in Gyr, gas mass [Msun] or surface density [Msun kpc^-2].
+    eta : float
+        Dimensionless mass-loading factor.
+    recycling : float [default: 0.4]
+        Dimensionless recycling parameter.
+    dt : float [default: 0.01]
+        Integration timestep in Gyr.
+
+    Returns
+    -------
+    times : list
+        Integration times in Gyr.
+    sfh : list
+        Star formation rate in Msun yr^-1
+    """
+    mgas = 0
+    time = 0
+    sfh = []
+    times = []
+    while time < END_TIME:
+        sfr = mgas / tau_star(time, mgas) # Msun / Gyr
+        mgas += time_dependence(time) * dt * 1.e9 # yr-Gyr conversion
+        mgas -= sfr * dt * (1 + eta - recycling)
+        sfh.append(1.e-9 * sfr)
+        times.append(time)
+        time += dt
+    return times, sfh
+        

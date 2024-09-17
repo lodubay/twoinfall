@@ -7,11 +7,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import vice
-from multizone.src.models import twoinfall, twoinfall_sf_law
+from multizone.src.models import twoinfall, twoinfall_sf_law, equilibrium_mass_loading
 import paths
 from multizone.src.yields import W23
 from multizone.src import models, dtds
-from multizone.src.disks import equilibrium_mass_loading
 from apogee_sample import APOGEESample
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH, ZONE_WIDTH
 from colormaps import paultol
