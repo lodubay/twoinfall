@@ -54,22 +54,6 @@ class two_component_disk(double_exponential):
         norm = self.normalize(rmax)
         self.first.norm *= mass * norm
         self.second.norm *= mass * norm
-        
-    def thick_to_thin(self, radius):
-        """
-        Calculate the ratio of surface mass density between the components.
-        
-        Parameters
-        ----------
-        radius : float
-            Galactic radius in kpc.
-        
-        Returns
-        -------
-        float
-            The thick disk surface mass density divided by the thin disk.
-        """
-        return self.first(radius) / (self.ratio * self.second(radius))
     
     def normalize(self, rmax, dr=0.1):
         """
@@ -94,3 +78,51 @@ class two_component_disk(double_exponential):
                 (dr * (i + 1))**2 - (dr * i)**2
             )
         return 1 / integral
+    
+    def thick_disk(self, radius):
+        """
+        The surface mass density of the thick disk at the given radius.
+        
+        Parameters
+        ----------
+        radius : float
+            Galactic radius in kpc.
+        
+        Returns
+        -------
+        float
+            Thick disk surface mass density.
+        """
+        return self.first(radius)
+    
+    def thin_disk(self, radius):
+        """
+        The surface mass density of the thin disk at the given radius.
+        
+        Parameters
+        ----------
+        radius : float
+            Galactic radius in kpc.
+        
+        Returns
+        -------
+        float
+            Thin disk surface mass density.
+        """
+        return self.ratio * self.second(radius)
+        
+    def thick_to_thin(self, radius):
+        """
+        Calculate the ratio of surface mass density between the components.
+        
+        Parameters
+        ----------
+        radius : float
+            Galactic radius in kpc.
+        
+        Returns
+        -------
+        float
+            The thick disk surface mass density divided by the thin disk.
+        """
+        return self.thick_disk(radius) / self.thin_disk(radius)
