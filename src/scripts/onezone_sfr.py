@@ -18,7 +18,7 @@ from _globals import ONEZONE_DEFAULTS, ZONE_WIDTH
 from colormaps import paultol
 
 RADIUS = 8.
-ONSET = 3.5
+ONSET = 4.2
 FIRST_TIMESCALE = 1.
 SECOND_TIMESCALE = 15.
 FEH_LIM = (-1.4, 0.6)
@@ -26,6 +26,7 @@ OFE_LIM = (-0.12, 0.48)
 
 def main():
     plt.style.use(paths.styles / "paper.mplstyle")
+    plt.rcParams['axes.prop_cycle'] = plt.cycler('color', paultol.vibrant.colors)
     fig, axs = setup_figure(xlim=FEH_LIM, ylim=OFE_LIM)
 
     # Plot underlying APOGEE contours
@@ -61,7 +62,8 @@ def main():
         RADIUS, 
         first_timescale=FIRST_TIMESCALE, 
         second_timescale=SECOND_TIMESCALE, 
-        onset=ONSET
+        onset=ONSET,
+        outflows="equilibrium"
     )
     
     sz = vice.singlezone(
@@ -71,7 +73,7 @@ def main():
         **ONEZONE_DEFAULTS
     )
     eta_func = equilibrium_mass_loading(
-        tau_star=2., 
+        tau_star=2.,
         tau_sfh=ifr.second.timescale, 
         alpha_h_eq=0.2
     )
@@ -86,7 +88,7 @@ def main():
     # Weight by SFR
     hist = vice.history(name)
     axs[0].scatter(hist['[fe/h]'][::10], hist['[o/fe]'][::10], 
-                   s=[20*h for h in hist['sfr'][::10]],
+                   s=[50*h for h in hist['sfr'][::10]],
                    c=model_color)
     # Mark every Gyr
     axs[0].scatter(hist['[fe/h]'][::100], hist['[o/fe]'][::100], 
