@@ -42,6 +42,12 @@ class two_component_disk(double_exponential):
     -------
     normalize(rmax, dr=0.1)
         Normalize the total disk mass to 1.
+    thick_disk(radius)
+        The surface mass density of the thick disk at the given radius.
+    thin_disk(radius)
+        The surface mass density of the thick disk at the given radius.
+    thick_to_thin(radius)
+        The ratio of thick to thin disk surface mass density.
     """
     def __init__(self, ratio=THICK_TO_THIN_RATIO, 
                  mass=M_STAR_MW, 
