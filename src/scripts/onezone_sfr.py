@@ -9,8 +9,7 @@ import matplotlib.pyplot as plt
 import vice
 
 from multizone.src.yields import W23
-from multizone.src.disks import equilibrium_mass_loading
-from multizone.src.models import twoinfall, twoinfall_sf_law
+from multizone.src.models import twoinfall, twoinfall_sf_law, equilibrium_mass_loading
 from track_and_mdf import setup_figure, plot_vice_onezone
 from apogee_sample import APOGEESample
 import paths
@@ -19,7 +18,9 @@ from _globals import ONEZONE_DEFAULTS, ZONE_WIDTH
 from colormaps import paultol
 
 RADIUS = 8.
-ONSET = 3.5 # Gyr
+ONSET = 3.5
+FIRST_TIMESCALE = 1.
+SECOND_TIMESCALE = 15.
 FEH_LIM = (-1.4, 0.6)
 OFE_LIM = (-0.12, 0.48)
 
@@ -47,30 +48,36 @@ def main():
                                          smoothing=0.05)
     axs[2].plot(ofe_df / max(ofe_df), get_bin_centers(bin_edges), 'k-')
     
+    # Set up output directory
     output_dir = paths.data / "onezone" / "eta"
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
     name = str(output_dir / "equilibrium")
     
+    # One-zone model parameters
     simtime = np.arange(0, 13.21, 0.01)
-    
-    eta_func = equilibrium_mass_loading(tau_star=2., tau_sfh=10., alpha_h_eq=0.2)
-    
     area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
+    ifr = twoinfall(
+        RADIUS, 
+        first_timescale=FIRST_TIMESCALE, 
+        second_timescale=SECOND_TIMESCALE, 
+        onset=ONSET
+    )
     
     sz = vice.singlezone(
         name = name,
-        func = twoinfall(
-            RADIUS, 
-            first_timescale=1., 
-            second_timescale=10., 
-            onset=ONSET),
+        func = ifr,
         mode = "ifr",
         **ONEZONE_DEFAULTS
     )
+    eta_func = equilibrium_mass_loading(
+        tau_star=2., 
+        tau_sfh=ifr.second.timescale, 
+        alpha_h_eq=0.2
+    )
     sz.eta = eta_func(RADIUS)
     print(eta_func(RADIUS))
-    sz.tau_star = twoinfall_sf_law(area, onset=ONSET)
+    sz.tau_star = twoinfall_sf_law(area, onset=ifr.onset)
     sz.run(simtime, overwrite=True)
     
     model_color = paultol.bright.colors[0]

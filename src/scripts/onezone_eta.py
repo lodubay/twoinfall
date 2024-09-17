@@ -9,8 +9,7 @@ import matplotlib.pyplot as plt
 import vice
 
 from multizone.src.yields import W23
-from multizone.src.disks import equilibrium_mass_loading
-from multizone.src.models import twoinfall, twoinfall_sf_law
+from multizone.src import models
 from track_and_mdf import setup_figure, plot_vice_onezone
 import paths
 from _globals import ONEZONE_DEFAULTS, ZONE_WIDTH
@@ -30,13 +29,15 @@ def main():
     
     simtime = np.arange(0, 13.21, 0.01)
     
-    eta_func = equilibrium_mass_loading(tau_star=2., tau_sfh=10., alpha_h_eq=0.1)
+    eta_func = models.equilibrium_mass_loading(
+        tau_star=2., tau_sfh=10., alpha_h_eq=0.1
+    )
     
     area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
     
     sz = vice.singlezone(
         name = name,
-        func = twoinfall(
+        func = models.twoinfall(
             RADIUS, 
             first_timescale=1., 
             second_timescale=10., 
@@ -46,7 +47,7 @@ def main():
     )
     sz.eta = eta_func(RADIUS)
     print(eta_func(RADIUS))
-    sz.tau_star = twoinfall_sf_law(area, onset=ONSET)
+    sz.tau_star = models.twoinfall_sf_law(area, onset=ONSET)
     sz.run(simtime, overwrite=True)
     
     plot_vice_onezone(name, fig=fig, axs=axs)

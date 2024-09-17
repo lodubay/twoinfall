@@ -18,16 +18,15 @@ class twoinfall(double_exponential):
 
     def __init__(self, radius, onset=SECOND_ONSET, 
                  first_timescale=FIRST_TIMESCALE, 
-                  second_timescale=SECOND_TIMESCALE,
-                 dt = 0.01, dr = 0.1):
-        super().__init__() # dummy initial parameters
-        self.onset = onset
+                 second_timescale=SECOND_TIMESCALE,
+                 dt = 0.01, dr = 0.1, outflows='default'):
+        super().__init__(onset=onset, ratio=1.)
         self.first.timescale = first_timescale 
         self.second.timescale = second_timescale 
         self.ratio = twoinfall_ampratio(self, radius, onset=self.onset, 
-                                        dr = dr, dt = dt)
+                                        dr = dr, dt = dt, outflows=outflows)
         prefactor = normalize_ifrmode(self, gradient, radius, dt = dt,
-            dr = dr, which_tau_star = 'twoinfall')
+            dr = dr, which_tau_star = 'twoinfall', outflows=outflows)
         self.first.norm *= prefactor
         self.second.norm *= prefactor
 

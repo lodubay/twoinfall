@@ -13,10 +13,9 @@ import paths
 # from multizone.src.yields import J21
 # from vice.yields.presets import JW20
 from multizone.src.yields import W23
-vice.yields.sneia.settings['fe'] *= (1.1/1.2)
+# vice.yields.sneia.settings['fe'] *= (1.1/1.2)
 # from multizone.src.yields import F04
-from multizone.src import models, dtds
-from multizone.src.disks import equilibrium_mass_loading
+from multizone.src import models
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH, ZONE_WIDTH
 from colormaps import paultol
 from track_and_mdf import setup_axes, plot_vice_onezone
@@ -33,8 +32,8 @@ LABELS = {
     'second_timescale': '\\tau_2',
     'onset': 't_{\\rm on}'
 }
-XLIM = (-1.7, 0.7)
-YLIM = (-0.16, 0.54)
+XLIM = (-1.7, 0.8)
+YLIM = (-0.18, 0.54)
 
 def main():
     plt.style.use(paths.styles / 'paper.mplstyle')
@@ -42,32 +41,27 @@ def main():
     fig = plt.figure(figsize=(TWO_COLUMN_WIDTH, 0.36*TWO_COLUMN_WIDTH))
     gs = fig.add_gridspec(7, 22, wspace=0.)
     subfigs = [fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))]
-    # Outflow mass-loading factor
-    eta_func = equilibrium_mass_loading(alpha_h_eq=0.1, tau_sfh=10., tau_star=2.)
-    eta = eta_func(RADIUS)
-    # eta = 1.
-    print('Mass-loading factor: ', eta)
-    print('First timescale')
+    print('\nFirst timescale')
     axs0 = vary_param(subfigs[0], first_timescale=[0.1, 0.3, 1, 3],
-                      second_timescale=10, onset=4, eta=eta,
-                      xlim=XLIM, ylim=YLIM, label_index=3)
-    print('Second timescale')
-    axs1 = vary_param(subfigs[1], second_timescale=[1, 3, 10, 30],
-                      first_timescale=1, onset=4, eta=eta,
+                      second_timescale=10, onset=4,
+                      xlim=XLIM, ylim=YLIM, label_index=0, verbose=True)
+    print('\nSecond timescale')
+    axs1 = vary_param(subfigs[1], second_timescale=[3, 5, 10, 30],
+                      first_timescale=1, onset=4,
                       xlim=XLIM, ylim=YLIM, ylabel=False,
-                      label_index=1)
-    print('Onset time')
+                      label_index=1, verbose=True)
+    print('\nOnset time')
     axs2 = vary_param(subfigs[2], onset=[1, 2, 3, 4, 5],
-                      first_timescale=1, second_timescale=10, eta=eta,
+                      first_timescale=1, second_timescale=10,
                       xlim=XLIM, ylim=YLIM, ylabel=False,
-                      label_index=2)
+                      label_index=2, verbose=True)
     plt.subplots_adjust(bottom=0.13, top=0.98, left=0.16, right=0.98, wspace=0.5)
     fig.savefig(paths.figures / 'onezone_params', dpi=300)
     plt.close()
 
 
 def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
-               label_index=0, eta=0.6, **kwargs):
+               label_index=0, verbose=False, **kwargs):
     """
     Plot a series of onezone model outputs, varying one parameter of the 
     two-infall model while holding the others fixed.
@@ -112,11 +106,19 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
     simtime = np.arange(0, END_TIME + dt, dt)
     area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
 
-    for i, val in tqdm(enumerate(values)):
+    for i, val in enumerate(values):
         param_dict[var] = val
+        # Outflow mass-loading factor
+        eta_func = models.equilibrium_mass_loading(
+            alpha_h_eq=0.2, 
+            tau_sfh=param_dict['second_timescale'], 
+            tau_star=2.
+        )
+        eta = eta_func(RADIUS)
         # Run one-zone model
         name = output_name(*param_dict.values())
-        ifr = models.twoinfall(RADIUS, dt=dt, **param_dict)
+        ifr = models.twoinfall(RADIUS, dt=dt, outflows='equilibrium', 
+                               **param_dict)
         sz = vice.singlezone(name=name,
                              func=ifr, 
                              mode='ifr',
@@ -131,6 +133,15 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
                           label=f'{val:.1f}', 
                           marker_labels=(i==label_index),
                           markers=[0.3, 1, 3, 10])
+        if verbose:
+            print('Value:', val)
+            print('Eta:', eta)
+            # Thick-to-thin ratio
+            hist = vice.history(name)
+            onset_idx = int(ifr.onset / dt)
+            thick_disk_mass = hist['mstar'][onset_idx-1]
+            thin_disk_mass = hist['mstar'][-1] - thick_disk_mass
+            print('Thick-to-thin ratio:', thick_disk_mass / thin_disk_mass)
 
     # Adjust axis limits
     axs[1].set_ylim(bottom=0)

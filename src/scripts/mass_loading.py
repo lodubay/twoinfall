@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from multizone.src.yields import W23
-from multizone.src.disks import equilibrium_mass_loading
+from multizone.src.models import equilibrium_mass_loading
 import paths
 
 
