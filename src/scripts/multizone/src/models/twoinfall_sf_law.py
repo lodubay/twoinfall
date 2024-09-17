@@ -65,7 +65,7 @@ class twoinfall_sf_law(J21_sf_law):
     epoch the star formation efficiency timescale is multiplied by a factor
     [default: 0.5] as in, e.g., Nissen et al. (2020).
     """
-    def __init__(self, area, onset=3.5, factor=0.5, index=1.5, Sigma_g_break=1e8,
+    def __init__(self, area, onset=4.2, factor=0.5, index=1.5, Sigma_g_break=1e8,
                  **kwargs):
         super().__init__(area, mode="ifr", index1=index, index2=index, 
                          Sigma_g2=Sigma_g_break, **kwargs)
