@@ -9,10 +9,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import vice
 
+from multizone.src.yields import W23
 from multizone.src import models, dtds
 from multizone.src.models import twoinfall_sf_law
 from multizone.src.models import equilibrium_mass_loading
-from multizone.src.yields import W23
 # vice.yields.sneia.settings['fe'] *= (1.1/1.2)
 from track_and_mdf import setup_figure, plot_vice_onezone
 from colormaps import paultol

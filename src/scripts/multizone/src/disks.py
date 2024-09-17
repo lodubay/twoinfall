@@ -230,7 +230,7 @@ class star_formation_history:
             Simulation time in Gyr.
     """
 
-    def __init__(self, spec = "static", zone_width = 0.1, dt = 0.01):
+    def __init__(self, spec = "static", zone_width = 0.1, dt = 0.01, **kwargs):
         self._radii = []
         self._evol = []
         i = 0
@@ -245,7 +245,8 @@ class star_formation_history:
                 "twoinfall":          models.twoinfall,
                 "twoinfall_var":      models.twoinfall_var,
                 "earlyburst":         models.earlyburst_ifr,
-            }[spec.lower()]((i + 0.5) * zone_width, dr = zone_width, dt = dt))
+            }[spec.lower()]((i + 0.5) * zone_width, dr = zone_width, dt = dt,
+                            **kwargs))
             i += 1
 
     def __call__(self, radius, time):

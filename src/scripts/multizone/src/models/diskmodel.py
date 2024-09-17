@@ -9,7 +9,7 @@ two_component_disk : object
 
 import math as m
 from .utils import double_exponential
-from ..._globals import MAX_SF_RADIUS, END_TIME, M_STAR_MW, \
+from ..._globals import MAX_SF_RADIUS, M_STAR_MW, \
     THIN_DISK_SCALE_RADIUS, THICK_DISK_SCALE_RADIUS, THICK_TO_THIN_RATIO
 
 

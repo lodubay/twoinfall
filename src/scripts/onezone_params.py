@@ -8,8 +8,6 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import vice
 # from vice.toolkit import J21_sf_law
-from multizone.src.models import twoinfall_sf_law
-import paths
 # from multizone.src.yields import J21
 # from vice.yields.presets import JW20
 from multizone.src.yields import W23
@@ -19,6 +17,7 @@ from multizone.src import models
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH, ZONE_WIDTH
 from colormaps import paultol
 from track_and_mdf import setup_axes, plot_vice_onezone
+import paths
 
 RADIUS = 8.
 PARAM_DEFAULTS = {
@@ -123,7 +122,7 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
                              func=ifr, 
                              mode='ifr',
                              **ONEZONE_DEFAULTS)
-        sz.tau_star = twoinfall_sf_law(area, onset=param_dict['onset'])
+        sz.tau_star = models.twoinfall_sf_law(area, onset=param_dict['onset'])
         sz.eta = eta
         sz.run(simtime, overwrite=True)
         plot_vice_onezone(name, 
