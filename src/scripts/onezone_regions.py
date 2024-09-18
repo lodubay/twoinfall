@@ -7,7 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import vice
-from multizone.src.models import twoinfall, twoinfall_sf_law, equilibrium_mass_loading
+from multizone.src.models import twoinfall, twoinfall_sf_law, insideout, \
+    equilibrium_mass_loading
 import paths
 from multizone.src.yields import W23
 from multizone.src import models, dtds
@@ -17,7 +18,7 @@ from colormaps import paultol
 from track_and_mdf import setup_axes, plot_vice_onezone
 from utils import get_bin_centers
 
-ONSET = 3.5
+ONSET = 4.2
 XLIM = (-1.4, 0.6)
 YLIM = (-0.12, 0.48)
 
@@ -59,10 +60,12 @@ def plot_region(fig, radius, dr=2., eta=equilibrium_mass_loading(),
     # APOGEE abundance distributions
     feh_df, bin_edges = apogee_solar.mdf(col="FE_H", range=XLIM, 
                                          smoothing=0.2)
-    axs[1].plot(get_bin_centers(bin_edges), feh_df / max(feh_df), "k-")
+    axs[1].plot(get_bin_centers(bin_edges), feh_df / max(feh_df), 
+                color="gray", linestyle="-", marker=None)
     ofe_df, bin_edges = apogee_solar.mdf(col="O_FE", range=YLIM, 
                                          smoothing=0.05)
-    axs[2].plot(ofe_df / max(ofe_df), get_bin_centers(bin_edges), "k-")
+    axs[2].plot(ofe_df / max(ofe_df), get_bin_centers(bin_edges), 
+                color="gray", linestyle="-", marker=None)
     
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
@@ -77,7 +80,7 @@ def plot_region(fig, radius, dr=2., eta=equilibrium_mass_loading(),
         func = twoinfall(
             radius, 
             first_timescale=1., 
-            second_timescale=10., 
+            second_timescale=insideout.timescale(radius), 
             onset=ONSET),
         mode = "ifr",
         **ONEZONE_DEFAULTS
@@ -92,11 +95,12 @@ def plot_region(fig, radius, dr=2., eta=equilibrium_mass_loading(),
     # Weight by SFR
     hist = vice.history(name)
     axs[0].scatter(hist["[fe/h]"][::10], hist["[o/fe]"][::10], 
-                   s=[20*h for h in hist["sfr"][::10]],
+                   s=[10*h/max(hist["sfr"]) for h in hist["sfr"][::10]],
                    c=color)
     # Mark every Gyr
     axs[0].scatter(hist["[fe/h]"][::100], hist["[o/fe]"][::100], 
-                   s=[5*h for h in hist["sfr"][::100]], c="w", zorder=10)
+                   s=[2*h/max(hist["sfr"]) for h in hist["sfr"][::100]], 
+                   c="w", zorder=10)
     
     # Label axes
     axs[0].text(0.95, 0.95, r"$R_{\rm gal}=%s$ kpc" % radius,

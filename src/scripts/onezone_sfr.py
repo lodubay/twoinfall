@@ -26,28 +26,30 @@ OFE_LIM = (-0.12, 0.48)
 
 def main():
     plt.style.use(paths.styles / "paper.mplstyle")
-    plt.rcParams['axes.prop_cycle'] = plt.cycler('color', paultol.vibrant.colors)
+    plt.rcParams["axes.prop_cycle"] = plt.cycler("color", paultol.vibrant.colors)
     fig, axs = setup_figure(xlim=FEH_LIM, ylim=OFE_LIM)
 
     # Plot underlying APOGEE contours
     apogee_data = APOGEESample.load()
     apogee_solar = apogee_data.region(galr_lim=(7, 9), absz_lim=(0, 2))
-    # apogee_solar.plot_kde2D_contours(axs[0], 'FE_H', 'O_FE', c='k', lw=1,
-    #                                  plot_kwargs={'zorder': 1})
-    pcm = axs[0].hexbin(apogee_solar('FE_H'), apogee_solar('O_FE'),
-                  gridsize=50, bins='log',
+    # apogee_solar.plot_kde2D_contours(axs[0], "FE_H", "O_FE", c="k", lw=1,
+    #                                  plot_kwargs={"zorder": 1})
+    pcm = axs[0].hexbin(apogee_solar("FE_H"), apogee_solar("O_FE"),
+                  gridsize=50, bins="log",
                   extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]],
-                  cmap='Greys', linewidths=0.2)
+                  cmap="Greys", linewidths=0.2)
     cax = axs[0].inset_axes([0.05, 0.05, 0.05, 0.8])
-    fig.colorbar(pcm, cax=cax, orientation='vertical')
+    fig.colorbar(pcm, cax=cax, orientation="vertical")
     
     # APOGEE abundance distributions
-    feh_df, bin_edges = apogee_solar.mdf(col='FE_H', range=FEH_LIM, 
+    feh_df, bin_edges = apogee_solar.mdf(col="FE_H", range=FEH_LIM, 
                                          smoothing=0.2)
-    axs[1].plot(get_bin_centers(bin_edges), feh_df / max(feh_df), 'k-')
-    ofe_df, bin_edges = apogee_solar.mdf(col='O_FE', range=OFE_LIM, 
+    axs[1].plot(get_bin_centers(bin_edges), feh_df / max(feh_df), 
+                color="gray", linestyle="-", marker=None)
+    ofe_df, bin_edges = apogee_solar.mdf(col="O_FE", range=OFE_LIM, 
                                          smoothing=0.05)
-    axs[2].plot(ofe_df / max(ofe_df), get_bin_centers(bin_edges), 'k-')
+    axs[2].plot(ofe_df / max(ofe_df), get_bin_centers(bin_edges), 
+                color="gray", linestyle="-", marker=None)
     
     # Set up output directory
     output_dir = paths.data / "onezone" / "eta"
@@ -87,14 +89,15 @@ def main():
                       color=model_color)
     # Weight by SFR
     hist = vice.history(name)
-    axs[0].scatter(hist['[fe/h]'][::10], hist['[o/fe]'][::10], 
-                   s=[50*h for h in hist['sfr'][::10]],
+    axs[0].scatter(hist["[fe/h]"][::10], hist["[o/fe]"][::10], 
+                   s=[10*h/max(hist["sfr"]) for h in hist["sfr"][::10]],
                    c=model_color)
     # Mark every Gyr
-    axs[0].scatter(hist['[fe/h]'][::100], hist['[o/fe]'][::100], 
-                   s=[5*h for h in hist['sfr'][::100]], c='w', zorder=10)
+    axs[0].scatter(hist["[fe/h]"][::100], hist["[o/fe]"][::100], 
+                   s=[2*h/max(hist["sfr"]) for h in hist["sfr"][::100]], 
+                   c="w", zorder=10)
     
-    plt.savefig(paths.figures / 'onezone_sfr')
+    plt.savefig(paths.figures / "onezone_sfr")
     plt.close()
     
 
