@@ -11,6 +11,7 @@ from ..._globals import MAX_SF_RADIUS, END_TIME, M_STAR_MW, \
 import vice
 from vice.toolkit import J21_sf_law
 import math as m
+import numbers
 
 
 def normalize(time_dependence, radial_gradient, radius, dt = 0.01, dr = 0.1,
@@ -89,6 +90,8 @@ def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
     }[outflows]
     times, sfh = integrate_infall(time_dependence, tau_star, eta, 
                                   recycling=recycling, dt=dt)
+    if recycling == "continuous":
+        recycling = 0.4
     sfh = vice.toolkit.interpolation.interp_scheme_1d(times, sfh)
     return normalize(sfh, radial_gradient, radius, dt = dt, dr = dr,
         recycling = recycling)
@@ -106,11 +109,12 @@ def twoinfall_ampratio(time_dependence, radius, onset = 4, outflows='default',
         'equilibrium': equilibrium_mass_loading()(radius),
         'none': 0
     }[outflows]
+
     times, sfh = integrate_infall(time_dependence, tau_star, eta, 
                                   recycling=recycling, dt=dt)
-    sfh_to_mstar = dt * 1e9 * (1 - recycling)
-    mstar_final = sum(sfh) * sfh_to_mstar
-    mstar_onset = sum(sfh[:int(onset/dt)]) * sfh_to_mstar
+    mstar = calculate_mstar(sfh, dt=dt, recycling=recycling)
+    mstar_final = mstar[-1]
+    mstar_onset = mstar[int(onset/dt)-1]
     thick_to_thin = THICK_TO_THIN_RATIO * m.exp(
         radius * (1 / THIN_DISK_SCALE_RADIUS - 1 / THICK_DISK_SCALE_RADIUS))
     # return mstar_final / (mstar_final - mstar_onset) * (1 + thick_to_thin)**-1
@@ -141,17 +145,90 @@ def integrate_infall(time_dependence, tau_star, eta, recycling=0.4, dt=0.01):
         Integration times in Gyr.
     sfh : list
         Star formation rate in Msun yr^-1
+        
     """
+    if isinstance(recycling, str) and recycling.lower() == "continuous":
+        r = 0
+        continuous = True
+    elif isinstance(recycling, numbers.Number):
+        r = recycling
+        continuous = False
+    else:
+        raise TypeError("Parameter 'recycling' must be a float or 'continuous'.")
+    
     mgas = 0
     time = 0
     sfh = []
     times = []
     while time < END_TIME:
         sfr = mgas / tau_star(time, mgas) # Msun / Gyr
-        mgas += time_dependence(time) * dt * 1.e9 # yr-Gyr conversion
-        mgas -= sfr * dt * (1 + eta - recycling)
         sfh.append(1.e-9 * sfr)
+        mgas += time_dependence(time) * dt * 1.e9 # yr-Gyr conversion
+        mgas -= sfr * dt * (1 + eta - r)
+        if continuous:
+            mgas += continuous_recycling(sfh, dt=dt) * dt * 1e9
         times.append(time)
         time += dt
     return times, sfh
-        
+
+
+def calculate_mstar(sfh, dt=0.01, recycling=0.4):
+    r"""
+    Calculate the stellar mass at each timestep from the star formation history.
+
+    Parameters
+    ----------
+    sfh : list of floats
+        The star formation history in Msun/yr.
+    dt : float [default: 0.01]
+        The timestep in Gyr.
+
+    Returns
+    -------
+    list of floats
+        Stellar mass at each timestep.
+
+    """
+    if isinstance(recycling, str) and recycling.lower() == "continuous":
+        r = 0
+        continuous = True
+    elif isinstance(recycling, numbers.Number):
+        r = recycling
+        continuous = False
+    else:
+        raise TypeError("Parameter 'recycling' must be a float or 'continuous'.")
+    
+    mstar = [0]
+    for i in range(1, len(sfh)):
+        if continuous:
+            dm = (sfh[i] - continuous_recycling(sfh[:i], dt=dt)) * dt * 1e9
+        else:
+            dm = sfh[i] * dt * 1e9 * (1 - r)
+        mstar.append(mstar[i-1] + dm)
+    return mstar
+
+
+def continuous_recycling(sfh, dt=0.01):
+    r"""
+    Numerically approximate the mass recycling rate.
+    
+    Parameters
+    ----------
+    sfh : list of floats
+        The star formation history in Msun/yr.
+    dt : float [default: 0.01]
+        The timestep in Gyr.
+    
+    Returns
+    -------
+    float
+        Recycling rate in Msun/yr.
+    
+    """
+    recycling_rate = 0.
+    crf = vice.cumulative_return_fraction # alias for readability
+    for i in range(len(sfh)):
+        # Increasing lookback time
+        recycling_rate += sfh[-(i+1)] * (crf((i+1) * dt) - crf(i * dt))
+    return recycling_rate
+    
