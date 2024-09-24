@@ -56,8 +56,12 @@ def normalize(time_dependence, radial_gradient, dt = 0.01, dr = 0.1,
     """
 
     time_integral = 0
+    sfh = []
     for i in range(int(END_TIME / dt)):
+        sfh.append(time_dependence(i * dt))
         time_integral += time_dependence(i * dt) * dt * 1.e9 # yr to Gyr
+        if recycling == "continuous":
+            time_integral -= continuous_recycling(sfh, dt=dt)
 
     radial_integral = 0
     for i in range(int(MAX_SF_RADIUS / dr)):
@@ -65,6 +69,9 @@ def normalize(time_dependence, radial_gradient, dt = 0.01, dr = 0.1,
             (dr * (i + 1))**2 - (dr * i)**2
         )
 
+    if recycling == "continuous":
+        recycling = 0
+    
     return M_STAR_MW / ((1 - recycling) * radial_integral * time_integral)
 
 
@@ -89,8 +96,6 @@ def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
     }[outflows]
     times, sfh = integrate_infall(time_dependence, tau_star, eta, 
                                   recycling=recycling, dt=dt)
-    if recycling == "continuous":
-        recycling = 0.4
     sfh = vice.toolkit.interpolation.interp_scheme_1d(times, sfh)
     return normalize(sfh, radial_gradient, dt = dt, dr = dr, 
                      recycling = recycling)
