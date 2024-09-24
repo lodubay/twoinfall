@@ -6,7 +6,7 @@ given radius under the two-infall model.
 from ..._globals import END_TIME
 from .utils import double_exponential
 from .normalize import normalize_ifrmode, twoinfall_ampratio
-from .gradient import gradient
+from .gradient import gradient, thick_to_thin_ratio
 from .insideout import insideout
 import math as m
 
@@ -45,7 +45,8 @@ class twoinfall(double_exponential):
         super().__init__(onset=onset, ratio=1.)
         self.first.timescale = first_timescale 
         self.second.timescale = second_timescale 
-        self.ratio = twoinfall_ampratio(self, radius, onset=self.onset, 
+        self.ratio = twoinfall_ampratio(self, radius, thick_to_thin_ratio,
+                                        onset=self.onset, 
                                         dr = dr, dt = 0.001, outflows=outflows)
         prefactor = normalize_ifrmode(self, gradient, radius, dt = 0.001,
             dr = dr, which_tau_star = "twoinfall", outflows=outflows)

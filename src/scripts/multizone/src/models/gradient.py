@@ -40,3 +40,24 @@ def gradient(radius):
         THICK_TO_THIN_RATIO * m.exp(-radius / THICK_DISK_SCALE_RADIUS)
     )
 
+
+def thick_to_thin_ratio(radius):
+    r"""
+    The stellar surface density ratio between the thick and thin disks
+    as defined in Bland-Hawthorn & Gerhard (2016).
+    
+    Parameters
+    ----------
+    radius : real number
+        Galactocentric radius in kpc.
+    
+    Returns
+    -------
+    float
+        The ratio between the thick and thin disk stellar surface density
+        at the given radius.
+    """
+    return THICK_TO_THIN_RATIO * m.exp(
+        radius * (1 / THIN_DISK_SCALE_RADIUS - 1 / THICK_DISK_SCALE_RADIUS)
+    )
+

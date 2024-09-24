@@ -22,56 +22,57 @@ def main(style='paper'):
     fig, ax = plt.subplots(tight_layout=True)
     
     dr = 0.1
-    rbins = np.arange(0, _globals.MAX_SF_RADIUS + dr, dr)
+    rbins = np.arange(0, _globals.MAX_SF_RADIUS, dr)
     rbin_centers = get_bin_centers(rbins)
     
-    # Plot expected gradients
     mw_disk = two_component_disk()
-    ax.plot(rbin_centers, [mw_disk(r) for r in rbin_centers], 
-            'k-', label='Two-component disk')
+    total_disk = np.array([mw_disk(r) for r in rbins[:-1]])
+    thin_disk = np.array([mw_disk.thin_disk(r) for r in rbins[:-1]])
+    thick_disk = np.array([mw_disk.thick_disk(r) for r in rbins[:-1]])
     
-    # Individual thin and thick disk components
-    ax.plot(rbin_centers, 
-            [mw_disk.ratio * mw_disk.second(r) for r in rbin_centers], 
-            'k--', label='Thin disk')
-    ax.plot(rbin_centers, [mw_disk.first(r) for r in rbin_centers], 
-            'k:', label='Thick disk')
+    # Plot model baseline
+    ax.axhline(2, color='k', linestyle='-', label='Total disk')
+    ax.axhline(1, color='k', linestyle='--', label='Thin disk')
+    ax.axhline(0, color='k', linestyle=':', label='Thick disk')
     
     # Two-infall SFH with no migration
     nomig_name = 'nomigration/outflow/no_gasflow/J21/twoinfall/diskmodel'
     nomig = MultizoneStars.from_output(nomig_name)
     densities = surface_density_gradient(nomig, rbins)
-    ax.plot(rbin_centers[:154], densities[:154], 'g-', label='No migration')
+    ax.plot(rbins[:-1], (densities - total_disk) / total_disk + 2, 'g-', 
+            label='dt=0.01')
     
     onset = get_onset_time(nomig_name)
-    # nomig_thick = nomig.filter({'formation_time': (0, onset)})
-    # densities = surface_density_gradient(nomig_thick, rbins)
-    # ax.plot(rbin_centers[:154], densities[:154], 'g:')
-    
     nomig_thin = nomig.filter({'formation_time': (onset, None)})
     densities = surface_density_gradient(nomig_thin, rbins)
-    ax.plot(rbin_centers[:154], densities[:154], 'g--')
+    ax.plot(rbins[:-1], (densities - thin_disk) / thin_disk + 1, 'g--')
+    
+    nomig_thick = nomig.filter({'formation_time': (0, onset)})
+    densities = surface_density_gradient(nomig_thick, rbins)
+    ax.plot(rbins[:-1], (densities - thick_disk) / thick_disk, 'g:')
     
     # Two-infall SFH no migration (small integration dt)
-    # finedt_name = 'nomigration/outflow/no_gasflow/J21/twoinfall_fine_dt/diskmodel'
-    # finedt = MultizoneStars.from_output(finedt_name)
-    # densities = surface_density_gradient(finedt, rbins)
-    # ax.plot(rbin_centers[:154], densities[:154], 'b-', label='dt=0.001')
+    finedt_name = 'nomigration/outflow/no_gasflow/J21/twoinfall_fine_dt/diskmodel'
+    finedt = MultizoneStars.from_output(finedt_name)
+    densities = surface_density_gradient(finedt, rbins)
+    ax.plot(rbins[:-1], (densities - total_disk) / total_disk + 2, 'b-', 
+            label='dt=0.001')
     
     # Two-infall components
-    # onset = get_onset_time(finedt_name)
-    # finedt_thick = finedt.filter({'formation_time': (0, onset)})
-    # densities = surface_density_gradient(finedt_thick, rbins)
-    # ax.plot(rbin_centers[:154], densities[:154], 'b:')
-    # finedt_thin = finedt.filter({'formation_time': (onset, None)})
-    # densities = surface_density_gradient(finedt_thin, rbins)
-    # ax.plot(rbin_centers[:154], densities[:154], 'b--')
+    onset = get_onset_time(finedt_name)
+    finedt_thin = finedt.filter({'formation_time': (onset, None)})
+    densities = surface_density_gradient(finedt_thin, rbins)
+    ax.plot(rbins[:-1], (densities - thin_disk) / thin_disk + 1, 'b--')
+    finedt_thick = finedt.filter({'formation_time': (0, onset)})
+    densities = surface_density_gradient(finedt_thick, rbins)
+    ax.plot(rbins[:-1], (densities - thick_disk) / thick_disk, 'b:')
+    
     
     # Inside-out
-    insideout_name = 'nomigration/outflow/no_gasflow/J21/insideout/diskmodel'
-    insideout = MultizoneStars.from_output(insideout_name)
-    densities = surface_density_gradient(insideout, rbins)
-    ax.plot(rbin_centers[:154], densities[:154], 'b-', label='Inside-out')
+    # insideout_name = 'nomigration/outflow/no_gasflow/J21/insideout/diskmodel'
+    # insideout = MultizoneStars.from_output(insideout_name)
+    # densities = surface_density_gradient(insideout, rbins)
+    # ax.plot(rbin_centers, (densities - total_disk) / total_disk + 2, 'r-', label='Inside-out')
     
     # Two-infall SFH with Gaussian migration scheme
     # gaussmig_name = 'gaussian/outflow/no_gasflow/J21/twoinfall/diskmodel'
@@ -89,10 +90,13 @@ def main(style='paper'):
     # ax.plot(rbin_centers, densities, 'b--')
     
     ax.set_xlabel(r'$R_{\rm gal}$ [kpc]')
-    ax.set_ylabel(r'$\Sigma_\star$ [M$_\odot$ kpc$^{-2}$]')
-    ax.set_yscale('log')
+    # ax.set_ylabel(r'$\Sigma_{\rm\star, out} - \Sigma_{\rm \star, model}$ [M$_\odot$ kpc$^{-2}$]')
+    ax.set_ylabel(r'$\Delta\Sigma_\star/\Sigma_\star$')
+    # ax.set_yscale('log')
     ax.xaxis.set_minor_locator(MultipleLocator(1))
     ax.xaxis.set_major_locator(MultipleLocator(4))
+    ax.yaxis.set_minor_locator(MultipleLocator(0.2))
+    ax.yaxis.set_major_locator(MultipleLocator(1))
     ax.legend(loc='upper right', frameon=False)
     
     plt.savefig(paths.figures / 'density_gradient')
@@ -148,7 +152,7 @@ def surface_density_gradient(mzs, rbins, origin=False):
         rcol = 'galr_final'
     masses = stars.groupby(pd.cut(stars[rcol], rbins), 
                            observed=False)['mstar'].sum()
-    areas = [np.pi * (rbins[i+1]**2 - rbins[i]**2) for i in range(len(rbins)-1)]
+    areas = [m.pi * (rbins[i+1]**2 - rbins[i]**2) for i in range(len(rbins)-1)]
     return masses / np.array(areas)
 
 

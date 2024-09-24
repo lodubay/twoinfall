@@ -78,14 +78,15 @@ def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
     infall mode.
     """
     area = m.pi * ((radius + dr)**2 - radius**2)
+    mean_radius = radius + dr / 2.
     tau_star = {
         'default': J21_sf_law,
         'earlyburst': earlyburst_tau_star,
         'twoinfall': twoinfall_sf_law,
     }[which_tau_star.lower()](area)
     eta = {
-        'default': vice.milkyway.default_mass_loading(radius),
-        'equilibrium': equilibrium_mass_loading()(radius),
+        'default': vice.milkyway.default_mass_loading(mean_radius),
+        'equilibrium': equilibrium_mass_loading()(mean_radius),
         'none': 0
     }[outflows]
     times, sfh = integrate_infall(time_dependence, tau_star, eta, 
@@ -97,17 +98,19 @@ def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
         recycling = recycling)
 
 
-def twoinfall_ampratio(time_dependence, radius, onset = 4, outflows='default',
+def twoinfall_ampratio(time_dependence, thick_to_thin_ratio, radius, 
+                       onset = 4, outflows='default',
                        dt = 0.01, dr = 0.1, recycling = 0.4):
     area = m.pi * ((radius + dr)**2 - radius**2)
+    mean_radius = radius + dr / 2.
     tau_star = twoinfall_sf_law(area, onset=onset)
     if outflows not in ['default', 'equilibrium', 'none']:
         raise ValueError('Parameter ``outflows`` must be one of "default", \
 "equilibrium", or "none".')
     eta = {
-        'default': vice.milkyway.default_mass_loading(radius),
-        'equilibrium': equilibrium_mass_loading()(radius),
-        'none': 0
+        'default': vice.milkyway.default_mass_loading(mean_radius),
+        'equilibrium': equilibrium_mass_loading()(mean_radius),
+        'none': 0.
     }[outflows]
 
     times, sfh = integrate_infall(time_dependence, tau_star, eta, 
@@ -115,10 +118,8 @@ def twoinfall_ampratio(time_dependence, radius, onset = 4, outflows='default',
     mstar = calculate_mstar(sfh, dt=dt, recycling=recycling)
     mstar_final = mstar[-1]
     mstar_onset = mstar[int(onset/dt)-1]
-    thick_to_thin = THICK_TO_THIN_RATIO * m.exp(
-        radius * (1 / THIN_DISK_SCALE_RADIUS - 1 / THICK_DISK_SCALE_RADIUS))
-    # return mstar_final / (mstar_final - mstar_onset) * (1 + thick_to_thin)**-1
-    return thick_to_thin**-1 * mstar_onset / (mstar_final - mstar_onset)
+    ratio = thick_to_thin_ratio(mean_radius)
+    return ratio**-1 * mstar_onset / (mstar_final - mstar_onset)
 
 
 def integrate_infall(time_dependence, tau_star, eta, recycling=0.4, dt=0.01):
@@ -182,6 +183,9 @@ def calculate_mstar(sfh, dt=0.01, recycling=0.4):
         The star formation history in Msun/yr.
     dt : float [default: 0.01]
         The timestep in Gyr.
+    recycling : float or str [default: 0.4]
+        The recycling parameter. If "continuous", implements continuous
+        recycling calculations; otherwise, assumes instantaneous recycling.
 
     Returns
     -------
