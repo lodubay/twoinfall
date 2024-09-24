@@ -1,6 +1,7 @@
 
 __all__ = ["insideout", "lateburst", "outerburst", "static", "twoinfall",
-           "earlyburst_ifr", "earlyburst_tau_star", "equilibrium_mass_loading"]
+           "earlyburst_ifr", "earlyburst_tau_star", "equilibrium_mass_loading",
+           "fiducial_sf_law"]
 from .insideout import insideout
 from .lateburst import lateburst
 from .outerburst import outerburst
@@ -11,3 +12,4 @@ from .earlyburst_ifr import earlyburst_ifr
 from .earlyburst_tau_star import earlyburst_tau_star
 from .diskmodel import two_component_disk
 from .mass_loading import equilibrium_mass_loading
+from .fiducial_sf_law import fiducial_sf_law

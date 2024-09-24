@@ -3,13 +3,11 @@ This file contains the class which implements a star formation law for the
 two-infall model.
 """
 import numbers
-from vice.toolkit import J21_sf_law
+from .fiducial_sf_law import fiducial_sf_law
 
-class twoinfall_sf_law(J21_sf_law):
+class twoinfall_sf_law(fiducial_sf_law):
     r"""
     The star formation law for the two-infall model.
-    
-    Inherits functionality from ``vice.toolkit.J21_sf_law``.
     
     Parameters
     ----------
@@ -21,15 +19,8 @@ class twoinfall_sf_law(J21_sf_law):
     factor : real number [default : 0.5]
         The multiplicative factor on the star formation efficiency timescale
         during the first gas infall epoch.
-    index : real number [default : 1.5]
-        The index of the power-law at gas surface densities below 
-        ``Sigma_g_break``.
-    Sigma_g_break : real number [default : 1.0e+08]
-        The gas surface density at which there is a break in the
-        Kennicutt-Schmidt relation. The star formation law is linear above this
-        value. Assumes units of M$_\odot$ kpc$^{-2}$.
     **kwargs : varying types
-        Keyword arguments passed to ``J21_sf_law``.
+        Keyword arguments passed to ``fiducial_sf_law``.
     
     Attributes
     ----------
@@ -39,7 +30,7 @@ class twoinfall_sf_law(J21_sf_law):
         The multiplicative factor on the star formation efficiency timescale
         during the first gas infall epoch.
     
-    Other attributes are inherited from ``J21_sf_law``.
+    Other attributes and functionality are inherited from ``fiducial_sf_law``.
     
     Calling
     -------
@@ -64,11 +55,10 @@ class twoinfall_sf_law(J21_sf_law):
     component is the molecular gas timescale, but during the first gas infall
     epoch the star formation efficiency timescale is multiplied by a factor
     [default: 0.5] as in, e.g., Nissen et al. (2020).
+    
     """
-    def __init__(self, area, onset=4.2, factor=0.5, index=1.5, Sigma_g_break=1e8,
-                 **kwargs):
-        super().__init__(area, mode="ifr", index1=index, index2=index, 
-                         Sigma_g2=Sigma_g_break, **kwargs)
+    def __init__(self, area, onset=4.2, factor=0.5, **kwargs):
+        super().__init__(area, mode="ifr", **kwargs)
         self.onset = onset
         self.factor = factor
     

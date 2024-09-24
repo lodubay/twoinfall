@@ -149,9 +149,9 @@ class diskmodel(vice.milkyway):
                     self.zones[i].tau_star = models.twoinfall_sf_law(area)
                 else:
                     # Simplified SF law, single power-law with cutoff
-                    self.zones[i].tau_star = J21_sf_law(area, mode = self.mode,
-                                                        index1=1.5, index2=1.5,
-                                                        Sigma_g2=1e8)
+                    self.zones[i].tau_star = models.fiducial_sf_law(
+                        area, mode=self.mode)
+            
             # Outflows
             if not outflows:
                 self.zones[i].eta = 0.
