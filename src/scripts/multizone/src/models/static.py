@@ -28,4 +28,4 @@ class static(constant):
 
     def __init__(self, radius, dt = 0.01, dr = 0.1):
         super().__init__()
-        self.amplitude *= normalize(self, gradient, radius, dt = dt, dr = dr)
+        self.amplitude *= normalize(self, gradient, dt = dt, dr = dr)

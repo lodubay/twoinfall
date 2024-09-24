@@ -38,7 +38,7 @@ class lateburst(modified_exponential, gaussian):
             rise = _TAU_RISE_)
         gaussian.__init__(self, mean = _BURST_TIME_, amplitude = 1.5)
         self._prefactor = 1
-        self._prefactor = normalize(self, gradient, radius, dt = dt, dr = dr)
+        self._prefactor = normalize(self, gradient, dt = dt, dr = dr)
 
     def __call__(self, time):
         return self._prefactor * modified_exponential.__call__(self, time) * (

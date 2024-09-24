@@ -37,7 +37,7 @@ class insideout(modified_exponential):
     def __init__(self, radius, dt = 0.01, dr = 0.1):
         super().__init__(timescale = insideout.timescale(radius),
             rise = _TAU_RISE_)
-        self.norm *= normalize(self, gradient, radius, dt = dt, dr = dr)
+        self.norm *= normalize(self, gradient, dt = dt, dr = dr)
 
     @staticmethod
     def timescale(radius, Re = 5):

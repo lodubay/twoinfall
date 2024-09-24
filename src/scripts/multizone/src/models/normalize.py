@@ -14,7 +14,7 @@ import math as m
 import numbers
 
 
-def normalize(time_dependence, radial_gradient, radius, dt = 0.01, dr = 0.1,
+def normalize(time_dependence, radial_gradient, dt = 0.01, dr = 0.1,
               recycling = 0.4):
     r"""
     Determine the prefactor on the surface density of star formation as a
@@ -31,8 +31,6 @@ def normalize(time_dependence, radial_gradient, radius, dt = 0.01, dr = 0.1,
         A function accepting galactocentric radius in kpc specifying the
         desired stellar radial surface density gradient at the present day.
         Return value assumed to be unitless and unnormalized.
-    radius : real number
-        The galactocentric radius to evaluate the normalization at.
     dt : real number [default : 0.01]
         The timestep size in Gyr.
     dr : real number [default : 0.1]
@@ -94,8 +92,8 @@ def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
     if recycling == "continuous":
         recycling = 0.4
     sfh = vice.toolkit.interpolation.interp_scheme_1d(times, sfh)
-    return normalize(sfh, radial_gradient, radius, dt = dt, dr = dr,
-        recycling = recycling)
+    return normalize(sfh, radial_gradient, dt = dt, dr = dr, 
+                     recycling = recycling)
 
 
 def twoinfall_ampratio(time_dependence, thick_to_thin_ratio, radius, 
