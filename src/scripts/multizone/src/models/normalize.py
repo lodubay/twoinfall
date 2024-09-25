@@ -5,6 +5,7 @@ Johnson et al. (2021).
 
 from .earlyburst_tau_star import earlyburst_tau_star
 from .twoinfall_sf_law import twoinfall_sf_law
+from .fiducial_sf_law import fiducial_sf_law
 from .mass_loading import equilibrium_mass_loading
 from ..._globals import MAX_SF_RADIUS, END_TIME, M_STAR_MW, \
     THIN_DISK_SCALE_RADIUS, THICK_DISK_SCALE_RADIUS, THICK_TO_THIN_RATIO
@@ -85,7 +86,7 @@ def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
     area = m.pi * ((radius + dr)**2 - radius**2)
     mean_radius = radius + dr / 2.
     tau_star = {
-        'default': J21_sf_law,
+        'fiducial': fiducial_sf_law,
         'earlyburst': earlyburst_tau_star,
         'twoinfall': twoinfall_sf_law,
     }[which_tau_star.lower()](area)

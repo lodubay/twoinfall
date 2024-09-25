@@ -52,20 +52,36 @@ def main(style='paper'):
     ax.plot(rbins[:-1], (densities - thick_disk) / thick_disk, 'g:')
     
     # Two-infall SFH no migration (small integration dt)
-    finedt_name = 'nomigration/outflow/no_gasflow/J21/twoinfall_fine_dt/diskmodel'
-    finedt = MultizoneStars.from_output(finedt_name)
-    densities = surface_density_gradient(finedt, rbins)
-    ax.plot(rbins[:-1], (densities - total_disk) / total_disk + 2, 'b-', 
-            label='dt=0.001')
+    # finedt_name = 'nomigration/outflow/no_gasflow/J21/twoinfall_fine_dt/diskmodel'
+    # finedt = MultizoneStars.from_output(finedt_name)
+    # densities = surface_density_gradient(finedt, rbins)
+    # ax.plot(rbins[:-1], (densities - total_disk) / total_disk + 2, 'b-', 
+    #         label='dt=0.001')
     
     # Two-infall components
-    onset = get_onset_time(finedt_name)
-    finedt_thin = finedt.filter({'formation_time': (onset, None)})
-    densities = surface_density_gradient(finedt_thin, rbins)
-    ax.plot(rbins[:-1], (densities - thin_disk) / thin_disk + 1, 'b--')
-    finedt_thick = finedt.filter({'formation_time': (0, onset)})
-    densities = surface_density_gradient(finedt_thick, rbins)
-    ax.plot(rbins[:-1], (densities - thick_disk) / thick_disk, 'b:')
+    # onset = get_onset_time(finedt_name)
+    # finedt_thin = finedt.filter({'formation_time': (onset, None)})
+    # densities = surface_density_gradient(finedt_thin, rbins)
+    # ax.plot(rbins[:-1], (densities - thin_disk) / thin_disk + 1, 'b--')
+    # finedt_thick = finedt.filter({'formation_time': (0, onset)})
+    # densities = surface_density_gradient(finedt_thick, rbins)
+    # ax.plot(rbins[:-1], (densities - thick_disk) / thick_disk, 'b:')
+    
+    # Two-infall SFH post-process
+    # multinorm_name = 'post-process/outflow/no_gasflow/J21/twoinfall/diskmodel'
+    # multinorm = MultizoneStars.from_output(multinorm_name)
+    # densities = surface_density_gradient(multinorm, rbins, origin=True)
+    # ax.plot(rbins[:-1], (densities - total_disk) / total_disk + 2, 'r-', 
+    #         label='post-process')
+    
+    # Two-infall components
+    # onset = get_onset_time(multinorm_name)
+    # multinorm_thin = multinorm.filter({'formation_time': (onset, None)})
+    # densities = surface_density_gradient(multinorm_thin, rbins, origin=True)
+    # ax.plot(rbins[:-1], (densities - thin_disk) / thin_disk + 1, 'r--')
+    # multinorm_thick = multinorm.filter({'formation_time': (0, onset)})
+    # densities = surface_density_gradient(multinorm_thick, rbins, origin=True)
+    # ax.plot(rbins[:-1], (densities - thick_disk) / thick_disk, 'r:')
     
     
     # Inside-out

@@ -11,6 +11,7 @@ from multizone.src.models import twoinfall, twoinfall_sf_law, insideout, \
     equilibrium_mass_loading
 import paths
 from multizone.src.yields import W23
+# from vice.yields.presets import JW20
 from multizone.src import models, dtds
 from apogee_sample import APOGEESample
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH, ZONE_WIDTH
@@ -29,6 +30,7 @@ def main():
     subfigs = [fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))]
     # Outflow mass-loading factor
     eta_func = equilibrium_mass_loading(alpha_h_eq=0.1, tau_sfh=15., tau_star=2.)
+    # eta_func = vice.milkyway.default_mass_loading
     axs0 = plot_region(subfigs[0], 4, eta=eta_func, 
                        color=paultol.highcontrast.colors[2],
                        xlim=XLIM, ylim=YLIM)

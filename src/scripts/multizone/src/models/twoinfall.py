@@ -45,6 +45,7 @@ class twoinfall(double_exponential):
         super().__init__(onset=onset, ratio=1.)
         self.first.timescale = first_timescale 
         self.second.timescale = second_timescale 
+        # for i in range(3):
         self.ratio = twoinfall_ampratio(self, thick_to_thin_ratio, radius,
                                         onset=self.onset, 
                                         dr = dr, dt = dt, outflows=outflows,

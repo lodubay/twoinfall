@@ -21,7 +21,8 @@ from _globals import END_TIME, ONEZONE_DEFAULTS, ONE_COLUMN_WIDTH, ZONE_WIDTH
 
 RADIUS = 8.
 XLIM = (-1.6, 0.6)
-YLIM = (-0.16, 0.48)
+YLIM = (-0.18, 0.48)
+ONSET = 4.2
 
 
 def main():
@@ -43,7 +44,7 @@ def main():
         RADIUS, 
         first_timescale=1.,
         second_timescale=15., 
-        onset=3.5
+        onset=ONSET
     )
     eta_func = equilibrium_mass_loading(
         tau_star=2., 
