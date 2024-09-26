@@ -24,9 +24,8 @@ def normalize(time_dependence, radial_gradient, dt = 0.01, dr = 0.1,
     Parameters
     ----------
     time_dependence : <function>
-        A function accepting time in Gyr and galactocentric radius in kpc, in
-        that order, specifying the time-dependence of the star formation
-        history at that radius. Return value assumed to be unitless and
+        A function accepting time in Gyr specifying the time-dependence of the 
+        star formation history. Return value assumed to be unitless and
         unnormalized.
     radial_gradient : <function>
         A function accepting galactocentric radius in kpc specifying the
@@ -51,7 +50,7 @@ def normalize(time_dependence, radial_gradient, dt = 0.01, dr = 0.1,
     -----
     This function automatically adopts the desired maximum radius of star
     formation, end time of the model, and total stellar mass declared in
-    ``src/_globals.py``.
+    ``_globals.py``.
 
     .. [1] Kroupa (2001), MNRAS, 322, 231
     """
@@ -83,16 +82,15 @@ def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
     Performs essentially the same thing as ``normalize`` but for models ran in
     infall mode.
     """
-    area = m.pi * ((radius + dr)**2 - radius**2)
-    mean_radius = radius + dr / 2.
+    area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
     tau_star = {
         'fiducial': fiducial_sf_law,
         'earlyburst': earlyburst_tau_star,
         'twoinfall': twoinfall_sf_law,
     }[which_tau_star.lower()](area)
     eta = {
-        'default': vice.milkyway.default_mass_loading(mean_radius),
-        'equilibrium': equilibrium_mass_loading()(mean_radius),
+        'default': vice.milkyway.default_mass_loading(radius),
+        'equilibrium': equilibrium_mass_loading()(radius),
         'none': 0
     }[outflows]
     times, sfh = integrate_infall(time_dependence, tau_star, eta, 
@@ -105,15 +103,14 @@ def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
 def twoinfall_ampratio(time_dependence, thick_to_thin_ratio, radius, 
                        onset = 4, outflows='default',
                        dt = 0.01, dr = 0.1, recycling = 0.4):
-    area = m.pi * ((radius + dr)**2 - radius**2)
-    mean_radius = radius + dr / 2.
+    area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
     tau_star = twoinfall_sf_law(area, onset=onset)
     if outflows not in ['default', 'equilibrium', 'none']:
         raise ValueError('Parameter ``outflows`` must be one of "default", \
 "equilibrium", or "none".')
     eta = {
-        'default': vice.milkyway.default_mass_loading(mean_radius),
-        'equilibrium': equilibrium_mass_loading()(mean_radius),
+        'default': vice.milkyway.default_mass_loading(radius),
+        'equilibrium': equilibrium_mass_loading()(radius),
         'none': 0.
     }[outflows]
 
@@ -122,7 +119,7 @@ def twoinfall_ampratio(time_dependence, thick_to_thin_ratio, radius,
     mstar = calculate_mstar(sfh, dt=dt, recycling=recycling)
     mstar_final = mstar[-1]
     mstar_onset = mstar[int(onset/dt)-1]
-    ratio = thick_to_thin_ratio(mean_radius)
+    ratio = thick_to_thin_ratio(radius)
     return ratio**-1 * mstar_onset / (mstar_final - mstar_onset)
 
 
