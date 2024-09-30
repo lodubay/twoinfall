@@ -2,21 +2,16 @@
 Plot a grid of [O/Fe] vs [Fe/H] at varying Galactic radii and z-heights.
 """
 
-# import sys
 import argparse
 from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from matplotlib.lines import Line2D
-# from matplotlib.colors import Normalize
-# from matplotlib.cm import ScalarMappable
 import numpy as np
 import vice
 from multizone_stars import MultizoneStars
 from apogee_sample import APOGEESample
-# from mwm_tools import import_mwm
 from scatter_plot_grid import setup_axes, setup_colorbar
-# from utils import kde2D
 from _globals import GALR_BINS, ABSZ_BINS, ZONE_WIDTH, MAX_SF_RADIUS
 import paths
 

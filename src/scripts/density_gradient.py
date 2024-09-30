@@ -36,10 +36,16 @@ def main(style='paper'):
     ax.axhline(0, color='k', linestyle=':', label='Thick disk')
     
     # Inside-out
-    insideout_name = 'nomigration/outflow/no_gasflow/J21/insideout/diskmodel'
+    insideout_name = 'nomigration/outflow/no_gasflow/J21/static/diskmodel'
     insideout = MultizoneStars.from_output(insideout_name)
     densities = surface_density_gradient(insideout, rbins)
-    ax.plot(rbin_centers, (densities - total_disk) / total_disk + 2, 'r-', label='Inside-out')
+    ax.plot(rbin_centers, (densities - total_disk) / total_disk + 2, 'r-', label='Static SFR')
+    
+    # Inside-out
+    # insideout_name = 'nomigration/outflow/no_gasflow/J21/static_fine_dr/diskmodel'
+    # insideout = MultizoneStars.from_output(insideout_name)
+    # densities = surface_density_gradient(insideout, rbins)
+    # ax.plot(rbin_centers, (densities - total_disk) / total_disk + 2, 'g-', label='dr=0.01')
     
     # Two-infall SFH with no migration
     nomig_name = 'nomigration/outflow/no_gasflow/J21/twoinfall/diskmodel'

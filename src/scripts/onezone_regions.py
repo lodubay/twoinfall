@@ -7,11 +7,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import vice
-from multizone.src.models import twoinfall, twoinfall_sf_law, insideout, \
-    equilibrium_mass_loading
 import paths
-from multizone.src.yields import W23
+# from multizone.src.yields import W23
 # from vice.yields.presets import JW20
+from multizone.src.yields import J21
+# from multizone.src.yields import F04
 from multizone.src import models, dtds
 from apogee_sample import APOGEESample
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH, ZONE_WIDTH
@@ -29,8 +29,8 @@ def main():
     gs = fig.add_gridspec(7, 22, wspace=0.)
     subfigs = [fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))]
     # Outflow mass-loading factor
-    eta_func = equilibrium_mass_loading(alpha_h_eq=0.1, tau_sfh=15., tau_star=2.)
-    # eta_func = vice.milkyway.default_mass_loading
+    # eta_func = equilibrium_mass_loading(alpha_h_eq=0.2, tau_sfh=15., tau_star=2.)
+    eta_func = vice.milkyway.default_mass_loading
     axs0 = plot_region(subfigs[0], 4, eta=eta_func, 
                        color=paultol.highcontrast.colors[2],
                        xlim=XLIM, ylim=YLIM)
@@ -44,7 +44,7 @@ def main():
     fig.savefig(paths.figures / "onezone_regions", dpi=300)
     plt.close()
     
-def plot_region(fig, radius, dr=2., eta=equilibrium_mass_loading(), 
+def plot_region(fig, radius, dr=2., eta=models.equilibrium_mass_loading(), 
                 output_dir=paths.data/"onezone"/"regions", 
                 color=None, **kwargs):
     axs = setup_axes(fig, title="", **kwargs)
@@ -79,18 +79,18 @@ def plot_region(fig, radius, dr=2., eta=equilibrium_mass_loading(),
     
     sz = vice.singlezone(
         name = name,
-        func = twoinfall(
-            radius, 
-            first_timescale=1., 
-            second_timescale=insideout.timescale(radius), 
-            onset=ONSET),
-        mode = "ifr",
+        # func = models.twoinfall(
+        #     radius, 
+        #     first_timescale=1., 
+        #     second_timescale=insideout.timescale(radius), 
+        #     onset=ONSET),
+        func = models.insideout(radius),
+        mode = "sfr",
         **ONEZONE_DEFAULTS
     )
     sz.eta = eta(radius)
-    sz.tau_star = twoinfall_sf_law(area, onset=ONSET)
-    print(sz.eta)
-    print(sz.func.second.timescale)
+    # sz.tau_star = models.twoinfall_sf_law(area, onset=ONSET)
+    sz.tau_star = models.fiducial_sf_law(area)
     sz.run(simtime, overwrite=True)
     
     plot_vice_onezone(name, fig=fig, axs=axs, markers=[], color=color)
