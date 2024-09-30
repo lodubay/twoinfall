@@ -90,9 +90,9 @@ class diskmodel(vice.milkyway):
     """
 
     def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "static",
-        verbose = True, migration_mode = "diffusion", yields="J21",
-        delay = 0.04, RIa = "powerlaw", RIa_kwargs={}, seed=42, 
-        radial_gas_velocity = 0., outflows=True, **kwargs):
+                 verbose = True, migration_mode = "diffusion", yields="J21",
+                 delay = 0.04, RIa = "powerlaw", RIa_kwargs={}, seed=42, 
+                 radial_gas_velocity = 0., outflows=True, **kwargs):
         super().__init__(zone_width = zone_width, name = name,
             verbose = verbose, **kwargs)
         if self.zone_width <= 0.2 and self.dt <= 0.02 and self.n_stars >= 6:
@@ -235,7 +235,7 @@ class star_formation_history:
         self._evol = []
         i = 0
         max_radius = 20 # kpc, defined by ``vice.milkyway`` object.
-        while (i + 1) * zone_width < max_radius:
+        while (i + 1) * zone_width <= max_radius:
             self._radii.append((i + 0.5) * zone_width)
             self._evol.append({
                 "static":             models.static,
