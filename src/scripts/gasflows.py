@@ -16,27 +16,31 @@ def main(style='paper'):
                                            2 * _globals.ONE_COLUMN_WIDTH),
                             tight_layout=True)
                             
-    plot_radial_gradient('no_outflow/diskmodel', axs, 
-                         label=r'0 km/s | $\eta=0$',
-                         color='k', linestyle='-')
-    plot_radial_gradient('gasflow_1kms_no_outflow/diskmodel', axs,
-                         label=r'1 km/s | $\eta=0$',
-                         color='r', linestyle='-')
-    plot_radial_gradient('gasflow_1kms_maxsf_13kpc/diskmodel', axs,
-                         label=r'1 km/s | $\eta=0$ | $R_{\rm max}=13$ kpc',
-                         color='r', linestyle=':')
-    plot_radial_gradient('gasflow_2kms_no_outflow/diskmodel', axs,
-                         label=r'2 km/s | $\eta=0$',
-                         color='b', linestyle='-')
-    plot_radial_gradient('gaussian/diskmodel', axs,
-                         label=r'0 km/s | $\eta\propto e^R$',
-                         color='k', linestyle='--')
-    plot_radial_gradient('gasflow_1kms/diskmodel', axs,
-                         label=r'1 km/s | $\eta\propto e^R$',
-                         color='r', linestyle='--')
-    plot_radial_gradient('gasflow_2kms/diskmodel', axs,
-                         label=r'2 km/s | $\eta\propto e^R$',
-                         color='b', linestyle='--')
+    # plot_radial_gradient('no_outflow/diskmodel', axs, 
+    #                      label=r'0 km/s | $\eta=0$',
+    #                      color='k', linestyle='-')
+    # plot_radial_gradient('gasflow_1kms_no_outflow/diskmodel', axs,
+    #                      label=r'1 km/s | $\eta=0$',
+    #                      color='r', linestyle='-')
+    # plot_radial_gradient('gasflow_1kms_maxsf_13kpc/diskmodel', axs,
+    #                      label=r'1 km/s | $\eta=0$ | $R_{\rm max}=13$ kpc',
+    #                      color='r', linestyle=':')
+    # plot_radial_gradient('gasflow_2kms_no_outflow/diskmodel', axs,
+    #                      label=r'2 km/s | $\eta=0$',
+    #                      color='b', linestyle='-')
+    # plot_radial_gradient('gaussian/diskmodel', axs,
+    #                      label=r'0 km/s | $\eta\propto e^R$',
+    #                      color='k', linestyle='--')
+    # plot_radial_gradient('gasflow_1kms/diskmodel', axs,
+    #                      label=r'1 km/s | $\eta\propto e^R$',
+    #                      color='r', linestyle='--')
+    # plot_radial_gradient('gasflow_2kms/diskmodel', axs,
+    #                      label=r'2 km/s | $\eta\propto e^R$',
+    #                      color='b', linestyle='--')
+    plot_radial_gradient('gaussian/no_outflow/gasflow_in_1kms/J21/insideout/diskmodel',
+                         axs, label='SFR mode')
+    plot_radial_gradient('gaussian/no_outflow/gasflow_in_1kms/J21/twoinfall/diskmodel',
+                         axs, label='IFR mode')
     
     # mout = vice.output(str(paths.multizone / 'gasflow_1kms_maxsf_13kpc/diskmodel'))
     # axs[0].plot(radial_gradient(mout, '[o/h]'), 'r:', label='1 km/s | $\eta=0$')

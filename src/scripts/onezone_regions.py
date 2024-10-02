@@ -9,8 +9,8 @@ from tqdm import tqdm
 import vice
 import paths
 # from multizone.src.yields import W23
-# from vice.yields.presets import JW20
-from multizone.src.yields import J21
+from vice.yields.presets import JW20
+# from multizone.src.yields import J21
 # from multizone.src.yields import F04
 from multizone.src import models, dtds
 from apogee_sample import APOGEESample
@@ -29,7 +29,7 @@ def main():
     gs = fig.add_gridspec(7, 22, wspace=0.)
     subfigs = [fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))]
     # Outflow mass-loading factor
-    # eta_func = equilibrium_mass_loading(alpha_h_eq=0.2, tau_sfh=15., tau_star=2.)
+    # eta_func = models.equilibrium_mass_loading(alpha_h_eq=0.2, tau_sfh=15., tau_star=2.)
     eta_func = vice.milkyway.default_mass_loading
     axs0 = plot_region(subfigs[0], 4, eta=eta_func, 
                        color=paultol.highcontrast.colors[2],
@@ -79,18 +79,18 @@ def plot_region(fig, radius, dr=2., eta=models.equilibrium_mass_loading(),
     
     sz = vice.singlezone(
         name = name,
-        # func = models.twoinfall(
-        #     radius, 
-        #     first_timescale=1., 
-        #     second_timescale=insideout.timescale(radius), 
-        #     onset=ONSET),
-        func = models.insideout(radius),
-        mode = "sfr",
+        func = models.twoinfall(
+            radius, 
+            first_timescale=1., 
+            second_timescale=models.insideout.timescale(radius), 
+            onset=ONSET),
+        # func = models.insideout(radius),
+        mode = "ifr",
         **ONEZONE_DEFAULTS
     )
     sz.eta = eta(radius)
-    # sz.tau_star = models.twoinfall_sf_law(area, onset=ONSET)
-    sz.tau_star = models.fiducial_sf_law(area)
+    sz.tau_star = models.twoinfall_sf_law(area, onset=ONSET)
+    # sz.tau_star = models.fiducial_sf_law(area)
     sz.run(simtime, overwrite=True)
     
     plot_vice_onezone(name, fig=fig, axs=axs, markers=[], color=color)
@@ -106,6 +106,8 @@ def plot_region(fig, radius, dr=2., eta=models.equilibrium_mass_loading(),
     
     # Label axes
     axs[0].text(0.95, 0.95, r"$R_{\rm gal}=%s$ kpc" % radius,
+                va="top", ha="right", transform=axs[0].transAxes)
+    axs[0].text(0.95, 0.85, r"$\tau_2=%s$ Gyr" % round(sz.func.second.timescale, 1),
                 va="top", ha="right", transform=axs[0].transAxes)
     
     return axs
