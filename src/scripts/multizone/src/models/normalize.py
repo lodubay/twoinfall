@@ -60,17 +60,12 @@ def normalize(time_dependence, radial_gradient, dt = 0.01, dr = 0.1,
     for i in range(int(END_TIME / dt)):
         sfh.append(time_dependence(i * dt))
         time_integral += time_dependence(i * dt) * dt * 1.e9 # yr to Gyr
-        if recycling == "continuous":
-            time_integral -= continuous_recycling(sfh, dt=dt)
 
     radial_integral = 0
     for i in range(int(MAX_SF_RADIUS / dr)):
         radial_integral += radial_gradient(dr * (i + 0.5)) * m.pi * (
             (dr * (i + 1))**2 - (dr * i)**2
         )
-
-    if recycling == "continuous":
-        recycling = 0
     
     return M_STAR_MW / ((1 - recycling) * radial_integral * time_integral)
 
@@ -149,15 +144,6 @@ def integrate_infall(time_dependence, tau_star, eta, recycling=0.4, dt=0.01):
         Star formation rate in Msun yr^-1
         
     """
-    if isinstance(recycling, str) and recycling.lower() == "continuous":
-        r = 0
-        continuous = True
-    elif isinstance(recycling, numbers.Number):
-        r = recycling
-        continuous = False
-    else:
-        raise TypeError("Parameter 'recycling' must be a float or 'continuous'.")
-    
     mgas = 0
     time = 0
     sfh = []
@@ -166,9 +152,7 @@ def integrate_infall(time_dependence, tau_star, eta, recycling=0.4, dt=0.01):
         sfr = mgas / tau_star(time, mgas) # Msun / Gyr
         sfh.append(1.e-9 * sfr)
         mgas += time_dependence(time) * dt * 1.e9 # yr-Gyr conversion
-        mgas -= sfr * dt * (1 + eta - r)
-        if continuous:
-            mgas += continuous_recycling(sfh, dt=dt) * dt * 1e9
+        mgas -= sfr * dt * (1 + eta - recycling)
         times.append(time)
         time += dt
     return times, sfh
@@ -184,9 +168,8 @@ def calculate_mstar(sfh, dt=0.01, recycling=0.4):
         The star formation history in Msun/yr.
     dt : float [default: 0.01]
         The timestep in Gyr.
-    recycling : float or str [default: 0.4]
-        The recycling parameter. If "continuous", implements continuous
-        recycling calculations; otherwise, assumes instantaneous recycling.
+    recycling : float [default: 0.4]
+        The dimensionless recycling parameter.
 
     Returns
     -------
@@ -194,46 +177,9 @@ def calculate_mstar(sfh, dt=0.01, recycling=0.4):
         Stellar mass at each timestep.
 
     """
-    if isinstance(recycling, str) and recycling.lower() == "continuous":
-        r = 0
-        continuous = True
-    elif isinstance(recycling, numbers.Number):
-        r = recycling
-        continuous = False
-    else:
-        raise TypeError("Parameter 'recycling' must be a float or 'continuous'.")
-    
     mstar = [0]
     for i in range(1, len(sfh)):
-        if continuous:
-            dm = (sfh[i] - continuous_recycling(sfh[:i], dt=dt)) * dt * 1e9
-        else:
-            dm = sfh[i] * dt * 1e9 * (1 - r)
+        dm = sfh[i] * dt * 1e9 * (1 - recycling)
         mstar.append(mstar[i-1] + dm)
     return mstar
-
-
-def continuous_recycling(sfh, dt=0.01):
-    r"""
-    Numerically approximate the mass recycling rate.
-    
-    Parameters
-    ----------
-    sfh : list of floats
-        The star formation history in Msun/yr.
-    dt : float [default: 0.01]
-        The timestep in Gyr.
-    
-    Returns
-    -------
-    float
-        Recycling rate in Msun/yr.
-    
-    """
-    recycling_rate = 0.
-    crf = vice.cumulative_return_fraction # alias for readability
-    for i in range(len(sfh)):
-        # Increasing lookback time
-        recycling_rate += sfh[-(i+1)] * (crf((i+1) * dt) - crf(i * dt))
-    return recycling_rate
     
