@@ -49,7 +49,6 @@ class diskmodel(vice.milkyway):
         - "lateburst"
         - "outerburst"
         - "twoinfall"
-        - "twoinfall_var"
         - "earlyburst"
     
     verbose : ``bool`` [default : True]
@@ -126,7 +125,7 @@ class diskmodel(vice.milkyway):
         else:
             from .yields import J21
         # Set the SF mode - infall vs star formation rate
-        if spec.lower() in ["twoinfall", "twoinfall_var", "earlyburst"]:
+        if spec.lower() in ["twoinfall", "earlyburst"]:
             self.mode = "ifr"
             for zone in self.zones: zone.Mg0 = 0
         else:
@@ -144,7 +143,7 @@ class diskmodel(vice.milkyway):
             if mean_radius <= MAX_SF_RADIUS:
                 area = m.pi * (self.annuli[i + 1]**2 - self.annuli[i]**2)
                 if spec.lower() == "earlyburst":
-                    self.zones[i].tau_star = models.earlyburst_tau_star(area)
+                    self.zones[i].tau_star = models.earlyburst_sf_law(area)
                 elif "twoinfall" in spec.lower():
                     self.zones[i].tau_star = models.twoinfall_sf_law(area)
                 else:
@@ -243,7 +242,6 @@ class star_formation_history:
                 "lateburst":          models.lateburst,
                 "outerburst":         models.outerburst,
                 "twoinfall":          models.twoinfall,
-                "twoinfall_var":      models.twoinfall_var,
                 "earlyburst":         models.earlyburst_ifr,
             }[spec.lower()]((i + 0.5) * zone_width, dr = zone_width, dt = dt,
                             **kwargs))

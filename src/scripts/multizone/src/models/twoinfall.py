@@ -12,7 +12,7 @@ import vice
 import math as m
 
 FIRST_TIMESCALE = 1. # Gyr
-SECOND_TIMESCALE = 10. # Gyr
+SECOND_TIMESCALE = 15. # Gyr
 SECOND_ONSET = 4.2 # Gyr
 
 class twoinfall(double_exponential):
