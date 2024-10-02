@@ -40,16 +40,17 @@ def main():
     simtime = np.arange(0, END_TIME + dt, dt)
 
     area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
+    eta_func = equilibrium_mass_loading(
+        tau_star=2., 
+        tau_sfh=15., 
+        alpha_h_eq=0.2
+    )
     ifr = models.twoinfall(
         RADIUS, 
         first_timescale=1.,
         second_timescale=15., 
-        onset=ONSET
-    )
-    eta_func = equilibrium_mass_loading(
-        tau_star=2., 
-        tau_sfh=ifr.second.timescale, 
-        alpha_h_eq=0.2
+        onset=ONSET,
+        mass_loading=eta_func,
     )
 
     tau_star_list = [twoinfall_sf_law(area, onset=ifr.onset, factor=1.),

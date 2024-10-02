@@ -50,3 +50,8 @@ class equilibrium_mass_loading:
         
     def __call__(self, radius):
         return self._eta_sun * m.exp((radius - 8) / self._scale_radius)
+
+
+def no_outflows(radius):
+    """A dummy function returning 0 for all inputs."""
+    return 0.

@@ -3,16 +3,9 @@ This file implements the normalization calculation in Appendix B of
 Johnson et al. (2021).
 """
 
-from .earlyburst_tau_star import earlyburst_tau_star
-from .twoinfall_sf_law import twoinfall_sf_law
-from .fiducial_sf_law import fiducial_sf_law
-from .mass_loading import equilibrium_mass_loading
-from ..._globals import MAX_SF_RADIUS, END_TIME, M_STAR_MW, \
-    THIN_DISK_SCALE_RADIUS, THICK_DISK_SCALE_RADIUS, THICK_TO_THIN_RATIO
+from ..._globals import MAX_SF_RADIUS, END_TIME, M_STAR_MW
 import vice
-from vice.toolkit import J21_sf_law
 import math as m
-import numbers
 
 
 def normalize(time_dependence, radial_gradient, dt = 0.01, dr = 0.1,
@@ -56,9 +49,7 @@ def normalize(time_dependence, radial_gradient, dt = 0.01, dr = 0.1,
     """
 
     time_integral = 0
-    sfh = []
     for i in range(int(END_TIME / dt)):
-        sfh.append(time_dependence(i * dt))
         time_integral += time_dependence(i * dt) * dt * 1.e9 # yr to Gyr
 
     radial_integral = 0
@@ -70,55 +61,48 @@ def normalize(time_dependence, radial_gradient, dt = 0.01, dr = 0.1,
     return M_STAR_MW / ((1 - recycling) * radial_integral * time_integral)
 
 
-def normalize_ifrmode(time_dependence, radial_gradient, radius, dt = 0.01,
-                      dr = 0.1, recycling = 0.4, which_tau_star='default',
-                      outflows = 'default'):
+def normalize_ifrmode(time_dependence, radial_gradient, tau_star, eta=0.,
+                      dt = 0.01, dr = 0.1, recycling = 0.4):
     r"""
-    Performs essentially the same thing as ``normalize`` but for models ran in
-    infall mode.
+    Wrapper for ``normalize`` for models in infall mode.
+    
+    Parameters
+    ----------
+    time_dependence : <function>
+        A function accepting time in Gyr specifying the time-dependence of the 
+        gas infall history. Return value assumed to be unitless and 
+        unnormalized.
+    radial_gradient : <function>
+        A function accepting galactocentric radius in kpc specifying the
+        desired stellar radial surface density gradient at the present day.
+        Return value assumed to be unitless and unnormalized.
+    tau_star : <function>
+        The star formation efficiency timescale. Accepts two parameters: 
+        time in Gyr, and gas mass [Msun] or surface density [Msun kpc^-2].
+        Returns a value with units of Gyr.
+    dt : real number [default : 0.01]
+        The timestep size in Gyr.
+    dr : real number [default : 0.1]
+        The width of each annulus in kpc.
+    recycling : real number [default : 0.4]
+        The instantaneous recycling mass fraction for a single stellar
+        population. Default is calculated for the Kroupa IMF [1]_.
+
+    Returns
+    -------
+    A : real number
+        The prefactor on the surface density of gas infall at that radius
+        such that when used in simulation, the correct total stellar mass with
+        the specified radial gradient is produced.
+        
     """
-    area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
-    tau_star = {
-        'fiducial': fiducial_sf_law,
-        'earlyburst': earlyburst_tau_star,
-        'twoinfall': twoinfall_sf_law,
-    }[which_tau_star.lower()](area)
-    eta = {
-        'default': vice.milkyway.default_mass_loading(radius),
-        'equilibrium': equilibrium_mass_loading()(radius),
-        'none': 0
-    }[outflows]
     times, sfh = integrate_infall(time_dependence, tau_star, eta, 
                                   recycling=recycling, dt=dt)
-    sfh = vice.toolkit.interpolation.interp_scheme_1d(times, sfh)
     return normalize(sfh, radial_gradient, dt = dt, dr = dr, 
                      recycling = recycling)
 
 
-def twoinfall_ampratio(time_dependence, thick_to_thin_ratio, radius, 
-                       onset = 4, outflows='default',
-                       dt = 0.01, dr = 0.1, recycling = 0.4):
-    area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
-    tau_star = twoinfall_sf_law(area, onset=onset)
-    if outflows not in ['default', 'equilibrium', 'none']:
-        raise ValueError('Parameter ``outflows`` must be one of "default", \
-"equilibrium", or "none".')
-    eta = {
-        'default': vice.milkyway.default_mass_loading(radius),
-        'equilibrium': equilibrium_mass_loading()(radius),
-        'none': 0.
-    }[outflows]
-
-    times, sfh = integrate_infall(time_dependence, tau_star, eta, 
-                                  recycling=recycling, dt=dt)
-    mstar = calculate_mstar(sfh, dt=dt, recycling=recycling)
-    mstar_final = mstar[-1]
-    mstar_onset = mstar[int(onset/dt)-1]
-    ratio = thick_to_thin_ratio(radius)
-    return ratio**-1 * mstar_onset / (mstar_final - mstar_onset)
-
-
-def integrate_infall(time_dependence, tau_star, eta, recycling=0.4, dt=0.01):
+def integrate_infall(time_dependence, tau_star, eta=0., recycling=0.4, dt=0.01):
     r"""
     Calculate the star formation history from a prescribed infall rate history.
     
@@ -127,8 +111,8 @@ def integrate_infall(time_dependence, tau_star, eta, recycling=0.4, dt=0.01):
     time_dependence : <function>
         Time-dependence of the infall rate. Accepts one parameter: time in Gyr.
     tau_star : <function>
-        Star formation efficiency timescale. Accepts two parameters: 
-        time in Gyr, gas mass [Msun] or surface density [Msun kpc^-2].
+        The star formation efficiency timescale. Accepts two parameters: 
+        time in Gyr, and gas mass [Msun] or surface density [Msun kpc^-2].
     eta : float
         Dimensionless mass-loading factor.
     recycling : float [default: 0.4]
@@ -155,31 +139,7 @@ def integrate_infall(time_dependence, tau_star, eta, recycling=0.4, dt=0.01):
         mgas -= sfr * dt * (1 + eta - recycling)
         times.append(time)
         time += dt
+    # Interpolate the resulting list
+    sfh = vice.toolkit.interpolation.interp_scheme_1d(times, sfh)
     return times, sfh
-
-
-def calculate_mstar(sfh, dt=0.01, recycling=0.4):
-    r"""
-    Calculate the stellar mass at each timestep from the star formation history.
-
-    Parameters
-    ----------
-    sfh : list of floats
-        The star formation history in Msun/yr.
-    dt : float [default: 0.01]
-        The timestep in Gyr.
-    recycling : float [default: 0.4]
-        The dimensionless recycling parameter.
-
-    Returns
-    -------
-    list of floats
-        Stellar mass at each timestep.
-
-    """
-    mstar = [0]
-    for i in range(1, len(sfh)):
-        dm = sfh[i] * dt * 1e9 * (1 - recycling)
-        mstar.append(mstar[i-1] + dm)
-    return mstar
     

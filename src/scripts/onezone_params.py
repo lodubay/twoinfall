@@ -116,8 +116,8 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
         eta = eta_func(RADIUS)
         # Run one-zone model
         name = output_name(*param_dict.values())
-        ifr = models.twoinfall(RADIUS, dt=dt, outflows='equilibrium', 
-                               **param_dict)
+        ifr = models.twoinfall(RADIUS, mass_loading=eta_func, dt=dt, 
+                               dr=ZONE_WIDTH, **param_dict)
         sz = vice.singlezone(name=name,
                              func=ifr, 
                              mode='ifr',

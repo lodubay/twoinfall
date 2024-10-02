@@ -5,7 +5,7 @@ Conroy et al. (2022) to be used in VICE multizone simulations.
 
 from vice.toolkit import J21_sf_law
 
-class earlyburst_tau_star(J21_sf_law):
+class earlyburst_sf_law(J21_sf_law):
     r"""
     An implementation of the Conroy et al. (2022) SFE timescale model.
     

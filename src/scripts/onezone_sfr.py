@@ -60,12 +60,17 @@ def main():
     # One-zone model parameters
     simtime = np.arange(0, 13.21, 0.01)
     area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
+    eta_func = equilibrium_mass_loading(
+        tau_star=2.,
+        tau_sfh=SECOND_TIMESCALE, 
+        alpha_h_eq=0.2
+    )
     ifr = twoinfall(
         RADIUS, 
         first_timescale=FIRST_TIMESCALE, 
         second_timescale=SECOND_TIMESCALE, 
         onset=ONSET,
-        outflows="equilibrium"
+        mass_loading=eta_func,
     )
     
     sz = vice.singlezone(
@@ -74,13 +79,7 @@ def main():
         mode = "ifr",
         **ONEZONE_DEFAULTS
     )
-    eta_func = equilibrium_mass_loading(
-        tau_star=2.,
-        tau_sfh=ifr.second.timescale, 
-        alpha_h_eq=0.2
-    )
     sz.eta = eta_func(RADIUS)
-    print(eta_func(RADIUS))
     sz.tau_star = twoinfall_sf_law(area, onset=ifr.onset)
     sz.run(simtime, overwrite=True)
     
