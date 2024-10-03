@@ -1,5 +1,6 @@
 r"""
-This file contains analytical models for the Milky Way disk.
+This file contains analytical models for the stellar surface density of the
+Milky Way disk at late times.
 
 Contents
 --------
@@ -48,6 +49,7 @@ class two_component_disk(double_exponential):
         The surface mass density of the thick disk at the given radius.
     thick_to_thin(radius)
         The ratio of thick to thin disk surface mass density.
+
     """
     def __init__(self, ratio=THICK_TO_THIN_RATIO, 
                  mass=M_STAR_MW, 
@@ -85,6 +87,24 @@ class two_component_disk(double_exponential):
             )
         return 1 / integral
     
+    def gradient(self, radius):
+        r"""
+        The unitless, un-normalized stellar surface density gradient.
+        
+        Parameters
+        ----------
+        radius : float
+            Galactic radius in kpc.
+        
+        Returns
+        -------
+        float
+            The value of $g(R_{\rm gal})$ as defined in Appendix B of
+            Johnson et al. (2021).
+        
+        """
+        return self.__call__(radius) / self.__call__(0)
+    
     def thick_disk(self, radius):
         """
         The surface mass density of the thick disk at the given radius.
@@ -98,6 +118,7 @@ class two_component_disk(double_exponential):
         -------
         float
             Thick disk surface mass density.
+        
         """
         return self.first(radius)
     
@@ -114,6 +135,7 @@ class two_component_disk(double_exponential):
         -------
         float
             Thin disk surface mass density.
+        
         """
         return self.ratio * self.second(radius)
         
@@ -130,5 +152,6 @@ class two_component_disk(double_exponential):
         -------
         float
             The thick disk surface mass density divided by the thin disk.
+        
         """
         return self.thick_disk(radius) / self.thin_disk(radius)

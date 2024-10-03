@@ -56,16 +56,19 @@ class twoinfall(double_exponential):
         self.first.timescale = first_timescale 
         self.second.timescale = second_timescale
         # Calculate amplitude ratio
-        self.ratio = self.ampratio(radius, mass_loading = mass_loading, 
+        self.ratio = self.ampratio(radius, thick_to_thin_ratio, 
+                                   mass_loading = mass_loading, 
                                    dr = dr, dt = dt)
         # Normalize infall rate
-        prefactor = self.normalize(radius, mass_loading = mass_loading, 
+        prefactor = self.normalize(radius, gradient, 
+                                   mass_loading = mass_loading, 
                                    dt = dt,  dr = dr)
         self.first.norm *= prefactor
         self.second.norm *= prefactor
 
 
-    def ampratio(self, radius, mass_loading = vice.milkyway.default_mass_loading, 
+    def ampratio(self, radius, thick_to_thin_ratio, 
+                 mass_loading = vice.milkyway.default_mass_loading, 
                  dt = 0.01, dr = 0.1, recycling = 0.4):
         r"""
         Calculate the ratio of the second infall amplitude to the first.
@@ -74,6 +77,9 @@ class twoinfall(double_exponential):
         ----------
         radius : float
             The galactocentric radius at which to evaluate the amplitude ratio.
+        thick_to_thin_ratio : <function>
+            The ratio of the thick disk to thin disk surface density as a 
+            function of radius in kpc.
         mass_loading : <function> [default: ``vice.milkyway.default_mass_loading``]
             The dimensionless mass-loading factor as a function of radius.
         dt : real number [default : 0.01]
@@ -100,7 +106,8 @@ class twoinfall(double_exponential):
         return ratio**-1 * mstar_onset / (mstar_final - mstar_onset)
     
     
-    def normalize(self, radius, mass_loading = vice.milkyway.default_mass_loading, 
+    def normalize(self, radius, gradient, 
+                  mass_loading = vice.milkyway.default_mass_loading, 
                   dt = 0.01, dr = 0.1, recycling = 0.4):
         r"""
         Normalize the infall rate according to the desired surface density.
@@ -109,6 +116,10 @@ class twoinfall(double_exponential):
         ----------
         radius : float
             The galactocentric radius at which to normalize the gas infall.
+        gradient : <function>
+            A function accepting galactocentric radius in kpc specifying the
+            desired stellar radial surface density gradient at the present day.
+            Return value assumed to be unitless and unnormalized.
         mass_loading : <function> [default: ``vice.milkyway.default_mass_loading``]
             The dimensionless mass-loading factor as a function of radius.
         dt : real number [default : 0.01]
