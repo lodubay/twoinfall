@@ -26,10 +26,11 @@ def main():
     # Set up figure: two panels, vertically stacked
     plt.style.use(paths.styles / 'paper.mplstyle')
     plt.rcParams['axes.prop_cycle'] = plt.cycler('color', paultol.vibrant.colors)
-    fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 1.85*ONE_COLUMN_WIDTH))
+    fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 2*ONE_COLUMN_WIDTH))
     # TODO figure out how to make subfigures exactly equal
-    gs = fig.add_gridspec(13, 7, hspace=0., wspace=0.)
-    subfigs = [fig.add_subfigure(gs[i:i+w,:]) for i, w in zip((0, 6), (6, 7))]
+    # gs = fig.add_gridspec(13, 7, hspace=0., wspace=0.)
+    # subfigs = [fig.add_subfigure(gs[i:i+w,:]) for i, w in zip((0, 6), (6, 7))]
+    subfigs = fig.subfigures(2, 1, hspace=-0.1)
     
     # One-zone model settings
     dt = ONEZONE_DEFAULTS['dt']
@@ -45,7 +46,7 @@ def main():
         parent_dir.mkdir(parents=True)
     
     # First panel: constant [O/Fe]
-    axs0 = setup_axes(subfigs[0], xlim=XLIM, ylim=YLIM, xlabel=False)
+    axs0 = setup_axes(subfigs[0], xlim=XLIM, ylim=YLIM, xlabel=True)
     # Pristine infall
     name = str(parent_dir / 'ZinNone')
     sz = vice.singlezone(name=name,
@@ -62,16 +63,13 @@ def main():
                       linewidth=2,
                       label='None', 
                       marker_labels=False)
-    # hist = vice.history(name)
-    # mstar_onset = hist['mstar'][int(ifr.onset/dt)-1]
-    # print(mstar_onset / (hist['mstar'][-1] - mstar_onset))
 
     # Pre-enriched infall with constant metallicity
     ofe_in = 0.3
     for i, feh_in in enumerate([-2.0, -1.5, -1.0]):
         Zfe_in = xh_to_z(feh_in)
         Zo_in = xh_to_z(ofe_in + feh_in, element='o')
-        name = str(parent_dir / f'ZinConst{i+1:d}')
+        name = str(parent_dir / f'ZinConst{int(-10*feh_in):d}')
         sz = vice.singlezone(name=name,
                              func=ifr, 
                              mode='ifr',
@@ -87,8 +85,8 @@ def main():
                           label=r'$%s$' % feh_in, 
                           marker_labels=False)
     
-    # Exponentially increasing Zin
-    name = str(parent_dir / 'ZinExp')
+    # Exponentially increasing Zin to [Fe/H]=-1.0
+    name = str(parent_dir / 'ZinExp2')
     feh_in = -1.0
     tau_Zin = 2 # exponential timescale of infall enrichment
     Zfe_in = lambda t: xh_to_z(feh_in) * (1 - m.exp(-t/tau_Zin))
@@ -105,7 +103,27 @@ def main():
                       fig=subfigs[0], axs=axs0, 
                       linestyle='-', 
                       color=None,
-                      label=r'Exp (2 Gyr) $\to -1.0$', 
+                      label=r'Exp (2 Gyr) $\to-1.0$', 
+                      marker_labels=False)
+
+    # Exponentially increasing Zin to Solar [Fe/H]
+    name = str(parent_dir / 'ZinExp5')
+    tau_Zin = 5 # exponential timescale of infall enrichment
+    Zfe_in = lambda t: xh_to_z(feh_in) * (1 - m.exp(-t/tau_Zin))
+    Zo_in = lambda t: xh_to_z(ofe_in + feh_in, 'o') * (1 - m.exp(-t/tau_Zin))
+    sz = vice.singlezone(name=name,
+                         func=ifr, 
+                         mode='ifr',
+                         **ONEZONE_DEFAULTS)
+    sz.tau_star = tau_star
+    sz.eta = eta
+    sz.Zin = {'fe': Zfe_in, 'o': Zo_in}
+    sz.run(simtime, overwrite=True)
+    plot_vice_onezone(name, 
+                      fig=subfigs[0], axs=axs0, 
+                      linestyle='-', 
+                      color=None,
+                      label=r'Exp (5 Gyr) $\to-1.0$', 
                       marker_labels=False)
     # Axes labels
     axs0[0].text(0.95, 0.95, r'[O/Fe]$_{\rm in}=+%s$' % ofe_in, 
@@ -122,14 +140,35 @@ def main():
                       linewidth=2,
                       label='None', 
                       marker_labels=False)
+    
+    # Constant [O/H], variable [O/Fe]
+    name = str(parent_dir / 'Zin10_VaryOFe')
+    oh_in = -1.0
+    Zo_in = xh_to_z(feh_in, 'o')
+    tau_ofe = 5
+    ofe_in = lambda t: 0.45 * m.exp(-t/tau_ofe)
+    Zfe_in = lambda t: xh_to_z(oh_in - ofe_in(t), 'fe')
+    sz = vice.singlezone(name=name,
+                         func=ifr, 
+                         mode='ifr',
+                         **ONEZONE_DEFAULTS)
+    sz.tau_star = tau_star
+    sz.eta = eta
+    sz.Zin = {'fe': Zfe_in, 'o': Zo_in}
+    sz.run(simtime, overwrite=True)
+    plot_vice_onezone(name, 
+                      fig=subfigs[1], axs=axs1, 
+                      linestyle='-', 
+                      color=None,
+                      label='-1.0', 
+                      marker_labels=False)
+    
     # Exponentially increasing Zin
     name = str(parent_dir / 'ZinExp_VaryOFe')
-    feh_in = -1.0
     oh_in = -1.0
-    tau_Zfe = 5 # exponential timescale of infall enrichment
     tau_Zo = 2
-    Zfe_in = lambda t: xh_to_z(feh_in) * (1 - m.exp(-t/tau_Zfe))
     Zo_in = lambda t: xh_to_z(oh_in, 'o') * (1 - m.exp(-t/tau_Zo))
+    Zfe_in = lambda t: xh_to_z(z_to_xh(Zo_in(t), 'o') - ofe_in(t))
     sz = vice.singlezone(name=name,
                          func=ifr, 
                          mode='ifr',
@@ -148,7 +187,7 @@ def main():
     # Axes labels
     axs1[0].text(0.95, 0.95, r'Variable [O/Fe]$_{\rm in}$', 
                  ha='right', va='top', transform=axs1[0].transAxes)
-    axs1[0].legend(title=r'[Fe/H]$_{\rm in}$', frameon=False)
+    axs1[0].legend(title=r'[O/H]$_{\rm in}$', frameon=False)
     
     fig.savefig(paths.figures / 'enriched_infall')
     plt.close()
@@ -156,6 +195,10 @@ def main():
 def xh_to_z(xh, element='fe'):
     """Convert logarithmic abundance [X/H] to linear abundance Z."""
     return vice.solar_z[element] * 10 ** xh
+
+def z_to_xh(z, element='fe'):
+    """Convert linear abundance Z to logarithmic abundance [X/H]"""
+    return m.log10(z / vice.solar_z[element])
 
 
 if __name__ == '__main__':
