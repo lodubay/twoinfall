@@ -4,14 +4,16 @@ Plot a grid of [O/Fe] vs [Fe/H] at varying Galactic radii and z-heights.
 
 import argparse
 from pathlib import Path
+
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from matplotlib.lines import Line2D
 import numpy as np
 import vice
+
 from multizone_stars import MultizoneStars
 from apogee_sample import APOGEESample
-from scatter_plot_grid import setup_axes, setup_colorbar
+from scatter_plot_grid import setup_axes, setup_colorbar, plot_gas_abundance
 from _globals import GALR_BINS, ABSZ_BINS, ZONE_WIDTH, MAX_SF_RADIUS
 import paths
 
@@ -36,7 +38,7 @@ def plot_ofe_feh_grid(mzs, apogee_data, tracks=True, apogee_contours=True,
     if color_by == 'galr_origin':
         cbar_label = r'Birth $R_{\rm{Gal}}$ [kpc]'
         cbar_lim = (0, MAX_SF_RADIUS)
-        fname = 'ofe_feh_origin_grid.png'
+        fname = 'ofe_feh_grid.png'
     elif color_by == 'age':
         cbar_label = 'Stellar age [Gyr]'
         cbar_lim = (0, 13.5)
@@ -66,11 +68,7 @@ def plot_ofe_feh_grid(mzs, apogee_data, tracks=True, apogee_contours=True,
                 subset.scatter_plot(ax, '[fe/h]', '[o/fe]', color=color_by,
                                     cmap=cmap, norm=cbar.norm)
             if tracks:
-                zone = int(0.5 * (galr_lim[0] + galr_lim[1]) / ZONE_WIDTH)
-                zone_path = str(mzs.fullpath / ('zone%d' % zone))
-                hist = vice.history(zone_path)
-                ax.plot(hist['[fe/h]'], hist['[o/fe]'], c=ism_track_color, ls='-', 
-                        linewidth=ism_track_width)
+                plot_gas_abundance(ax, subset, '[fe/h]', '[o/fe]')
             if apogee_contours:
                 apogee_subset = apogee_data.region(galr_lim, absz_lim)
                 apogee_subset.plot_kde2D_contours(ax, 'FE_H', 'O_FE')

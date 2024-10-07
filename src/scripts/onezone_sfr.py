@@ -8,8 +8,10 @@ import matplotlib.pyplot as plt
 
 import vice
 
-from multizone.src.yields import W23
+# from multizone.src.yields import W23
+from multizone.src.yields import J21
 from multizone.src.models import twoinfall, twoinfall_sf_law, equilibrium_mass_loading
+from multizone.src.models.gradient import gradient
 from track_and_mdf import setup_figure, plot_vice_onezone
 from apogee_sample import APOGEESample
 import paths
@@ -60,12 +62,13 @@ def main():
     # One-zone model parameters
     simtime = np.arange(0, 13.21, 0.01)
     area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
-    eta_func = equilibrium_mass_loading(
-        tau_star=2.,
-        tau_sfh=SECOND_TIMESCALE, 
-        alpha_h_eq=0.2
-    )
-    ifr = twoinfall(
+    # eta_func = equilibrium_mass_loading(
+    #     tau_star=4.,
+    #     tau_sfh=SECOND_TIMESCALE, 
+    #     alpha_h_eq=0.2
+    # )
+    eta_func = vice.milkyway.default_mass_loading
+    ifr = twoinfall_gradient(
         RADIUS, 
         first_timescale=FIRST_TIMESCALE, 
         second_timescale=SECOND_TIMESCALE, 
@@ -98,6 +101,13 @@ def main():
     
     plt.savefig(paths.figures / "onezone_sfr")
     plt.close()
+
+
+class twoinfall_gradient(twoinfall):
+    def __init__(self, radius, **kwargs):
+        super().__init__(radius, **kwargs)
+        self.first.norm *= gradient(radius)
+        self.second.norm *= gradient(radius)
     
 
 if __name__ == "__main__":

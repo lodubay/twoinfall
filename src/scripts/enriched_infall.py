@@ -8,12 +8,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import vice
 
-from multizone.src.yields import W23
+# from multizone.src.yields import W23
+from multizone.src.yields import J21
 from multizone.src.models import twoinfall, twoinfall_sf_law, equilibrium_mass_loading
 from track_and_mdf import setup_axes, plot_vice_onezone
 from apogee_sample import APOGEESample
 import paths
-from utils import get_bin_centers
+from utils import get_bin_centers, twoinfall_gradient
 from _globals import ONEZONE_DEFAULTS, ZONE_WIDTH, ONE_COLUMN_WIDTH, END_TIME
 from colormaps import paultol
 
@@ -36,9 +37,10 @@ def main():
     dt = ONEZONE_DEFAULTS['dt']
     simtime = np.arange(0, END_TIME + dt, dt)
     area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
-    eta_func = equilibrium_mass_loading()
+    # eta_func = equilibrium_mass_loading()
+    eta_func = vice.milkyway.default_mass_loading
     eta = eta_func(RADIUS)
-    ifr = twoinfall(RADIUS, mass_loading=eta_func, dt=dt, 
+    ifr = twoinfall_gradient(RADIUS, mass_loading=eta_func, dt=dt, 
                     dr=ZONE_WIDTH)
     tau_star = twoinfall_sf_law(area, onset=ifr.onset)
     parent_dir = paths.onezone / 'enriched_infall'
@@ -164,25 +166,25 @@ def main():
                       marker_labels=False)
     
     # Exponentially increasing Zin
-    name = str(parent_dir / 'ZinExp_VaryOFe')
-    oh_in = -1.0
-    tau_Zo = 2
-    Zo_in = lambda t: xh_to_z(oh_in, 'o') * (1 - m.exp(-t/tau_Zo))
-    Zfe_in = lambda t: xh_to_z(z_to_xh(Zo_in(t), 'o') - ofe_in(t))
-    sz = vice.singlezone(name=name,
-                         func=ifr, 
-                         mode='ifr',
-                         **ONEZONE_DEFAULTS)
-    sz.tau_star = tau_star
-    sz.eta = eta
-    sz.Zin = {'fe': Zfe_in, 'o': Zo_in}
-    sz.run(simtime, overwrite=True)
-    plot_vice_onezone(name, 
-                      fig=subfigs[1], axs=axs1, 
-                      linestyle='-', 
-                      color=None,
-                      label='Exp', 
-                      marker_labels=False)
+    # name = str(parent_dir / 'ZinExp_VaryOFe')
+    # oh_in = -1.0
+    # tau_Zo = 2
+    # Zo_in = lambda t: xh_to_z(oh_in, 'o') * (1 - m.exp(-t/tau_Zo))
+    # Zfe_in = lambda t: xh_to_z(z_to_xh(Zo_in(t), 'o') - ofe_in(t))
+    # sz = vice.singlezone(name=name,
+    #                      func=ifr, 
+    #                      mode='ifr',
+    #                      **ONEZONE_DEFAULTS)
+    # sz.tau_star = tau_star
+    # sz.eta = eta
+    # sz.Zin = {'fe': Zfe_in, 'o': Zo_in}
+    # sz.run(simtime, overwrite=True)
+    # plot_vice_onezone(name, 
+    #                   fig=subfigs[1], axs=axs1, 
+    #                   linestyle='-', 
+    #                   color=None,
+    #                   label='Exp', 
+    #                   marker_labels=False)
     
     # Axes labels
     axs1[0].text(0.95, 0.95, r'Variable [O/Fe]$_{\rm in}$', 

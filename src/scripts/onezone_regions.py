@@ -13,6 +13,7 @@ from multizone.src.yields import W23
 # from multizone.src.yields import J21
 # from multizone.src.yields import F04
 from multizone.src import models, dtds
+from multizone.src.models.gradient import gradient
 from apogee_sample import APOGEESample
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH, ZONE_WIDTH
 from colormaps import paultol
@@ -79,7 +80,7 @@ def plot_region(fig, radius, dr=2., eta=models.equilibrium_mass_loading(),
     
     sz = vice.singlezone(
         name = name,
-        func = models.twoinfall(
+        func = twoinfall_gradient(
             radius, 
             first_timescale=1., 
             second_timescale=models.insideout.timescale(radius), 
@@ -112,6 +113,13 @@ def plot_region(fig, radius, dr=2., eta=models.equilibrium_mass_loading(),
                 va="top", ha="right", transform=axs[0].transAxes)
     
     return axs
+
+
+class twoinfall_gradient(models.twoinfall):
+    def __init__(self, radius, **kwargs):
+        super().__init__(radius, **kwargs)
+        self.first.norm *= gradient(radius)
+        self.second.norm *= gradient(radius)
 
 
 if __name__ == "__main__":

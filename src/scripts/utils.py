@@ -3,6 +3,7 @@ Functions used by many plotting scripts.
 """
 
 from numbers import Number
+
 import numpy as np
 from numpy.random import default_rng
 import pandas as pd
@@ -13,7 +14,37 @@ from astropy.table import Table
 import astropy.units as u
 import astropy.coordinates as coords
 import vice
+
+from multizone.src.models import twoinfall
+from multizone.src.models.gradient import gradient
 from _globals import RANDOM_SEED
+
+
+class twoinfall_gradient(twoinfall):
+    """A sub-class of the twoinfall SFH which incorporates the value of the
+    stellar surface density gradient when called."""
+    def __init__(self, radius, **kwargs):
+        super().__init__(radius, **kwargs)
+        self.first.norm *= gradient(radius)
+        self.second.norm *= gradient(radius)
+
+
+def vice_to_apogee_col(col):
+    """
+    Convert VICE multizone output to APOGEE column labels.
+    
+    Parameters
+    ----------
+    col : str
+        Name of column in VICE multizone stars output.
+    
+    Returns
+    -------
+    str
+        Column label in APOGEE data.
+        
+    """
+    return col[1:-1].replace('/', '_').upper()
 
 
 # =============================================================================

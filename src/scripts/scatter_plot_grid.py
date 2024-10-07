@@ -3,11 +3,47 @@ This file contains utility functions related to generating a grid of scatter
 plots, e.g., showing [O/Fe] vs [Fe/H] over a range of Galactic regions.
 """
 
+import vice
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize, LogNorm, BoundaryNorm
 from matplotlib.cm import ScalarMappable
-from utils import sample_rows
-from _globals import GALR_BINS, ABSZ_BINS, TWO_COLUMN_WIDTH
+from utils import sample_rows, vice_to_apogee_col
+from _globals import GALR_BINS, ABSZ_BINS, TWO_COLUMN_WIDTH, ZONE_WIDTH
+
+
+def plot_gas_abundance(ax, mzs, xcol, ycol, c='k', ls='-', lw=0.5):
+    """
+    Plot the ISM abundance tracks for the mean zone.
+
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axes on which to plot the gas abundance.
+    mzs : MultizoneStars object
+        Object containing model stars data. Gas abundance will be plotted from
+        the mean radius of the data.
+    xcol : str
+        Column of data to plot on the x-axis.
+    ycol : str
+        Column of data to plot on the y-axis.
+    c : str, optional
+        Line color. The default is 'k'.
+    ls : str, optional
+        Line style. The default is '-'.
+    lw : float, optional
+        Line width. The default is 0.5.
+
+    Returns
+    -------
+    lines : list of Line2D
+        Output of Axes.plot().
+
+    """
+    zone = int(0.5 * (mzs.galr_lim[0] + mzs.galr_lim[1]) / mzs.zone_width)
+    zone_path = str(mzs.fullpath / ('zone%d' % zone))
+    hist = vice.history(zone_path)
+    lines = ax.plot(hist[xcol], hist[ycol], c=c, ls=ls, linewidth=lw)
+    return lines
 
 
 def setup_colorbar(fig, cmap=None, vmin=None, vmax=None, label='', 
@@ -69,7 +105,8 @@ def setup_colorbar(fig, cmap=None, vmin=None, vmax=None, label='',
 def setup_axes(galr_bins=GALR_BINS[:-1], absz_bins=ABSZ_BINS,
                width=TWO_COLUMN_WIDTH, xlim=None, ylim=None,
                xlabel='', ylabel='', xlabelpad=2, ylabelpad=2,
-               row_label_pos=(0.07, 0.88), spacing=0., title=''):
+               row_label_pos=(0.07, 0.88), spacing=0., title='',
+               row_label_col=0):
     """
     Set up a blank grid of axes with a default subplot spacing.
 
@@ -121,6 +158,7 @@ def setup_axes(galr_bins=GALR_BINS[:-1], absz_bins=ABSZ_BINS,
         ax.set_xlabel(xlabel, labelpad=xlabelpad)
     for i, ax in enumerate(axs[:,0]):
         ax.set_ylabel(ylabel, labelpad=ylabelpad)
+    for i, ax in enumerate(axs[:, row_label_col]):
         # Label bins in z-height
         absz_lim = (absz_bins[-(i+2)], absz_bins[-(i+1)])
         ax.text(row_label_pos[0], row_label_pos[1], 
