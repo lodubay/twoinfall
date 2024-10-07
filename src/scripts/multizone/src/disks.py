@@ -50,6 +50,7 @@ class diskmodel(vice.milkyway):
         - "outerburst"
         - "twoinfall"
         - "earlyburst"
+        - "static_infall"
     
     verbose : ``bool`` [default : True]
         Whether or not the run the models with verbose output.
@@ -125,9 +126,9 @@ class diskmodel(vice.milkyway):
         else:
             from .yields import J21
         # Set the SF mode - infall vs star formation rate
-        if spec.lower() in ["twoinfall", "earlyburst"]:
+        if spec.lower() in ["twoinfall", "earlyburst", "static_infall"]:
             self.mode = "ifr"
-            for zone in self.zones: zone.Mg0 = 0
+            for zone in self.zones: zone.Mg0 = 0 # TODO change to 1e6?
         else:
             self.mode = "sfr"
         # Mass-loading factor calibrated for equilibrium metallicity
@@ -163,7 +164,7 @@ class diskmodel(vice.milkyway):
             radial_gas_velocity *= _KPC_PER_KM_ # vrad now in kpc / Gyr
             for i in range(self.n_zones):
                 for j in range(self.n_zones):
-                    if i - 1 == j:
+                    if i - 1 == j and i * zone_width < MAX_SF_RADIUS:
                         # normalized to 10 Myr time interval
                         numerator = radial_gas_velocity**2 * 0.01**2
                         numerator -= 2 * i * zone_width * radial_gas_velocity * 0.01
@@ -243,6 +244,7 @@ class star_formation_history:
                 "outerburst":         models.outerburst,
                 "twoinfall":          models.twoinfall,
                 "earlyburst":         models.earlyburst_ifr,
+                "static_infall":      models.static_infall,
             }[spec.lower()]((i + 0.5) * zone_width, dr = zone_width, dt = dt,
                             **kwargs))
             i += 1

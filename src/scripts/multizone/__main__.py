@@ -14,7 +14,7 @@ import paths
 _MIGRATION_MODELS_ = ["diffusion", "linear", "post-process", "sudden", 
                       "gaussian", "none"]
 _EVOLUTION_MODELS_ = ["static", "insideout", "lateburst", "outerburst",
-                      "twoinfall", "earlyburst"]
+                      "twoinfall", "earlyburst", "static_infall"]
 _DELAY_MODELS_ = ["powerlaw", "plateau", "prompt", "exponential", "triple",
                   "greggio05_single", "greggio05_double"]
 _YIELD_SETS_ = ["F04", "JW20", "J21", "C22", "W23"]
