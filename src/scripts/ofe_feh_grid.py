@@ -17,6 +17,7 @@ import paths
 
 FEH_LIM = (-1.3, 0.7)
 OFE_LIM = (-0.15, 0.65)
+_COLOR_OPTIONS = ['galr_origin', 'age']
 
 def main(output_name, uncertainties=True, **kwargs):
     # Import APOGEE data
@@ -30,13 +31,26 @@ def main(output_name, uncertainties=True, **kwargs):
 
 
 def plot_ofe_feh_grid(mzs, apogee_data, tracks=True, apogee_contours=True,
-                      style='paper', cmap='winter_r'):
+                      style='paper', cmap='winter_r', color_by='galr_origin'):
+    color_by = color_by.lower()
+    if color_by == 'galr_origin':
+        cbar_label = r'Birth $R_{\rm{Gal}}$ [kpc]'
+        cbar_lim = (0, MAX_SF_RADIUS)
+        fname = 'ofe_feh_origin_grid.png'
+    elif color_by == 'age':
+        cbar_label = 'Stellar age [Gyr]'
+        cbar_lim = (0, 13.5)
+        fname = 'ofe_feh_age_grid.png'
+    else:
+        raise ValueError('Parameter "color_by" must be one of %s' % 
+                         _COLOR_OPTIONS)
+    
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = setup_axes(xlim=FEH_LIM, ylim=OFE_LIM, xlabel='[Fe/H]', 
                           ylabel='[O/Fe]', row_label_pos=(0.07, 0.85),
                           title=mzs.name, width=8, galr_bins=GALR_BINS)
-    cbar = setup_colorbar(fig, cmap=cmap, vmin=0, vmax=MAX_SF_RADIUS, 
-                          label=r'Birth $R_{\rm{Gal}}$ [kpc]')
+    cbar = setup_colorbar(fig, cmap=cmap, vmin=cbar_lim[0], vmax=cbar_lim[1], 
+                          label=cbar_label)
     cbar.ax.yaxis.set_major_locator(MultipleLocator(2))
     cbar.ax.yaxis.set_minor_locator(MultipleLocator(0.5))
     
@@ -49,7 +63,7 @@ def plot_ofe_feh_grid(mzs, apogee_data, tracks=True, apogee_contours=True,
             galr_lim = (GALR_BINS[j], GALR_BINS[j+1])
             subset = mzs.region(galr_lim, absz_lim)
             if subset.nstars:
-                subset.scatter_plot(ax, '[fe/h]', '[o/fe]', color='galr_origin',
+                subset.scatter_plot(ax, '[fe/h]', '[o/fe]', color=color_by,
                                     cmap=cmap, norm=cbar.norm)
             if tracks:
                 zone = int(0.5 * (galr_lim[0] + galr_lim[1]) / ZONE_WIDTH)
@@ -69,16 +83,19 @@ def plot_ofe_feh_grid(mzs, apogee_data, tracks=True, apogee_contours=True,
     axs[0,0].yaxis.set_minor_locator(MultipleLocator(0.05))
     # Custom legend
     custom_lines = [Line2D([0], [0], color=ism_track_color, linestyle='-', 
-                           linewidth=ism_track_width),
-                    Line2D([0], [0], color='r', linestyle='-', linewidth=0.5),
-                    Line2D([0], [0], color='r', linestyle='--', linewidth=0.5)]
-    legend_labels = ['Gas abundance', 'APOGEE 30% cont.', 'APOGEE 80% cont.']
+                           linewidth=ism_track_width)]
+    legend_labels = ['Gas abundance']
+    if apogee_contours:
+        custom_lines += [
+            Line2D([0], [0], color='r', linestyle='-', linewidth=0.5),
+            Line2D([0], [0], color='r', linestyle='--', linewidth=0.5)]
+        legend_labels += ['APOGEE 30% cont.', 'APOGEE 80% cont.']
     axs[2,-1].legend(custom_lines, legend_labels, frameon=False, 
                      loc='upper right', handlelength=0.6, handletextpad=0.4)
     
     # Save
-    fname = mzs.name.replace('diskmodel', 'ofe_feh_grid.png')
-    fullpath = paths.extra / fname
+    fpath = mzs.name.replace('diskmodel', fname)
+    fullpath = paths.extra / fpath
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)
@@ -107,5 +124,9 @@ if __name__ == '__main__':
                         choices=['paper', 'poster'],
                         default='paper', 
                         help='Plot style to use (default: paper)')
+    parser.add_argument('-c', '--color-by', 
+                        choices=_COLOR_OPTIONS, default='galr_origin',
+                        help='Output parameter to assign color-coding ' + \
+                             '(default: galr_origin).')
     args = parser.parse_args()
     main(**vars(args))
