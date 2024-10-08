@@ -12,7 +12,7 @@ from scatter_plot_grid import setup_axes, setup_colorbar, plot_gas_abundance
 from _globals import ABSZ_BINS, GALR_BINS, MAX_SF_RADIUS
 import paths
 
-FEH_LIM = (-1.5, 0.7)
+FEH_LIM = (-1.5, 0.8)
 AGE_LIM = (0, 14)
 
 def main(output_name, uncertainties=True, **kwargs):
@@ -22,12 +22,13 @@ def main(output_name, uncertainties=True, **kwargs):
     mzs = MultizoneStars.from_output(output_name)
     # Model observational uncertainties
     if uncertainties:
-        mzs.model_uncertainty(inplace=True)
+        mzs.model_uncertainty(apogee_sample.data, inplace=True)
     plot_age_feh_grid(mzs, apogee_sample, **kwargs)
 
 
 def plot_age_feh_grid(mzs, apogee_data, cmap='winter_r', uncertainties=True, 
-                      tracks=True, style='paper', apogee_medians=True):
+                      tracks=True, style='paper', apogee_medians=True,
+                      fname='age_feh_grid.png'):
     plt.style.use(paths.styles / ('%s.mplstyle' % style))
     fig, axs = setup_axes(xlim=AGE_LIM, ylim=FEH_LIM, xlabel='Age [Gyr]', 
                           ylabel='[Fe/H]', row_label_pos=(0.18, 0.85),
@@ -56,8 +57,7 @@ def plot_age_feh_grid(mzs, apogee_data, cmap='winter_r', uncertainties=True,
     axs[0,0].yaxis.set_minor_locator(MultipleLocator(0.1))
     
     # Save
-    fname = mzs.name.replace('diskmodel', 'age_feh_grid.png')
-    fullpath = paths.extra / fname
+    fullpath = paths.extra / mzs.name.replace('diskmodel', fname)
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)

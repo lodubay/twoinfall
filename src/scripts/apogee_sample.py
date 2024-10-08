@@ -374,6 +374,44 @@ apogee_sample.py`` to generate it first.')
         else:
             return APOGEESample(subset, data_dir=self.data_dir, 
                                 galr_lim=galr_lim, absz_lim=absz_lim)
+
+
+    def age_intervals(self, col, bin_edges, quantiles=[0.16, 0.5, 0.84], 
+                      age_col='AGE'):
+        """
+        Calculate stellar age quantiles in bins of a secondary parameter.
+        
+        Parameters
+        ----------
+        col : str
+            Data column corresponding to the second parameter (typically an
+            abundance, like "FE_H").
+        bin_edges : array-like
+            List or array of bin edges for the secondary parameter.
+        quantiles : list, optional
+            List of quantiles to calculate in each bin. The default is
+            [0.16, 0.5, 0.84], corresponding to the median and +/- one
+            standard deviation.
+        age_col : str, optional
+            Name of column containing ages. The default is 'AGE'.
+        
+        Returns
+        -------
+        pandas.DataFrame
+            DataFrame with each column corresponding to a quantile level
+            and each row a bin in the specified secondary parameter, plus
+            a final column "Count" with the number of targets in each bin.
+        """
+        # Remove entries with no age estimate
+        data = self.data.dropna(subset=age_col)
+        age_grouped = data.groupby(pd.cut(data[col], bin_edges), observed=False)[age_col]
+        age_quantiles = []
+        for q in quantiles:
+            age_quantiles.append(age_grouped.quantile(q))
+        age_quantiles.append(age_grouped.count())
+        df = pd.concat(age_quantiles, axis=1)
+        df.columns = quantiles + ['Count']
+        return df
         
     @property
     def data(self):

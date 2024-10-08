@@ -28,21 +28,20 @@ def main(output_name, uncertainties=True, **kwargs):
     mzs = MultizoneStars.from_output(output_name)
     # Model observational uncertainties
     if uncertainties:
-        mzs.model_uncertainty(inplace=True)
+        mzs.model_uncertainty(apogee_sample.data, inplace=True)
     plot_ofe_feh_grid(mzs, apogee_data, **kwargs)
 
 
 def plot_ofe_feh_grid(mzs, apogee_data, tracks=True, apogee_contours=True,
-                      style='paper', cmap='winter_r', color_by='galr_origin'):
+                      style='paper', cmap='winter_r', color_by='galr_origin',
+                      fname='ofe_feh_grid.py'):
     color_by = color_by.lower()
     if color_by == 'galr_origin':
         cbar_label = r'Birth $R_{\rm{Gal}}$ [kpc]'
         cbar_lim = (0, MAX_SF_RADIUS)
-        fname = 'ofe_feh_grid.png'
     elif color_by == 'age':
         cbar_label = 'Stellar age [Gyr]'
         cbar_lim = (0, 13.5)
-        fname = 'ofe_feh_age_grid.png'
     else:
         raise ValueError('Parameter "color_by" must be one of %s' % 
                          _COLOR_OPTIONS)
@@ -92,8 +91,7 @@ def plot_ofe_feh_grid(mzs, apogee_data, tracks=True, apogee_contours=True,
                      loc='upper right', handlelength=0.6, handletextpad=0.4)
     
     # Save
-    fpath = mzs.name.replace('diskmodel', fname)
-    fullpath = paths.extra / fpath
+    fullpath = paths.extra / mzs.name.replace('diskmodel', fname)
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)

@@ -13,7 +13,7 @@ import vice
 
 import paths
 from _globals import RANDOM_SEED, ZONE_WIDTH
-from utils import box_smooth, sample_rows
+from utils import box_smooth, sample_rows, weighted_quantile
 
 
 def main():
@@ -423,7 +423,45 @@ class MultizoneStars:
         ax.scatter(stars[xcol], stars[ycol], c=color, s=markersize,
                    cmap=cmap, norm=norm, rasterized=True, edgecolor='none',
                    **kwargs)
-    
+
+
+    def age_intervals(self, col, bin_edges, quantiles=[0.16, 0.5, 0.84]):
+        """
+        Calculate stellar age quantiles in bins of a secondary parameter.
+        
+        Parameters
+        ----------
+        col : str
+            Data column corresponding to the second parameter (typically an
+            abundance, like "FE_H").
+        bin_edges : array-like
+            List or array of bin edges for the secondary parameter.
+        quantiles : list, optional
+            List of quantiles to calculate in each bin. The default is
+            [0.16, 0.5, 0.84], corresponding to the median and +/- one
+            standard deviation.
+        
+        Returns
+        -------
+        pandas.DataFrame
+            DataFrame with each column corresponding to a quantile level
+            and each row a bin in the specified secondary parameter, plus
+            a final column "Mass" with the total stellar mass in each bin.
+        """
+        # Remove entries with no age estimate
+        stars = self.stars.dropna(how='any')
+        grouped = stars.groupby(pd.cut(stars[col], bin_edges), observed=False)
+        age_quantiles = []
+        for q in quantiles:
+            # Weight stellar populations by mass
+            wq = lambda x: weighted_quantile(x, 'age', 'mstar', quantile=q)
+            age_quantiles.append(grouped.apply(wq, include_groups=False))
+        age_quantiles.append(grouped['mstar'].sum())
+        df = pd.concat(age_quantiles, axis=1)
+        df.columns = quantiles + ['Mass']
+        return df
+
+
     def mdf(self, col, bins=100, range=None, smoothing=0.):
         """
         Generate a metallicity distribution function (MDF) for the given 
