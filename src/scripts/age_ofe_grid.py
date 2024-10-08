@@ -156,7 +156,7 @@ def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None,
                                       quantiles=[0.16, 0.5, 0.84])
     # Drop bins with few targets
     mtot = age_intervals['Mass'].sum()
-    age_intervals = age_intervals[age_intervals['Mass'] / mtot >= min_mass_frac]
+    age_intervals = age_intervals[age_intervals['MassFrac'] >= min_mass_frac]
     bin_centers = get_bin_centers(bin_edges)
     ax.errorbar(age_intervals[0.5], bin_centers, 
                 xerr=(age_intervals[0.5] - age_intervals[0.16], 

@@ -456,9 +456,9 @@ class MultizoneStars:
             # Weight stellar populations by mass
             wq = lambda x: weighted_quantile(x, 'age', 'mstar', quantile=q)
             age_quantiles.append(grouped.apply(wq, include_groups=False))
-        age_quantiles.append(grouped['mstar'].sum())
+        age_quantiles.append(grouped['mstar'].sum() / stars['mstar'].sum())
         df = pd.concat(age_quantiles, axis=1)
-        df.columns = quantiles + ['Mass']
+        df.columns = quantiles + ['MassFrac']
         return df
 
 
