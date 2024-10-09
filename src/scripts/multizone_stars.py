@@ -458,7 +458,7 @@ class MultizoneStars:
             age_quantiles.append(grouped.apply(wq, include_groups=False))
         age_quantiles.append(grouped['mstar'].sum() / stars['mstar'].sum())
         df = pd.concat(age_quantiles, axis=1)
-        df.columns = quantiles + ['MassFrac']
+        df.columns = quantiles + ['mass_fraction']
         return df
 
 

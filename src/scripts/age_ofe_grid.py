@@ -154,14 +154,16 @@ def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None,
     """
     age_intervals = mzs.age_intervals(col, bin_edges, 
                                       quantiles=[0.16, 0.5, 0.84])
+    age_intervals['bin_edge_left'] = bin_edges[:-1]
+    age_intervals['bin_edge_right'] = bin_edges[1:]
+    age_intervals['bin_center'] = get_bin_centers(bin_edges)
     # Drop bins with few targets
-    mtot = age_intervals['Mass'].sum()
-    age_intervals = age_intervals[age_intervals['MassFrac'] >= min_mass_frac]
-    bin_centers = get_bin_centers(bin_edges)
-    ax.errorbar(age_intervals[0.5], bin_centers, 
+    age_intervals = age_intervals[age_intervals['mass_fraction'] >= min_mass_frac]
+    ax.errorbar(age_intervals[0.5], age_intervals['bin_center'], 
                 xerr=(age_intervals[0.5] - age_intervals[0.16], 
                       age_intervals[0.84] - age_intervals[0.5]),
-                yerr=np.array(bin_edges[1:]) - np.array(bin_centers),
+                yerr=(age_intervals['bin_center'] - age_intervals['bin_edge_left'],
+                      age_intervals['bin_edge_right'] - age_intervals['bin_center']),
                 color=color, linestyle='none', capsize=1, elinewidth=0.5,
                 capthick=0.5, marker='^', markersize=2, label=label,
     )
@@ -193,14 +195,16 @@ def plot_apogee_median_ages(ax, apogee_sample, col, bin_edges, label=None,
     age_intervals = apogee_sample.age_intervals(col, bin_edges, 
                                                 quantiles=[0.16, 0.5, 0.84], 
                                                 age_col=age_col)
+    age_intervals['bin_edge_left'] = bin_edges[:-1]
+    age_intervals['bin_edge_right'] = bin_edges[1:]
+    age_intervals['bin_center'] = get_bin_centers(bin_edges)
     # Drop bins with few targets
-    age_intervals = age_intervals[age_intervals['Count'] >= 10]
-    bin_centers = get_bin_centers(bin_edges)
-    # TODO get bin width from df index
-    ax.errorbar(age_intervals[0.5], bin_centers, 
+    age_intervals = age_intervals[age_intervals['count'] >= 10]
+    ax.errorbar(age_intervals[0.5], age_intervals['bin_center'], 
                 xerr=(age_intervals[0.5] - age_intervals[0.16], 
                       age_intervals[0.84] - age_intervals[0.5]),
-                yerr=np.array(bin_edges[1:]) - np.array(bin_centers),
+                yerr=(age_intervals['bin_center'] - age_intervals['bin_edge_left'],
+                      age_intervals['bin_edge_right'] - age_intervals['bin_center']),
                 color=color, linestyle='none', capsize=1, elinewidth=0.5,
                 capthick=0.5, marker='^', markersize=2, label=label,
     )

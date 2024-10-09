@@ -410,7 +410,7 @@ apogee_sample.py`` to generate it first.')
             age_quantiles.append(age_grouped.quantile(q))
         age_quantiles.append(age_grouped.count())
         df = pd.concat(age_quantiles, axis=1)
-        df.columns = quantiles + ['Count']
+        df.columns = quantiles + ['count']
         return df
         
     @property
