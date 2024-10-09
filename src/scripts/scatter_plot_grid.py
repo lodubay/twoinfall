@@ -7,8 +7,7 @@ import vice
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize, LogNorm, BoundaryNorm
 from matplotlib.cm import ScalarMappable
-from utils import sample_rows, vice_to_apogee_col
-from _globals import GALR_BINS, ABSZ_BINS, TWO_COLUMN_WIDTH, ZONE_WIDTH
+from _globals import GALR_BINS, ABSZ_BINS, TWO_COLUMN_WIDTH
 
 
 def plot_gas_abundance(ax, mzs, xcol, ycol, c='k', ls='-', lw=0.5):

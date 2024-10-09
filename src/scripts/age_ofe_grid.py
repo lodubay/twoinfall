@@ -154,16 +154,17 @@ def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None,
     """
     age_intervals = mzs.age_intervals(col, bin_edges, 
                                       quantiles=[0.16, 0.5, 0.84])
-    age_intervals['bin_edge_left'] = bin_edges[:-1]
-    age_intervals['bin_edge_right'] = bin_edges[1:]
-    age_intervals['bin_center'] = get_bin_centers(bin_edges)
     # Drop bins with few targets
+    include = age_intervals['mass_fraction'] >= min_mass_frac
     age_intervals = age_intervals[age_intervals['mass_fraction'] >= min_mass_frac]
-    ax.errorbar(age_intervals[0.5], age_intervals['bin_center'], 
+    bin_edges_left = age_intervals.index.categories[include].left
+    bin_edges_right = age_intervals.index.categories[include].right
+    bin_centers = (bin_edges_left + bin_edges_right) / 2
+    ax.errorbar(age_intervals[0.5], bin_centers, 
                 xerr=(age_intervals[0.5] - age_intervals[0.16], 
                       age_intervals[0.84] - age_intervals[0.5]),
-                yerr=(age_intervals['bin_center'] - age_intervals['bin_edge_left'],
-                      age_intervals['bin_edge_right'] - age_intervals['bin_center']),
+                yerr=(bin_centers - bin_edges_left,
+                      bin_edges_right - bin_centers),
                 color=color, linestyle='none', capsize=1, elinewidth=0.5,
                 capthick=0.5, marker='^', markersize=2, label=label,
     )
@@ -195,16 +196,17 @@ def plot_apogee_median_ages(ax, apogee_sample, col, bin_edges, label=None,
     age_intervals = apogee_sample.age_intervals(col, bin_edges, 
                                                 quantiles=[0.16, 0.5, 0.84], 
                                                 age_col=age_col)
-    age_intervals['bin_edge_left'] = bin_edges[:-1]
-    age_intervals['bin_edge_right'] = bin_edges[1:]
-    age_intervals['bin_center'] = get_bin_centers(bin_edges)
     # Drop bins with few targets
-    age_intervals = age_intervals[age_intervals['count'] >= 10]
-    ax.errorbar(age_intervals[0.5], age_intervals['bin_center'], 
+    include = age_intervals['count'] >= min_stars
+    age_intervals = age_intervals[include]
+    bin_edges_left = age_intervals.index.categories[include].left
+    bin_edges_right = age_intervals.index.categories[include].right
+    bin_centers = (bin_edges_left + bin_edges_right) / 2
+    ax.errorbar(age_intervals[0.5], bin_centers, 
                 xerr=(age_intervals[0.5] - age_intervals[0.16], 
                       age_intervals[0.84] - age_intervals[0.5]),
-                yerr=(age_intervals['bin_center'] - age_intervals['bin_edge_left'],
-                      age_intervals['bin_edge_right'] - age_intervals['bin_center']),
+                yerr=(bin_centers - bin_edges_left,
+                      bin_edges_right - bin_centers),
                 color=color, linestyle='none', capsize=1, elinewidth=0.5,
                 capthick=0.5, marker='^', markersize=2, label=label,
     )
