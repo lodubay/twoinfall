@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import vice
 import paths
 import _globals
+from utils import radial_gradient
 
 def main(style='paper'):
     plt.style.use(paths.styles / f'{style}.mplstyle')
@@ -42,11 +43,11 @@ def main(style='paper'):
     #                      label=r'2 km/s | $\eta\propto e^R$',
     #                      color='b', linestyle='--')
     plot_radial_gradient('nomigration/no_outflow/gasflow_in_1kms/J21/static/diskmodel',
-                         axs, label='Static SFR mode')
+                         axs, label='Static SFR mode (gas flows, no outflow)')
     plot_radial_gradient('nomigration/no_outflow/gasflow_in_1kms/J21/static_infall/diskmodel',
-                         axs, label='Static IFR mode')
-    plot_radial_gradient('nomigration/no_outflow/gasflow_in_1kms/J21/twoinfall/diskmodel',
-                         axs, label='Two-Infall')
+                         axs, label='Static IFR mode (gas flows, no outflow')
+    # plot_radial_gradient('nomigration/no_outflow/gasflow_in_1kms/J21/twoinfall/diskmodel',
+    #                      axs, label='Two-Infall')
     plot_radial_gradient('nomigration/outflow/no_gasflow/J21/twoinfall/diskmodel',
                          axs, linestyle='--', label='Two-Infall (outflows, no gas flow)')
     
@@ -59,6 +60,9 @@ def main(style='paper'):
     axs[1].set_ylabel('[Fe/H]')
     axs[2].set_ylabel('[O/Fe]')
     axs[2].set_xlabel('Radius [kpc]')
+    
+    axs[0].set_ylim((-1, 1))
+    axs[1].set_ylim((-1, 1))
     
     axs[0].legend()
     
@@ -76,35 +80,6 @@ def plot_radial_gradient(name, axs, label='', color=None, linestyle='-'):
                 marker=None, linestyle=linestyle, color=color)
     axs[2].plot(xarr, radial_gradient(mout, '[o/fe]'), 
                 marker=None, linestyle=linestyle, color=color)
-
-
-def radial_gradient(multioutput, parameter, index=-1, 
-                    Rmax=_globals.MAX_SF_RADIUS,
-                    zone_width=_globals.ZONE_WIDTH):
-    """
-    Return the value of the given model parameter at all zones.
-    
-    Parameters
-    ----------
-    multioutput : vice.multioutput
-        VICE multi-zone output instance for the desired model.
-    parameter : str
-        Name of parameter in vice.history dataframe.
-    index : int, optional
-        Index to select for each zone. The default is -1, which corresponds
-        to the last simulation timestep or the present day.
-    Rmax : float, optional
-        Maximum radius in kpc. The default is 15.5.
-    zone_width : float, optional
-        Annular zone width in kpc. The default is 0.1.
-        
-    Returns
-    -------
-    list
-        Parameter values at each zone at the given time index.
-    """
-    return [multioutput.zones['zone%i' % z].history[index][parameter] 
-            for z in range(int(Rmax/zone_width))]
 
 
 if __name__ == '__main__':

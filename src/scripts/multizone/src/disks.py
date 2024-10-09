@@ -95,6 +95,7 @@ class diskmodel(vice.milkyway):
                  radial_gas_velocity = 0., outflows=True, **kwargs):
         super().__init__(zone_width = zone_width, name = name,
             verbose = verbose, **kwargs)
+        # Migration prescription
         if self.zone_width <= 0.2 and self.dt <= 0.02 and self.n_stars >= 6:
             Nstars = 3102519
         else:
@@ -112,8 +113,6 @@ class diskmodel(vice.milkyway):
             self.migration.stars = diskmigration(self.annuli,
                     N = Nstars, mode = migration_mode, 
                     filename = analogdata_filename)
-        self.evolution = star_formation_history(spec = spec,
-            zone_width = zone_width)
         # Set the yields
         if yields == "JW20":
             from vice.yields.presets import JW20
@@ -123,16 +122,25 @@ class diskmodel(vice.milkyway):
             from .yields import F04
         elif yields == "W23":
             from .yields import W23
+            # Mass-loading factor calibrated to produce equilibrium abundance
+            self.mass_loading = models.equilibrium_mass_loading()
         else:
             from .yields import J21
+        # Outflow mass-loading factor (default inherits from vice.milkyway)
+        if not outflows:
+            self.mass_loading = models.mass_loading.no_outflows
         # Set the SF mode - infall vs star formation rate
+        evol_kwargs = {}
         if spec.lower() in ["twoinfall", "earlyburst", "static_infall"]:
             self.mode = "ifr"
-            for zone in self.zones: zone.Mg0 = 0 # TODO change to 1e6?
+            for zone in self.zones: zone.Mg0 = 1e5
+            # specify mass-loading factor for infall mode normalization
+            evol_kwargs["mass_loading"] = self.mass_loading
         else:
             self.mode = "sfr"
-        # Mass-loading factor calibrated for equilibrium metallicity
-        eta_equil = models.equilibrium_mass_loading()
+        # Star formation history
+        self.evolution = star_formation_history(spec = spec,
+            zone_width = zone_width, **evol_kwargs)
         # Set the Type Ia delay time distribution
         dtd = delay_time_distribution(dist = RIa, tmin = delay, **RIa_kwargs)
         for i in range(self.n_zones):
@@ -151,19 +159,15 @@ class diskmodel(vice.milkyway):
                     # Simplified SF law, single power-law with cutoff
                     self.zones[i].tau_star = models.fiducial_sf_law(
                         area, mode=self.mode)
-            
-            # Outflows
-            if not outflows:
-                self.zones[i].eta = 0.
-            elif yields == "W23":
-                self.zones[i].eta = eta_equil(mean_radius)
         
         # CONSTANT GAS VELOCITY
-        if radial_gas_velocity != 0:
+        if radial_gas_velocity:
             radial_gas_velocity *= _SECONDS_PER_GYR_
             radial_gas_velocity *= _KPC_PER_KM_ # vrad now in kpc / Gyr
             for i in range(self.n_zones):
                 for j in range(self.n_zones):
+                    # Limit gas flow to within the stellar disk, otherwise
+                    # abundances are depleted in the outer disk
                     if i - 1 == j and i * zone_width < MAX_SF_RADIUS:
                         # normalized to 10 Myr time interval
                         numerator = radial_gas_velocity**2 * 0.01**2
