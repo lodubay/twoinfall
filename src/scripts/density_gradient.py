@@ -81,6 +81,7 @@ def main(style='paper'):
     # ax.set_ylabel(r'$\Delta\Sigma_\star/\Sigma_\star$')
     ax.set_ylabel(r'$\Sigma_\star$ [M$_\odot$ kpc$^{-2}$]')
     ax.set_yscale('log')
+    ax.set_ylim((5e5, 6e9))
     # ax.xaxis.set_minor_locator(MultipleLocator(1))
     # ax.xaxis.set_major_locator(MultipleLocator(4))
     # ax.yaxis.set_minor_locator(MultipleLocator(0.2))

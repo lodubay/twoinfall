@@ -89,6 +89,10 @@ class MultizoneStars:
         if verbose: 
             print('Importing VICE multizone data from', str(fullpath))
         stars = pd.DataFrame(vice.stars(str(fullpath)).todict())
+        # Calculate log age (in years)
+        stars['log_age'] = np.log10(stars['age']) + 9.
+        # Calculate [Fe/O]
+        stars['[fe/o]'] = -stars['[o/fe]']
         # Convert radial zone indices to Galactic radii in kpc
         stars['galr_origin'] = zone_width * stars['zone_origin']
         stars['galr_final'] = zone_width * stars['zone_final']
@@ -301,6 +305,10 @@ class MultizoneStars:
         ofe_med_err = apogee_data['O_FE_ERR'].median()
         ofe_noise = rng.normal(scale=ofe_med_err, size=noisy_stars.shape[0])
         noisy_stars['[o/fe]'] += ofe_noise
+        # [Fe/O] uncertainty 
+        feo_med_err = apogee_data['FE_O_ERR'].median()
+        feo_noise = rng.normal(scale=feo_med_err, size=noisy_stars.shape[0])
+        noisy_stars['[fe/o]'] += feo_noise
         if inplace:
             self.stars = noisy_stars
         else:

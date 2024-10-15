@@ -3,10 +3,10 @@ This file contains utility functions related to generating a grid of scatter
 plots, e.g., showing [O/Fe] vs [Fe/H] over a range of Galactic regions.
 """
 
-import vice
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize, LogNorm, BoundaryNorm
 from matplotlib.cm import ScalarMappable
+import vice
 from _globals import GALR_BINS, ABSZ_BINS, TWO_COLUMN_WIDTH
 
 
@@ -146,7 +146,7 @@ def setup_axes(galr_bins=GALR_BINS[:-1], absz_bins=ABSZ_BINS,
     plt.subplots_adjust(right=0.98, left=0.06, bottom=0.08, top=0.95,
                         wspace=spacing, hspace=spacing)
     # Figure title
-    if len(title) > 0:
+    if title != '':
         fig.suptitle(title)
         fig.subplots_adjust(top=0.88)
     # Axis limits

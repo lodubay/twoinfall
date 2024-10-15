@@ -52,6 +52,27 @@ def vice_to_apogee_col(col):
     return col[1:-1].replace('/', '_').upper()
 
 
+def capitalize_abundance(abund):
+    """
+    Convert abundance label from VICE (lowercase) to plot label style.
+    
+    Parameters
+    ----------
+    abund : str
+        Abundance label from VICE.
+
+    Returns
+    -------
+    str
+        Abundance label with proper capitalization
+    
+    """
+    assert abund[0] == '[' and abund[-1] == ']'
+    elements = [e.capitalize() for e in abund[1:-1].split('/')]
+    assert len(elements) == 2
+    return '[%s/%s]' % tuple(elements)
+
+
 def radial_gradient(multioutput, parameter, index=-1, 
                     Rmax=MAX_SF_RADIUS, zone_width=ZONE_WIDTH):
     """
