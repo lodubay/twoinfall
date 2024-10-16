@@ -90,7 +90,8 @@ class MultizoneStars:
             print('Importing VICE multizone data from', str(fullpath))
         stars = pd.DataFrame(vice.stars(str(fullpath)).todict())
         # Calculate log age (in years)
-        stars['log_age'] = np.log10(stars['age']) + 9.
+        with np.errstate(divide='ignore'): # some stars will have 0 age
+            stars['log_age'] = np.log10(stars['age']) + 9.
         # Calculate [Fe/O]
         stars['[fe/o]'] = -stars['[o/fe]']
         # Convert radial zone indices to Galactic radii in kpc

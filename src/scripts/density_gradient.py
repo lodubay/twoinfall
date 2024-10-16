@@ -38,7 +38,7 @@ def main(style='paper'):
     # ax.plot(rbin_centers, thick_disk, 'k-.', label='Thick disk')
     
     # Static SFR mode
-    name = 'nomigration/no_outflow/gasflow_in_1kms/J21/static/diskmodel'
+    name = 'nomigration/no_outflow/no_gasflow/J21/static/diskmodel'
     mzs = MultizoneStars.from_output(name)
     densities = stellar_density_gradient(mzs, rbins)
     ax.plot(rbin_centers, densities, 'r-', label='Static SFR (no outflow)')
@@ -47,7 +47,16 @@ def main(style='paper'):
     ax.plot(radii + ZONE_WIDTH, sigma_gas, 'r:', label='Gas')
     
     # Static IFR mode
-    name = 'nomigration/no_outflow/gasflow_in_1kms/J21/static_infall/diskmodel'
+    name = 'nomigration/outflow/no_gasflow/J21/static_infall/diskmodel'
+    mzs = MultizoneStars.from_output(name)
+    densities = stellar_density_gradient(mzs, rbins)
+    ax.plot(rbin_centers, densities, 'g--', label='Static IFR (outflows)')
+    # Gas density
+    sigma_gas, radii = gas_density_gradient(name)
+    ax.plot(radii + ZONE_WIDTH, sigma_gas, 'g:', label='Gas')
+    
+    # Static IFR mode
+    name = 'nomigration/no_outflow/no_gasflow/J21/static_infall/diskmodel'
     mzs = MultizoneStars.from_output(name)
     densities = stellar_density_gradient(mzs, rbins)
     ax.plot(rbin_centers, densities, 'b--', label='Static IFR (no outflow)')
@@ -87,7 +96,7 @@ def main(style='paper'):
     # ax.yaxis.set_minor_locator(MultipleLocator(0.2))
     # ax.yaxis.set_major_locator(MultipleLocator(1))
     ax.legend(loc='upper right', frameon=False)
-    ax.set_title('1 km/s radial gas flows')
+    # ax.set_title('1 km/s radial gas flows')
     
     plt.savefig(paths.figures / 'density_gradient')
     plt.close()
