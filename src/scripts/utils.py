@@ -3,6 +3,7 @@ Functions used by many plotting scripts.
 """
 
 from numbers import Number
+import math as m
 
 import numpy as np
 from numpy.random import default_rng
@@ -28,10 +29,11 @@ from _globals import RANDOM_SEED, MAX_SF_RADIUS, ZONE_WIDTH
 class twoinfall_gradient(twoinfall):
     """A sub-class of the twoinfall SFH which incorporates the value of the
     stellar surface density gradient when called."""
-    def __init__(self, radius, **kwargs):
-        super().__init__(radius, **kwargs)
-        self.first.norm *= gradient(radius)
-        self.second.norm *= gradient(radius)
+    def __init__(self, radius, dr=0.1, **kwargs):
+        super().__init__(radius, dr=dr, **kwargs)
+        area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
+        self.first.norm *= gradient(radius) * area
+        self.second.norm *= gradient(radius) * area
 
 
 def vice_to_apogee_col(col):

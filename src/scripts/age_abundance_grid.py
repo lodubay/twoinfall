@@ -158,8 +158,9 @@ def plot_age_abundance_grid(mzs, col, apogee_sample=None, fname='',
                 plot_apogee_median_ages(ax, apogee_subset, apogee_col, abund_bins, label='L23')
     
     # Add legend to top-right panel
-    axs[0,-1].legend(loc='upper left', frameon=False, handletextpad=0.1,
-                     borderpad=0.2, handlelength=1.5)
+    if medians:
+        axs[0,-1].legend(loc='upper left', frameon=False, handletextpad=0.1,
+                         borderpad=0.2, handlelength=1.5)
                              
     # Set x-axis scale and ticks
     if log:

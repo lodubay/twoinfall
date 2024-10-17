@@ -8,19 +8,20 @@ import matplotlib.pyplot as plt
 
 import vice
 
-# from multizone.src.yields import W23
-from multizone.src.yields import J21
+from multizone.src.yields import W23
+# from multizone.src.yields import J21
 from multizone.src.models import twoinfall, twoinfall_sf_law, equilibrium_mass_loading
+from multizone.src.dtds import exponential
 from multizone.src.models.gradient import gradient
 from track_and_mdf import setup_figure, plot_vice_onezone
 from apogee_sample import APOGEESample
 import paths
-from utils import get_bin_centers
+from utils import get_bin_centers, twoinfall_gradient
 from _globals import ONEZONE_DEFAULTS, ZONE_WIDTH
 from colormaps import paultol
 
 RADIUS = 8.
-ONSET = 4.2
+ONSET = 6
 FIRST_TIMESCALE = 1.
 SECOND_TIMESCALE = 15.
 FEH_LIM = (-1.4, 0.6)
@@ -30,6 +31,10 @@ def main():
     plt.style.use(paths.styles / "paper.mplstyle")
     plt.rcParams["axes.prop_cycle"] = plt.cycler("color", paultol.vibrant.colors)
     fig, axs = setup_figure(xlim=FEH_LIM, ylim=OFE_LIM)
+    
+    print(vice.yields.ccsne.settings['fe'])
+    print(vice.yields.ccsne.settings['o'])
+    print(vice.yields.sneia.settings['fe'])
 
     # Plot underlying APOGEE contours
     apogee_data = APOGEESample.load()
@@ -62,12 +67,12 @@ def main():
     # One-zone model parameters
     simtime = np.arange(0, 13.21, 0.01)
     area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
-    # eta_func = equilibrium_mass_loading(
-    #     tau_star=4.,
-    #     tau_sfh=SECOND_TIMESCALE, 
-    #     alpha_h_eq=0.2
-    # )
-    eta_func = vice.milkyway.default_mass_loading
+    eta_func = equilibrium_mass_loading(
+        tau_star=2.,
+        tau_sfh=SECOND_TIMESCALE, 
+        equilibrium=0.2
+    )
+    # eta_func = vice.milkyway.default_mass_loading
     ifr = twoinfall_gradient(
         RADIUS, 
         first_timescale=FIRST_TIMESCALE, 
@@ -84,6 +89,7 @@ def main():
     )
     sz.eta = eta_func(RADIUS)
     sz.tau_star = twoinfall_sf_law(area, onset=ifr.onset)
+    # sz.RIa = exponential()
     sz.run(simtime, overwrite=True)
     
     model_color = paultol.bright.colors[0]
@@ -101,13 +107,6 @@ def main():
     
     plt.savefig(paths.figures / "onezone_sfr")
     plt.close()
-
-
-class twoinfall_gradient(twoinfall):
-    def __init__(self, radius, **kwargs):
-        super().__init__(radius, **kwargs)
-        self.first.norm *= gradient(radius)
-        self.second.norm *= gradient(radius)
     
 
 if __name__ == "__main__":

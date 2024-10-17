@@ -122,6 +122,13 @@ class diskmodel(vice.milkyway):
             from .yields import F04
         elif yields == "W23":
             from .yields import W23
+            ycco = vice.yields.ccsne.settings['o']
+            yccfe = vice.yields.ccsne.settings['fe']
+            print(ycco)
+            print(yccfe)
+            print(vice.solar_z['o'])
+            print(vice.solar_z['fe'])
+            print(m.log10((ycco / yccfe) / (vice.solar_z['o'] / vice.solar_z['fe'])))
             # Mass-loading factor calibrated to produce equilibrium abundance
             self.mass_loading = models.equilibrium_mass_loading()
         else:

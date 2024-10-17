@@ -18,6 +18,7 @@ from track_and_mdf import setup_figure, plot_vice_onezone
 from colormaps import paultol
 import paths
 from _globals import END_TIME, ONEZONE_DEFAULTS, ONE_COLUMN_WIDTH, ZONE_WIDTH
+from utils import twoinfall_gradient
 
 RADIUS = 8.
 XLIM = (-1.6, 0.6)
@@ -43,9 +44,9 @@ def main():
     eta_func = equilibrium_mass_loading(
         tau_star=2., 
         tau_sfh=15., 
-        alpha_h_eq=0.2
+        equilibrium=0.
     )
-    ifr = models.twoinfall(
+    ifr = twoinfall_gradient(
         RADIUS, 
         first_timescale=1.,
         second_timescale=15., 

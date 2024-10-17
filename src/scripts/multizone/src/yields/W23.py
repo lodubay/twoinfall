@@ -11,6 +11,8 @@ Fexp = 0.75
 mfecc = 0.058
 # Mean SN Ia Fe yield (Msun)
 mfeia = 0.7
+# Fraction of solar Si produced by CC SNe
+Fsicc = 0.8
 
 # solar abundances by mass
 # based on Magg et al. (2022) Table 5 + 0.04 dex to correct for diffusion
@@ -24,7 +26,7 @@ vice.solar_z["fe"] = 1.37e-3
 afecc = {
     "o": 0.45,
     "mg": 0.45,
-    "si": 0.36,
+    "si": 0.35,
     "fe": 0.
 }
 Rcc = ccsn_ratio(Fexp=Fexp) # CCSNe per unit stellar mass
@@ -35,7 +37,7 @@ for el in ["o", "mg", "si", "fe"]:
 
 # population averaged SNIa Fe yield, integrated to t=infty
 # for a constant SFR, will evolve to afeeq at late times
-afeeq = -0.1
+afeeq = 0.0
 tau_sfh = 15
 tau_Ia = 1.5
 mu = tau_sfh / (tau_sfh - tau_Ia) # assuming tau_sfh >> minimum SN Ia delay time
@@ -43,4 +45,4 @@ Ria = (Rcc / mu) * (mfecc / mfeia) * (10 ** (afecc["o"] - afeeq) - 1.)
 vice.yields.sneia.settings["fe"] = Ria * mfeia
 vice.yields.sneia.settings["o"] = 0.
 vice.yields.sneia.settings["mg"] = 0.
-vice.yields.sneia.settings["si"] = 0.
+vice.yields.sneia.settings["si"] = (1 - Fsicc) / Fsicc * vice.yields.ccsne.settings["si"]

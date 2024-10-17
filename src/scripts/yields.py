@@ -17,8 +17,8 @@ def main():
         snia_yields.append('\\num{%.2e}' % vice.yields.sneia.settings[el])
     df = pd.DataFrame({
         'Element': elements,
-        '$y_X^{\\rm CC}$': ccsn_yields,
-        '$y_X^{\\rm Ia}$': snia_yields,
+        '$y_{\\rm X}^{\\rm CC}$': ccsn_yields,
+        '$y_{\\rm X}^{\\rm Ia}$': snia_yields,
     })
     latex_table = df.to_latex(column_format='c|cc', index=False)
     # Replace float 0s with int

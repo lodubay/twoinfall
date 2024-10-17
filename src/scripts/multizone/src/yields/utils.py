@@ -6,7 +6,7 @@ import vice
 
 def ccsn_ratio(Fexp=0.75, Mmin=0.08, Mmax=120, Mthresh=8, dm=0.01, 
                imf=vice.imf.kroupa):
-    """
+    r"""
     Calculate the core-collapse supernova ratio per total mass of stars.
     
     Parameters
@@ -29,7 +29,7 @@ def ccsn_ratio(Fexp=0.75, Mmin=0.08, Mmax=120, Mthresh=8, dm=0.01,
     Returns
     -------
     float
-        The core-collapse supernova ratio Rcc.
+        The core-collapse supernova ratio $R_{\rm cc}$.
     """
     # Integration masses
     masses = [m * dm + Mmin for m in range(int((Mmax + dm - Mmin) / dm))]

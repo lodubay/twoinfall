@@ -44,7 +44,9 @@ def main(style='paper'):
     ax.plot(rbin_centers, densities, 'r-', label='Static SFR (no outflow)')
     # Gas density
     sigma_gas, radii = gas_density_gradient(name)
-    ax.plot(radii + ZONE_WIDTH, sigma_gas, 'r:', label='Gas')
+    ax.plot(radii, sigma_gas, 'r:', label='Gas')
+    sigma_mstar, radii = mstar_density_gradient(name)
+    print(sigma_mstar[:-1] / total_disk)
     
     # Static IFR mode
     name = 'nomigration/outflow/no_gasflow/J21/static_infall/diskmodel'
@@ -53,7 +55,9 @@ def main(style='paper'):
     ax.plot(rbin_centers, densities, 'g--', label='Static IFR (outflows)')
     # Gas density
     sigma_gas, radii = gas_density_gradient(name)
-    ax.plot(radii + ZONE_WIDTH, sigma_gas, 'g:', label='Gas')
+    ax.plot(radii, sigma_gas, 'g:', label='Gas')
+    sigma_mstar, radii = mstar_density_gradient(name)
+    print(sigma_mstar[:-1] / total_disk)
     
     # Static IFR mode
     name = 'nomigration/no_outflow/no_gasflow/J21/static_infall/diskmodel'
@@ -62,7 +66,9 @@ def main(style='paper'):
     ax.plot(rbin_centers, densities, 'b--', label='Static IFR (no outflow)')
     # Gas density
     sigma_gas, radii = gas_density_gradient(name)
-    ax.plot(radii + ZONE_WIDTH, sigma_gas, 'b:', label='Gas')
+    ax.plot(radii, sigma_gas, 'b:', label='Gas')
+    sigma_mstar, radii = mstar_density_gradient(name)
+    print(sigma_mstar[:-1]/ total_disk)
     
     # Inside-out
     # insideout_name = 'nomigration/outflow/no_gasflow/J21/static_fine_dr/diskmodel'
@@ -181,6 +187,33 @@ def gas_density_gradient(name, zone_width=ZONE_WIDTH):
     radii = [i * zone_width for i in range(len(gas_mass_gradient))]
     areas = [m.pi * ((r + zone_width)**2 - r**2) for r in radii]
     return np.array(gas_mass_gradient) / np.array(areas), np.array(radii)
+
+
+def mstar_density_gradient(name, zone_width=ZONE_WIDTH):
+    """
+    Calculate the radial stellar surface density gradient from each zone.
+    
+    Parameters
+    ----------
+    name : str
+        Relative path to multizone output directory.
+    rbins : array-like
+        Radial bins.
+    
+    Returns
+    -------
+    sigma_gas : numpy.ndarray
+        Gas surface densities in each radius bin [Msun kpc^-2]
+    radii : numpy.ndarray
+        Inner radii of zones in kpc.
+    
+    """
+    multioutput = vice.output(str(paths.multizone / name))
+    mstar_mass_gradient = radial_gradient(multioutput, 'mstar', 
+                                          zone_width=zone_width)
+    radii = [i * zone_width for i in range(len(mstar_mass_gradient))]
+    areas = [m.pi * ((r + zone_width)**2 - r**2) for r in radii]
+    return np.array(mstar_mass_gradient) / np.array(areas), np.array(radii)
 
 
 if __name__ == '__main__':
