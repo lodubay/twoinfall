@@ -133,7 +133,7 @@ class diskmodel(vice.milkyway):
         # Outflow mass-loading factor (default inherits from vice.milkyway)
         if not outflows:
             self.mass_loading = models.mass_loading.no_outflows
-        elif YIELDS == "W23":
+        elif YIELDS == "W24":
             # Mass-loading factor calibrated to produce equilibrium abundance
             self.mass_loading = models.equilibrium_mass_loading()
         # Set the SF mode - infall vs star formation rate

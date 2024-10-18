@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import vice
 
-# from multizone.src.yields import W23
+# from multizone.src.yields import W24
 from multizone.src.yields import J21
 from multizone.src.models import twoinfall, twoinfall_sf_law, equilibrium_mass_loading
 from track_and_mdf import setup_axes, plot_vice_onezone

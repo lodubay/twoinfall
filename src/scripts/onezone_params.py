@@ -10,7 +10,7 @@ import vice
 # from vice.toolkit import J21_sf_law
 from multizone.src.yields import J21
 # from vice.yields.presets import JW20
-# from multizone.src.yields import W23
+# from multizone.src.yields import W24
 # vice.yields.sneia.settings['fe'] *= (1.1/1.2)
 # from multizone.src.yields import F04
 from multizone.src import models

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 import vice
 
-from multizone.src.yields import W23
+from multizone.src.yields import W24
 from multizone.src import models
 from track_and_mdf import setup_figure, plot_vice_onezone
 import paths

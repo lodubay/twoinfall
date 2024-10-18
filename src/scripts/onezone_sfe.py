@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import vice
 
-from multizone.src.yields import W23
+from multizone.src.yields import W24
 from multizone.src import models, dtds
 from multizone.src.models import twoinfall_sf_law
 from multizone.src.models import equilibrium_mass_loading

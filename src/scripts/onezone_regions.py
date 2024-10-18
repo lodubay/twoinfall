@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import vice
 import paths
-from multizone.src.yields import W23
+from multizone.src.yields import W24
 # from vice.yields.presets import JW20
 # from multizone.src.yields import J21
 # from multizone.src.yields import F04
