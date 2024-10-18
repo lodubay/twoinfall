@@ -1,5 +1,5 @@
 """
-This file implements the equilibrium-based yields of Weinberg et al. (2023).
+This file implements the equilibrium-based yields of Weinberg et al. (2024).
 """
 
 import vice
