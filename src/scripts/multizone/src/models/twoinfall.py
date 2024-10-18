@@ -8,6 +8,7 @@ from .utils import double_exponential
 from .normalize import normalize_ifrmode, integrate_infall
 from .gradient import gradient, thick_to_thin_ratio
 from .twoinfall_sf_law import twoinfall_sf_law
+from .insideout import insideout
 import vice
 import math as m
 
@@ -135,6 +136,26 @@ class twoinfall(double_exponential):
         eta = mass_loading(radius)
         return normalize_ifrmode(self, gradient, tau_star, eta = eta,
                                  dt = dt, dr = dr, recycling = recycling)
+
+
+class twoinfall_var(twoinfall):
+    """
+    Variant of the two-infall SFH with a radially-dependent second infall 
+    timescale.
+    
+    Parameters
+    ----------
+    radius : float
+        The galactocentric radius in kpc of a given annulus in the model.
+    Re : float [default: 5]
+        Effective radius of the Galaxy in kpc.
+    
+    Other parameters, arguments, and functionality are inherited from 
+    ``twoinfall``.
+    """
+    def __init__(self, radius, Re=5, **kwargs):
+        second_timescale = insideout.timescale(radius, Re)
+        super().__init__(radius, second_timescale=second_timescale)
 
 
 def calculate_mstar(sfh, time, dt=0.01, recycling=0.4):

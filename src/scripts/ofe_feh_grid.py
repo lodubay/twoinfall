@@ -23,18 +23,18 @@ _COLOR_OPTIONS = ['galr_origin', 'age']
 
 def main(output_name, uncertainties=True, **kwargs):
     # Import APOGEE data
-    apogee_data = APOGEESample.load()
+    apogee_sample = APOGEESample.load()
     # Import multioutput stars data
     mzs = MultizoneStars.from_output(output_name)
     # Model observational uncertainties
     if uncertainties:
         mzs.model_uncertainty(apogee_sample.data, inplace=True)
-    plot_ofe_feh_grid(mzs, apogee_data, **kwargs)
+    plot_ofe_feh_grid(mzs, apogee_sample, **kwargs)
 
 
 def plot_ofe_feh_grid(mzs, apogee_data, tracks=True, apogee_contours=True,
                       style='paper', cmap='winter_r', color_by='galr_origin',
-                      fname='ofe_feh_grid.py'):
+                      fname='ofe_feh_grid.png'):
     color_by = color_by.lower()
     if color_by == 'galr_origin':
         cbar_label = r'Birth $R_{\rm{Gal}}$ [kpc]'

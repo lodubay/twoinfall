@@ -62,7 +62,7 @@ def normalize(time_dependence, radial_gradient, dt = 0.01, dr = 0.1,
 
 
 def normalize_ifrmode(time_dependence, radial_gradient, tau_star, eta=0.,
-                      dt = 0.01, dr = 0.1, recycling = 0.4):
+                      Mg0=0, dt = 0.01, dr = 0.1, recycling = 0.4):
     r"""
     Wrapper for ``normalize`` for models in infall mode.
     
@@ -80,6 +80,8 @@ def normalize_ifrmode(time_dependence, radial_gradient, tau_star, eta=0.,
         The star formation efficiency timescale. Accepts two parameters: 
         time in Gyr, and gas mass [Msun] or surface density [Msun kpc^-2].
         Returns a value with units of Gyr.
+    Mg0 : float [default: 0]
+        Initial gas mass in Solar masses.
     dt : real number [default : 0.01]
         The timestep size in Gyr.
     dr : real number [default : 0.1]
@@ -97,12 +99,13 @@ def normalize_ifrmode(time_dependence, radial_gradient, tau_star, eta=0.,
         
     """
     times, sfh = integrate_infall(time_dependence, tau_star, eta, 
-                                  recycling=recycling, dt=dt)
+                                  recycling=recycling, dt=dt, Mg0=Mg0)
     return normalize(sfh, radial_gradient, dt = dt, dr = dr, 
                      recycling = recycling)
 
 
-def integrate_infall(time_dependence, tau_star, eta=0., recycling=0.4, dt=0.01):
+def integrate_infall(time_dependence, tau_star, eta=0., recycling=0.4, dt=0.01,
+                     Mg0=0):
     r"""
     Calculate the star formation history from a prescribed infall rate history.
     
@@ -119,6 +122,8 @@ def integrate_infall(time_dependence, tau_star, eta=0., recycling=0.4, dt=0.01):
         Dimensionless recycling parameter.
     dt : float [default: 0.01]
         Integration timestep in Gyr.
+    Mg0 : float [default: 0]
+        Initial gas mass in Solar masses.
 
     Returns
     -------
@@ -128,7 +133,7 @@ def integrate_infall(time_dependence, tau_star, eta=0., recycling=0.4, dt=0.01):
         Star formation rate in Msun yr^-1
         
     """
-    mgas = 0
+    mgas = Mg0
     time = 0
     sfh = []
     times = []

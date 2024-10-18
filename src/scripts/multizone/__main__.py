@@ -14,10 +14,11 @@ import paths
 _MIGRATION_MODELS_ = ["diffusion", "linear", "post-process", "sudden", 
                       "gaussian", "none"]
 _EVOLUTION_MODELS_ = ["static", "insideout", "lateburst", "outerburst",
-                      "twoinfall", "earlyburst", "static_infall"]
+                      "twoinfall", "earlyburst", "static_infall",
+                      "twoinfall_var"]
 _DELAY_MODELS_ = ["powerlaw", "plateau", "prompt", "exponential", "triple",
                   "greggio05_single", "greggio05_double"]
-_YIELD_SETS_ = ["F04", "JW20", "J21", "C22", "W23"]
+# _YIELD_SETS_ = ["F04", "JW20", "J21", "C22", "W23"]
 
 def parse():
     r"""
@@ -90,19 +91,20 @@ underscores. (Default: \"fe_o\")""",
         type = float,
         default = _globals.ZONE_WIDTH)
     
-    parser.add_argument("--yields",
-        help = "The nucleosynthetic yield set to use. (Default: 'J21')",
-        type = str,
-        choices = _YIELD_SETS_,
-        default = "J21")
+    # parser.add_argument("--yields",
+    #     help = "The nucleosynthetic yield set to use. (Default: 'J21')",
+    #     type = str,
+    #     choices = _YIELD_SETS_,
+    #     default = "J21")
     
     parser.add_argument("--seed", 
                         help = "Seed for the random number generator.",
                         type = int,
                         default = _globals.RANDOM_SEED)
     
-    parser.add_argument("--gasvelocity",
-                        help = "Radial gas velocity in km/s.",
+    parser.add_argument("--radial-gas-velocity",
+                        help = "Radial gas velocity in km/s, negative for \
+an inward flow (default: 0).",
                         type = float,
                         default = 0.)
     
@@ -140,9 +142,9 @@ def model(args):
         RIa = args.RIa,
         RIa_kwargs = RIa_kwargs,
         delay = args.minimum_delay,
-        yields = args.yields,
+        # yields = args.yields,
         seed = args.seed,
-        radial_gas_velocity = args.gasvelocity,
+        radial_gas_velocity = args.radial_gas_velocity,
         outflows = not args.no_outflows
     )
     if args.migration == "post-process":

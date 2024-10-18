@@ -15,10 +15,11 @@ if vice.version[:2] < (1, 2):
 Johnson et al. (2021) figures. Current: %s""" % (vice.__version__))
 else: pass
 from vice.toolkit import hydrodisk, J21_sf_law
-from .._globals import END_TIME, MAX_SF_RADIUS, ZONE_WIDTH
+from .._globals import END_TIME, MAX_SF_RADIUS, ZONE_WIDTH, YIELDS
 from .migration import diskmigration, gaussian_migration, no_migration
 from . import models
 from . import dtds
+from . import yields
 from .models.utils import get_bin_number, interpolate
 from .models.gradient import gradient
 import math as m
@@ -49,6 +50,7 @@ class diskmodel(vice.milkyway):
         - "lateburst"
         - "outerburst"
         - "twoinfall"
+        - "twoinfall_var"
         - "earlyburst"
         - "static_infall"
     
@@ -89,12 +91,27 @@ class diskmodel(vice.milkyway):
     Attributes and functionality are inherited from ``vice.milkyway``.
     """
 
-    def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "static",
-                 verbose = True, migration_mode = "diffusion", yields="J21",
-                 delay = 0.04, RIa = "powerlaw", RIa_kwargs={}, seed=42, 
+    def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "twoinfall",
+                 verbose = True, migration_mode = "gaussian", #yields="J21",
+                 delay = 0.04, RIa = "plateau", RIa_kwargs={}, seed=42, 
                  radial_gas_velocity = 0., outflows=True, **kwargs):
         super().__init__(zone_width = zone_width, name = name,
             verbose = verbose, **kwargs)
+        # Set the yields
+        # if yields == "JW20":
+        #     from vice.yields.presets import JW20
+        # elif yields == "C22":
+        #     from .yields import C22
+        # elif yields == "F04":
+        #     from .yields import F04
+        # if yields == "W23":
+            # Magg+ 2022 Solar abundances
+            # from .yields import W23
+            # Magg22_ZX = 0.0225 # Z/X ratio
+            # Y = vice.solar_z["he"]
+            # self.Z_solar = Magg22_ZX * (1 - Y) / (1 + Magg22_ZX)
+        # else:
+        #     from .yields import J21
         # Migration prescription
         if self.zone_width <= 0.2 and self.dt <= 0.02 and self.n_stars >= 6:
             Nstars = 3102519
@@ -113,29 +130,12 @@ class diskmodel(vice.milkyway):
             self.migration.stars = diskmigration(self.annuli,
                     N = Nstars, mode = migration_mode, 
                     filename = analogdata_filename)
-        # Set the yields
-        if yields == "JW20":
-            from vice.yields.presets import JW20
-        elif yields == "C22":
-            from .yields import C22
-        elif yields == "F04":
-            from .yields import F04
-        elif yields == "W23":
-            from .yields import W23
-            ycco = vice.yields.ccsne.settings['o']
-            yccfe = vice.yields.ccsne.settings['fe']
-            print(ycco)
-            print(yccfe)
-            print(vice.solar_z['o'])
-            print(vice.solar_z['fe'])
-            print(m.log10((ycco / yccfe) / (vice.solar_z['o'] / vice.solar_z['fe'])))
-            # Mass-loading factor calibrated to produce equilibrium abundance
-            self.mass_loading = models.equilibrium_mass_loading()
-        else:
-            from .yields import J21
         # Outflow mass-loading factor (default inherits from vice.milkyway)
         if not outflows:
             self.mass_loading = models.mass_loading.no_outflows
+        elif YIELDS == "W23":
+            # Mass-loading factor calibrated to produce equilibrium abundance
+            self.mass_loading = models.equilibrium_mass_loading()
         # Set the SF mode - infall vs star formation rate
         evol_kwargs = {}
         if spec.lower() in ["twoinfall", "earlyburst", "static_infall"]:
@@ -254,6 +254,7 @@ class star_formation_history:
                 "lateburst":          models.lateburst,
                 "outerburst":         models.outerburst,
                 "twoinfall":          models.twoinfall,
+                "twoinfall_var":      models.twoinfall_var,
                 "earlyburst":         models.earlyburst_ifr,
                 "static_infall":      models.static_infall,
             }[spec.lower()]((i + 0.5) * zone_width, dr = zone_width, dt = dt,
