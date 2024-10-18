@@ -138,7 +138,7 @@ class diskmodel(vice.milkyway):
             self.mass_loading = models.equilibrium_mass_loading()
         # Set the SF mode - infall vs star formation rate
         evol_kwargs = {}
-        if spec.lower() in ["twoinfall", "earlyburst", "static_infall"]:
+        if spec.lower() in ["twoinfall", "earlyburst", "static_infall", "twoinfall_var"]:
             self.mode = "ifr"
             for zone in self.zones: zone.Mg0 = 1e5
             # specify mass-loading factor for infall mode normalization

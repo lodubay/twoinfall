@@ -153,9 +153,10 @@ class twoinfall_var(twoinfall):
     Other parameters, arguments, and functionality are inherited from 
     ``twoinfall``.
     """
-    def __init__(self, radius, Re=5, **kwargs):
-        second_timescale = insideout.timescale(radius, Re)
-        super().__init__(radius, second_timescale=second_timescale)
+    def __init__(self, radius, **kwargs):
+        super().__init__(
+            radius, second_timescale=insideout.timescale(radius), **kwargs
+        )
 
 
 def calculate_mstar(sfh, time, dt=0.01, recycling=0.4):
