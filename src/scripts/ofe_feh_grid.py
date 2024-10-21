@@ -32,7 +32,7 @@ def main(output_name, uncertainties=True, **kwargs):
     plot_ofe_feh_grid(mzs, apogee_sample, **kwargs)
 
 
-def plot_ofe_feh_grid(mzs, apogee_data, tracks=True, apogee_contours=True,
+def plot_ofe_feh_grid(mzs, apogee_sample, tracks=True, apogee_contours=True,
                       style='paper', cmap='winter_r', color_by='galr_origin',
                       fname='ofe_feh_grid.png'):
     color_by = color_by.lower()
@@ -69,7 +69,7 @@ def plot_ofe_feh_grid(mzs, apogee_data, tracks=True, apogee_contours=True,
             if tracks:
                 plot_gas_abundance(ax, subset, '[fe/h]', '[o/fe]')
             if apogee_contours:
-                apogee_subset = apogee_data.region(galr_lim, absz_lim)
+                apogee_subset = apogee_sample.region(galr_lim, absz_lim)
                 apogee_subset.plot_kde2D_contours(ax, 'FE_H', 'O_FE')
     
     # Set x-axis ticks

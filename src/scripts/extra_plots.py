@@ -1,67 +1,99 @@
 """
-Plot age vs [O/Fe] from all multizone runs and generate a summary table of
-RMS median-difference scores.
+This script creates multiple plots from the given multizone output for diagnostic purposes.
 """
 
-import paths
-from tqdm import tqdm
+import argparse
+
 from multizone_stars import MultizoneStars
-from apogee_tools import import_apogee
-from age_ofe import plot_age_ofe
+from apogee_sample import APOGEESample
+from age_abundance_grid import plot_age_abundance_grid
 from feh_distribution import plot_feh_distribution
 from ofe_distribution import plot_ofe_distribution
-from ofe_bimodality import plot_bimodality_comparison
+# from ofe_bimodality import plot_bimodality_comparison
 from ofe_feh_grid import plot_ofe_feh_grid
+import paths
 
-SFH_LIST = [
-    'insideout', 
-    'lateburst', 
-    'earlyburst', 
-    'twoinfall'
-]
-DTD_LIST = [
-    'powerlaw_slope11', 
-    'powerlaw_slope14', 
-    'exponential_timescale15',
-    'exponential_timescale30', 
-    'plateau_width03', 
-    'plateau_width10', 
-    'prompt',
-    'triple'
-]
-STYLE = 'paper'
-
-def main():
+def main(output_name, verbose=False, tracks=False, log_age=False, 
+         uncertainties=False, apogee_data=False, style='paper'):
     # Import APOGEE data
-    apogee_data = import_apogee()
-    # Loop through all VICE multi-zone outputs
-    print('Making supplementary plots for every multizone run...')
-    with tqdm(total=len(SFH_LIST) * len(DTD_LIST) + 1) as t:
-        for evolution in SFH_LIST:
-            for RIa in DTD_LIST:
-                # Import VICE multi-zone output data
-                output_name = '/'.join(['gaussian', evolution, RIa, 'diskmodel'])
-                make_all_plots(output_name, apogee_data)
-                t.update()
-        output_name = 'diffusion/insideout/powerlaw_slope11/diskmodel'
-        make_all_plots(output_name, apogee_data)
-        t.update()
-    print('Done! Plots are located at %s' % str(paths.extra))
-
-
-def make_all_plots(output_name, apogee_data, uncertainties=True):
+    apogee_sample = APOGEESample.load()
+    # Import multizone stars data
     mzs = MultizoneStars.from_output(output_name)
+    parent_dir = paths.extra / mzs.name.replace('diskmodel', '')
     # Forward-model APOGEE uncertainties
     if uncertainties:
-        mzs.model_uncertainty(inplace=True, apogee_data=apogee_data)
-    plot_age_ofe(mzs, apogee_data, log=True, style=STYLE)
-    plot_feh_distribution(mzs, apogee_data, style=STYLE)
-    plot_ofe_distribution(mzs, apogee_data, style=STYLE)
-    plot_bimodality_comparison(mzs, apogee_data, resample=True,
-                           style=STYLE)
-    plot_ofe_feh_grid(mzs, apogee_data, tracks=True, 
-                      apogee_contours=True, style=STYLE)
+        mzs.model_uncertainty(inplace=True, apogee_data=apogee_sample.data)
+    # Age vs [O/H]
+    plot_age_abundance_grid(mzs, '[o/h]', color_by='galr_origin', cmap='winter_r', 
+                            apogee_sample=apogee_sample,
+                            style=style, log=log_age, verbose=verbose,
+                            medians=apogee_data, tracks=tracks)
+    # Age vs [Fe/H]
+    plot_age_abundance_grid(mzs, '[fe/h]', color_by='galr_origin', cmap='winter_r', 
+                            apogee_sample=apogee_sample,
+                            style=style, log=log_age, verbose=verbose,
+                            medians=apogee_data, tracks=tracks)
+    # Age vs [O/Fe]
+    plot_age_abundance_grid(mzs, '[o/fe]', color_by='[fe/h]', cmap='viridis', 
+                            apogee_sample=apogee_sample,
+                            style=style, log=log_age, verbose=verbose,
+                            medians=apogee_data, tracks=tracks)
+    # Abundance distributions
+    plot_feh_distribution(mzs, apogee_sample, style=style)
+    plot_ofe_distribution(mzs, apogee_sample, style=style)
+    # [O/Fe] vs [Fe/H]
+    plot_ofe_feh_grid(mzs, apogee_sample, tracks=tracks,
+                      apogee_contours=apogee_data, style=style)
+    # [O/Fe] vs [Fe/H], color-coded by age
+    plot_ofe_feh_grid(mzs, apogee_sample, tracks=tracks,
+                      apogee_contours=apogee_data, style=style,
+                      color_by='age', cmap='Spectral_r', 
+                      fname='ofe_feh_age_grid.png')
+    print('Done! Plots are located at %s' % str(parent_dir))
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        prog='extra_plots.py',
+        description='Generate multiple diagnostic plots for the given multizone output.'
+    )
+    parser.add_argument(
+        'output_name', 
+        metavar='NAME',
+        type=str,
+        help='Name of VICE multizone output located within src/data/multizone.'
+    )
+    parser.add_argument(
+        '-v', '--verbose', 
+        action='store_true',
+        help='Print verbose output to terminal.'
+    )
+    parser.add_argument(
+        '-t', '--tracks', 
+        action='store_true',
+        help='Plot ISM tracks in addition to stellar abundances.'
+    )
+    parser.add_argument(
+        '-l', '--log-age', 
+        action='store_true',
+        help='Plot age on a log scale.'
+    )
+    parser.add_argument(
+        '-u', '--uncertainties', 
+        action='store_true',
+        help='Forward-model APOGEE uncertainties in VICE output.'
+    )
+    parser.add_argument(
+        '-a', '--apogee-data', 
+        action='store_true',
+        help='Plot APOGEE data for comparison.'
+    )
+    parser.add_argument(
+        '--style', 
+        type=str,
+        default='paper',
+        choices=['paper', 'poster', 'presentation'],
+        help='Plot style to use (default: paper).'
+    )
+    args = parser.parse_args()
+    main(**vars(args))
