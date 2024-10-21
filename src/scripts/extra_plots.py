@@ -16,6 +16,7 @@ from feh_distribution import plot_feh_distribution
 from ofe_distribution import plot_ofe_distribution
 # from ofe_bimodality import plot_bimodality_comparison
 from ofe_feh_grid import plot_ofe_feh_grid
+from density_gradient import plot_density_gradient
 from utils import get_bin_centers, get_color_list
 import paths
 from _globals import TWO_COLUMN_WIDTH, ZONE_WIDTH, GALR_BINS
@@ -58,6 +59,8 @@ def main(output_name, verbose=False, tracks=False, log_age=False,
                       fname='ofe_feh_age_grid.png')
     # Star formation history
     plot_sfh(output_name, style=style)
+    # Stellar density gradient
+    plot_density_gradient(mzs, components=('twoinfall' in mzs.name))
     print('Done! Plots are located at %s' % str(parent_dir))
 
 

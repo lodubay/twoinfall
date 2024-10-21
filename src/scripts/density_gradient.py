@@ -2,6 +2,7 @@
 This script plots stellar density as a function of Galactocentric radius.
 """
 
+import argparse
 import math as m
 
 import numpy as np
@@ -17,94 +18,64 @@ import paths
 from _globals import MAX_SF_RADIUS, ZONE_WIDTH
 
 
-def main(style='paper'):    
+def main(output_name, components=False, style='paper', origin=False):
+    # Import multioutput stars data
+    mzs = MultizoneStars.from_output(output_name)
+    plot_density_gradient(mzs, components=components, style=style, origin=origin)
+
+
+def plot_density_gradient(mzs, components=False, style='paper', label='VICE',
+                          color='r', fname='density_gradient.png', origin=False):    
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, ax = plt.subplots(tight_layout=True)
+    fig.suptitle(mzs.name)
     
     rbins = np.arange(0, MAX_SF_RADIUS, ZONE_WIDTH)
     rbin_centers = get_bin_centers(rbins)
     
+    # Analytic model
     mw_disk = two_component_disk()
     total_disk = np.array([mw_disk(r) for r in rbin_centers])
-    thin_disk = np.array([mw_disk.thin_disk(r) for r in rbin_centers])
-    thick_disk = np.array([mw_disk.thick_disk(r) for r in rbin_centers])
-    
-    # Plot model baseline
-    # ax.axhline(2, color='k', linestyle='-', label='Total disk')
-    # ax.axhline(1, color='k', linestyle='--', label='Thin disk')
-    # ax.axhline(0, color='k', linestyle=':', label='Thick disk')
     ax.plot(rbin_centers, total_disk, 'k-', label='Total disk')
-    # ax.plot(rbin_centers, thin_disk, 'k--', label='Thin disk')
-    # ax.plot(rbin_centers, thick_disk, 'k-.', label='Thick disk')
+    if components:
+        thin_disk = np.array([mw_disk.thin_disk(r) for r in rbin_centers])
+        ax.plot(rbin_centers, thin_disk, 'k--', label='Thin disk')
+        thick_disk = np.array([mw_disk.thick_disk(r) for r in rbin_centers])
+        ax.plot(rbin_centers, thick_disk, 'k-.', label='Thick disk')
     
-    # Static SFR mode
-    name = 'nomigration/no_outflow/no_gasflow/J21/static/diskmodel'
-    mzs = MultizoneStars.from_output(name)
-    densities = stellar_density_gradient(mzs, rbins)
-    ax.plot(rbin_centers, densities, 'r-', label='Static SFR (no outflow)')
+    # Multi-zone output
+    densities = stellar_density_gradient(mzs, rbins, origin=origin)
+    ax.plot(rbin_centers, densities, color=color, linestyle='-', label=label)
+    if components:
+        onset = get_onset_time(mzs.name)
+        thin_stars = mzs.filter({'formation_time': (onset, None)})
+        densities = stellar_density_gradient(thin_stars, rbins, origin=origin)
+        ax.plot(rbin_centers, densities, color=color, linestyle='--')
+        thick_stars = mzs.filter({'formation_time': (0, onset)})
+        densities = stellar_density_gradient(thick_stars, rbins, origin=origin)
+        ax.plot(rbin_centers, densities, color=color, linestyle='-.')
+    
     # Gas density
-    sigma_gas, radii = gas_density_gradient(name)
-    ax.plot(radii, sigma_gas, 'r:', label='Gas')
-    sigma_mstar, radii = mstar_density_gradient(name)
-    print(sigma_mstar[:-1] / total_disk)
-    
-    # Static IFR mode
-    name = 'nomigration/outflow/no_gasflow/J21/static_infall/diskmodel'
-    mzs = MultizoneStars.from_output(name)
-    densities = stellar_density_gradient(mzs, rbins)
-    ax.plot(rbin_centers, densities, 'g--', label='Static IFR (outflows)')
-    # Gas density
-    sigma_gas, radii = gas_density_gradient(name)
-    ax.plot(radii, sigma_gas, 'g:', label='Gas')
-    sigma_mstar, radii = mstar_density_gradient(name)
-    print(sigma_mstar[:-1] / total_disk)
-    
-    # Static IFR mode
-    name = 'nomigration/no_outflow/no_gasflow/J21/static_infall/diskmodel'
-    mzs = MultizoneStars.from_output(name)
-    densities = stellar_density_gradient(mzs, rbins)
-    ax.plot(rbin_centers, densities, 'b--', label='Static IFR (no outflow)')
-    # Gas density
-    sigma_gas, radii = gas_density_gradient(name)
-    ax.plot(radii, sigma_gas, 'b:', label='Gas')
-    sigma_mstar, radii = mstar_density_gradient(name)
-    print(sigma_mstar[:-1]/ total_disk)
-    
-    # Inside-out
-    # insideout_name = 'nomigration/outflow/no_gasflow/J21/static_fine_dr/diskmodel'
-    # insideout = MultizoneStars.from_output(insideout_name)
-    # densities = surface_density_gradient(insideout, rbins)
-    # ax.plot(rbin_centers, (densities - total_disk) / total_disk + 2, 'g-', label='dr=0.01')
-    
-    # Two-infall SFH with no migration
-    # nomig_name = 'nomigration/outflow/no_gasflow/J21/twoinfall/diskmodel'
-    # nomig = MultizoneStars.from_output(nomig_name)
-    # densities = stellar_density_gradient(nomig, rbins)
-    # ax.plot(rbin_centers, densities, 'g-', 
-    #         label='Two-infall')
-    
-    # onset = get_onset_time(nomig_name)
-    # nomig_thin = nomig.filter({'formation_time': (onset, None)})
-    # densities = stellar_density_gradient(nomig_thin, rbins)
-    # ax.plot(rbin_centers, densities, 'g--')
-    
-    # nomig_thick = nomig.filter({'formation_time': (0, onset)})
-    # densities = stellar_density_gradient(nomig_thick, rbins)
-    # ax.plot(rbin_centers, densities, 'g.-')
+    sigma_gas, radii = gas_density_gradient(mzs.name)
+    ax.plot(radii, sigma_gas, color=color, linestyle=':', label='Gas')
     
     ax.set_xlabel(r'$R_{\rm gal}$ [kpc]')
     # ax.set_ylabel(r'$\Delta\Sigma_\star/\Sigma_\star$')
     ax.set_ylabel(r'$\Sigma_\star$ [M$_\odot$ kpc$^{-2}$]')
     ax.set_yscale('log')
     ax.set_ylim((5e5, 6e9))
-    # ax.xaxis.set_minor_locator(MultipleLocator(1))
-    # ax.xaxis.set_major_locator(MultipleLocator(4))
+    ax.xaxis.set_minor_locator(MultipleLocator(1))
+    ax.xaxis.set_major_locator(MultipleLocator(4))
     # ax.yaxis.set_minor_locator(MultipleLocator(0.2))
     # ax.yaxis.set_major_locator(MultipleLocator(1))
     ax.legend(loc='upper right', frameon=False)
     # ax.set_title('1 km/s radial gas flows')
     
-    plt.savefig(paths.figures / 'density_gradient')
+    # Save
+    fullpath = paths.extra / mzs.name.replace('diskmodel', fname)
+    if not fullpath.parents[0].exists():
+        fullpath.parents[0].mkdir(parents=True)
+    plt.savefig(fullpath, dpi=300)
     plt.close()
 
 
@@ -217,4 +188,20 @@ def mstar_density_gradient(name, zone_width=ZONE_WIDTH):
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        prog='density_gradient.py',
+        description='Plot the stellar density gradient from a multizone run.'
+    )
+    parser.add_argument('output_name', metavar='NAME',
+                        help='Name of VICE multizone output.')
+    parser.add_argument('-c', '--components', action='store_true',
+                        help='Plot thick & thin disk components.')
+    parser.add_argument('-s', '--style', 
+                        choices=['paper', 'poster'],
+                        default='paper', 
+                        help='Plot style to use (default: paper)')
+    parser.add_argument('-o', '--origin', action='store_true',
+                        help='Plot stellar density gradient at birth, ' + \
+                            'rather than final radius.')
+    args = parser.parse_args()
+    main(**vars(args))
