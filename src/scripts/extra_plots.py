@@ -7,6 +7,7 @@ import argparse
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 import vice
 
 from multizone_stars import MultizoneStars
@@ -82,19 +83,22 @@ def plot_sfh(output_name, style='paper', cmap='plasma_r', fname='sfh.png'):
     # axs[1].set_ylim((3e-5, 0.1))
     axs[2].set_ylabel(r'$\Sigma_g$ [$M_{\odot}\,\rm{kpc}^{-2}$]')
     axs[2].set_yscale('log')
-    # axs[2].set_ylim((5e5, 2e8))
+    axs[2].set_ylim((1e5, 3e8))
     axs[3].set_ylabel(r'$\tau_\star$ [Gyr]')
     axs[3].set_ylim((0, 12))
+    axs[3].yaxis.set_major_locator(MultipleLocator(5))
+    axs[3].yaxis.set_minor_locator(MultipleLocator(1))
     for ax in axs:
         ax.set_xlabel('Time [Gyr]')
         ax.set_xlim((-1, 14))
+        ax.xaxis.set_minor_locator(MultipleLocator(1))
     zones = [int(galr / ZONE_WIDTH) for galr in get_bin_centers(GALR_BINS)]
     colors = get_color_list(plt.get_cmap(cmap), GALR_BINS)
     linestyle = '-'
     for zone, color in zip(zones, colors):
         radius = (zone + 0.5) * ZONE_WIDTH
         area = np.pi * ((radius + ZONE_WIDTH)**2 - radius**2)
-        label = f'{zone * ZONE_WIDTH} kpc'
+        label = f'{zone * ZONE_WIDTH:.0f}'
         history = multioutput.zones[f'zone{zone}'].history
         time = np.array(history['time'])
         infall_surface = np.array(history['ifr']) / area
@@ -107,6 +111,8 @@ def plot_sfh(output_name, style='paper', cmap='plasma_r', fname='sfh.png'):
                     len(history['time']) - 1)]
         axs[3].plot(history['time'][1:], tau_star, color=color, ls=linestyle,
                     label=label)
+    axs[1].legend(frameon=False, title=r'$R_{\rm gal}$ [kpc]', ncols=2, 
+                  loc='best', borderpad=0.2, labelspacing=0.2, columnspacing=1.2)
     # Save
     fullpath = paths.extra / output_name.replace('diskmodel', fname)
     if not fullpath.parents[0].exists():
