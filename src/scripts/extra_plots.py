@@ -33,12 +33,12 @@ def main(output_name, verbose=False, tracks=False, log_age=False,
     if uncertainties:
         mzs.model_uncertainty(inplace=True, apogee_data=apogee_sample.data)
     # Age vs [O/H]
-    plot_age_abundance_grid(mzs, '[o/h]', color_by='galr_origin', cmap='plasma_r', 
+    plot_age_abundance_grid(mzs, '[o/h]', color_by='galr_origin', cmap='winter_r', 
                             apogee_sample=apogee_sample,
                             style=style, log=log_age, verbose=verbose,
                             medians=apogee_data, tracks=tracks)
     # Age vs [Fe/H]
-    plot_age_abundance_grid(mzs, '[fe/h]', color_by='galr_origin', cmap='plasma_r', 
+    plot_age_abundance_grid(mzs, '[fe/h]', color_by='galr_origin', cmap='winter_r', 
                             apogee_sample=apogee_sample,
                             style=style, log=log_age, verbose=verbose,
                             medians=apogee_data, tracks=tracks)
@@ -51,7 +51,7 @@ def main(output_name, verbose=False, tracks=False, log_age=False,
     plot_feh_distribution(mzs, apogee_sample, style=style)
     plot_ofe_distribution(mzs, apogee_sample, style=style)
     # [O/Fe] vs [Fe/H]
-    plot_ofe_feh_grid(mzs, apogee_sample, tracks=tracks, cmap='plasma_r',
+    plot_ofe_feh_grid(mzs, apogee_sample, tracks=tracks, cmap='winter_r',
                       apogee_contours=apogee_data, style=style)
     # [O/Fe] vs [Fe/H], color-coded by age
     plot_ofe_feh_grid(mzs, apogee_sample, tracks=tracks,
