@@ -218,10 +218,9 @@ class APOGEESample:
         sample_file_path = data_dir / name
         try:
             data = pd.read_csv(sample_file_path)
-        except FileNotFoundError as e:
-            print('APOGEE sample file not found. Please run ``python \
-apogee_sample.py`` to generate it first.')
-            raise e
+        except FileNotFoundError:
+            raise FileNotFoundError('APOGEE sample file not found. Please run \
+``python apogee_sample.py`` to generate it first.')
         return cls(data, data_dir=data_dir, galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)        
 
     def kde2D(self, xcol, ycol, bandwidth=0.03, overwrite=False):
