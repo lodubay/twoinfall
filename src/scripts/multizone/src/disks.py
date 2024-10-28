@@ -51,6 +51,7 @@ class diskmodel(vice.milkyway):
         - "outerburst"
         - "twoinfall"
         - "twoinfall_var"
+        - "twoinfall_inner"
         - "earlyburst"
         - "static_infall"
     
@@ -138,7 +139,13 @@ class diskmodel(vice.milkyway):
             self.mass_loading = models.equilibrium_mass_loading()
         # Set the SF mode - infall vs star formation rate
         evol_kwargs = {}
-        if spec.lower() in ["twoinfall", "earlyburst", "static_infall", "twoinfall_var"]:
+        if spec.lower() in [
+            "twoinfall", 
+            "twoinfall_var", 
+            "twoinfall_inner",
+            "earlyburst", 
+            "static_infall"
+        ]:
             self.mode = "ifr"
             for zone in self.zones: zone.Mg0 = 1e5
             # specify mass-loading factor for infall mode normalization
@@ -255,6 +262,7 @@ class star_formation_history:
                 "outerburst":         models.outerburst,
                 "twoinfall":          models.twoinfall,
                 "twoinfall_var":      models.twoinfall_var,
+                "twoinfall_inner":    models.twoinfall_inner,
                 "earlyburst":         models.earlyburst_ifr,
                 "static_infall":      models.static_infall,
             }[spec.lower()]((i + 0.5) * zone_width, dr = zone_width, dt = dt,

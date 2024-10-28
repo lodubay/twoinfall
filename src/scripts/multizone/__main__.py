@@ -11,13 +11,34 @@ from . import _globals
 from . import src
 import paths
 
-_MIGRATION_MODELS_ = ["diffusion", "linear", "post-process", "sudden", 
-                      "gaussian", "none"]
-_EVOLUTION_MODELS_ = ["static", "insideout", "lateburst", "outerburst",
-                      "twoinfall", "earlyburst", "static_infall",
-                      "twoinfall_var"]
-_DELAY_MODELS_ = ["powerlaw", "plateau", "prompt", "exponential", "triple",
-                  "greggio05_single", "greggio05_double"]
+_MIGRATION_MODELS_ = [
+    "diffusion", 
+    "linear", 
+    "post-process", 
+    "sudden", 
+    "gaussian", 
+    "none"
+]
+_EVOLUTION_MODELS_ = [
+    "static", 
+    "insideout", 
+    "lateburst", 
+    "outerburst",
+    "earlyburst", 
+    "static_infall",
+    "twoinfall", 
+    "twoinfall_var", 
+    "twoinfall_inner"
+]
+_DELAY_MODELS_ = [
+    "powerlaw", 
+    "plateau", 
+    "prompt", 
+    "exponential", 
+    "triple",
+    "greggio05_single", 
+    "greggio05_double"
+]
 # _YIELD_SETS_ = ["F04", "JW20", "J21", "C22", "W23"]
 
 def parse():
@@ -25,92 +46,93 @@ def parse():
     Parse the command line arguments using argparse.ArgumentParser
     """
     parser = argparse.ArgumentParser(
-        description = "The parameters of the Milky Way models to run.")
-
+        description = "The parameters of the Milky Way models to run."
+    )
     parser.add_argument("-f", "--force",
         help = "Force overwrite existing VICE outputs of the same name.",
-        action = "store_true")
-    
+        action = "store_true"
+    )
     parser.add_argument("-p", "--pickle",
         help = "Save functional attributes along with VICE output.",
-        action = "store_true")
-
+        action = "store_true"
+    )
     parser.add_argument("--migration",
         help = "The migration model to assume. (Default: gaussian)",
         type = str,
         choices = _MIGRATION_MODELS_,
-        default = "gaussian")
-
+        default = "gaussian"
+    )
     parser.add_argument("--evolution",
         help = "The evolutionary history to assume (Default: twoinfall)",
         type = str,
         choices = _EVOLUTION_MODELS_,
-        default = "twoinfall")
-
+        default = "twoinfall"
+    )
     parser.add_argument("--RIa",
         help = "The SN Ia delay-time distribution to assume (Default: plateau)",
         type = str,
         choices = _DELAY_MODELS_,
-        default = "plateau")
-
+        default = "plateau"
+    )
     parser.add_argument("--RIa-params",
         help = "Parameters for the SN Ia delay-time distribution separated by \
 underscores. (Default: '')",
         type = str,
-        default = "")
-
+        default = ""
+    )
     parser.add_argument("--minimum-delay",
-         help = "The minimum SN Ia delay time in Gyr (Default: 0.04)",
-         type = float,
-         default = _globals.MIN_RIA_DELAY)
-
+        help = "The minimum SN Ia delay time in Gyr (Default: 0.04)",
+        type = float,
+        default = _globals.MIN_RIA_DELAY
+    )
     parser.add_argument("--dt",
         help = "Timestep size in Gyr. (Default: 0.01)",
         type = float,
-        default = _globals.DT)
-
+        default = _globals.DT
+    )
     parser.add_argument("--nstars",
         help = """Number of stellar populations per zone per timestep. \
 (Default: 8)""",
         type = int,
-        default = _globals.NSTARS)
-
+        default = _globals.NSTARS
+    )
     parser.add_argument("--name",
         help = "The name of the output simulations (Default: 'diskmodel')",
         type = str,
-        default = "diskmodel")
-
+        default = "diskmodel"
+    )
     parser.add_argument("--elements",
         help = """Elements to simulation the enrichment for separated by \
 underscores. (Default: \"fe_o\")""",
         type = str,
-        default = "_".join(_globals.ELEMENTS))
-
+        default = "_".join(_globals.ELEMENTS)
+    )
     parser.add_argument("--zonewidth",
         help = "The width of each annulus in kpc. (Default: 0.1)",
         type = float,
-        default = _globals.ZONE_WIDTH)
-    
+        default = _globals.ZONE_WIDTH
+    )
     # parser.add_argument("--yields",
     #     help = "The nucleosynthetic yield set to use. (Default: 'J21')",
     #     type = str,
     #     choices = _YIELD_SETS_,
-    #     default = "J21")
-    
+    #     default = "J21"
+    # )
     parser.add_argument("--seed", 
-                        help = "Seed for the random number generator.",
-                        type = int,
-                        default = _globals.RANDOM_SEED)
-    
+        help = "Seed for the random number generator.",
+        type = int,
+        default = _globals.RANDOM_SEED
+    )
     parser.add_argument("--radial-gas-velocity",
-                        help = "Radial gas velocity in km/s, negative for \
+        help = "Radial gas velocity in km/s, negative for \
 an inward flow (default: 0).",
-                        type = float,
-                        default = 0.)
-    
+        type = float,
+        default = 0.
+    )
     parser.add_argument("--no-outflows",
-                        help = "Disable mass-loaded outflows.",
-                        action = "store_true")
+        help = "Disable mass-loaded outflows.",
+        action = "store_true"
+    )
 
     return parser
 
