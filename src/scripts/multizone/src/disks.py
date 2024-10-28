@@ -153,8 +153,11 @@ class diskmodel(vice.milkyway):
         else:
             self.mode = "sfr"
         # Star formation history
-        self.evolution = star_formation_history(spec = spec,
-            zone_width = zone_width, **evol_kwargs)
+        self.evolution = star_formation_history(
+            spec = spec,
+            zone_width = zone_width, 
+            **evol_kwargs
+        )
         # Set the Type Ia delay time distribution
         dtd = delay_time_distribution(dist = RIa, tmin = delay, **RIa_kwargs)
         for i in range(self.n_zones):
@@ -277,13 +280,14 @@ class star_formation_history:
         else:
             idx = get_bin_number(self._radii, radius)
             if idx != -1:
-                return gradient(radius) * interpolate(self._radii[idx],
+                val = gradient(radius) * interpolate(self._radii[idx],
                     self._evol[idx](time), self._radii[idx + 1],
                     self._evol[idx + 1](time), radius)
             else:
-                return gradient(radius) * interpolate(self._radii[-2],
+                val = gradient(radius) * interpolate(self._radii[-2],
                     self._evol[-2](time), self._radii[-1], self._evol[-1](time),
                     radius)
+            return max(val, 0) # Ensure no negative values
 
 
 class delay_time_distribution:
