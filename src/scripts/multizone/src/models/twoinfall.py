@@ -3,7 +3,7 @@ This file declares the time-dependence of the star formation history at a
 given radius under the two-infall model.
 """
 
-from ..._globals import END_TIME, MAX_SF_RADIUS
+from ..._globals import END_TIME
 from .utils import double_exponential
 from .normalize import normalize_ifrmode, integrate_infall
 from .gradient import gradient, thick_to_thin_ratio

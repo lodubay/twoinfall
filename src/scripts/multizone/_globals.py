@@ -22,7 +22,7 @@ DT = 0.01
 
 # List of elements to simulate
 # Order is important! "Reference elements" (e.g., Fe) should come first
-ELEMENTS = ['fe', 'o']
+ELEMENTS = ["fe", "o"]
 
 # Number of stellar populations per zone per timestep
 NSTARS = 8
@@ -35,4 +35,4 @@ THIN_DISK_SCALE_RADIUS = 2.5 # kpc
 THICK_DISK_SCALE_RADIUS = 2.0 # kpc
 THICK_TO_THIN_RATIO = 0.27 # at r = 0
 
-YIELDS = "W24"
+YIELDS = "J21"
