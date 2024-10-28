@@ -4,9 +4,7 @@ the two-infall model where the first infall is constrained to the inner
 galaxy (<9 kpc).
 """
 
-import math as m
-from ..._globals import MAX_SF_RADIUS
-from .twoinfall import twoinfall, FIRST_TIMESCALE
+from .twoinfall import twoinfall
 
 FIRST_MAX_RADIUS = 9 # kpc, maximum radius of the first infall
 
