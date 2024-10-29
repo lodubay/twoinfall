@@ -7,12 +7,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import vice
-# from vice.toolkit import J21_sf_law
-from multizone.src.yields import J21
+
+# from multizone.src.yields import J21
 # from vice.yields.presets import JW20
-# from multizone.src.yields import W24
+from multizone.src.yields import W24
 # vice.yields.sneia.settings['fe'] *= (1.1/1.2)
 # from multizone.src.yields import F04
+from utils import twoinfall_onezone
 from multizone.src import models
 from multizone.src.models.gradient import gradient
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH, ZONE_WIDTH
@@ -109,16 +110,16 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
     for i, val in enumerate(values):
         param_dict[var] = val
         # Outflow mass-loading factor
-        # eta_func = models.equilibrium_mass_loading(
-        #     alpha_h_eq=0.2, 
-        #     tau_sfh=param_dict['second_timescale'], 
-        #     tau_star=2.
-        # )
-        eta_func = vice.milkyway.default_mass_loading
+        eta_func = models.equilibrium_mass_loading(
+            equilibrium=0.2, 
+            tau_sfh=param_dict['second_timescale'], 
+            tau_star=2.
+        )
+        # eta_func = vice.milkyway.default_mass_loading
         eta = eta_func(RADIUS)
         # Run one-zone model
         name = output_name(*param_dict.values())
-        ifr = twoinfall_gradient(RADIUS, mass_loading=eta_func, dt=dt, 
+        ifr = twoinfall_onezone(RADIUS, mass_loading=eta_func, dt=dt, 
                                  dr=ZONE_WIDTH, **param_dict)
         sz = vice.singlezone(name=name,
                              func=ifr, 
@@ -155,13 +156,6 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
                 transform=axs[0].transAxes)
 
     return axs
-
-
-class twoinfall_gradient(models.twoinfall):
-    def __init__(self, radius, **kwargs):
-        super().__init__(radius, **kwargs)
-        self.first.norm *= gradient(radius)
-        self.second.norm *= gradient(radius)
 
 
 def output_name(tau1, tau2, onset, parent_dir=paths.data/'onezone'/'params'):

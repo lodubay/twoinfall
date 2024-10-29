@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import vice
+
 import paths
 from multizone.src.yields import W24
 # from vice.yields.presets import JW20
@@ -18,7 +19,7 @@ from apogee_sample import APOGEESample
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH, ZONE_WIDTH
 from colormaps import paultol
 from track_and_mdf import setup_axes, plot_vice_onezone
-from utils import get_bin_centers, twoinfall_gradient
+from utils import get_bin_centers, twoinfall_onezone
 
 ONSET = 4.2
 XLIM = (-1.4, 0.6)
@@ -30,7 +31,7 @@ def main():
     gs = fig.add_gridspec(7, 22, wspace=0.)
     subfigs = [fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))]
     # Outflow mass-loading factor
-    eta_func = models.equilibrium_mass_loading(equilibrium=0.1, tau_sfh=15., tau_star=2.)
+    eta_func = models.equilibrium_mass_loading(equilibrium=0.2, tau_sfh=15., tau_star=2.)
     # eta_func = vice.milkyway.default_mass_loading
     axs0 = plot_region(subfigs[0], 4, eta=eta_func, 
                        color=paultol.highcontrast.colors[2],
@@ -80,19 +81,17 @@ def plot_region(fig, radius, dr=2., eta=models.equilibrium_mass_loading(),
     
     sz = vice.singlezone(
         name = name,
-        func = twoinfall_gradient(
+        func = twoinfall_onezone(
             radius, 
             first_timescale=1., 
             second_timescale=models.insideout.timescale(radius), 
             onset=ONSET,
             mass_loading=eta),
-        # func = insideout_gradient(radius),
         mode = "ifr",
         **ONEZONE_DEFAULTS
     )
     sz.eta = eta(radius)
     sz.tau_star = models.twoinfall_sf_law(area, onset=ONSET)
-    # sz.tau_star = models.fiducial_sf_law(area)
     sz.run(simtime, overwrite=True)
     
     plot_vice_onezone(name, fig=fig, axs=axs, markers=[], color=color)
@@ -113,12 +112,6 @@ def plot_region(fig, radius, dr=2., eta=models.equilibrium_mass_loading(),
                 va="top", ha="right", transform=axs[0].transAxes)
     
     return axs
-
-class insideout_gradient(models.insideout):
-    def __init__(self, radius, dr=0.1, **kwargs):
-        super().__init__(radius, dr=dr, **kwargs)
-        area = np.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
-        self.norm *= gradient(radius) * area
 
 
 if __name__ == "__main__":

@@ -26,14 +26,15 @@ from _globals import RANDOM_SEED, MAX_SF_RADIUS, ZONE_WIDTH
 # =============================================================================
 
 
-class twoinfall_gradient(twoinfall):
+class twoinfall_onezone(twoinfall):
     """A sub-class of the twoinfall SFH which incorporates the value of the
-    stellar surface density gradient when called."""
+    stellar surface density gradient, and returns an infall gas mass rather
+    than surface density when called."""
     def __init__(self, radius, dr=0.1, **kwargs):
         super().__init__(radius, dr=dr, **kwargs)
-        area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
-        self.first.norm *= gradient(radius) * area
-        self.second.norm *= gradient(radius) * area
+        area = m.pi * ((radius + dr)**2 - radius**2)
+        self.first.norm *= area * gradient(radius)
+        self.second.norm *= area * gradient(radius)
 
 
 def vice_to_apogee_col(col):
