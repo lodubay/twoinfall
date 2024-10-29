@@ -20,7 +20,7 @@ from .migration import diskmigration, gaussian_migration, no_migration
 from . import models
 from . import dtds
 from . import yields
-from .models.utils import get_bin_number, interpolate
+from .models.utils import get_bin_number, interpolate, modified_exponential
 from .models.gradient import gradient
 import math as m
 import sys
@@ -86,6 +86,11 @@ class diskmodel(vice.milkyway):
         Random number generator seed.
     radial_gas_velocity : ``float`` [default: 0]
         Radial gas flow velocity in km/s. Positive denotes an outward gas flow.
+    pre_enrichment : ``float`` [default: -inf]
+        The [X/H] abundance of the infalling gas at late times. The infall
+        metallicity starts at 0 and increases exponentially to the specified
+        value on a 2 Gyr timescale. If -inf, infalling gas is pristine 
+        throughout the simulation.
     kwargs : varying types
         Other keyword arguments to pass ``vice.milkyway``.
 
@@ -95,7 +100,8 @@ class diskmodel(vice.milkyway):
     def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "twoinfall",
                  verbose = True, migration_mode = "gaussian", #yields="J21",
                  delay = 0.04, RIa = "plateau", RIa_kwargs={}, seed=42, 
-                 radial_gas_velocity = 0., outflows=True, **kwargs):
+                 radial_gas_velocity = 0., outflows=True, 
+                 pre_enrichment=float("-inf"), **kwargs):
         super().__init__(zone_width = zone_width, name = name,
             verbose = verbose, **kwargs)
         # Set the yields
@@ -147,7 +153,7 @@ class diskmodel(vice.milkyway):
             "static_infall"
         ]:
             self.mode = "ifr"
-            for zone in self.zones: zone.Mg0 = 1e5
+            for zone in self.zones: zone.Mg0 = 0.
             # specify mass-loading factor for infall mode normalization
             evol_kwargs["mass_loading"] = self.mass_loading
         else:
@@ -176,6 +182,17 @@ class diskmodel(vice.milkyway):
                     # Simplified SF law, single power-law with cutoff
                     self.zones[i].tau_star = models.fiducial_sf_law(
                         area, mode=self.mode)
+
+        # Metallicity of infalling gas
+        if not m.isinf(pre_enrichment):
+            for i in range(self.n_zones):
+                self.zones[i].Zin = {}
+                for e in self.zones[i].elements:
+                    self.zones[i].Zin[e] = modified_exponential(
+                        norm = vice.solar_z[e] * 10**pre_enrichment,
+                        rise = 2,
+                        timescale = float("inf")
+                    )
         
         # CONSTANT GAS VELOCITY
         if radial_gas_velocity:

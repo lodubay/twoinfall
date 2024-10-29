@@ -8,13 +8,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import vice
 
-# from multizone.src.yields import W24
-from multizone.src.yields import J21
+from multizone.src.yields import W24
+# from multizone.src.yields import J21
+# from vice.yields.presets import JW20
 from multizone.src.models import twoinfall, twoinfall_sf_law, equilibrium_mass_loading
 from track_and_mdf import setup_axes, plot_vice_onezone
 from apogee_sample import APOGEESample
 import paths
-from utils import get_bin_centers, twoinfall_gradient
+from utils import get_bin_centers, twoinfall_onezone
 from _globals import ONEZONE_DEFAULTS, ZONE_WIDTH, ONE_COLUMN_WIDTH, END_TIME
 from colormaps import paultol
 
@@ -37,10 +38,10 @@ def main():
     dt = ONEZONE_DEFAULTS['dt']
     simtime = np.arange(0, END_TIME + dt, dt)
     area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
-    # eta_func = equilibrium_mass_loading()
-    eta_func = vice.milkyway.default_mass_loading
+    eta_func = equilibrium_mass_loading()
+    # eta_func = vice.milkyway.default_mass_loading
     eta = eta_func(RADIUS)
-    ifr = twoinfall_gradient(RADIUS, mass_loading=eta_func, dt=dt, 
+    ifr = twoinfall_onezone(RADIUS, mass_loading=eta_func, dt=dt, 
                     dr=ZONE_WIDTH)
     tau_star = twoinfall_sf_law(area, onset=ifr.onset)
     parent_dir = paths.onezone / 'enriched_infall'

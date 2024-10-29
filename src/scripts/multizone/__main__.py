@@ -133,6 +133,12 @@ an inward flow (default: 0).",
         help = "Disable mass-loaded outflows.",
         action = "store_true"
     )
+    parser.add_argument("--pre-enrichment",
+        help = "The [X/H] abundance of the infalling gas at late times. \
+If -inf, infalling gas is always pristine. (Default: -inf).",
+        default = float("-inf"),
+        type = float
+    )
 
     return parser
 
@@ -146,6 +152,10 @@ def model(args):
     args : argparse.Namespace
         The command line arguments parsed via argparse.
     """
+    # Create output dir (and parents) if it doesn't exist
+    fullpath = paths.multizone / args.name
+    if not fullpath.parents[0].exists():
+        fullpath.parents[0].mkdir(parents=True)
     # Parse RIa params into dict
     RIa_kwargs = {}
     if '=' in args.RIa_params:
@@ -159,7 +169,7 @@ def model(args):
         elements = args.elements.split('_')
     )
     kwargs = dict(
-        name = str(paths.multizone / args.name),
+        name = str(fullpath),
         spec = args.evolution,
         RIa = args.RIa,
         RIa_kwargs = RIa_kwargs,
@@ -167,7 +177,8 @@ def model(args):
         # yields = args.yields,
         seed = args.seed,
         radial_gas_velocity = args.radial_gas_velocity,
-        outflows = not args.no_outflows
+        outflows = not args.no_outflows,
+        pre_enrichment = args.pre_enrichment
     )
     if args.migration == "post-process":
         kwargs["simple"] = True
