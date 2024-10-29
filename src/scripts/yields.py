@@ -5,7 +5,7 @@ adopted in this paper.
 
 import pandas as pd
 import vice
-from multizone.src.yields import W23
+from multizone.src.yields import W24
 import paths
 
 def main():
