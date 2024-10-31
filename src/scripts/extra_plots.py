@@ -18,9 +18,9 @@ from ofe_distribution import plot_ofe_distribution
 # from ofe_bimodality import plot_bimodality_comparison
 from ofe_feh_grid import plot_ofe_feh_grid
 from density_gradient import plot_density_gradient
-from utils import get_bin_centers, get_color_list
+from utils import get_bin_centers, get_color_list, radial_gradient
 import paths
-from _globals import TWO_COLUMN_WIDTH, ZONE_WIDTH, GALR_BINS
+from _globals import TWO_COLUMN_WIDTH, ZONE_WIDTH, GALR_BINS, ONE_COLUMN_WIDTH
 
 def main(output_name, verbose=False, tracks=False, log_age=False, 
          uncertainties=False, apogee_data=False, style='paper'):
@@ -62,6 +62,8 @@ def main(output_name, verbose=False, tracks=False, log_age=False,
     plot_sfh(output_name, style=style)
     # Stellar density gradient
     plot_density_gradient(mzs, components=('twoinfall' in mzs.name))
+    # Mass-loading factor
+    plot_mass_loading(output_name)
     print('Done! Plots are located at %s' % str(parent_dir))
 
 
@@ -113,6 +115,32 @@ def plot_sfh(output_name, style='paper', cmap='plasma_r', fname='sfh.png'):
                     label=label)
     axs[1].legend(frameon=False, title=r'$R_{\rm gal}$ [kpc]', ncols=2, 
                   loc='best', borderpad=0.2, labelspacing=0.2, columnspacing=1.2)
+    # Save
+    fullpath = paths.extra / output_name.replace('diskmodel', fname)
+    if not fullpath.parents[0].exists():
+        fullpath.parents[0].mkdir(parents=True)
+    plt.savefig(fullpath, dpi=300)
+    plt.close()
+
+
+def plot_mass_loading(output_name, style='paper', fname='mass_loading.png'):
+    """
+    Plot the outflow mass-loading factor as a function of radius.
+    """
+    plt.style.use(paths.styles / f'{style}.mplstyle')
+    fig, ax = plt.subplots(figsize=(ONE_COLUMN_WIDTH, ONE_COLUMN_WIDTH))
+
+    multioutput = vice.output(str(paths.multizone / output_name))
+    eta_list = radial_gradient(multioutput, 'eta_0')
+    radii = [i * ZONE_WIDTH for i in range(len(eta_list))]
+
+    ax.plot(radii, eta_list, "k-")
+    
+    ax.axvline(8, color="r", ls="--")
+    ax.axhline(eta_list[80], color="r", ls="--")
+    
+    ax.set_xlabel(r"$R_{\rm gal}$ [kpc]")
+    ax.set_ylabel(r"$\eta\equiv\dot\Sigma_{\rm out}/\dot\Sigma_\star$")
     # Save
     fullpath = paths.extra / output_name.replace('diskmodel', fname)
     if not fullpath.parents[0].exists():
