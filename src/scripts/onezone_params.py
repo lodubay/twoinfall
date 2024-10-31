@@ -33,7 +33,7 @@ LABELS = {
     'second_timescale': '\\tau_2',
     'onset': 't_{\\rm on}'
 }
-XLIM = (-1.7, 0.8)
+XLIM = (-1.4, 0.8)
 YLIM = (-0.18, 0.54)
 
 def main():
@@ -101,7 +101,7 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
         raise ValueError('Please specify one variable parameter.')
     multiline_title = '$\\tau_2=%s$ Gyr,' % second_timescale + '\n' + \
         '$t_{\\rm on}=%s$ Gyr' % onset
-    axs = setup_axes(subfig, title='', **kwargs)
+    axs = setup_axes(subfig, title='', xname='[O/H]', **kwargs)
 
     dt = ONEZONE_DEFAULTS['dt']
     simtime = np.arange(0, END_TIME + dt, dt)
@@ -129,6 +129,7 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
         sz.eta = eta
         sz.run(simtime, overwrite=True)
         plot_vice_onezone(name, 
+                          xcol='[o/h]',
                           fig=subfig, axs=axs, 
                           linestyle='-', 
                           color=None, 
