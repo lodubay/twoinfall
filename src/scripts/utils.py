@@ -32,7 +32,7 @@ class twoinfall_onezone(twoinfall):
     than surface density when called."""
     def __init__(self, radius, dr=0.1, **kwargs):
         super().__init__(radius, dr=dr, **kwargs)
-        area = m.pi * ((radius + dr)**2 - radius**2)
+        area = m.pi * ((radius + dr/2)**2 - (radius - dr/2)**2)
         self.first.norm *= area * gradient(radius)
         self.second.norm *= area * gradient(radius)
 
