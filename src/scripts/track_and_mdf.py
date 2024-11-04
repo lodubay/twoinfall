@@ -262,6 +262,7 @@ def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), xlabel=True,
     ax_mdf.tick_params(axis='x', labelbottom=False)
     ax_mdf.tick_params(axis='y', labelsize='small')
     ax_mdf.set_ylim((0, 1.2))
+    ax_mdf.yaxis.set_major_locator(MultipleLocator(1))
     ax_mdf.yaxis.set_minor_locator(MultipleLocator(0.2))
     if ylabel:
         ax_mdf.set_ylabel(r'$P($%s$)$' % xname, size='small')
@@ -278,6 +279,7 @@ def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), xlabel=True,
     else:
         ax_odf.xaxis.set_ticklabels([])
     ax_odf.set_xlim((0, 1.2))
+    ax_odf.xaxis.set_major_locator(MultipleLocator(1))
     ax_odf.xaxis.set_minor_locator(MultipleLocator(0.2))
     axs = [ax_main, ax_mdf, ax_odf]
     return axs

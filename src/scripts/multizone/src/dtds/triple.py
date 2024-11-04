@@ -37,7 +37,8 @@ class triple(plateau):
     def __init__(self, early_rate=0.05, rise_time=0.5, width=0.5, slope=-1.1, 
                  tmin=0.04, tmax=END_TIME):
         self.rise_time = rise_time
-        super().__init__(width=width, tmin=rise_time, tmax=tmax, slope=slope)
+        super().__init__(width=width+rise_time, tmin=rise_time, tmax=tmax, 
+                         slope=slope)
         self.early_rate = early_rate * super().__call__(rise_time)
         self.norm = 1
         # Normalize over full time range
