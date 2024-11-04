@@ -8,33 +8,28 @@ import matplotlib.pyplot as plt
 
 import vice
 
-from multizone.src.yields import W24
-# from multizone.src.yields import J21
-from multizone.src.models import twoinfall, twoinfall_sf_law, equilibrium_mass_loading
-from multizone.src.dtds import exponential
-from multizone.src.models.gradient import gradient
+# from multizone.src.yields import W24
+from multizone.src.yields import J21
+from multizone.src.models import twoinfall_sf_law, equilibrium_mass_loading
 from track_and_mdf import setup_figure, plot_vice_onezone
 from apogee_sample import APOGEESample
 import paths
-from utils import get_bin_centers, twoinfall_gradient
-from _globals import ONEZONE_DEFAULTS, ZONE_WIDTH
+from utils import get_bin_centers, twoinfall_onezone
+from _globals import ONEZONE_DEFAULTS
 from colormaps import paultol
 
 RADIUS = 8.
-ONSET = 6
+ZONE_WIDTH = 2.
+ONSET = 3.2
 FIRST_TIMESCALE = 1.
 SECOND_TIMESCALE = 15.
 FEH_LIM = (-1.4, 0.6)
-OFE_LIM = (-0.12, 0.48)
+OFE_LIM = (-0.08, 0.48)
 
 def main():
     plt.style.use(paths.styles / "paper.mplstyle")
     plt.rcParams["axes.prop_cycle"] = plt.cycler("color", paultol.vibrant.colors)
     fig, axs = setup_figure(xlim=FEH_LIM, ylim=OFE_LIM)
-    
-    print(vice.yields.ccsne.settings['fe'])
-    print(vice.yields.ccsne.settings['o'])
-    print(vice.yields.sneia.settings['fe'])
 
     # Plot underlying APOGEE contours
     apogee_data = APOGEESample.load()
@@ -66,19 +61,20 @@ def main():
     
     # One-zone model parameters
     simtime = np.arange(0, 13.21, 0.01)
-    area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
-    eta_func = equilibrium_mass_loading(
-        tau_star=2.,
-        tau_sfh=SECOND_TIMESCALE, 
-        equilibrium=0.2
-    )
-    # eta_func = vice.milkyway.default_mass_loading
-    ifr = twoinfall_gradient(
+    area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
+    # eta_func = equilibrium_mass_loading(
+    #     tau_star=2.,
+    #     tau_sfh=SECOND_TIMESCALE, 
+    #     equilibrium=0.2
+    # )
+    eta_func = vice.milkyway.default_mass_loading
+    ifr = twoinfall_onezone(
         RADIUS, 
         first_timescale=FIRST_TIMESCALE, 
         second_timescale=SECOND_TIMESCALE, 
         onset=ONSET,
         mass_loading=eta_func,
+        dr=ZONE_WIDTH
     )
     
     sz = vice.singlezone(
@@ -98,11 +94,11 @@ def main():
     # Weight by SFR
     hist = vice.history(name)
     axs[0].scatter(hist["[fe/h]"][::10], hist["[o/fe]"][::10], 
-                   s=[10*h/max(hist["sfr"]) for h in hist["sfr"][::10]],
+                   s=[20*h/max(hist["sfr"]) for h in hist["sfr"][::10]],
                    c=model_color)
     # Mark every Gyr
     axs[0].scatter(hist["[fe/h]"][::100], hist["[o/fe]"][::100], 
-                   s=[2*h/max(hist["sfr"]) for h in hist["sfr"][::100]], 
+                   s=[5*h/max(hist["sfr"]) for h in hist["sfr"][::100]], 
                    c="w", zorder=10)
     
     plt.savefig(paths.figures / "onezone_sfr")

@@ -104,6 +104,7 @@ class diskmodel(vice.milkyway):
                  pre_enrichment=float("-inf"), **kwargs):
         super().__init__(zone_width = zone_width, name = name,
             verbose = verbose, **kwargs)
+        print(vice.yields.ccsne.settings["fe"])
         # Set the yields
         # if yields == "JW20":
         #     from vice.yields.presets import JW20

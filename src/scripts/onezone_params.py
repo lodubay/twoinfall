@@ -33,7 +33,7 @@ LABELS = {
     'second_timescale': '\\tau_2',
     'onset': 't_{\\rm on}'
 }
-XLIM = (-1.4, 0.8)
+XLIM = (-1.4, 0.7)
 YLIM = (-0.18, 0.54)
 
 def main():
@@ -49,12 +49,12 @@ def main():
     print('\nSecond timescale')
     axs1 = vary_param(subfigs[1], second_timescale=[3, 5, 10, 30],
                       first_timescale=1, onset=4,
-                      xlim=XLIM, ylim=YLIM, ylabel=False,
+                      xlim=XLIM, ylim=YLIM, ylabel='',
                       label_index=1, verbose=True)
     print('\nOnset time')
     axs2 = vary_param(subfigs[2], onset=[1, 2, 3, 4, 5],
                       first_timescale=1, second_timescale=10,
-                      xlim=XLIM, ylim=YLIM, ylabel=False,
+                      xlim=XLIM, ylim=YLIM, ylabel='',
                       label_index=2, verbose=True)
     plt.subplots_adjust(bottom=0.13, top=0.98, left=0.16, right=0.98, wspace=0.5)
     fig.savefig(paths.figures / 'onezone_params', dpi=300)
@@ -101,7 +101,7 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
         raise ValueError('Please specify one variable parameter.')
     multiline_title = '$\\tau_2=%s$ Gyr,' % second_timescale + '\n' + \
         '$t_{\\rm on}=%s$ Gyr' % onset
-    axs = setup_axes(subfig, title='', xname='[O/H]', **kwargs)
+    axs = setup_axes(subfig, title='', xlabel='[Fe/H]', **kwargs)
 
     dt = ONEZONE_DEFAULTS['dt']
     simtime = np.arange(0, END_TIME + dt, dt)
@@ -110,12 +110,12 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
     for i, val in enumerate(values):
         param_dict[var] = val
         # Outflow mass-loading factor
-        # eta_func = models.equilibrium_mass_loading(
-        #     equilibrium=0.2, 
-        #     tau_sfh=param_dict['second_timescale'], 
-        #     tau_star=2.
-        # )
-        eta_func = vice.milkyway.default_mass_loading
+        eta_func = models.equilibrium_mass_loading(
+            equilibrium=0., 
+            # tau_sfh=param_dict['second_timescale'], 
+            tau_star=0.
+        )
+        # eta_func = vice.milkyway.default_mass_loading
         eta = eta_func(RADIUS)
         # Run one-zone model
         name = output_name(*param_dict.values())
@@ -129,7 +129,7 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
         sz.eta = eta
         sz.run(simtime, overwrite=True)
         plot_vice_onezone(name, 
-                          xcol='[o/h]',
+                          xcol='[fe/h]',
                           fig=subfig, axs=axs, 
                           linestyle='-', 
                           color=None, 

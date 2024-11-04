@@ -208,8 +208,8 @@ def setup_figure(width=ONE_COLUMN_WIDTH, **kwargs):
     return fig, axs
 
 
-def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), xlabel=True, 
-               ylabel=True, xname='[Fe/H]', yname='[O/Fe]'):
+def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), 
+               xlabel='[Fe/H]', ylabel='[O/Fe]'):
     """
     Create three axes: the main abundance track axis plus two
     side panels for [Fe/H] and [O/Fe] distribution functions.
@@ -245,16 +245,16 @@ def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), xlabel=True,
     ax_main.xaxis.set_minor_locator(MultipleLocator(0.1))
     ax_main.yaxis.set_major_locator(MultipleLocator(0.1))
     ax_main.yaxis.set_minor_locator(MultipleLocator(0.02))
-    if xlabel:
-        ax_main.set_xlabel(xname)
-    else:
+    if xlabel == '':
         ax_main.xaxis.set_ticklabels([])
         gs.update(bottom=0.)
-    if ylabel:
-        ax_main.set_ylabel(yname, labelpad=-2)
     else:
+        ax_main.set_xlabel(xlabel)
+    if ylabel == '':
         ax_main.yaxis.set_ticklabels([])
         gs.update(left=0.02)
+    else:
+        ax_main.set_ylabel(ylabel)
     ax_main.set_xlim(xlim)
     ax_main.set_ylim(ylim)
     # Add panel above for MDF in [Fe/H]
@@ -264,20 +264,20 @@ def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), xlabel=True,
     ax_mdf.set_ylim((0, 1.2))
     ax_mdf.yaxis.set_major_locator(MultipleLocator(1))
     ax_mdf.yaxis.set_minor_locator(MultipleLocator(0.2))
-    if ylabel:
-        ax_mdf.set_ylabel(r'$P($%s$)$' % xname, size='small')
-    else:
+    if ylabel == '':
         ax_mdf.yaxis.set_ticklabels([])
+    else:
+        ax_mdf.set_ylabel(r'$P($%s$)$' % xlabel, size='small')
     # Add plot title
     ax_mdf.set_title(title, loc='left', x=0.05, y=0.8, va='top', pad=0)
     # Add panel to the right for MDF in [O/Fe]
     ax_odf = fig.add_subplot(gs[1,1], sharey=ax_main)
     ax_odf.tick_params(axis='y', labelleft=False)
     ax_odf.tick_params(axis='x', labelsize='small')
-    if xlabel:
-        ax_odf.set_xlabel(r'$P($%s$)$' % yname, size='small')
-    else:
+    if xlabel == '':
         ax_odf.xaxis.set_ticklabels([])
+    else:
+        ax_odf.set_xlabel(r'$P($%s$)$' % ylabel, size='small')
     ax_odf.set_xlim((0, 1.2))
     ax_odf.xaxis.set_major_locator(MultipleLocator(1))
     ax_odf.xaxis.set_minor_locator(MultipleLocator(0.2))

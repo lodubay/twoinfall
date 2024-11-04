@@ -28,7 +28,7 @@ XLIM = (-1.4, 0.6)
 YLIM = (-0.12, 0.48)
 
 def main():
-    plt.style.use(paths.styles / "paper.mplstyle")
+    plt.style.use(paths.styles / 'paper.mplstyle')
     fig = plt.figure(figsize=(TWO_COLUMN_WIDTH, 0.36*TWO_COLUMN_WIDTH))
     gs = fig.add_gridspec(7, 22, wspace=0.)
     subfigs = [fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))]
@@ -40,42 +40,42 @@ def main():
                        xlim=XLIM, ylim=YLIM, dr=ZONE_WIDTH)
     axs1 = plot_region(subfigs[1], 8, eta=eta_func,
                        color=paultol.highcontrast.colors[1],
-                       xlim=XLIM, ylim=YLIM, ylabel=False, dr=ZONE_WIDTH)
+                       xlim=XLIM, ylim=YLIM, ylabel='', dr=ZONE_WIDTH)
     axs2 = plot_region(subfigs[2], 10, eta=eta_func,
                        color=paultol.highcontrast.colors[0],
-                       xlim=XLIM, ylim=YLIM, ylabel=False, dr=ZONE_WIDTH)
+                       xlim=XLIM, ylim=YLIM, ylabel='', dr=ZONE_WIDTH)
     plt.subplots_adjust(bottom=0.13, top=0.98, left=0.16, right=0.98, wspace=0.5)
-    fig.savefig(paths.figures / "onezone_regions", dpi=300)
+    fig.savefig(paths.figures / 'onezone_regions', dpi=300)
     plt.close()
     
 def plot_region(fig, radius, dr=4., eta=models.equilibrium_mass_loading(), 
-                output_dir=paths.data/"onezone"/"regions", 
+                output_dir=paths.data/'onezone'/'regions', 
                 color=None, **kwargs):
-    axs = setup_axes(fig, title="", xname="[O/H]", **kwargs)
+    axs = setup_axes(fig, title='', xlabel='[O/H]', **kwargs)
     # Plot underlying APOGEE contours
     apogee_data = APOGEESample.load()
     apogee_solar = apogee_data.region(galr_lim=(radius - dr/2, radius + dr/2), 
                                       absz_lim=(0, 2))
-    pcm = axs[0].hexbin(apogee_solar("O_H"), apogee_solar("O_FE"),
-                  gridsize=50, bins="log",
+    pcm = axs[0].hexbin(apogee_solar('O_H'), apogee_solar('O_FE'),
+                  gridsize=50, bins='log',
                   extent=[XLIM[0], XLIM[1], YLIM[0], YLIM[1]],
-                  cmap="Greys", linewidths=0.2)
+                  cmap='Greys', linewidths=0.2)
     cax = axs[0].inset_axes([0.05, 0.05, 0.05, 0.8])
-    fig.colorbar(pcm, cax=cax, orientation="vertical")
+    fig.colorbar(pcm, cax=cax, orientation='vertical')
     
     # APOGEE abundance distributions
-    feh_df, bin_edges = apogee_solar.mdf(col="O_H", range=XLIM, 
+    feh_df, bin_edges = apogee_solar.mdf(col='O_H', range=XLIM, 
                                          smoothing=0.2)
     axs[1].plot(get_bin_centers(bin_edges), feh_df / max(feh_df), 
-                color="gray", linestyle="-", marker=None)
-    ofe_df, bin_edges = apogee_solar.mdf(col="O_FE", range=YLIM, 
+                color='gray', linestyle='-', marker=None)
+    ofe_df, bin_edges = apogee_solar.mdf(col='O_FE', range=YLIM, 
                                          smoothing=0.05)
     axs[2].plot(ofe_df / max(ofe_df), get_bin_centers(bin_edges), 
-                color="gray", linestyle="-", marker=None)
+                color='gray', linestyle='-', marker=None)
     
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
-    name = str(output_dir / f"radius{radius:02d}")
+    name = str(output_dir / f'radius{radius:02d}')
     
     simtime = np.arange(0, 13.21, 0.01)
     
@@ -90,7 +90,7 @@ def plot_region(fig, radius, dr=4., eta=models.equilibrium_mass_loading(),
             onset=ONSET,
             mass_loading=eta,
             dr=dr),
-        mode = "ifr",
+        mode = 'ifr',
         **ONEZONE_DEFAULTS
     )
     sz.eta = eta(radius)
@@ -98,27 +98,27 @@ def plot_region(fig, radius, dr=4., eta=models.equilibrium_mass_loading(),
     # sz.RIa = dtds.exponential()
     sz.run(simtime, overwrite=True)
     
-    plot_vice_onezone(name, xcol="[o/h]", fig=fig, axs=axs, markers=[], color=color)
+    plot_vice_onezone(name, xcol='[o/h]', fig=fig, axs=axs, markers=[], color=color)
     # Weight by SFR
     hist = vice.history(name)
-    axs[0].scatter(hist["[o/h]"][::10], hist["[o/fe]"][::10], 
-                   s=[10*h/max(hist["sfr"]) for h in hist["sfr"][::10]],
+    axs[0].scatter(hist['[o/h]'][::10], hist['[o/fe]'][::10], 
+                   s=[10*h/max(hist['sfr']) for h in hist['sfr'][::10]],
                    c=color)
     # Mark every Gyr
-    axs[0].scatter(hist["[o/h]"][::100], hist["[o/fe]"][::100], 
-                   s=[2*h/max(hist["sfr"]) for h in hist["sfr"][::100]], 
-                   c="w", zorder=10)
+    axs[0].scatter(hist['[o/h]'][::100], hist['[o/fe]'][::100], 
+                   s=[2*h/max(hist['sfr']) for h in hist['sfr'][::100]], 
+                   c='w', zorder=10)
     
     # Label axes
-    axs[0].text(0.95, 0.95, r"$R_{\rm gal}=%s$ kpc" % radius,
-                va="top", ha="right", transform=axs[0].transAxes)
-    axs[0].text(0.95, 0.85, r"$\tau_2=%s$ Gyr" % round(sz.func.second.timescale, 1),
-                va="top", ha="right", transform=axs[0].transAxes)
-    axs[0].text(0.95, 0.75, r"$\eta=%s$" % round(sz.eta, 2),
-                va="top", ha="right", transform=axs[0].transAxes)
+    axs[0].text(0.95, 0.95, r'$R_{\rm gal}=%s$ kpc' % radius,
+                va='top', ha='right', transform=axs[0].transAxes)
+    axs[0].text(0.95, 0.85, r'$\tau_2=%s$ Gyr' % round(sz.func.second.timescale, 1),
+                va='top', ha='right', transform=axs[0].transAxes)
+    axs[0].text(0.95, 0.75, r'$\eta=%s$' % round(sz.eta, 2),
+                va='top', ha='right', transform=axs[0].transAxes)
     
     return axs
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
