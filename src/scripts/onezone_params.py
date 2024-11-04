@@ -8,20 +8,20 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import vice
 
-# from multizone.src.yields import J21
+from multizone.src.yields import J21
 # from vice.yields.presets import JW20
-from multizone.src.yields import W24
+# from multizone.src.yields import W24
 # vice.yields.sneia.settings['fe'] *= (1.1/1.2)
 # from multizone.src.yields import F04
 from utils import twoinfall_onezone
 from multizone.src import models
-from multizone.src.models.gradient import gradient
-from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH, ZONE_WIDTH
+from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH
 from colormaps import paultol
 from track_and_mdf import setup_axes, plot_vice_onezone
 import paths
 
 RADIUS = 8.
+ZONE_WIDTH = 2.
 PARAM_DEFAULTS = {
     'first_timescale': 1.,
     'second_timescale': 10.,
@@ -105,17 +105,17 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
 
     dt = ONEZONE_DEFAULTS['dt']
     simtime = np.arange(0, END_TIME + dt, dt)
-    area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
+    area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
 
     for i, val in enumerate(values):
         param_dict[var] = val
         # Outflow mass-loading factor
-        eta_func = models.equilibrium_mass_loading(
-            equilibrium=0.2, 
-            tau_sfh=param_dict['second_timescale'], 
-            tau_star=2.
-        )
-        # eta_func = vice.milkyway.default_mass_loading
+        # eta_func = models.equilibrium_mass_loading(
+        #     equilibrium=0.2, 
+        #     tau_sfh=param_dict['second_timescale'], 
+        #     tau_star=2.
+        # )
+        eta_func = vice.milkyway.default_mass_loading
         eta = eta_func(RADIUS)
         # Run one-zone model
         name = output_name(*param_dict.values())

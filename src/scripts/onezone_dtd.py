@@ -45,6 +45,7 @@ def main(style='paper'):
 
 
 def plot_dtds(fig, dtd_list, labels=[]):
+    """Plot DTD models as a function of time."""
     missing_labels = len(dtd_list) - len(labels)
     if missing_labels:
         labels += [None] * missing_labels
@@ -76,6 +77,7 @@ def plot_dtds(fig, dtd_list, labels=[]):
 
 
 def plot_onezone(fig, dtd_list, labels=[]):
+    """Plot abundance tracks of one-zone models with different DTDs."""
     missing_labels = len(dtd_list) - len(labels)
     if missing_labels:
         labels += [None] * missing_labels

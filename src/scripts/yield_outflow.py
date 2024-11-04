@@ -57,6 +57,8 @@ def main():
     run_plot_model(axs, 1, params, eta_scale=1)
     # Solar yields, x0.5 outflows
     run_plot_model(axs, 1, params, eta_scale=0.5)
+    # Solar yields, no outflows
+    # run_plot_model(axs, 1, params, eta_scale=0.)
 
     # Plot APOGEE abundances + Leung et al. (2023) ages
     apogee_sample = APOGEESample.load()

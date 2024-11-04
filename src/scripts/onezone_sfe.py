@@ -3,27 +3,24 @@ This script plots the outputs of one-zone models which illustrate the effect
 of a variable star formation efficiency (SFE).
 """
 
-from tqdm import tqdm
-
 import numpy as np
 import matplotlib.pyplot as plt
 import vice
 
-from multizone.src.yields import W24
-from multizone.src import models, dtds
+from multizone.src.yields import J21
 from multizone.src.models import twoinfall_sf_law
 from multizone.src.models import equilibrium_mass_loading
-# vice.yields.sneia.settings['fe'] *= (1.1/1.2)
 from track_and_mdf import setup_figure, plot_vice_onezone
 from colormaps import paultol
 import paths
-from _globals import END_TIME, ONEZONE_DEFAULTS, ONE_COLUMN_WIDTH, ZONE_WIDTH
-from utils import twoinfall_gradient
+from _globals import END_TIME, ONEZONE_DEFAULTS, ONE_COLUMN_WIDTH
+from utils import twoinfall_onezone
 
 RADIUS = 8.
 XLIM = (-1.6, 0.6)
 YLIM = (-0.18, 0.48)
 ONSET = 4.2
+ZONE_WIDTH = 2
 
 
 def main():
@@ -40,18 +37,20 @@ def main():
     dt = ONEZONE_DEFAULTS['dt']
     simtime = np.arange(0, END_TIME + dt, dt)
 
-    area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
-    eta_func = equilibrium_mass_loading(
-        tau_star=2., 
-        tau_sfh=15., 
-        equilibrium=0.
-    )
-    ifr = twoinfall_gradient(
+    area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
+    # eta_func = equilibrium_mass_loading(
+    #     tau_star=2., 
+    #     tau_sfh=15., 
+    #     equilibrium=0.
+    # )
+    eta_func = vice.milkyway.default_mass_loading
+    ifr = twoinfall_onezone(
         RADIUS, 
         first_timescale=1.,
         second_timescale=15., 
         onset=ONSET,
         mass_loading=eta_func,
+        dr=ZONE_WIDTH
     )
 
     tau_star_list = [twoinfall_sf_law(area, onset=ifr.onset, factor=1.),
