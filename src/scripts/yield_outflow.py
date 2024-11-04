@@ -20,8 +20,6 @@ from colormaps import paultol
 FE_CC_FRAC = 0.35
 RADIUS = 8.
 ZONE_WIDTH = 0.1
-XLIM = (-1.6, 0.6)
-YLIM = (-0.18, 0.48)
 FIRST_INFALL = 1.
 SECOND_INFALL = 15.
 ONSET = 4.2
@@ -100,7 +98,7 @@ def main():
 
 
 def run_plot_model(axs, scale, params, eta_scale=1.):
-    output_dir = paths.data / 'onezone' / 'ccsn_yield'
+    output_dir = paths.data / 'onezone' / 'yield_outflow'
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
     
