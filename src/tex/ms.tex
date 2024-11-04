@@ -67,10 +67,14 @@
 
 The two-infall model has long been proposed to explain the formation of the Milky Way's thick and thin disks. The infall history of any given region of the disk is described by two successive, exponentially declining bursts, whose timescale may vary as a function of radius. The first infall, which forms the thick disk, has a short timescale, typically on the order of $\sim1$ Gyr. The second infall forms the thin disk and has a much longer timescale, typically $\sim4-10$ Gyr.
 
+\subsection{Summary of Two-Infall Papers}
+
 % Summary of two-infall papers
 \citet{matteucci_galactic_1989} modeled the galaxy with a two-component model, a one-zone model for the halo and concentric shell zones for the disk. They used a simple exponential gas infall (so not yet a two-infall model), where the infall timescale increased proportionally with radius. They studied cases with primordial and pre-enriched gas infall, finding that the former produces a more realistic metallicity distribution in the Solar neighborhood. Their inside-out disk evolution produced good agreement with observed abundance gradients.
 
-\citet{chiappini_chemical_1997} presented the first two-infall model of the MW disk. They adopted an inside-out prescription for the formation of the thin disk, with the timescale of the second infall varying with radius. Their model parameters were constrained by the observed 
+\citet{chiappini_chemical_1997} presented the first two-infall model of the MW disk. They adopted an inside-out prescription for the formation of the thin disk, with the timescale of the second infall increasing linearly with radius. They assume the formation timescale of the thick disk is 1 Gyr, and the time of the second infall is 2 Gyr. They also assume a lower threshold on the gas density required for star formation, which produces a star formation hiatus at the end of the thick disk phase. They also noted the ``loop'' that appears in the \aFe--[Fe/H] relation during the thin disk phase.
+
+\citet{palla_chemical_2020} explored radial gas flows, variable star formation efficiency of the thin disk, and the onset time of the second infall (but not the infall timescales). They find that inside-out formation (i.e., longer infall timescales in the outer disk) is not sufficient to reproduce observed abundance gradients, and that radial gas flows, possibly in combination with a radially-varying star formation law, are key. Pre-enriched infall in the inner disk ($R<8$ kpc) at the level of -0.5 dex also improves agreement with data.
 
 % Radial gas flows
 Some two-infall studies \citep[e.g.,][]{palla_chemical_2020,palla_mapping_2024} implement inward radial gas flows with velocity $\sim1$ km s$^{-1}$ in order to reproduce the radial abundance gradient without Galactic outflows.
@@ -133,15 +137,33 @@ Motivated by constraints on the SFH by {\it Gaia}, \citet{spitoni_beyond_2023} p
 \subsection{Nucleosynthetic Yields}
 \label{sec:yields}
 
+The population-averaged nucleosynthetic yields of CCSNe are still fairly uncertain. This problem is exacerbated by the complexity of the CCSN explosion landscape \citep{sukhbold_core-collapse_2016}. We adopt the yields of \citet{weinberg_scale_2023}, who use a measurement of the mean Fe yield of CC SNe by \citet{rodriguez_iron_2023} and the observed \aFe plateau to infer population-averaged yields. The only difference here is that we assume that $20\%$ of Si in the Sun is produced by SNe Ia, which reduces the Si plateau to [Si/Fe]$_{\rm cc}=0.35$ and results in a non-zero value for $y_{\rm SI}^{\rm cc}$, unlike in \citet{weinberg_scale_2023}. Our yields are presented in Table \ref{tab:yields}.
+
 \begin{table}
     \centering
-    \caption{Yields.}
+    \caption{Nucleosynthetic yields.}
     \label{tab:yields}
     \include{output/yields.tex}
 \end{table}
 
+\subsection{Outflows}
+\label{sec:outflows}
+
+
+
 \subsection{The SN Ia Delay-Time Distribution}
 \label{sec:dtd}
+
+We adopt the wide plateau DTD of \citet{dubay_galactic_2024} as our fiducial DTD.
+
+\begin{equation}
+    \label{eq:plateau-dtd}
+    f_{\rm Ia}^{\rm plat}(t) =
+    \begin{cases}
+        1, & t < 1\,{\rm Gyr} \\
+        (t/1\,{\rm Gyr})^{-1.1}, & t \ge 1\,{\rm Gyr}.
+    \end{cases}
+\end{equation}
 
 \subsection{The Two-Infall Star Formation History}
 \label{sec:sfh}
