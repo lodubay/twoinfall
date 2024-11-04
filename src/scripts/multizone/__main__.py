@@ -156,6 +156,9 @@ def model(args):
     fullpath = paths.multizone / args.name
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
+    # Save command-line arguments to a file
+    with open(str(fullpath) + '_args.txt', 'w') as f:
+        f.writelines(['%s: %s\n' % (k, v) for k, v in vars(args).items()])
     # Parse RIa params into dict
     RIa_kwargs = {}
     if '=' in args.RIa_params:
