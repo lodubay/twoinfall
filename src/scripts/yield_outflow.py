@@ -1,6 +1,6 @@
 """
-This script plots one-zone models which track the evolution of just 
-CCSN products.
+This script plots the evolution of gas abundance in one-zone models which 
+compare several factors of yields and outflows.
 """
 
 import numpy as np
@@ -95,7 +95,7 @@ def main():
     ax5.set_xlabel('Lookback Time [Gyr]')
     ax5.legend(frameon=False)
 
-    fig.savefig(paths.figures / 'ccsn_yield')
+    fig.savefig(paths.figures / 'yield_outflow')
     plt.close()
 
 
