@@ -122,10 +122,17 @@ def plot_time_markers(time, feh, ofe, ax, loc=[0.1, 0.3, 1, 3, 10],
             else:
                 xpad = 0.03
                 ypad = 0.008
-            ax.text(feh[idx] + xpad, ofe[idx] + ypad, label, 
+            t = ax.text(feh[idx] + xpad, ofe[idx] + ypad, label, 
                     fontsize=default_font_size * 7/8,
                     ha='left', va='bottom', zorder=10
             )
+            t.set_bbox({
+                'facecolor': 'w', 
+                'edgecolor': 'none', 
+                'alpha': 0.8,
+                'pad': 0.1,
+                'boxstyle': 'round'
+            })
 
 
 def plot_mdf(ax, mdf, bins, histtype='step', log=False, bin_mult=1, **kwargs):

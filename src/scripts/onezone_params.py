@@ -25,7 +25,7 @@ ZONE_WIDTH = 2.
 PARAM_DEFAULTS = {
     'first_timescale': 1.,
     'second_timescale': 10.,
-    'onset': 4.
+    'onset': 3.
 }
 # convert between parameter keyword names and fancy labels
 LABELS = {
@@ -33,7 +33,7 @@ LABELS = {
     'second_timescale': '\\tau_2',
     'onset': 't_{\\rm on}'
 }
-XLIM = (-1.4, 0.7)
+XLIM = (-1.4, 0.8)
 YLIM = (-0.18, 0.54)
 
 def main():
@@ -44,18 +44,18 @@ def main():
     subfigs = [fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))]
     print('\nFirst timescale')
     axs0 = vary_param(subfigs[0], first_timescale=[0.1, 0.3, 1, 3],
-                      second_timescale=10, onset=4,
-                      xlim=XLIM, ylim=YLIM, label_index=0, verbose=True)
+                      second_timescale=10, onset=3,
+                      xlim=XLIM, ylim=YLIM, label_index=3, verbose=True)
     print('\nSecond timescale')
     axs1 = vary_param(subfigs[1], second_timescale=[3, 5, 10, 30],
-                      first_timescale=1, onset=4,
+                      first_timescale=1, onset=3,
                       xlim=XLIM, ylim=YLIM, show_ylabel=False,
-                      label_index=1, verbose=True)
+                      label_index=0, verbose=True)
     print('\nOnset time')
     axs2 = vary_param(subfigs[2], onset=[1, 2, 3, 4, 5],
                       first_timescale=1, second_timescale=10,
                       xlim=XLIM, ylim=YLIM, show_ylabel=False,
-                      label_index=2, verbose=True)
+                      label_index=0, verbose=True)
     plt.subplots_adjust(bottom=0.13, top=0.98, left=0.16, right=0.98, wspace=0.5)
     fig.savefig(paths.figures / 'onezone_params', dpi=300)
     plt.close()
