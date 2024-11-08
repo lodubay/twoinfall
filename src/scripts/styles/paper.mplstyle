@@ -19,13 +19,15 @@ mathtext.fontset: cm
 #text.latex.preamble: \usepackage{upgreek}
 # Font size
 font.size: 8
-legend.fontsize: 8
-legend.handlelength: 1.2
 figure.titlesize: 11
 axes.labelsize: 10
 axes.titlesize: 10
 xtick.labelsize: 8
 ytick.labelsize: 8
+# Legends
+legend.fontsize: 8
+legend.handlelength: 1.2
+legend.frameon: False
 # Axes
 axes.labelpad: 2.0
 axes.linewidth: 0.5
