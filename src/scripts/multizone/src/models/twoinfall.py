@@ -8,7 +8,7 @@ from .utils import double_exponential
 from .normalize import normalize_ifrmode, integrate_infall
 from .gradient import gradient, thick_to_thin_ratio
 from .twoinfall_sf_law import twoinfall_sf_law
-from .insideout import insideout
+from .diskmodel import two_component_disk
 import vice
 import math as m
 
@@ -48,11 +48,17 @@ class twoinfall(double_exponential):
     normalize(radius) : float
         Normalize the infall rate according to the desired surface density.
     """
-    def __init__(self, radius, mass_loading=vice.milkyway.default_mass_loading, 
-                 onset=SECOND_ONSET, 
-                 first_timescale=FIRST_TIMESCALE, 
-                 second_timescale=SECOND_TIMESCALE,
-                 dt = 0.01, dr = 0.1):
+    def __init__(
+            self, 
+            radius, 
+            # diskmodel = two_component_disk(),
+            mass_loading = vice.milkyway.default_mass_loading, 
+            onset = SECOND_ONSET, 
+            first_timescale = FIRST_TIMESCALE, 
+            second_timescale = SECOND_TIMESCALE,
+            dt = 0.01, 
+            dr = 0.1
+    ):
         super().__init__(onset=onset, ratio=1.)
         self.first.timescale = first_timescale 
         self.second.timescale = second_timescale
