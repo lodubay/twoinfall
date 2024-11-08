@@ -51,28 +51,29 @@ def plot_dtds(fig, dtd_list, labels=[]):
         labels += [None] * missing_labels
     ax = fig.add_subplot()
     fig.subplots_adjust(hspace=0., wspace=0.)
-    tarr = np.arange(0.04, 13.2, 0.001)
+    dt = 0.001
+    tarr = np.arange(0.04, 13.2, dt)
     for i, dtd in enumerate(dtd_list):
         yvals = np.array([dtd(t) for t in tarr])
-        ax.plot(tarr, yvals / dtd(1.), label=labels[i])
+        ax.plot(tarr, yvals / np.sum(yvals * dt), label=labels[i])
         # indicate median delay times
         cdf = np.cumsum(yvals / np.sum(yvals))
         med_idx = np.where(cdf >= 0.5)[0][0]
         med = tarr[med_idx]
-        ax.scatter(med, 5e-3, s=10, marker='o')
+        ax.scatter(med, 2e-3, s=10, marker='o')
     # Label median delay times
-    ax.text(1, 8e-3, 'Median delay times', ha='center')
+    ax.text(1, 3e-3, 'Median delay times', ha='center')
     # Format axes
-    ax.set_ylim((3e-3, 50))
+    ax.set_ylim((1e-3, 10))
     ax.set_xscale('log')
     ax.set_yscale('log')
     log_formatter = FuncFormatter(lambda y, _: '{:g}'.format(y))
     ax.xaxis.set_major_formatter(log_formatter)
     ax.yaxis.set_major_formatter(log_formatter)
     ax.set_xlabel('Time after star formation [Gyr]')
-    ax.set_ylabel('Relative SN Ia rate')
+    ax.set_ylabel('Normalized SN Ia rate')
     if not missing_labels:
-        ax.legend(frameon=False, title='SN Ia DTD', loc='lower left')
+        ax.legend(frameon=False, title='SN Ia DTD', loc='upper right')
     return ax
 
 
