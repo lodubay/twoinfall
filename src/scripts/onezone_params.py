@@ -49,12 +49,12 @@ def main():
     print('\nSecond timescale')
     axs1 = vary_param(subfigs[1], second_timescale=[3, 5, 10, 30],
                       first_timescale=1, onset=4,
-                      xlim=XLIM, ylim=YLIM, ylabel='',
+                      xlim=XLIM, ylim=YLIM, show_ylabel=False,
                       label_index=1, verbose=True)
     print('\nOnset time')
     axs2 = vary_param(subfigs[2], onset=[1, 2, 3, 4, 5],
                       first_timescale=1, second_timescale=10,
-                      xlim=XLIM, ylim=YLIM, ylabel='',
+                      xlim=XLIM, ylim=YLIM, show_ylabel=False,
                       label_index=2, verbose=True)
     plt.subplots_adjust(bottom=0.13, top=0.98, left=0.16, right=0.98, wspace=0.5)
     fig.savefig(paths.figures / 'onezone_params', dpi=300)

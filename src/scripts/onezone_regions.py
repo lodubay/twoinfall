@@ -9,9 +9,9 @@ from tqdm import tqdm
 import vice
 
 import paths
-from multizone.src.yields import W24
+# from multizone.src.yields import W24
 # from vice.yields.presets import JW20
-# from multizone.src.yields import J21
+from multizone.src.yields import J21
 # from multizone.src.yields import F04
 from multizone.src import models, dtds
 from multizone.src.models.gradient import gradient
@@ -23,7 +23,7 @@ from utils import get_bin_centers, twoinfall_onezone
 
 ZONE_WIDTH = 2.
 FIRST_TIMESCALE = 1.
-ONSET = 4.2
+ONSET = 3.2
 XLIM = (-1.4, 0.6)
 YLIM = (-0.12, 0.48)
 
@@ -33,17 +33,17 @@ def main():
     gs = fig.add_gridspec(7, 22, wspace=0.)
     subfigs = [fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))]
     # Outflow mass-loading factor
-    eta_func = models.equilibrium_mass_loading()
-    # eta_func = vice.milkyway.default_mass_loading
+    # eta_func = models.equilibrium_mass_loading()
+    eta_func = vice.milkyway.default_mass_loading
     axs0 = plot_region(subfigs[0], 6, eta=eta_func, 
                        color=paultol.highcontrast.colors[2],
                        xlim=XLIM, ylim=YLIM, dr=ZONE_WIDTH)
     axs1 = plot_region(subfigs[1], 8, eta=eta_func,
                        color=paultol.highcontrast.colors[1],
-                       xlim=XLIM, ylim=YLIM, ylabel='', dr=ZONE_WIDTH)
+                       xlim=XLIM, ylim=YLIM, show_ylabel=False, dr=ZONE_WIDTH)
     axs2 = plot_region(subfigs[2], 10, eta=eta_func,
                        color=paultol.highcontrast.colors[0],
-                       xlim=XLIM, ylim=YLIM, ylabel='', dr=ZONE_WIDTH)
+                       xlim=XLIM, ylim=YLIM, show_ylabel=False, dr=ZONE_WIDTH)
     plt.subplots_adjust(bottom=0.13, top=0.98, left=0.16, right=0.98, wspace=0.5)
     fig.savefig(paths.figures / 'onezone_regions', dpi=300)
     plt.close()

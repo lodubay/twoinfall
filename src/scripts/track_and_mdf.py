@@ -209,7 +209,7 @@ def setup_figure(width=ONE_COLUMN_WIDTH, **kwargs):
 
 
 def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52), 
-               xlabel='[Fe/H]', ylabel='[O/Fe]'):
+               xlabel='[Fe/H]', ylabel='[O/Fe]', show_xlabel=True, show_ylabel=True):
     """
     Create three axes: the main abundance track axis plus two
     side panels for [Fe/H] and [O/Fe] distribution functions.
@@ -224,11 +224,13 @@ def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52),
         Bounds on x-axis.
     ylim : tuple, optional
         Bounds on y-axis.
-    ylabel : bool, optional
+    show_ylabel : bool, optional
+        If False, remove x-axis labels and tick labels.
+    show_ylabel : bool, optional
         If False, remove y-axis labels and tick labels.
-    xname : str, optional
+    xlabel : str, optional
         Abundance label for the x-axis. The default is '[Fe/H]'.
-    yname : str, optional
+    ylabel : str, optional
         Abundance label for the y-axis. THe default is '[O/Fe]'.
 
     Returns
@@ -245,16 +247,16 @@ def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52),
     ax_main.xaxis.set_minor_locator(MultipleLocator(0.1))
     ax_main.yaxis.set_major_locator(MultipleLocator(0.1))
     ax_main.yaxis.set_minor_locator(MultipleLocator(0.02))
-    if xlabel == '':
+    if show_xlabel:
+        ax_main.set_xlabel(xlabel)
+    else:
         ax_main.xaxis.set_ticklabels([])
         gs.update(bottom=0.)
+    if show_ylabel:
+        ax_main.set_ylabel(ylabel)
     else:
-        ax_main.set_xlabel(xlabel)
-    if ylabel == '':
         ax_main.yaxis.set_ticklabels([])
         gs.update(left=0.02)
-    else:
-        ax_main.set_ylabel(ylabel)
     ax_main.set_xlim(xlim)
     ax_main.set_ylim(ylim)
     # Add panel above for MDF in [Fe/H]
@@ -264,20 +266,20 @@ def setup_axes(fig, title='', xlim=(-2.1, 0.4), ylim=(-0.1, 0.52),
     ax_mdf.set_ylim((0, 1.2))
     ax_mdf.yaxis.set_major_locator(MultipleLocator(1))
     ax_mdf.yaxis.set_minor_locator(MultipleLocator(0.2))
-    if ylabel == '':
-        ax_mdf.yaxis.set_ticklabels([])
-    else:
+    if show_ylabel:
         ax_mdf.set_ylabel(r'$P($%s$)$' % xlabel, size='small')
+    else:
+        ax_mdf.yaxis.set_ticklabels([])
     # Add plot title
     ax_mdf.set_title(title, loc='left', x=0.05, y=0.8, va='top', pad=0)
     # Add panel to the right for MDF in [O/Fe]
     ax_odf = fig.add_subplot(gs[1,1], sharey=ax_main)
     ax_odf.tick_params(axis='y', labelleft=False)
     ax_odf.tick_params(axis='x', labelsize='small')
-    if xlabel == '':
-        ax_odf.xaxis.set_ticklabels([])
-    else:
+    if show_xlabel:
         ax_odf.set_xlabel(r'$P($%s$)$' % ylabel, size='small')
+    else:
+        ax_odf.xaxis.set_ticklabels([])
     ax_odf.set_xlim((0, 1.2))
     ax_odf.xaxis.set_major_locator(MultipleLocator(1))
     ax_odf.xaxis.set_minor_locator(MultipleLocator(0.2))

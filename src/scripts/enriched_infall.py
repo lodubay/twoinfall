@@ -53,7 +53,7 @@ def main():
         parent_dir.mkdir(parents=True)
     
     # First panel: constant [O/Fe]
-    axs0 = setup_axes(subfigs[0], xlim=XLIM, ylim=YLIM, xlabel=True)
+    axs0 = setup_axes(subfigs[0], xlim=XLIM, ylim=YLIM, show_xlabel=True)
     # Pristine infall
     name = str(parent_dir / 'ZinNone')
     sz = vice.singlezone(name=name, **params)
