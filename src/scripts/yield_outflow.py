@@ -141,7 +141,7 @@ def plot_abundance_history(axs, fullname, col, label=''):
     axs[1].plot(hist['lookback'], hist[col], label=label)
     mdf = vice.mdf(fullname)
     mdf_bins = mdf['bin_edge_left'] + mdf['bin_edge_right'][-1:]
-    plot_mdf_curve(axs[0], mdf['dn/d%s' % col], mdf_bins, smoothing=0.01,
+    plot_mdf_curve(axs[0], mdf['dn/d%s' % col], mdf_bins, smoothing=0.02,
                    orientation='horizontal')
     
 
