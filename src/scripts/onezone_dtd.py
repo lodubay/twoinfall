@@ -38,7 +38,7 @@ def main(style='paper'):
 
     dtd_list = [dtds.plateau(), dtds.exponential(), dtds.powerlaw()]
     plot_dtds(subfigs[0], dtd_list, labels = ['Plateau', 'Exponential', 'Power-law'])
-    plot_onezone(subfigs[1], dtd_list)
+    plot_onezone(subfigs[1], dtd_list, labels = ['Plateau', 'Exponential', 'Power-law'])
     
     fig.savefig(paths.figures / 'onezone_dtd')
     plt.close()
@@ -94,7 +94,7 @@ def plot_onezone(fig, dtd_list, labels=[]):
                           marker_labels=(i == 0),
                           markers=[0.3, 1, 3, 10])
     if not missing_labels:
-        axs[0].legend(frameon=False, title='SN Ia DTD')
+        axs[0].legend(frameon=False, title='SN Ia DTD', loc='lower left')
     return axs
 
 
