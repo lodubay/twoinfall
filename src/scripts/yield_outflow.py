@@ -59,7 +59,10 @@ def main():
     # Solar yields, x0.5 outflows
     run_plot_model(axs, 1, params, eta_scale=0.5)
     # Higher yIa
-    run_plot_model(axs, 1, params, eta_scale=0.5, yia_scale=1.3)
+    yia_scale = 1.3
+    run_plot_model(axs, 1, params, eta_scale=0.5, yia_scale=yia_scale, 
+                   c=paultol.vibrant.colors[3], ls='--', 
+                   label=r'$y_{\rm Ia}\times%s$' % yia_scale)
     # Solar yields, no outflows
     # run_plot_model(axs, 1, params, eta_scale=0.)
 
@@ -102,7 +105,8 @@ def main():
     plt.close()
 
 
-def run_plot_model(axs, scale, params, eta_scale=1., yia_scale=1.):
+def run_plot_model(axs, scale, params, eta_scale=1., yia_scale=1., 
+                   label='', c=None, ls='-'):
     output_dir = paths.data / 'onezone' / 'yield_outflow'
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
@@ -111,7 +115,10 @@ def run_plot_model(axs, scale, params, eta_scale=1., yia_scale=1.):
     params['eta'] = equilibrium_mass_loading(tau_sfh=SECOND_INFALL)(RADIUS)
     params['eta'] *= eta_scale
     RIa = vice.yields.sneia.settings['fe'] / SNIA_FE_YIELD
-    label = r'$\eta=%s$, $y/Z_\odot = %s$, $R_{\rm Ia}=%s$' % (round(params['eta'], 1), scale, round(RIa, 4))
+    if label == '':
+        label = r'$\eta=%s$, $y/Z_\odot = %s$' % (
+            round(params['eta'], 1), scale
+        )
 
     eta_func = lambda r: params['eta']
     ifr = twoinfall_onezone(
@@ -135,18 +142,18 @@ def run_plot_model(axs, scale, params, eta_scale=1., yia_scale=1.):
     sz.run(simtime, overwrite=True)
 
     # Plots
-    plot_abundance_history(axs[0], fullname, '[o/h]', label=label)
-    plot_abundance_history(axs[1], fullname, '[fe/h]', label=label)
-    plot_abundance_history(axs[2], fullname, '[o/fe]', label=label)
+    plot_abundance_history(axs[0], fullname, '[o/h]', label=label, c=c, ls=ls)
+    plot_abundance_history(axs[1], fullname, '[fe/h]', label=label, c=c, ls=ls)
+    plot_abundance_history(axs[2], fullname, '[o/fe]', label=label, c=c, ls=ls)
 
 
-def plot_abundance_history(axs, fullname, col, label=''):
+def plot_abundance_history(axs, fullname, col, label='', c=None, ls='-'):
     hist = vice.history(fullname)
-    axs[1].plot(hist['lookback'], hist[col], label=label)
+    axs[1].plot(hist['lookback'], hist[col], label=label, color=c, ls=ls)
     mdf = vice.mdf(fullname)
     mdf_bins = mdf['bin_edge_left'] + mdf['bin_edge_right'][-1:]
     plot_mdf_curve(axs[0], mdf['dn/d%s' % col], mdf_bins, smoothing=0.02,
-                   orientation='horizontal')
+                   orientation='horizontal', color=c, ls=ls)
     
 
 def scale_yields(scale, fe_cc_frac=0.35, yia_scale=1.):
