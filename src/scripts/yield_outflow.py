@@ -18,6 +18,7 @@ import paths
 from colormaps import paultol
 
 FE_CC_FRAC = 0.35
+SNIA_FE_YIELD = 0.7 # Msun
 RADIUS = 8.
 ZONE_WIDTH = 0.1
 FIRST_INFALL = 1.
@@ -57,6 +58,8 @@ def main():
     run_plot_model(axs, 1, params, eta_scale=1)
     # Solar yields, x0.5 outflows
     run_plot_model(axs, 1, params, eta_scale=0.5)
+    # Higher yIa
+    run_plot_model(axs, 1, params, eta_scale=0.5, yia_scale=1.3)
     # Solar yields, no outflows
     # run_plot_model(axs, 1, params, eta_scale=0.)
 
@@ -99,15 +102,16 @@ def main():
     plt.close()
 
 
-def run_plot_model(axs, scale, params, eta_scale=1.):
+def run_plot_model(axs, scale, params, eta_scale=1., yia_scale=1.):
     output_dir = paths.data / 'onezone' / 'yield_outflow'
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
     
-    scale_yields(scale, fe_cc_frac=FE_CC_FRAC)
+    scale_yields(scale, fe_cc_frac=FE_CC_FRAC, yia_scale=yia_scale)
     params['eta'] = equilibrium_mass_loading(tau_sfh=SECOND_INFALL)(RADIUS)
     params['eta'] *= eta_scale
-    label = r'$\eta=%s$, $y/Z_\odot = %s$' % (round(params['eta'], 1), scale)
+    RIa = vice.yields.sneia.settings['fe'] / SNIA_FE_YIELD
+    label = r'$\eta=%s$, $y/Z_\odot = %s$, $R_{\rm Ia}=%s$' % (round(params['eta'], 1), scale, round(RIa, 4))
 
     eta_func = lambda r: params['eta']
     ifr = twoinfall_onezone(
@@ -145,7 +149,7 @@ def plot_abundance_history(axs, fullname, col, label=''):
                    orientation='horizontal')
     
 
-def scale_yields(scale, fe_cc_frac=0.35):
+def scale_yields(scale, fe_cc_frac=0.35, yia_scale=1.):
     r"""
     Adopt yields scaled according to the Solar metallicity.
 
@@ -169,7 +173,7 @@ def scale_yields(scale, fe_cc_frac=0.35):
     vice.yields.ccsne.settings['o'] = scale * vice.solar_z['o']
     vice.yields.ccsne.settings['fe'] = scale * fe_cc_frac * vice.solar_z['fe']
     vice.yields.sneia.settings['o'] = 0.
-    vice.yields.sneia.settings['fe'] = scale * (1 - fe_cc_frac) * vice.solar_z['fe']
+    vice.yields.sneia.settings['fe'] = yia_scale * scale * (1 - fe_cc_frac) * vice.solar_z['fe']
 
 
 if __name__ == '__main__':

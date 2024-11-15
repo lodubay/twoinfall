@@ -11,5 +11,7 @@ elif YIELDS == "C22":
     from . import C22
 elif YIELDS == "W24":
     from . import W24
+elif YIELDS == "W24mod":
+    from . import W24mod
 else:
     raise ValueError("Unrecognized yield specification in multizone/_globals.py.")

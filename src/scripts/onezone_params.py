@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import vice
 
-from multizone.src.yields import J21
+# from multizone.src.yields import J21
 # from vice.yields.presets import JW20
-# from multizone.src.yields import W24
+from multizone.src.yields import W24mod
 # vice.yields.sneia.settings['fe'] *= (1.1/1.2)
 # from multizone.src.yields import F04
 from utils import twoinfall_onezone
