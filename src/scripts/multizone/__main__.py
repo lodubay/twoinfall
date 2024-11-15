@@ -157,19 +157,21 @@ def model(args):
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     # Save command-line arguments to a file
-    with open(str(fullpath) + '_args.txt', 'w') as f:
-        f.writelines(['%s: %s\n' % (k, v) for k, v in vars(args).items()])
+    with open(str(fullpath) + "_args.txt", "w") as f:
+        f.write(args.name + "\n")
+        f.write("yields: %s\n" % _globals.YIELDS)
+        f.writelines(["%s: %s\n" % (k, v) for k, v in vars(args).items() if k != "name"])
     # Parse RIa params into dict
     RIa_kwargs = {}
     if '=' in args.RIa_params:
-        for p in args.RIa_params.split('_'):
-            key, value = p.split('=')
+        for p in args.RIa_params.split("_"):
+            key, value = p.split("=")
             RIa_kwargs[key] = float(value)
     config = src.config(
         timestep_size = args.dt,
         star_particle_density = args.nstars,
         zone_width = args.zonewidth,
-        elements = args.elements.split('_')
+        elements = args.elements.split("_")
     )
     kwargs = dict(
         name = str(fullpath),
