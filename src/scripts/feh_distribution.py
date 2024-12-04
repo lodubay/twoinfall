@@ -35,7 +35,8 @@ def plot_feh_distribution(mzs, apogee_sample, nbins=NBINS, xlim=FEH_LIM,
     # plot
     mdf_kwargs = {'bins': nbins, 'range': xlim, 'smoothing': smoothing}
     dfs.plot_multizone_mdfs(mzs, axs[:,0], '[fe/h]', colors, **mdf_kwargs)
-    dfs.plot_multizone_mdfs(apogee_sample, axs[:,1], 'FE_H', colors, **mdf_kwargs)
+    dfs.plot_multizone_mdfs(apogee_sample, axs[:,1], 'FE_H', colors, 
+                            label='APOGEE', **mdf_kwargs)
     for ax in axs[:,0]:
         ax.set_ylim((0, None))
     fig.suptitle(mzs.name)
