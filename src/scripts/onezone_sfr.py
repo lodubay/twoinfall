@@ -8,8 +8,7 @@ import matplotlib.pyplot as plt
 
 import vice
 
-# from multizone.src.yields import W24
-from multizone.src.yields import J21
+from multizone.src.yields import W24mod
 from multizone.src.models import twoinfall_sf_law, equilibrium_mass_loading
 from track_and_mdf import setup_figure, plot_vice_onezone
 from apogee_sample import APOGEESample
@@ -20,9 +19,9 @@ from colormaps import paultol
 
 RADIUS = 8.
 ZONE_WIDTH = 2.
-ONSET = 3.2
-FIRST_TIMESCALE = 1.
-SECOND_TIMESCALE = 15.
+ONSET = 4.2
+FIRST_TIMESCALE = 0.3
+SECOND_TIMESCALE = 10.
 FEH_LIM = (-1.4, 0.6)
 OFE_LIM = (-0.08, 0.48)
 
@@ -62,12 +61,12 @@ def main():
     # One-zone model parameters
     simtime = np.arange(0, 13.21, 0.01)
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
-    # eta_func = equilibrium_mass_loading(
-    #     tau_star=2.,
-    #     tau_sfh=SECOND_TIMESCALE, 
-    #     equilibrium=0.2
-    # )
-    eta_func = vice.milkyway.default_mass_loading
+    eta_func = equilibrium_mass_loading(
+        tau_star=0.,
+        # tau_sfh=SECOND_TIMESCALE, 
+        equilibrium=0.2
+    )
+    # eta_func = vice.milkyway.default_mass_loading
     ifr = twoinfall_onezone(
         RADIUS, 
         first_timescale=FIRST_TIMESCALE, 
