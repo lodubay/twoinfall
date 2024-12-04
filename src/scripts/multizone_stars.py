@@ -471,7 +471,7 @@ class MultizoneStars:
         return df
 
 
-    def mdf(self, col, bins=100, range=None, smoothing=0.):
+    def mdf(self, col, bins=100, range=None, smoothing=0., density=True):
         """
         Generate a metallicity distribution function (MDF) for the given 
         abundance.
@@ -500,7 +500,7 @@ class MultizoneStars:
             Bin edges of the MDF (length(mdf) + 1).
         """
         mdf, bin_edges = np.histogram(self(col), bins=bins, range=range, 
-                                      weights=self('mstar'), density=True)
+                                      weights=self('mstar'), density=density)
         if smoothing > 0:
             mdf = box_smooth(mdf, bin_edges, smoothing)
         return mdf, bin_edges
