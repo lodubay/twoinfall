@@ -16,7 +16,7 @@ import astropy.units as u
 import astropy.coordinates as coords
 import vice
 
-from multizone.src.models import twoinfall
+from multizone.src.models import twoinfall, insideout, earlyburst_ifr
 from multizone.src.models.gradient import gradient
 from _globals import RANDOM_SEED, MAX_SF_RADIUS, ZONE_WIDTH
 
@@ -35,6 +35,16 @@ class twoinfall_onezone(twoinfall):
         area = m.pi * ((radius + dr/2)**2 - (radius - dr/2)**2)
         self.first.norm *= area * gradient(radius)
         self.second.norm *= area * gradient(radius)
+
+
+class insideout_onezone(insideout):
+    """A sub-class of the inside-out SFH which incorporates the value of the
+    stellar surface density gradient, and returns an infall gas mass rather
+    than surface density when called."""
+    def __init__(self, radius, dr=0.1, **kwargs):
+        super().__init__(radius, dr=dr, **kwargs)
+        area = m.pi * ((radius + dr/2)**2 - (radius - dr/2)**2)
+        self.norm *= area * gradient(radius)
 
 
 def vice_to_apogee_col(col):

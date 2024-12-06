@@ -13,7 +13,7 @@ from _globals import ONE_COLUMN_WIDTH
 
 
 def plot_vice_onezone(output, fig=None, axs=[], label=None, color=None,
-                      markers=[0.1, 0.3, 1, 3, 10], marker_labels=False, 
+                      markers=[0.3, 1, 3, 10], marker_labels=False, 
                       mdf_smoothing=0.02, markersize=9, 
                       xcol='[fe/h]', ycol='[o/fe]', **kwargs):
     """
@@ -77,7 +77,7 @@ def plot_vice_onezone(output, fig=None, axs=[], label=None, color=None,
     return fig, axs
 
 
-def plot_time_markers(time, feh, ofe, ax, loc=[0.1, 0.3, 1, 3, 10],
+def plot_time_markers(time, feh, ofe, ax, loc=[0.3, 1, 3, 10],
                       color=None, show_labels=False, zorder=10, markersize=9):
     """
     Add temporal markers to the [O/Fe] vs [Fe/H] tracks.
@@ -187,6 +187,8 @@ def plot_mdf_curve(ax, mdf, bins, smoothing=0., orientation='vertical', **kwargs
     bin_width = bins[1] - bins[0]
     if smoothing > bin_width:
         mdf = gaussian_smooth(mdf, bins, smoothing)
+    else:
+        mdf = np.array(mdf)
     if orientation == 'horizontal':
         ax.plot(mdf / mdf.max(), bin_centers, **kwargs)
     else:
