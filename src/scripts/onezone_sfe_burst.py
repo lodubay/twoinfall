@@ -61,7 +61,7 @@ def main():
     simtime = np.arange(0, 13.21, 0.01)
 
     # Reference: constant tau_star
-    name = str(output_dir / 'const_sfe')
+    name = str(output_dir / 'constant')
     ifr = exponential(norm=1, timescale=15)
     sz = vice.singlezone(
         name = name,
@@ -71,12 +71,12 @@ def main():
     )
     sz.tau_star = TAU_STAR_BASE
     sz.run(simtime, overwrite=True)
-    
-    plot_vice_onezone(name, fig=fig, axs=axs, label='Fiducial')
+    plot_vice_onezone(name, fig=fig, axs=axs, label='Fiducial', 
+                      linestyle='--', marker_labels=True)
 
-    # SFE burst model 1
-    name = str(output_dir / 'sfe_burst1')
-    tau_star = tau_star_burst(onset=1)
+    # SFE burst model
+    name = str(output_dir / 'onset13_width02')
+    tau_star = tau_star_burst(onset=1.3, duration=0.2)
     sz = vice.singlezone(
         name = name,
         func = ifr,
@@ -85,20 +85,8 @@ def main():
     )
     sz.tau_star = tau_star
     sz.run(simtime, overwrite=True)
-    plot_vice_onezone(name, fig=fig, axs=axs, label='Burst at 1 Gyr')
-
-    # SFE burst model 2
-    name = str(output_dir / 'sfe_burst2')
-    tau_star = tau_star_burst(onset=3)
-    sz = vice.singlezone(
-        name = name,
-        func = ifr,
-        mode = 'ifr',
-        **ONEZONE_DEFAULTS
-    )
-    sz.tau_star = tau_star
-    sz.run(simtime, overwrite=True)
-    plot_vice_onezone(name, fig=fig, axs=axs, label='Burst at 3 Gyr', marker_labels=True)
+    plot_vice_onezone(name, fig=fig, axs=axs, label='SFE Burst')
+    axs[0].legend(loc='upper right')
     
     plt.savefig(paths.figures / 'onezone_sfe_burst')
     plt.close()
