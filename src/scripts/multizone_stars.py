@@ -434,13 +434,16 @@ class MultizoneStars:
                    **kwargs)
 
 
-    def age_intervals(self, col, bin_edges, quantiles=[0.16, 0.5, 0.84]):
+    def binned_intervals(self, col, bin_col, bin_edges, quantiles=[0.16, 0.5, 0.84]):
         """
-        Calculate stellar age quantiles in bins of a secondary parameter.
+        Calculate quantiles of a parameter in bins of a secondary parameter.
         
         Parameters
         ----------
         col : str
+            Data column corresponding to the first parameter, for which
+            intervals will be calculated in each bin.
+        bin_col : str
             Data column corresponding to the second parameter (typically an
             abundance, like "FE_H").
         bin_edges : array-like
@@ -455,18 +458,25 @@ class MultizoneStars:
         pandas.DataFrame
             DataFrame with each column corresponding to a quantile level
             and each row a bin in the specified secondary parameter, plus
-            a final column "Mass" with the total stellar mass in each bin.
+            a final column "Mass" with the fraction of stellar mass in each bin.
+        
+        Notes
+        -----
+        Example: to calculate the median, 16th, and 84th percentile of stellar
+        age in different bins of [Fe/H], use:
+        mzs.binned_intervals('age', '[fe/h]', np.arange(-1.2, 0.7, 0.1),
+                             quantiles=[0.16, 0.5, 0.84])
         """
         # Remove entries with no age estimate
         stars = self.stars.dropna(how='any')
-        grouped = stars.groupby(pd.cut(stars[col], bin_edges), observed=False)
-        age_quantiles = []
+        grouped = stars.groupby(pd.cut(stars[bin_col], bin_edges), observed=False)
+        param_quantiles = []
         for q in quantiles:
             # Weight stellar populations by mass
-            wq = lambda x: weighted_quantile(x, 'age', 'mstar', quantile=q)
-            age_quantiles.append(grouped.apply(wq, include_groups=False))
-        age_quantiles.append(grouped['mstar'].sum() / stars['mstar'].sum())
-        df = pd.concat(age_quantiles, axis=1)
+            wq = lambda x: weighted_quantile(x, col, 'mstar', quantile=q)
+            param_quantiles.append(grouped.apply(wq, include_groups=False))
+        param_quantiles.append(grouped['mstar'].sum() / stars['mstar'].sum())
+        df = pd.concat(param_quantiles, axis=1)
         df.columns = quantiles + ['mass_fraction']
         return df
 

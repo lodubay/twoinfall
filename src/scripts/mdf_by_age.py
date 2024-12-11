@@ -17,16 +17,20 @@ SMOOTH_WIDTH = 0.1
 FEH_LIM = (-1.0, 0.7)
 YSCALE = 1e7
 
+def main(output_name, **kwargs):
+    mzs = MultizoneStars.from_output(output_name)
+    plot_mdf_by_age(mzs, **kwargs)
 
-def main(output_name, col='[fe/h]', smoothing=0., xlim=FEH_LIM, style='paper', 
-         cmap='Spectral_r', nbins=NBINS):
+
+def plot_mdf_by_age(mzs, col='[fe/h]', smoothing=SMOOTH_WIDTH, xlim=FEH_LIM, 
+                    style='paper', cmap='Spectral_r', nbins=NBINS):
     plt.style.use(paths.styles / f'{style}.mplstyle')
     colors = get_color_list(plt.get_cmap(cmap), AGE_BINS)
 
-    mzs = MultizoneStars.from_output(output_name)
     fig, axs = plt.subplots(2, len(GALR_BINS)-1, 
                             figsize=(12, 3.5), 
                             sharex=True, gridspec_kw={'hspace': 0.})
+    fig.suptitle(mzs.name)
     for i in range(len(GALR_BINS)-1):
         galr_lim = GALR_BINS[i:i+2]
         axs[0,i].set_title('%s < R < %s' % tuple(galr_lim))
@@ -59,9 +63,11 @@ def main(output_name, col='[fe/h]', smoothing=0., xlim=FEH_LIM, style='paper',
     axs[1,0].set_ylabel('Normalized MDF')
     axs[0,0].legend(frameon=False, title='Age Bin [Gyr]')
     axs[1,0].xaxis.set_minor_locator(MultipleLocator(0.2))
+    axs[0,0].set_xlim(xlim)
     
     # Save
-    fname = mzs.name.replace('diskmodel', 'mdf_by_age.png')
+    simple_colname = col[1:-1].replace('/', '')
+    fname = mzs.name.replace('diskmodel', ('%s_df_by_age.png' % simple_colname))
     fullpath = paths.extra / fname
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
@@ -77,8 +83,6 @@ if __name__ == '__main__':
     )
     parser.add_argument('output_name', metavar='NAME',
                         help='Name of VICE multizone output')
-    # parser.add_argument('-u', '--uncertainties', action='store_true',
-    #                     help='Model APOGEE uncertainties in VICE output')
     parser.add_argument('--col', metavar='COL', type=str, default='[fe/h]',
                         help='Abundance column name (default: "[fe/h]")')
     parser.add_argument('--nbins', metavar='NBINS', type=int, default=NBINS,

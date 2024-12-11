@@ -15,6 +15,8 @@ from apogee_sample import APOGEESample
 from age_abundance_grid import plot_age_abundance_grid
 from feh_distribution import plot_feh_distribution
 from ofe_distribution import plot_ofe_distribution
+from mdf_by_age import plot_mdf_by_age
+from mdf_widths import plot_mdf_widths
 # from ofe_bimodality import plot_bimodality_comparison
 from ofe_feh_grid import plot_ofe_feh_grid
 from density_gradient import plot_density_gradient
@@ -37,19 +39,44 @@ def main(output_name, verbose=False, tracks=False, log_age=False,
                             apogee_sample=apogee_sample,
                             style=style, log=log_age, verbose=verbose,
                             medians=apogee_data, tracks=tracks)
+    if apogee_data:
+        plot_age_abundance_grid(mzs, '[o/h]', color_by='galr_origin', cmap='winter_r', 
+                                apogee_sample=apogee_sample, bin_by_age=True,
+                                style=style, log=log_age, verbose=verbose,
+                                medians=apogee_data, tracks=tracks,
+                                fname='age_oh_grid_by_age.png')
     # Age vs [Fe/H]
     plot_age_abundance_grid(mzs, '[fe/h]', color_by='galr_origin', cmap='winter_r', 
                             apogee_sample=apogee_sample,
                             style=style, log=log_age, verbose=verbose,
                             medians=apogee_data, tracks=tracks)
+    if apogee_data:
+        plot_age_abundance_grid(mzs, '[fe/h]', color_by='galr_origin', cmap='winter_r', 
+                                apogee_sample=apogee_sample, bin_by_age=True,
+                                style=style, log=log_age, verbose=verbose,
+                                medians=apogee_data, tracks=tracks,
+                                fname='age_feh_grid_by_age.png')
     # Age vs [O/Fe]
     plot_age_abundance_grid(mzs, '[o/fe]', color_by='[fe/h]', cmap='viridis', 
                             apogee_sample=apogee_sample,
                             style=style, log=log_age, verbose=verbose,
                             medians=apogee_data, tracks=tracks)
+    if apogee_data:
+        plot_age_abundance_grid(mzs, '[o/fe]', color_by='[fe/h]', cmap='viridis', 
+                                apogee_sample=apogee_sample, bin_by_age=True,
+                                style=style, log=log_age, verbose=verbose,
+                                medians=apogee_data, tracks=tracks,
+                                fname='age_ofe_grid_by_age.png')
     # Abundance distributions
     plot_feh_distribution(mzs, apogee_sample, style=style)
     plot_ofe_distribution(mzs, apogee_sample, style=style)
+    # Abundance distributions as a function of age
+    plot_mdf_by_age(mzs, col='[fe/h]', xlim=(-1.2, 0.7))
+    plot_mdf_by_age(mzs, col='[o/h]', xlim=(-1.0, 0.7))
+    # plot_mdf_by_age(mzs, col='[o/fe]', xlim=(-0.15, 0.55), smoothing=0.02)
+    # MDF width as a function of age
+    plot_mdf_widths(mzs, col='[fe/h]')
+    plot_mdf_widths(mzs, col='[o/h]')
     # [O/Fe] vs [Fe/H]
     plot_ofe_feh_grid(mzs, apogee_sample, tracks=tracks, cmap='winter_r',
                       apogee_contours=apogee_data, style=style)
@@ -77,13 +104,13 @@ def plot_sfh(output_name, style='paper', cmap='plasma_r', fname='sfh.png'):
                             figsize=(TWO_COLUMN_WIDTH, 0.33 * TWO_COLUMN_WIDTH))
     fig.suptitle(output_name)
     multioutput = vice.output(str(paths.multizone / output_name))
-    axs[0].set_title(r'$\dot \Sigma_{\rm in}$ [$M_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
+    axs[0].set_title(r'$\dot \Sigma_{\rm in}$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
     axs[0].set_yscale('log')
     # axs[0].set_ylim((3e-4, 0.1))
-    axs[1].set_title(r'$\dot \Sigma_\star$ [$M_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
+    axs[1].set_title(r'$\dot \Sigma_\star$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
     axs[1].set_yscale('log')
     # axs[1].set_ylim((3e-5, 0.1))
-    axs[2].set_title(r'$\Sigma_g$ [$M_{\odot}\,\rm{kpc}^{-2}$]')
+    axs[2].set_title(r'$\Sigma_g$ [M$_{\odot}\,\rm{kpc}^{-2}$]')
     axs[2].set_yscale('log')
     axs[2].set_ylim((1e5, 3e8))
     axs[3].set_title(r'$\tau_\star$ [Gyr]')

@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 
 from scatter_plot_grid import plot_gas_abundance, setup_axes, setup_colorbar
-from _globals import GALR_BINS, ABSZ_BINS, MAX_SF_RADIUS
+from _globals import GALR_BINS, ABSZ_BINS, MAX_SF_RADIUS, END_TIME
 from utils import vice_to_apogee_col, capitalize_abundance
 from apogee_sample import APOGEESample
 from multizone_stars import MultizoneStars
@@ -49,10 +49,11 @@ AXES_MINOR_LOCATOR = {
     'galr_origin': 0.5,
 }
 BIN_WIDTH = {
-    '[o/h]': 0.2,
-    '[fe/h]': 0.2,
+    '[o/h]': 0.1,
+    '[fe/h]': 0.1,
     '[o/fe]': 0.05,
     '[fe/o]': 0.05,
+    'age': 2
 }
 ROW_LABEL_POS = {
     '[o/h]': (0.07, 0.07),
@@ -76,7 +77,8 @@ def main(output_name, ydata, verbose=False, uncertainties=False, **kwargs):
 
 def plot_age_abundance_grid(mzs, col, apogee_sample=None, fname='',
                             style='paper', cmap='winter_r', log=False, verbose=False,
-                            medians=False, tracks=False, color_by='galr_origin'):
+                            medians=False, tracks=False, color_by='galr_origin',
+                            bin_by_age=False):
     """
     Plot a grid of age (x) vs abundance (y) across multiple Galactic regions.
     
@@ -101,7 +103,9 @@ def plot_age_abundance_grid(mzs, col, apogee_sample=None, fname='',
         matches the age data. The default is False.
     verbose : bool, optional
         If True, print verbose output to the terminal. The default is False.
-    
+    bin_by_age : bool, optional
+        If True, calculate abundance medians in bins of age. If False, 
+        calculate age medians in abundance bins.
     """
     col = col.lower()
     if col not in ABUNDANCE_COLUMNS:
@@ -149,13 +153,21 @@ def plot_age_abundance_grid(mzs, col, apogee_sample=None, fname='',
             subset.scatter_plot(ax, 'age', col, color=color_by,
                                 cmap=cmap, norm=cbar.norm)
             if tracks:
-                plot_gas_abundance(ax, subset, 'lookback', col)
+                plot_gas_abundance(ax, subset, 'lookback', col, ls='--')
             if medians:
-                abund_bins = np.arange(ylim[0], ylim[1] + BIN_WIDTH[col], 
-                                       BIN_WIDTH[col])
-                plot_vice_median_ages(ax, subset, col, abund_bins, label='Model')
                 apogee_subset = apogee_sample.region(galr_lim, absz_lim)
-                plot_apogee_median_ages(ax, apogee_subset, apogee_col, abund_bins, label='L23')
+                if bin_by_age:
+                    age_bins = np.arange(0, END_TIME + BIN_WIDTH['age'], 
+                                         BIN_WIDTH['age'])
+                    plot_vice_median_abundances(ax, subset, col, age_bins, 
+                                                label='Model')
+                    plot_apogee_median_abundances(ax, apogee_subset, apogee_col, 
+                                                  age_bins, age_col='AGE', label='L23')
+                else:
+                    abund_bins = np.arange(ylim[0], ylim[1] + BIN_WIDTH[col], 
+                                           BIN_WIDTH[col])
+                    plot_vice_median_ages(ax, subset, col, abund_bins, label='Model')
+                    plot_apogee_median_ages(ax, apogee_subset, apogee_col, abund_bins, label='L23')
     
     # Add legend to top-right panel
     if medians:
@@ -184,6 +196,50 @@ def plot_age_abundance_grid(mzs, col, apogee_sample=None, fname='',
     plt.close()
 
 
+def plot_vice_median_abundances(ax, mzs, col, bin_edges, label=None,
+                                color='k', min_mass_frac=0.01):
+    """
+    Plot median stellar abundances binned by age from VICE multi-zone output.
+    
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axis on which to plot the medians.
+    mzs : MultizoneStars instance
+        VICE multizone stars output.
+    col : str
+        Data column with abundance data.
+    bin_edges : array-like
+        Age bin edges to group the data.
+    label : str, optional
+        The main scatter plot / error bar label. The default is None.
+    age_col : str, optional
+        Name of column containing ages. The default is 'AGE'.
+    min_mass_frac : float, optional
+        The minimum stellar mass fraction in a bin required for that bin
+        to be plotted. The default is 0.01, or 1% of the total mass in the
+        VICE output subset.
+    """
+    abundance_intervals = mzs.binned_intervals(col, 'age', bin_edges,
+                                               quantiles=[0.16, 0.5, 0.84])
+    # Drop bins with few targets
+    include = abundance_intervals['mass_fraction'] >= min_mass_frac
+    abundance_intervals = abundance_intervals[
+        abundance_intervals['mass_fraction'] >= min_mass_frac
+    ]
+    bin_edges_left = abundance_intervals.index.categories[include].left
+    bin_edges_right = abundance_intervals.index.categories[include].right
+    bin_centers = (bin_edges_left + bin_edges_right) / 2
+    ax.errorbar(bin_centers, abundance_intervals[0.5], 
+                xerr=(bin_centers - bin_edges_left,
+                      bin_edges_right - bin_centers),
+                yerr=(abundance_intervals[0.5] - abundance_intervals[0.16], 
+                      abundance_intervals[0.84] - abundance_intervals[0.5]),
+                color=color, linestyle='none', capsize=1, elinewidth=0.5,
+                capthick=0.5, marker='^', markersize=2, label=label,
+    )
+
+
 def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None, 
                           color='k', min_mass_frac=0.01):
     """
@@ -208,8 +264,8 @@ def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None,
         to be plotted. The default is 0.01, or 1% of the total mass in the
         VICE output subset.
     """
-    age_intervals = mzs.age_intervals(col, bin_edges, 
-                                      quantiles=[0.16, 0.5, 0.84])
+    age_intervals = mzs.binned_intervals('age', col, bin_edges, 
+                                         quantiles=[0.16, 0.5, 0.84])
     # Drop bins with few targets
     include = age_intervals['mass_fraction'] >= min_mass_frac
     age_intervals = age_intervals[age_intervals['mass_fraction'] >= min_mass_frac]
@@ -221,6 +277,47 @@ def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None,
                       age_intervals[0.84] - age_intervals[0.5]),
                 yerr=(bin_centers - bin_edges_left,
                       bin_edges_right - bin_centers),
+                color=color, linestyle='none', capsize=1, elinewidth=0.5,
+                capthick=0.5, marker='^', markersize=2, label=label,
+    )
+
+
+def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None, 
+                                  color='r', age_col='AGE', min_stars=10):
+    """
+    Plot median stellar ages binned by abundance from APOGEE data.
+    
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axis on which to plot the medians.
+    apogee_sample : APOGEESample instance
+        APOGEE sample data or subset of the sample.
+    col : str
+        Data column with abundance data.
+    bin_edges : array-like
+        Age bin edges to group the data.
+    label : str, optional
+        The main scatter plot / error bar label. The default is None.
+    age_col : str, optional
+        Name of column containing ages. The default is 'AGE'.
+    min_stars : int, optional
+        The minimum number of stars in a bin required to plot the age interval.
+        The default is 10.
+    """
+    abundance_intervals = apogee_sample.binned_intervals(col, age_col, bin_edges, 
+                                                         quantiles=[0.16, 0.5, 0.84])
+    # Drop bins with few targets
+    include = abundance_intervals['count'] >= min_stars
+    abundance_intervals = abundance_intervals[include]
+    bin_edges_left = abundance_intervals.index.categories[include].left
+    bin_edges_right = abundance_intervals.index.categories[include].right
+    bin_centers = (bin_edges_left + bin_edges_right) / 2
+    ax.errorbar(bin_centers, abundance_intervals[0.5], 
+                xerr=(bin_centers - bin_edges_left,
+                      bin_edges_right - bin_centers),
+                yerr=(abundance_intervals[0.5] - abundance_intervals[0.16], 
+                      abundance_intervals[0.84] - abundance_intervals[0.5]),
                 color=color, linestyle='none', capsize=1, elinewidth=0.5,
                 capthick=0.5, marker='^', markersize=2, label=label,
     )
@@ -249,9 +346,8 @@ def plot_apogee_median_ages(ax, apogee_sample, col, bin_edges, label=None,
         The minimum number of stars in a bin required to plot the age interval.
         The default is 10.
     """
-    age_intervals = apogee_sample.age_intervals(col, bin_edges, 
-                                                quantiles=[0.16, 0.5, 0.84], 
-                                                age_col=age_col)
+    age_intervals = apogee_sample.binned_intervals(age_col, col, bin_edges, 
+                                                   quantiles=[0.16, 0.5, 0.84])
     # Drop bins with few targets
     include = age_intervals['count'] >= min_stars
     age_intervals = age_intervals[include]
@@ -318,6 +414,11 @@ multizone output.'
         '-m', '--medians', 
         action='store_true',
         help='Plot age medians in abundance bins for model and APOGEE data.'
+    )
+    parser.add_argument(
+        '--bin-by-age', 
+        action='store_true',
+        help='Calculate abundance medians in stellar age bins, rather than the reverse.'
     )
     parser.add_argument(
         '--cmap', 

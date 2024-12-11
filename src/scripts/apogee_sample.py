@@ -375,24 +375,24 @@ class APOGEESample:
                                 galr_lim=galr_lim, absz_lim=absz_lim)
 
 
-    def age_intervals(self, col, bin_edges, quantiles=[0.16, 0.5, 0.84], 
-                      age_col='AGE'):
+    def binned_intervals(self, col, bin_col, bin_edges, 
+                         quantiles=[0.16, 0.5, 0.84]):
         """
         Calculate stellar age quantiles in bins of a secondary parameter.
         
         Parameters
         ----------
         col : str
-            Data column corresponding to the second parameter (typically an
-            abundance, like "FE_H").
+            Data column corresponding to the first parameter, for which the
+            intervals will be calculated in each bin.
+        bin_col : str
+            Data column corresponding to the second (binning) parameter.
         bin_edges : array-like
             List or array of bin edges for the secondary parameter.
         quantiles : list, optional
             List of quantiles to calculate in each bin. The default is
             [0.16, 0.5, 0.84], corresponding to the median and +/- one
             standard deviation.
-        age_col : str, optional
-            Name of column containing ages. The default is 'AGE'.
         
         Returns
         -------
@@ -402,13 +402,13 @@ class APOGEESample:
             a final column "Count" with the number of targets in each bin.
         """
         # Remove entries with no age estimate
-        data = self.data.dropna(subset=age_col)
-        age_grouped = data.groupby(pd.cut(data[col], bin_edges), observed=False)[age_col]
-        age_quantiles = []
+        data = self.data.dropna(subset=col)
+        param_grouped = data.groupby(pd.cut(data[bin_col], bin_edges), observed=False)[col]
+        param_quantiles = []
         for q in quantiles:
-            age_quantiles.append(age_grouped.quantile(q))
-        age_quantiles.append(age_grouped.count())
-        df = pd.concat(age_quantiles, axis=1)
+            param_quantiles.append(param_grouped.quantile(q))
+        param_quantiles.append(param_grouped.count())
+        df = pd.concat(param_quantiles, axis=1)
         df.columns = quantiles + ['count']
         return df
         
