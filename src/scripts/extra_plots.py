@@ -20,9 +20,9 @@ from mdf_widths import plot_mdf_widths
 # from ofe_bimodality import plot_bimodality_comparison
 from ofe_feh_grid import plot_ofe_feh_grid
 from density_gradient import plot_density_gradient
-from utils import get_bin_centers, get_color_list, radial_gradient
+from utils import get_bin_centers, get_color_list, radial_gradient, weighted_quantile
 import paths
-from _globals import TWO_COLUMN_WIDTH, ZONE_WIDTH, GALR_BINS, ONE_COLUMN_WIDTH
+from _globals import TWO_COLUMN_WIDTH, ZONE_WIDTH, GALR_BINS, ONE_COLUMN_WIDTH, MAX_SF_RADIUS
 
 def main(output_name, verbose=False, tracks=False, log_age=False, 
          uncertainties=False, apogee_data=False, style='paper'):
@@ -34,6 +34,8 @@ def main(output_name, verbose=False, tracks=False, log_age=False,
     # Forward-model APOGEE uncertainties
     if uncertainties:
         mzs.model_uncertainty(inplace=True, apogee_data=apogee_sample.data)
+    # Abundance gradients
+    plot_abundance_gradients(mzs, uncertainties=uncertainties, style=style)
     # Age vs [O/H]
     plot_age_abundance_grid(mzs, '[o/h]', color_by='galr_origin', cmap='winter_r', 
                             apogee_sample=apogee_sample,
@@ -71,12 +73,12 @@ def main(output_name, verbose=False, tracks=False, log_age=False,
     plot_feh_distribution(mzs, apogee_sample, style=style)
     plot_ofe_distribution(mzs, apogee_sample, style=style)
     # Abundance distributions as a function of age
-    plot_mdf_by_age(mzs, col='[fe/h]', xlim=(-1.2, 0.7))
-    plot_mdf_by_age(mzs, col='[o/h]', xlim=(-1.0, 0.7))
+    plot_mdf_by_age(mzs, col='[fe/h]', xlim=(-1.2, 0.7), style=style)
+    plot_mdf_by_age(mzs, col='[o/h]', xlim=(-1.0, 0.7), style=style)
     # plot_mdf_by_age(mzs, col='[o/fe]', xlim=(-0.15, 0.55), smoothing=0.02)
     # MDF width as a function of age
-    plot_mdf_widths(mzs, col='[fe/h]')
-    plot_mdf_widths(mzs, col='[o/h]')
+    plot_mdf_widths(mzs, col='[fe/h]', style=style)
+    plot_mdf_widths(mzs, col='[o/h]', style=style)
     # [O/Fe] vs [Fe/H]
     plot_ofe_feh_grid(mzs, apogee_sample, tracks=tracks, cmap='winter_r',
                       apogee_contours=apogee_data, style=style)
@@ -133,7 +135,7 @@ def plot_sfh(output_name, style='paper', cmap='plasma_r', fname='sfh.png'):
         infall_surface = np.array(history['ifr']) / area
         axs[0].plot(time, infall_surface, color=color, label=label, ls=linestyle)
         sf_surface = np.array(history['sfr']) / area
-        axs[1].plot(time, sf_surface, color=color, ls=linestyle, label=label)
+        axs[1].plot(time[1:], sf_surface[1:], color=color, ls=linestyle, label=label)
         gas_surface = np.array(history['mgas']) / area
         axs[2].plot(time, gas_surface, color=color, ls=linestyle, label=label)
         tau_star = [history['mgas'][i+1] / history['sfr'][i+1] * 1e-9 for i in range(
@@ -170,6 +172,66 @@ def plot_mass_loading(output_name, style='paper', fname='mass_loading.png'):
     ax.set_ylabel(r"$\eta\equiv\dot\Sigma_{\rm out}/\dot\Sigma_\star$")
     # Save
     fullpath = paths.extra / output_name.replace('diskmodel', fname)
+    if not fullpath.parents[0].exists():
+        fullpath.parents[0].mkdir(parents=True)
+    plt.savefig(fullpath, dpi=300)
+    plt.close()
+
+
+def plot_abundance_gradients(mzs, uncertainties=False, style='paper'):
+    """
+    Plot the radial gas and stellar abundance gradient for a multizone output.
+    """
+    plt.style.use(paths.styles / f'{style}.mplstyle')
+    fig, axs = plt.subplots(3, 1, figsize=(ONE_COLUMN_WIDTH, 2 * ONE_COLUMN_WIDTH),
+                            tight_layout=True, sharex=True)
+    fig.suptitle(mzs.name)
+    # Gas
+    mout = vice.output(str(paths.multizone / mzs.name))
+    xarr = np.arange(0, MAX_SF_RADIUS, ZONE_WIDTH)
+    axs[0].plot(xarr, radial_gradient(mout, '[o/h]'), 'k-', label='Gas (present-day)')
+    axs[1].plot(xarr, radial_gradient(mout, '[fe/h]'), 'k-')
+    axs[2].plot(xarr, radial_gradient(mout, '[o/fe]'), 'k-')
+    # Stars
+    median_abundances = np.zeros((3, len(GALR_BINS)-1))
+    for i in range(len(GALR_BINS)-1):
+        galr_lim = GALR_BINS[i:i+2]
+        subset = mzs.filter({'galr_final': tuple(galr_lim), 
+                             'zfinal': (0, 0.5),
+                             'age': (0, 0.1)})
+        median_abundances[:,i] = [
+            weighted_quantile(subset.stars, '[o/h]', 'mstar', quantile=0.5),
+            weighted_quantile(subset.stars, '[fe/h]', 'mstar', quantile=0.5),
+            weighted_quantile(subset.stars, '[o/fe]', 'mstar', quantile=0.5),
+        ]
+    axs[0].plot(get_bin_centers(GALR_BINS), median_abundances[0], 'ko', label='Stars (<100 Myr old)')
+    axs[1].plot(get_bin_centers(GALR_BINS), median_abundances[1], 'ko')
+    axs[2].plot(get_bin_centers(GALR_BINS), median_abundances[2], 'ko')
+    # Reference gradient and sun
+    axs[0].plot(xarr, -0.08 * (xarr - 8.0), 'k--', label='Reference (-0.08 dex/kpc)')
+    axs[0].scatter([8], [0], marker='+', color='k')
+    axs[1].scatter([8], [0], marker='+', color='k')
+    axs[2].scatter([8], [0], marker='+', color='k')
+    # Configure axes
+    axs[0].set_xlim((-1, 17))
+    axs[0].set_ylim((-0.7, 0.7))
+    axs[0].xaxis.set_major_locator(MultipleLocator(4))
+    axs[0].xaxis.set_minor_locator(MultipleLocator(1))
+    axs[0].set_ylabel('[O/H]')
+    axs[0].yaxis.set_major_locator(MultipleLocator(0.5))
+    axs[0].yaxis.set_minor_locator(MultipleLocator(0.1))
+    axs[1].set_ylim((-0.7, 0.7))
+    axs[1].set_ylabel('[Fe/H]')
+    axs[1].yaxis.set_major_locator(MultipleLocator(0.5))
+    axs[1].yaxis.set_minor_locator(MultipleLocator(0.1))
+    axs[2].set_ylim((-0.12, 0.12))
+    axs[2].set_ylabel('[O/Fe]')
+    axs[2].yaxis.set_major_locator(MultipleLocator(0.1))
+    axs[2].yaxis.set_minor_locator(MultipleLocator(0.02))
+    axs[2].set_xlabel('Radius [kpc]')    
+    axs[0].legend()
+    # Save
+    fullpath = paths.extra / mzs.name.replace('diskmodel', 'abundance_gradients.png')
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)
