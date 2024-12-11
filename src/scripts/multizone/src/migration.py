@@ -1,5 +1,6 @@
 import random
 import math as m
+from numbers import Number
 from vice.toolkit import hydrodisk
 from .._globals import END_TIME, ZONE_WIDTH, RANDOM_SEED
 
@@ -116,6 +117,11 @@ class gaussian_migration:
     absz_max : float [default : 3]
         Maximum |z|-height above the midplane in kpc. The default corresponds
         to the maximum value in the h277 sample.
+    time_power : float, optional [default: 0.33]
+        Power on the time-dependence of the migration speed.
+    sigma_rm8 : float, optional [default: 2.68]
+        Measurement of the strength of radial migration in kpc for an 8 Gyr 
+        old star.
     
     Attributes
     ----------
@@ -137,7 +143,7 @@ class gaussian_migration:
     """
     def __init__(self, radbins, zone_width=ZONE_WIDTH, end_time=END_TIME,
                  filename="stars.out", absz_max=3., seed=RANDOM_SEED,
-                 post_process=False):
+                 post_process=False, time_power=0.33, sigma_rm8=2.68):
         # Random number seed
         random.seed(seed)
         self.radial_bins = radbins
@@ -145,6 +151,8 @@ class gaussian_migration:
         self.end_time = end_time
         self.absz_max = absz_max
         self.post_process = post_process
+        self.time_power = time_power
+        self.sigma_rm8 = sigma_rm8
         # super().__init__(radbins, mode=None, filename=filename, **kwargs)
         if isinstance(filename, str):
             self._file = open(filename, 'w')
@@ -165,7 +173,15 @@ class gaussian_migration:
             if age > 0:
                 # Randomly draw migration distance dR based on age & Rform
                 while True: # ensure 0 < Rfinal <= Rmax
-                    dR = random.gauss(mu=0., sigma=self.migr_scale(age, Rform))
+                    dR = random.gauss(
+                        mu=0., 
+                        sigma=self.migr_scale(
+                            age, 
+                            Rform, 
+                            time_power=self.time_power, 
+                            coeff=self.sigma_rm8
+                        )
+                    )
                     Rfinal = Rform + dR
                     if Rfinal > 0. and Rfinal <= self.radial_bins[-1]:
                         break
@@ -199,7 +215,9 @@ class gaussian_migration:
                     return int((R / self.zone_width))
             else:
                 # Interpolate between Rform and Rfinal at current time
-                R = self.interpolator(Rform, Rform + self.dR, tform, time)
+                R = self.interpolator(
+                    Rform, Rform + self.dR, tform, time, power=self.time_power
+                )
                 return int(R / self.zone_width)
 
     def close_file(self):
@@ -208,25 +226,8 @@ class gaussian_migration:
         simulation runs.
         """
         self._file.close()
-
-    @property
-    def write(self):
-        r"""
-        Type : bool
-
-        Whether or not to write out to the extra star particle data output
-        file. For internal use by the vice.multizone object only.
-        """
-        return self._write
-
-    @write.setter
-    def write(self, value):
-        if isinstance(value, bool):
-            self._write = value
-        else:
-            raise TypeError("Must be a boolean. Got: %s" % (type(value)))
     
-    def interpolator(self, Rform, Rfinal, tform, time):
+    def interpolator(self, Rform, Rfinal, tform, time, power=0.33):
         r"""
         Interpolate between the formation and final radius following the fit
         to the h277 data, $\Delta R \propto t^{0.33}$.
@@ -241,6 +242,8 @@ class gaussian_migration:
             Formation time in Gyr.
         time : float
             Simulation time in Gyr.
+        time_power : float, optional [default: 0.33]
+            Power on the time-dependence of the migration speed.
         
         Returns
         -------
@@ -248,10 +251,10 @@ class gaussian_migration:
             Radius at the current simulation time in kpc.
         """
         tfrac = (time - tform) / (self.end_time - tform)
-        return Rform + (Rfinal - Rform) * (tfrac ** 0.33)
+        return Rform + (Rfinal - Rform) * (tfrac ** power)
         
     @staticmethod
-    def migr_scale(age, Rform):
+    def migr_scale(age, Rform, time_power=0.33, coeff=2.68):
         r"""
         A prescription for $\sigma_{\Delta R}$, the scale of the Gaussian 
         distribution of radial migration.
@@ -265,13 +268,18 @@ class gaussian_migration:
             Age of the stellar population in Gyr.
         Rform : float or array-like
             Formation radius of the stellar population in kpc.
+        time_power : float, optional [default: 0.33]
+            Power on the time-dependence of migration speed.
+        coeff : float, optional [default: 1.35]
+            Coefficient which scales the strength of radial migration for a
+            1 Gyr old star (also known as $\sigma_{\rm RM8}$).
         
         Returns
         -------
         float or array-like
             Scale factor for radial migration $\sigma_{\Delta R}$.
         """
-        return 1.35 * (age ** 0.33) * (Rform / 8) ** 0.61
+        return coeff * ((age / 8) ** time_power) * (Rform / 8) ** 0.61
     
     @staticmethod
     def scale_height(age, Rfinal):
@@ -353,6 +361,56 @@ class gaussian_migration:
         if scale <= 0.:
             raise ValueError("The scale height must be positive.")
         return -scale * m.log(1/cdf - 1)
+
+    @property
+    def write(self):
+        r"""
+        Type : bool
+
+        Whether or not to write out to the extra star particle data output
+        file. For internal use by the vice.multizone object only.
+        """
+        return self._write
+
+    @write.setter
+    def write(self, value):
+        if isinstance(value, bool):
+            self._write = value
+        else:
+            raise TypeError("Must be a boolean. Got: %s" % (type(value)))
+    
+    @property
+    def time_power(self):
+        """
+        Type : float
+        
+        The power of the migration strength dependence on age.
+        """
+        return self._time_power
+    
+    @time_power.setter
+    def time_power(self, value):
+        if isinstance(value, Number):
+            self._time_power = value
+        else:
+            raise TypeError("Must be a numeric value. Got: %s" % type(value))
+    
+    @property
+    def sigma_rm8(self):
+        """
+        Type : float
+        
+        The standard deviation of the Gaussian from which migration distance
+        is drawn for a star of age 8 Gyr.
+        """
+        return self._sigma_rm8
+    
+    @sigma_rm8.setter
+    def sigma_rm8(self, value):
+        if value > 0:
+            self._sigma_rm8 = value
+        else:
+            raise ValueError("Radial migration strength must be positive.")
 
 
 class no_migration:

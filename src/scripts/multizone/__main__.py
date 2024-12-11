@@ -62,6 +62,16 @@ def parse():
         choices = _MIGRATION_MODELS_,
         default = "gaussian"
     )
+    parser.add_argument("--migration-speed",
+        help = "Power on the time-dependence of radial migration speed \
+(Gaussian migration only; default: 0.33)",
+        type = float,
+        default = 0.33)
+    parser.add_argument("--migration-strength",
+        help = "Coefficient for the strength of radial migration in kpc \
+(Gaussian migration only; default: 2.68)",
+        type = float,
+        default = 2.68)
     parser.add_argument("--evolution",
         help = "The evolutionary history to assume (Default: twoinfall)",
         type = str,
@@ -183,7 +193,9 @@ def model(args):
         seed = args.seed,
         radial_gas_velocity = args.radial_gas_velocity,
         outflows = not args.no_outflows,
-        pre_enrichment = args.pre_enrichment
+        pre_enrichment = args.pre_enrichment,
+        migration_speed = args.migration_speed,
+        migration_strength = args.migration_strength
     )
     if args.migration == "post-process":
         kwargs["simple"] = True
