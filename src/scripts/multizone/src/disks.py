@@ -68,8 +68,11 @@ class diskmodel(vice.milkyway):
         - "gaussian"
         - "none"
 
-    migration_speed : ``float`` [default: 0.33]
+    migration_time_dep : ``float`` [default: 0.33]
         Power on the time-dependence of radial migration speed (affects
+        Gaussian migration only).
+    migration_radius_dep : ``float`` [default: 0.61]
+        Power on the radial dependence of radial migration speed (affects
         Gaussian migration only).
     migration_strength : ``float`` [default: 2.68]
         Coefficient for the strength of radial migration $\sigma_{\rm RM8}$ in
@@ -106,7 +109,8 @@ class diskmodel(vice.milkyway):
     def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "twoinfall",
                  verbose = True, migration_mode = "gaussian", #yields="J21",
                  delay = 0.04, RIa = "plateau", RIa_kwargs={}, seed=42, 
-                 radial_gas_velocity = 0., outflows=True, migration_speed=0.33,
+                 radial_gas_velocity = 0., outflows=True, 
+                 migration_time_dep=0.33, migration_radius_dep=0.61,
                  migration_strength=2.68, pre_enrichment=float("-inf"), **kwargs):
         super().__init__(zone_width = zone_width, name = name,
             verbose = verbose, **kwargs)
@@ -135,8 +139,8 @@ class diskmodel(vice.milkyway):
         if migration_mode == "gaussian":
             self.migration.stars = gaussian_migration(self.annuli, seed = seed,
                     zone_width = zone_width, filename = analogdata_filename,
-                    post_process = self.simple, time_power = migration_speed,
-                    sigma_rm8 = migration_strength)
+                    post_process = self.simple, time_power = migration_time_dep,
+                    radius_power = migration_radius_dep, sigma_rm8 = migration_strength)
         elif migration_mode == "none":
             self.migration.stars = no_migration(self.annuli, 
                                                 filename=analogdata_filename)

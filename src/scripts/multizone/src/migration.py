@@ -143,7 +143,8 @@ class gaussian_migration:
     """
     def __init__(self, radbins, zone_width=ZONE_WIDTH, end_time=END_TIME,
                  filename="stars.out", absz_max=3., seed=RANDOM_SEED,
-                 post_process=False, time_power=0.33, sigma_rm8=2.68):
+                 post_process=False, time_power=0.33, radius_power=0.61, 
+                 sigma_rm8=2.68):
         # Random number seed
         random.seed(seed)
         self.radial_bins = radbins
@@ -152,6 +153,7 @@ class gaussian_migration:
         self.absz_max = absz_max
         self.post_process = post_process
         self.time_power = time_power
+        self.radius_power = radius_power
         self.sigma_rm8 = sigma_rm8
         # super().__init__(radbins, mode=None, filename=filename, **kwargs)
         if isinstance(filename, str):
@@ -179,6 +181,7 @@ class gaussian_migration:
                             age, 
                             Rform, 
                             time_power=self.time_power, 
+                            radius_power=self.radius_power,
                             coeff=self.sigma_rm8
                         )
                     )
@@ -254,7 +257,7 @@ class gaussian_migration:
         return Rform + (Rfinal - Rform) * (tfrac ** power)
         
     @staticmethod
-    def migr_scale(age, Rform, time_power=0.33, coeff=2.68):
+    def migr_scale(age, Rform, time_power=0.33, radius_power=0.61, coeff=2.68):
         r"""
         A prescription for $\sigma_{\Delta R}$, the scale of the Gaussian 
         distribution of radial migration.
@@ -270,6 +273,8 @@ class gaussian_migration:
             Formation radius of the stellar population in kpc.
         time_power : float, optional [default: 0.33]
             Power on the time-dependence of migration speed.
+        radius_power : float, optional [default: 0.61]
+            Power on the radial dependence of migration speed.
         coeff : float, optional [default: 1.35]
             Coefficient which scales the strength of radial migration for a
             1 Gyr old star (also known as $\sigma_{\rm RM8}$).
@@ -279,7 +284,7 @@ class gaussian_migration:
         float or array-like
             Scale factor for radial migration $\sigma_{\Delta R}$.
         """
-        return coeff * ((age / 8) ** time_power) * (Rform / 8) ** 0.61
+        return coeff * ((age / 8) ** time_power) * (Rform / 8) ** radius_power
     
     @staticmethod
     def scale_height(age, Rfinal):
