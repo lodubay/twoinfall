@@ -23,6 +23,7 @@ def main(style='paper', smooth_width=0.1, xlim=(-1.7, 0.7), nbins=100):
     mzs_nomig = MultizoneStars.from_output('nomigration/outflow/no_gasflow/pristine/J21/insideout/diskmodel')
     # mzs_post = MultizoneStars.from_output('post-process/outflow/no_gasflow/J21/twoinfall/diskmodel')
     mzs_fast = MultizoneStars.from_output('gaussian_fast/outflow/no_gasflow/pristine/J21/insideout/diskmodel')
+    mzs_strong = MultizoneStars.from_output('gaussian_strong/outflow/no_gasflow/pristine/J21/insideout/diskmodel')
     mzs_f18 = MultizoneStars.from_output('frankel2018/outflow/no_gasflow/pristine/J21/insideout/diskmodel')
     
     for i, ax in enumerate(axs.flatten()):
@@ -45,11 +46,11 @@ def main(style='paper', smooth_width=0.1, xlim=(-1.7, 0.7), nbins=100):
                                                smoothing=smooth_width)
         ax.plot(get_bin_centers(mdf_bins), fast_mdf, c='b', ls='--',
                 label=r'Gaussian ($\tau^{0.5}$)')
-        f18_subset = mzs_f18.region(galr_lim, absz_lim=(0, 2))
-        f18_mdf, mdf_bins = f18_subset.mdf('[fe/h]', bins=nbins, range=xlim,
+        strong_subset = mzs_strong.region(galr_lim, absz_lim=(0, 2))
+        strong_mdf, mdf_bins = strong_subset.mdf('[fe/h]', bins=nbins, range=xlim,
                                                smoothing=smooth_width)
-        ax.plot(get_bin_centers(mdf_bins), f18_mdf, c='g', ls=':',
-                label='Frankel et al. (2018)')
+        ax.plot(get_bin_centers(mdf_bins), strong_mdf, c='g', ls=':',
+                label=r'Gaussian ($\sigma_{RM8}=3.6$ kpc)')
         # Plot data
         # apogee_subset = apogee_data.region(galr_lim=galr_lim, absz_lim=(0, 2))
         # data_mdf, mdf_bins = apogee_subset.mdf(col='FE_H', bins=nbins,
