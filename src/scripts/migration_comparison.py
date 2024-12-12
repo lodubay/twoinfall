@@ -5,13 +5,14 @@ stellar migration.
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 from multizone_stars import MultizoneStars
 from apogee_sample import APOGEESample
 import paths
 import _globals
 from utils import get_bin_centers
 
-def main(style='paper', smooth_width=0.1, xlim=(-1.7, 0.7), nbins=100):
+def main(style='paper', smooth_width=0.1, xlim=(-1.2, 0.7), nbins=100):
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = plt.subplots(2, 3, sharex=True, sharey=True,
                             figsize=(_globals.TWO_COLUMN_WIDTH, 
@@ -31,7 +32,7 @@ def main(style='paper', smooth_width=0.1, xlim=(-1.7, 0.7), nbins=100):
         # ax.text(0.5, 0.95, r'$%s \leq R_{\rm gal} < %s$ kpc' % galr_lim, 
         #         transform=ax.transAxes, ha='center', va='top')
         ax.set_title(r'$%s \leq R_{\rm gal} < %s$ kpc' % galr_lim)
-        nomig_subset = mzs_nomig.region(galr_lim, absz_lim=(0, 2))
+        nomig_subset = mzs_nomig.region(galr_lim, absz_lim=(0, 0.5))
         nomig_mdf, mdf_bins = nomig_subset.mdf('[fe/h]', bins=nbins, range=xlim,
                                                smoothing=smooth_width)
         ax.plot(get_bin_centers(mdf_bins), nomig_mdf, c='k', ls='--',
@@ -40,17 +41,17 @@ def main(style='paper', smooth_width=0.1, xlim=(-1.7, 0.7), nbins=100):
         mig_mdf, mdf_bins = mig_subset.mdf('[fe/h]', bins=nbins, range=xlim,
                                            smoothing=smooth_width)
         ax.plot(get_bin_centers(mdf_bins), mig_mdf, c='b', ls='-',
-                label=r'Gaussian ($\tau^{0.33}$)')
+                label=r'Fiducial')
         fast_subset = mzs_fast.region(galr_lim, absz_lim=(0, 2))
         fast_mdf, mdf_bins = fast_subset.mdf('[fe/h]', bins=nbins, range=xlim,
                                                smoothing=smooth_width)
-        ax.plot(get_bin_centers(mdf_bins), fast_mdf, c='b', ls='--',
-                label=r'Gaussian ($\tau^{0.5}$)')
+        ax.plot(get_bin_centers(mdf_bins), fast_mdf, c='g', ls='--',
+                label=r'Faster')
         strong_subset = mzs_strong.region(galr_lim, absz_lim=(0, 2))
         strong_mdf, mdf_bins = strong_subset.mdf('[fe/h]', bins=nbins, range=xlim,
                                                smoothing=smooth_width)
-        ax.plot(get_bin_centers(mdf_bins), strong_mdf, c='g', ls=':',
-                label=r'Gaussian ($\sigma_{RM8}=3.6$ kpc)')
+        ax.plot(get_bin_centers(mdf_bins), strong_mdf, c='r', ls=':',
+                label=r'Stronger')
         # Plot data
         # apogee_subset = apogee_data.region(galr_lim=galr_lim, absz_lim=(0, 2))
         # data_mdf, mdf_bins = apogee_subset.mdf(col='FE_H', bins=nbins,
@@ -64,6 +65,8 @@ def main(style='paper', smooth_width=0.1, xlim=(-1.7, 0.7), nbins=100):
         ax.set_xlabel('[Fe/H]')
     for ax in axs[:,0]:
         ax.set_ylabel('PDF')
+    axs[0,0].xaxis.set_major_locator(MultipleLocator(0.5))
+    axs[0,0].xaxis.set_minor_locator(MultipleLocator(0.1))
     
     axs[0,-1].legend(frameon=False)
     fig.savefig(paths.figures / 'migration_comparison')

@@ -13,8 +13,8 @@ from utils import box_smooth, get_color_list, discrete_colormap
 import paths
 from _globals import TWO_COLUMN_WIDTH
 
-MIGRATION_SCHEMES = ['gaussian', 'gaussian_strong']
-ROW_LABELS = ['Fiducial Gaussian', r'Gaussian ($\sigma_{\rm RM8} = 3.6$ kpc)']#r'Gaussian ($\tau^{0.5}$)']
+MIGRATION_SCHEMES = ['gaussian', 'gaussian_fast', 'gaussian_strong']
+ROW_LABELS = ['Fiducial', 'Faster', 'Stronger']
 RFORM_BINS = [3, 5, 7, 9, 11, 13]
 AGE_BINS = [0, 2, 4, 6, 8, 10, 12]
 CMAP_NAME = 'jet'
@@ -28,7 +28,7 @@ def main():
     colors = get_color_list(cmap, AGE_BINS)
     
     fig, axs = plt.subplots(len(MIGRATION_SCHEMES), len(RFORM_BINS)-1, 
-                            figsize=(TWO_COLUMN_WIDTH, 3), 
+                            figsize=(TWO_COLUMN_WIDTH, 4), 
                             sharex=True, sharey=True)
     plt.subplots_adjust(left=0.06, right=0.93, top=0.92, wspace=0., hspace=0.)
     
