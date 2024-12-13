@@ -13,8 +13,16 @@ from utils import box_smooth, get_color_list, discrete_colormap
 import paths
 from _globals import TWO_COLUMN_WIDTH
 
-MIGRATION_SCHEMES = ['gaussian', 'gaussian_fast', 'gaussian_strong']
-ROW_LABELS = ['Fiducial', 'Faster', 'Stronger']
+MIGRATION_SCHEMES = [
+    'gaussian_strong_linear', 
+    'gaussian_strong_cbrt', 
+    'gaussian_strong_veryfast'
+]
+ROW_LABELS = [
+    r'$\sigma_{\rm RM}=5$ kpc $\times(\tau/8)^1$', 
+    r'$\sigma_{\rm RM}=5$ kpc $\times(\tau/8)^{1/3}$', 
+    r'$\sigma_{\rm RM}=5$ kpc $\times(\tau/8)^{1/10}$'
+]
 RFORM_BINS = [3, 5, 7, 9, 11, 13]
 AGE_BINS = [0, 2, 4, 6, 8, 10, 12]
 CMAP_NAME = 'jet'
@@ -34,7 +42,8 @@ def main():
     
     for m, row in enumerate(axs):
         mig = MIGRATION_SCHEMES[m]
-        output_name = '/'.join((mig, 'outflow/no_gasflow/pristine/J21/insideout/diskmodel'))
+        output_name = 'migration_tests/%s/diskmodel' % mig
+        # output_name = '/'.join((mig, 'outflow/no_gasflow/pristine/J21/insideout/diskmodel'))
         mzs = MultizoneStars.from_output(output_name)
         row[2].text(0.5, 0.85, ROW_LABELS[m], 
                     ha='center', transform=row[2].transAxes,

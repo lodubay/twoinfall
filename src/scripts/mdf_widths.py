@@ -14,8 +14,11 @@ from _globals import GALR_BINS, ONE_COLUMN_WIDTH
 import paths
 
 
-def main(output_name, **kwargs):
-    mzs = MultizoneStars.from_output(output_name)
+def main(output_name, uncertainties=False, verbose=False, **kwargs):
+    mzs = MultizoneStars.from_output(output_name, verbose=verbose)
+    # Model uncertainties
+    if uncertainties:
+        mzs.model_uncertainty(inplace=True)
     plot_mdf_widths(mzs, **kwargs)
 
 
@@ -44,6 +47,9 @@ def plot_mdf_widths(mzs, col='[fe/h]', style='paper', cmap='plasma_r'):
     ax.set_xlabel('Age [Gyr]')
     ax.xaxis.set_major_locator(MultipleLocator(4))
     ax.xaxis.set_minor_locator(MultipleLocator(1))
+    ax.set_ylim((0, 0.4))
+    ax.yaxis.set_major_locator(MultipleLocator(0.1))
+    ax.yaxis.set_minor_locator(MultipleLocator(0.02))
     ax.set_ylabel(r'$\sigma_{\rm %s}$' % capitalize_abundance(col))
     ax.legend(frameon=False, title='Radial bin [kpc]')
     
@@ -65,8 +71,10 @@ if __name__ == '__main__':
     )
     parser.add_argument('output_name', metavar='NAME',
                         help='Name of VICE multizone output')
-    # parser.add_argument('-u', '--uncertainties', action='store_true',
-    #                     help='Model APOGEE uncertainties in VICE output')
+    parser.add_argument('-u', '--uncertainties', action='store_true',
+                        help='Model APOGEE uncertainties in VICE output')
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='Verbose output.')
     parser.add_argument('--col', metavar='COL', type=str, default='[fe/h]',
                         help='Abundance column name (default: "[fe/h]")')
     parser.add_argument('--cmap', metavar='COLORMAP', type=str,
