@@ -23,34 +23,42 @@ def main(style='paper'):
     
     output_names = [
         'gaussian/outflow/no_gasflow/pristine/J21/twoinfall/diskmodel',
-        'gaussian/outflow/no_gasflow/pristine/W24mod/twoinfall/diskmodel'
+        'gaussian/outflow/no_gasflow/pristine/W24/twoinfall/diskmodel'
     ]
     labels = ['J21', 'W24mod']
+    colors = [paultol.vibrant.colors[0], paultol.vibrant.colors[1]]
     
-    for output_name, label in zip(output_names, labels):
+    for i, output_name in enumerate(output_names):
         # Gas
         mout = vice.output(str(paths.multizone / output_name))
         xarr = np.arange(0, MAX_SF_RADIUS, ZONE_WIDTH)
-        axs[0].plot(xarr, radial_gradient(mout, '[o/h]'), linestyle='-', 
-                    label='%s gas (present-day)' % label)
-        axs[1].plot(xarr, radial_gradient(mout, '[fe/h]'), 'k-')
-        axs[2].plot(xarr, radial_gradient(mout, '[o/fe]'), 'k-')
+        axs[0].plot(xarr, radial_gradient(mout, '[o/h]'), 
+                    color=colors[i], linestyle='-', 
+                    label='%s gas (present-day)' % labels[i])
+        axs[1].plot(xarr, radial_gradient(mout, '[fe/h]'), 
+                    color=colors[i], linestyle='-')
+        axs[2].plot(xarr, radial_gradient(mout, '[o/fe]'), 
+                    color=colors[i], linestyle='-')
         # Stars
         mzs = MultizoneStars.from_output(output_name)
         median_abundances = np.zeros((3, len(GALR_BINS)-1))
-        for i in range(len(GALR_BINS)-1):
-            galr_lim = GALR_BINS[i:i+2]
+        for j in range(len(GALR_BINS)-1):
+            galr_lim = GALR_BINS[j:j+2]
             subset = mzs.filter({'galr_final': tuple(galr_lim), 
                                 'zfinal': (0, 0.5),
                                 'age': (0, 0.1)})
-            median_abundances[:,i] = [
+            median_abundances[:,j] = [
                 weighted_quantile(subset.stars, '[o/h]', 'mstar', quantile=0.5),
                 weighted_quantile(subset.stars, '[fe/h]', 'mstar', quantile=0.5),
                 weighted_quantile(subset.stars, '[o/fe]', 'mstar', quantile=0.5),
             ]
-        axs[0].plot(get_bin_centers(GALR_BINS), median_abundances[0], 'ko', label='Stars (<100 Myr old)')
-        axs[1].plot(get_bin_centers(GALR_BINS), median_abundances[1], 'ko')
-        axs[2].plot(get_bin_centers(GALR_BINS), median_abundances[2], 'ko')
+        axs[0].plot(get_bin_centers(GALR_BINS), median_abundances[0], 
+                    color=colors[i], marker='o', linestyle='none', 
+                    label='Stars (<100 Myr old)')
+        axs[1].plot(get_bin_centers(GALR_BINS), median_abundances[1], 
+                    color=colors[i], marker='o', linestyle='none')
+        axs[2].plot(get_bin_centers(GALR_BINS), median_abundances[2], 
+                    color=colors[i], marker='o', linestyle='none')
     # Reference gradient and sun
     axs[0].plot(xarr, -0.08 * (xarr - 8.0), 'k--', label='Reference (-0.08 dex/kpc)')
     axs[0].scatter([8], [0], marker='+', color='k')
