@@ -421,7 +421,7 @@ class MultizoneStars:
             Scatter plot marker size. The default is 0.5.
         kwargs passed to Axes.scatter()
         """
-        if sampled:
+        if sampled and self.nstars > 0:
             stars = self.sample(nsamples)
         else:
             stars = self.stars
