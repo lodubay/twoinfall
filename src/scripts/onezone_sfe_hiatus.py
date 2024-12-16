@@ -1,5 +1,5 @@
 """
-This script plots a one-zone VICE model with a short burst in the SFE.
+This script plots a one-zone VICE model with a short hiatus in the SFE.
 """
 
 import numpy as np
@@ -18,8 +18,8 @@ from colormaps import paultol
 
 RADIUS = 8.
 ZONE_WIDTH = 2.
-BURST_ONSET = 1.0
-BURST_DURATION = 0.3
+HIATUS_ONSET = 1.0
+HIATUS_DURATION = 0.3
 TAU_STAR_BASE = 2.0
 TAU_STAR_ENHANCEMENT = 10
 FEH_LIM = (-1.6, 0.6)
@@ -53,7 +53,7 @@ def main():
                 color='gray', linestyle='-', marker=None)
     
     # Set up output directory
-    output_dir = paths.data / 'onezone' / 'sfe_burst'
+    output_dir = paths.data / 'onezone' / 'sfe_hiatus'
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
     
@@ -74,7 +74,7 @@ def main():
     plot_vice_onezone(name, fig=fig, axs=axs, label='Fiducial', 
                       linestyle='--', marker_labels=True)
 
-    # SFE burst model
+    # SFE hiatus model
     name = str(output_dir / 'onset13_width02')
     tau_star = tau_star_burst(onset=1.3, duration=0.2)
     sz = vice.singlezone(
@@ -85,16 +85,16 @@ def main():
     )
     sz.tau_star = tau_star
     sz.run(simtime, overwrite=True)
-    plot_vice_onezone(name, fig=fig, axs=axs, label='SFE Burst')
+    plot_vice_onezone(name, fig=fig, axs=axs, label='SFE Hiatus')
     axs[0].legend(loc='upper right')
     
-    plt.savefig(paths.figures / 'onezone_sfe_burst')
+    plt.savefig(paths.figures / 'onezone_sfe_hiatus')
     plt.close()
 
 
 class tau_star_burst:
-    def __init__(self, base=TAU_STAR_BASE, onset=BURST_ONSET, 
-                 duration=BURST_DURATION, enhancement=TAU_STAR_ENHANCEMENT):
+    def __init__(self, base=TAU_STAR_BASE, onset=HIATUS_ONSET, 
+                 duration=HIATUS_DURATION, enhancement=TAU_STAR_ENHANCEMENT):
         self.base = base
         self.onset = onset
         self.duration = duration
