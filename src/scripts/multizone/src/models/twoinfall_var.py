@@ -23,5 +23,9 @@ class twoinfall_var(twoinfall):
     """
     def __init__(self, radius, **kwargs):
         super().__init__(
-            radius, second_timescale=insideout.timescale(radius), **kwargs
+            radius, second_timescale=self.timescale(radius), **kwargs
         )
+    
+    @staticmethod
+    def timescale(radius):
+        return max(1.03 * radius - 1.27, 1.82)
