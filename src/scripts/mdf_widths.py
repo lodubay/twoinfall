@@ -7,6 +7,7 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
+from matplotlib.lines import Line2D
 
 from multizone_stars import MultizoneStars
 from utils import get_color_list, get_bin_centers, capitalize_abundance, weighted_quantile
@@ -14,34 +15,21 @@ from _globals import GALR_BINS, ONE_COLUMN_WIDTH
 import paths
 
 
-def main(output_name, uncertainties=False, verbose=False, **kwargs):
+def main(output_name, verbose=False, **kwargs):
     mzs = MultizoneStars.from_output(output_name, verbose=verbose)
-    # Model uncertainties
-    if uncertainties:
-        mzs.model_uncertainty(inplace=True)
     plot_mdf_widths(mzs, **kwargs)
 
 
 def plot_mdf_widths(mzs, col='[fe/h]', style='paper', cmap='plasma_r'):
     plt.style.use(paths.styles / f'{style}.mplstyle')
-    colors = get_color_list(plt.get_cmap(cmap), GALR_BINS)
-
     fig, ax = plt.subplots(figsize=(ONE_COLUMN_WIDTH, ONE_COLUMN_WIDTH))
     fig.suptitle(mzs.name)
 
     age_bins = np.arange(14)
-    for i in range(len(GALR_BINS)-1):
-        galr_lim = GALR_BINS[i:i+2]
-        sigma_feh = []
-        for j in range(len(age_bins)-1):
-            age_lim = age_bins[j:j+2]
-            subset = mzs.filter({'age': tuple(age_lim), 'galr_final': tuple(galr_lim), 'zfinal': (0, 0.5)})
-            # Calculate MDF widths
-            per1 = weighted_quantile(subset.stars, val=col, weight='mstar', quantile=0.16)
-            med = weighted_quantile(subset.stars, val=col, weight='mstar', quantile=0.5)
-            per2 = weighted_quantile(subset.stars, val=col, weight='mstar', quantile=0.84)
-            sigma_feh.append((per2 - per1) / 2)
-        ax.plot(get_bin_centers(age_bins), sigma_feh, color=colors[i], label=str(galr_lim))
+    calculate_widths(ax, mzs, age_bins, col=col, cmap=cmap, linestyle='-', labels=True)
+    # Again, with age uncertainties
+    mzs.model_uncertainty(inplace=True)
+    calculate_widths(ax, mzs, age_bins, col=col, cmap=cmap, linestyle='--', labels=False)
 
     # Format axes
     ax.set_xlabel('Age [Gyr]')
@@ -51,7 +39,14 @@ def plot_mdf_widths(mzs, col='[fe/h]', style='paper', cmap='plasma_r'):
     ax.yaxis.set_major_locator(MultipleLocator(0.1))
     ax.yaxis.set_minor_locator(MultipleLocator(0.02))
     ax.set_ylabel(r'$\sigma_{\rm %s}$' % capitalize_abundance(col))
-    ax.legend(frameon=False, title='Radial bin [kpc]')
+    leg1 = ax.legend(frameon=False, title='Radial bin [kpc]')
+    ax.add_artist(leg1)
+
+    # Custom legend
+    custom_lines = [Line2D([0], [0], color='k', linestyle='-'),
+                    Line2D([0], [0], color='k', linestyle='--')]
+    custom_labels = ['Without uncertainty', 'With uncertainty']
+    ax.legend(custom_lines, custom_labels, loc='lower right')
     
     # Save
     simple_colname = col[1:-1].replace('/', '')
@@ -63,6 +58,30 @@ def plot_mdf_widths(mzs, col='[fe/h]', style='paper', cmap='plasma_r'):
     plt.close()
 
 
+def calculate_widths(ax, mzs, age_bins, col='[fe/h]', cmap='plasma_r', linestyle='-', labels=True):
+    colors = get_color_list(plt.get_cmap(cmap), GALR_BINS)
+    for i in range(len(GALR_BINS)-1):
+        galr_lim = GALR_BINS[i:i+2]
+        sigma_feh = []
+        for j in range(len(age_bins)-1):
+            age_lim = age_bins[j:j+2]
+            subset = mzs.filter({
+                'age': tuple(age_lim), 
+                'galr_final': tuple(galr_lim), 
+                'zfinal': (0, 0.5)
+            })
+            # Calculate MDF widths
+            per1 = weighted_quantile(subset.stars, val=col, weight='mstar', quantile=0.16)
+            med = weighted_quantile(subset.stars, val=col, weight='mstar', quantile=0.5)
+            per2 = weighted_quantile(subset.stars, val=col, weight='mstar', quantile=0.84)
+            sigma_feh.append((per2 - per1) / 2)
+        if labels:
+            label = str(galr_lim)
+        else:
+            label = ''
+        ax.plot(get_bin_centers(age_bins), sigma_feh, color=colors[i], 
+                linestyle=linestyle, label=label)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -71,8 +90,8 @@ if __name__ == '__main__':
     )
     parser.add_argument('output_name', metavar='NAME',
                         help='Name of VICE multizone output')
-    parser.add_argument('-u', '--uncertainties', action='store_true',
-                        help='Model APOGEE uncertainties in VICE output')
+    # parser.add_argument('-u', '--uncertainties', action='store_true',
+    #                     help='Model APOGEE uncertainties in VICE output')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='Verbose output.')
     parser.add_argument('--col', metavar='COL', type=str, default='[fe/h]',

@@ -32,6 +32,7 @@ def main(output_name, verbose=False, tracks=False, log_age=False,
     mzs = MultizoneStars.from_output(output_name)
     parent_dir = paths.extra / mzs.name.replace('diskmodel', '')
     # Forward-model APOGEE uncertainties
+    mzs_copy = mzs.copy() # Version without forward-modeled uncertainties
     if uncertainties:
         mzs.model_uncertainty(inplace=True, apogee_data=apogee_sample.data)
     # Abundance gradients
@@ -73,12 +74,12 @@ def main(output_name, verbose=False, tracks=False, log_age=False,
     plot_feh_distribution(mzs, apogee_sample, style=style)
     plot_ofe_distribution(mzs, apogee_sample, style=style)
     # Abundance distributions as a function of age
-    plot_mdf_by_age(mzs, col='[fe/h]', xlim=(-1.2, 0.7), style=style)
-    plot_mdf_by_age(mzs, col='[o/h]', xlim=(-1.0, 0.7), style=style)
+    plot_mdf_by_age(mzs_copy, col='[fe/h]', xlim=(-1.2, 0.7), style=style)
+    plot_mdf_by_age(mzs_copy, col='[o/h]', xlim=(-1.0, 0.7), style=style)
     # plot_mdf_by_age(mzs, col='[o/fe]', xlim=(-0.15, 0.55), smoothing=0.02)
     # MDF width as a function of age
-    plot_mdf_widths(mzs, col='[fe/h]', style=style)
-    plot_mdf_widths(mzs, col='[o/h]', style=style)
+    plot_mdf_widths(mzs_copy, col='[fe/h]', style=style)
+    plot_mdf_widths(mzs_copy, col='[o/h]', style=style)
     # [O/Fe] vs [Fe/H]
     plot_ofe_feh_grid(mzs, apogee_sample, tracks=tracks, cmap='winter_r',
                       apogee_contours=apogee_data, style=style)
