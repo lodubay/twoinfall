@@ -28,4 +28,7 @@ class twoinfall_var(twoinfall):
     
     @staticmethod
     def timescale(radius):
+        """
+        Follows the prescription from Chiappinni et al. (2001).
+        """
         return max(1.03 * radius - 1.27, 1.82)
