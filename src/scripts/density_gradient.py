@@ -133,7 +133,7 @@ def stellar_density_gradient(mzs, rbins, origin=False):
     return masses / np.array(areas)
 
 
-def gas_density_gradient(name, zone_width=ZONE_WIDTH):
+def gas_density_gradient(name, zone_width=ZONE_WIDTH, index=-1):
     """
     Calculate the radial gas surface density gradient.
     
@@ -141,8 +141,10 @@ def gas_density_gradient(name, zone_width=ZONE_WIDTH):
     ----------
     name : str
         Relative path to multizone output directory.
-    rbins : array-like
+    rbins : array-like, optional
         Radial bins.
+    index : int, optional
+        Time-index to calculate the radial gradient at.
     
     Returns
     -------
@@ -154,7 +156,7 @@ def gas_density_gradient(name, zone_width=ZONE_WIDTH):
     """
     multioutput = vice.output(str(paths.multizone / name))
     gas_mass_gradient = radial_gradient(multioutput, 'mgas', 
-                                        zone_width=zone_width)
+                                        zone_width=zone_width, index=index)
     radii = [i * zone_width for i in range(len(gas_mass_gradient))]
     areas = [m.pi * ((r + zone_width)**2 - r**2) for r in radii]
     return np.array(gas_mass_gradient) / np.array(areas), np.array(radii)
