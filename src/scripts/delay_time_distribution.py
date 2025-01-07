@@ -40,7 +40,7 @@ def main(style='paper'):
     plot_dtds(subfigs[0], dtd_list, labels = ['Plateau', 'Exponential', 'Power-law'])
     plot_onezone(subfigs[1], dtd_list, labels = ['Plateau', 'Exponential', 'Power-law'])
     
-    fig.savefig(paths.figures / 'onezone_dtd')
+    fig.savefig(paths.figures / 'delay_time_distribution')
     plt.close()
 
 
@@ -53,9 +53,11 @@ def plot_dtds(fig, dtd_list, labels=[]):
     fig.subplots_adjust(hspace=0., wspace=0.)
     dt = 0.001
     tarr = np.arange(0.04, 13.2, dt)
+    linestyles = ['-', '-.', '--']
     for i, dtd in enumerate(dtd_list):
         yvals = np.array([dtd(t) for t in tarr])
-        ax.plot(tarr, yvals / np.sum(yvals * dt), label=labels[i])
+        ax.plot(tarr, yvals / np.sum(yvals * dt), label=labels[i],
+                ls=linestyles[i])
         # indicate median delay times
         cdf = np.cumsum(yvals / np.sum(yvals))
         med_idx = np.where(cdf >= 0.5)[0][0]
@@ -87,12 +89,14 @@ def plot_onezone(fig, dtd_list, labels=[]):
         output_dir.mkdir(parents=True)
     axs = setup_axes(fig, xlim=XLIM, ylim=YLIM)
     fig.subplots_adjust(left=0.05, hspace=0., wspace=0.)
+    linestyles = ['-', '-.', '--']
     for i, dtd in enumerate(dtd_list):
         run_model(dtd)
         plot_vice_onezone(str(output_dir / dtd.name), 
                           fig=fig, axs=axs, label=labels[i],
                           marker_labels=(i == 0),
-                          markers=[0.3, 1, 3, 10])
+                          markers=[0.3, 1, 3, 10],
+                          ls=linestyles[i])
     if not missing_labels:
         axs[0].legend(frameon=False, title='SN Ia DTD', loc='lower left')
     return axs
