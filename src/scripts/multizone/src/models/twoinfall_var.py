@@ -31,4 +31,4 @@ class twoinfall_var(twoinfall):
         """
         Follows the prescription from Chiappinni et al. (2001).
         """
-        return max(1.03 * radius - 1.27, 1.82)
+        return 1.033 * max(radius, 3) - 1.27
