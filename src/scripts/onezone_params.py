@@ -113,7 +113,7 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
         eta_func = models.equilibrium_mass_loading(
             equilibrium=0., 
             # tau_sfh=param_dict['second_timescale'], 
-            tau_star=0.
+            tau_star=0. # for a consistent value of eta
         )
         # eta_func = vice.milkyway.default_mass_loading
         eta = eta_func(RADIUS)
