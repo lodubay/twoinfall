@@ -11,7 +11,7 @@ import vice
 from apogee_sample import APOGEESample
 from multizone.src.models import twoinfall_sf_law, equilibrium_mass_loading
 from multizone.src import dtds
-from utils import twoinfall_onezone
+from utils import twoinfall_onezone, get_bin_centers
 from track_and_mdf import plot_mdf_curve
 from _globals import ONEZONE_DEFAULTS, END_TIME, ONE_COLUMN_WIDTH
 import paths
@@ -44,6 +44,28 @@ def main():
     ax5.tick_params(axis='y', labelleft=False)
     axs = [[ax0, ax1], [ax2, ax3], [ax4, ax5]]
 
+    # Plot APOGEE abundances + Leung et al. (2023) ages
+    apogee_sample = APOGEESample.load()
+    local_sample = apogee_sample.region(galr_lim=(7, 9), absz_lim=(0, 0.5))
+    age_bins = np.arange(14)
+    age_bin_centers = get_bin_centers(age_bins)
+    oh_bins = local_sample.binned_intervals('O_H', 'AGE', age_bins)
+    ax1.errorbar(age_bin_centers, oh_bins[0.5], xerr=0.5,
+                 yerr=(oh_bins[0.5] - oh_bins[0.16], 
+                       oh_bins[0.84] - oh_bins[0.5]),
+                 linestyle='none', c='gray', capsize=1, marker='.', label='L23')
+    feh_bins = local_sample.binned_intervals('FE_H', 'AGE', age_bins)
+    ax3.errorbar(age_bin_centers, feh_bins[0.5], xerr=0.5,
+                 yerr=(feh_bins[0.5] - feh_bins[0.16], 
+                       feh_bins[0.84] - feh_bins[0.5]),
+                 linestyle='none', c='gray', capsize=1, marker='.', label='L23')
+    ofe_bins = local_sample.binned_intervals('O_FE', 'AGE', age_bins)
+    ax5.errorbar(age_bin_centers, ofe_bins[0.5], xerr=0.5,
+                 yerr=(ofe_bins[0.5] - ofe_bins[0.16], 
+                       ofe_bins[0.84] - ofe_bins[0.5]),
+                 linestyle='none', c='gray', capsize=1, marker='.', label='L23')
+    
+
     params = ONEZONE_DEFAULTS
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
     params['tau_star'] = twoinfall_sf_law(area)
@@ -60,13 +82,9 @@ def main():
     params['eta'] = 0.15
     run_plot_model(axs, 1, params, yia_scale=1.4)
 
-    # Plot APOGEE abundances + Leung et al. (2023) ages
-    apogee_sample = APOGEESample.load()
-    local_sample = apogee_sample.region(galr_lim=(7, 9), absz_lim=(0, 0.5))
-
     ax0.set_ylabel('[O/H]')
     ax0.set_xlim((1.2, 0))
-    ax0.set_ylim((-1.2, 0.3))
+    ax0.set_ylim((-1.2, 0.4))
     ax0.yaxis.set_major_locator(MultipleLocator(0.5))
     ax0.yaxis.set_minor_locator(MultipleLocator(0.1))
 
@@ -78,7 +96,7 @@ def main():
     ax1.legend(frameon=False)
     
     ax2.set_ylabel('[Fe/H]')
-    ax2.set_ylim((-1.4, 0.4))
+    ax2.set_ylim((-1.2, 0.4))
     ax2.yaxis.set_major_locator(MultipleLocator(0.5))
     ax2.yaxis.set_minor_locator(MultipleLocator(0.1))
 
