@@ -53,17 +53,20 @@ def main():
     ax1.errorbar(age_bin_centers, oh_bins[0.5], xerr=0.5,
                  yerr=(oh_bins[0.5] - oh_bins[0.16], 
                        oh_bins[0.84] - oh_bins[0.5]),
-                 linestyle='none', c='gray', capsize=1, marker='.', label='L23')
+                 linestyle='none', c='gray', capsize=1, marker='.', 
+                 label='Median (L23)')
     feh_bins = local_sample.binned_intervals('FE_H', 'AGE', age_bins)
     ax3.errorbar(age_bin_centers, feh_bins[0.5], xerr=0.5,
                  yerr=(feh_bins[0.5] - feh_bins[0.16], 
                        feh_bins[0.84] - feh_bins[0.5]),
-                 linestyle='none', c='gray', capsize=1, marker='.', label='L23')
+                 linestyle='none', c='gray', capsize=1, marker='.', 
+                 label='Median (L23)')
     ofe_bins = local_sample.binned_intervals('O_FE', 'AGE', age_bins)
     ax5.errorbar(age_bin_centers, ofe_bins[0.5], xerr=0.5,
                  yerr=(ofe_bins[0.5] - ofe_bins[0.16], 
                        ofe_bins[0.84] - ofe_bins[0.5]),
-                 linestyle='none', c='gray', capsize=1, marker='.', label='L23')
+                 linestyle='none', c='gray', capsize=1, marker='.', 
+                 label='Median (L23)')
     
 
     params = ONEZONE_DEFAULTS
@@ -73,14 +76,14 @@ def main():
     params['RIa'] = dtds.plateau()
 
     # 3x yields, similar to J21
-    params['eta'] = 2.4
-    run_plot_model(axs, 3, params)
+    params['eta'] = 2.5
+    run_plot_model(axs, 3, params, yia_scale=1.15)
     # 2x yields
-    params['eta'] = 1.4
-    run_plot_model(axs, 2, params, yia_scale=1.1)
+    params['eta'] = 1.45
+    run_plot_model(axs, 2, params, yia_scale=1.25)
     # Solar yields, similar to W24
-    params['eta'] = 0.15
-    run_plot_model(axs, 1, params, yia_scale=1.4)
+    params['eta'] = 0.18
+    run_plot_model(axs, 1, params, yia_scale=1.55)
 
     ax0.set_ylabel('[O/H]')
     ax0.set_xlim((1.2, 0))
