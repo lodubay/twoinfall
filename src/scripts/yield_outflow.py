@@ -33,7 +33,7 @@ OFE_LIM = (-0.15, 0.5)
 def main():
     plt.style.use(paths.styles / 'paper.mplstyle')
     plt.rcParams['axes.prop_cycle'] = plt.cycler(
-        'color', paultol.vibrant.colors)
+        'color', paultol.bright.colors)
 
     fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 3*ONE_COLUMN_WIDTH))
     gs = fig.add_gridspec(3, 2, width_ratios=(1, 4), wspace=0., hspace=0.1)
