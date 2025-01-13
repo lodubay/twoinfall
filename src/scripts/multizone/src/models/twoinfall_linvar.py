@@ -3,10 +3,9 @@ This file declares the time-dependence of the infall rate for a variant of
 the two-infall model with a radially-dependent second infall timescale.
 """
 
-from .insideout import insideout
 from .twoinfall import twoinfall
 
-class twoinfall_var(twoinfall):
+class twoinfall_linvar(twoinfall):
     """
     Variant of the two-infall SFH with a radially-dependent second infall 
     timescale.
@@ -29,6 +28,20 @@ class twoinfall_var(twoinfall):
     @staticmethod
     def timescale(radius):
         """
+        Timescale for the second infall which increases linearly with radius.
+        
+        Parameters
+        ----------
+        radius : float
+            Galactocentric radius in kpc.
+
+        Returns
+        -------
+        float
+            Timescale of the second infall in Gyr (minimum of 1.83 Gyr).
+        
+        Notes
+        ----
         Follows the prescription from Chiappinni et al. (2001).
         """
         return 1.033 * max(radius, 3) - 1.27

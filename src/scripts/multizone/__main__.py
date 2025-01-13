@@ -27,7 +27,8 @@ _EVOLUTION_MODELS_ = [
     "earlyburst", 
     "static_infall",
     "twoinfall", 
-    "twoinfall_var", 
+    "twoinfall_linvar", 
+    "twoinfall_expvar", 
     "twoinfall_inner"
 ]
 _DELAY_MODELS_ = [

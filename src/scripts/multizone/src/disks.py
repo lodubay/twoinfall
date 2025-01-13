@@ -50,7 +50,8 @@ class diskmodel(vice.milkyway):
         - "lateburst"
         - "outerburst"
         - "twoinfall"
-        - "twoinfall_var"
+        - "twoinfall_linvar"
+        - "twoinfall_expvar"
         - "twoinfall_inner"
         - "earlyburst"
         - "static_infall"
@@ -158,8 +159,9 @@ class diskmodel(vice.milkyway):
         evol_kwargs = {}
         if spec.lower() in [
             "twoinfall", 
-            "twoinfall_var", 
             "twoinfall_inner",
+            "twoinfall_linvar",
+            "twoinfall_expvar",
             "earlyburst", 
             "static_infall"
         ]:
@@ -292,7 +294,8 @@ class star_formation_history:
                 "lateburst":          models.lateburst,
                 "outerburst":         models.outerburst,
                 "twoinfall":          models.twoinfall,
-                "twoinfall_var":      models.twoinfall_var,
+                "twoinfall_linvar":   models.twoinfall_linvar,
+                "twoinfall_expvar":   models.twoinfall_expvar,
                 "twoinfall_inner":    models.twoinfall_inner,
                 "earlyburst":         models.earlyburst_ifr,
                 "static_infall":      models.static_infall,
