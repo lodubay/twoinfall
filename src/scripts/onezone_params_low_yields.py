@@ -34,6 +34,10 @@ def main():
                       first_timescale=1, second_timescale=10,
                       xlim=XLIM, ylim=YLIM, show_ylabel=False,
                       label_index=0, verbose=True)
+    # Label subfigures
+    labels = ['(a)', '(b)', '(c)']
+    for label, subfig in zip(labels, subfigs):
+        subfig.suptitle(label, x=0.92, y=0.92, ha='right')
     plt.subplots_adjust(bottom=0.13, top=0.98, left=0.16, right=0.98, wspace=0.5)
     fig.savefig(paths.figures / 'onezone_params_low_yields', dpi=300)
     plt.close()
