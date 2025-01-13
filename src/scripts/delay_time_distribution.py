@@ -62,11 +62,12 @@ def plot_dtds(fig, dtd_list, labels=[]):
         cdf = np.cumsum(yvals / np.sum(yvals))
         med_idx = np.where(cdf >= 0.5)[0][0]
         med = tarr[med_idx]
-        ax.scatter(med, 2e-3, s=10, marker='o')
+        ax.scatter(med, 8e-3, s=10, marker='o')
     # Label median delay times
-    ax.text(1, 3e-3, 'Median delay times', ha='center')
+    ax.text(1, 1.1e-2, 'Median delay times', ha='center')
     # Format axes
-    ax.set_ylim((1e-3, 10))
+    ax.set_xlim((3e-2, 20))
+    ax.set_ylim((5e-3, 10))
     ax.set_xscale('log')
     ax.set_yscale('log')
     log_formatter = FuncFormatter(lambda y, _: '{:g}'.format(y))
@@ -94,7 +95,7 @@ def plot_onezone(fig, dtd_list, labels=[]):
         run_model(dtd)
         plot_vice_onezone(str(output_dir / dtd.name), 
                           fig=fig, axs=axs, label=labels[i],
-                          marker_labels=(i == 0),
+                          marker_labels=(i == 1),
                           markers=[0.3, 1, 3, 10],
                           ls=linestyles[i])
     if not missing_labels:
