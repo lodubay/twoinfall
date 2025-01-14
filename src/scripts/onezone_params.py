@@ -8,11 +8,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import vice
 
-from multizone.src.yields import J21
-# from vice.yields.presets import JW20
-# from multizone.src.yields import W24mod
-# vice.yields.sneia.settings['fe'] *= (1.1/1.2)
-# from multizone.src.yields import F04
+from multizone.src.yields import W24mod
 from utils import twoinfall_onezone
 from multizone.src import models
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH
@@ -22,10 +18,10 @@ import paths
 
 RADIUS = 8.
 ZONE_WIDTH = 2.
-PARAM_DEFAULTS = {
+FIDUCIAL = {
     'first_timescale': 1.,
     'second_timescale': 10.,
-    'onset': 3.
+    'onset': 4.
 }
 # convert between parameter keyword names and fancy labels
 LABELS = {
@@ -33,8 +29,8 @@ LABELS = {
     'second_timescale': '\\tau_2',
     'onset': 't_{\\rm on}'
 }
-XLIM = (-1.4, 0.8)
-YLIM = (-0.18, 0.54)
+XLIM = (-1.8, 0.7)
+YLIM = (-0.16, 0.54)
 
 def main():
     plt.style.use(paths.styles / 'paper.mplstyle')
@@ -62,7 +58,7 @@ def main():
 
 
 def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
-               label_index=0, verbose=False, **kwargs):
+               label_index=0, verbose=False, cmap_name=None, **kwargs):
     """
     Plot a series of onezone model outputs, varying one parameter of the 
     two-infall model while holding the others fixed.
@@ -99,8 +95,6 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
             other_params += '$%s=%s$ Gyr\n' % (LABELS[param], value)
     if var is None:
         raise ValueError('Please specify one variable parameter.')
-    multiline_title = '$\\tau_2=%s$ Gyr,' % second_timescale + '\n' + \
-        '$t_{\\rm on}=%s$ Gyr' % onset
     axs = setup_axes(subfig, title='', xlabel='[Fe/H]', **kwargs)
 
     dt = ONEZONE_DEFAULTS['dt']
@@ -109,6 +103,14 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
 
     for i, val in enumerate(values):
         param_dict[var] = val
+        # Line color
+        if val == FIDUCIAL[var]:
+            color = 'k'
+        elif cmap_name is not None:
+            cmap = plt.get_cmap(cmap_name)
+            color = cmap((i+0.5) / len(values))
+        else:
+            color = None
         # Outflow mass-loading factor
         eta_func = models.equilibrium_mass_loading(
             equilibrium=0., 
@@ -132,7 +134,7 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
                           xcol='[fe/h]',
                           fig=subfig, axs=axs, 
                           linestyle='-', 
-                          color=None, 
+                          color=color, 
                           label=f'{val:.1f}', 
                           marker_labels=(i==label_index),
                           markers=[0.3, 1, 3, 10])
