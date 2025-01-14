@@ -209,8 +209,9 @@ def plot_abundance_gradients(mzs, uncertainties=False, style='paper'):
     axs[1].plot(get_bin_centers(GALR_BINS), median_abundances[1], 'ko')
     axs[2].plot(get_bin_centers(GALR_BINS), median_abundances[2], 'ko')
     # Reference gradient and sun
-    axs[0].plot(xarr, -0.08 * (xarr - 8.0), 'k--', label='Reference (-0.08 dex/kpc)')
+    axs[0].plot(xarr, -0.06 * (xarr - 8.0), 'k--', label='Reference (-0.06 dex/kpc)')
     axs[0].scatter([8], [0], marker='+', color='k')
+    axs[1].plot(xarr, -0.06 * (xarr - 8.0), 'k--', label='Reference (-0.06 dex/kpc)')
     axs[1].scatter([8], [0], marker='+', color='k')
     axs[2].scatter([8], [0], marker='+', color='k')
     # Configure axes
