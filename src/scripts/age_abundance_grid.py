@@ -162,7 +162,7 @@ def plot_age_abundance_grid(mzs, col, apogee_sample=None, fname='',
                     plot_vice_median_abundances(ax, subset, col, age_bins, 
                                                 label='Model')
                     plot_apogee_median_abundances(ax, apogee_subset, apogee_col, 
-                                                  age_bins, age_col='AGE', label='L23')
+                                                  age_bins, age_col='L23_AGE', label='L23')
                 else:
                     abund_bins = np.arange(ylim[0], ylim[1] + BIN_WIDTH[col], 
                                            BIN_WIDTH[col])
@@ -213,8 +213,6 @@ def plot_vice_median_abundances(ax, mzs, col, bin_edges, label=None,
         Age bin edges to group the data.
     label : str, optional
         The main scatter plot / error bar label. The default is None.
-    age_col : str, optional
-        Name of column containing ages. The default is 'AGE'.
     min_mass_frac : float, optional
         The minimum stellar mass fraction in a bin required for that bin
         to be plotted. The default is 0.01, or 1% of the total mass in the
@@ -257,8 +255,6 @@ def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None,
         Bin edges to group the data.
     label : str, optional
         The main scatter plot / error bar label. The default is None.
-    age_col : str, optional
-        Name of column containing ages. The default is 'AGE'.
     min_mass_frac : float, optional
         The minimum stellar mass fraction in a bin required for that bin
         to be plotted. The default is 0.01, or 1% of the total mass in the
@@ -283,7 +279,7 @@ def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None,
 
 
 def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None, 
-                                  color='r', age_col='AGE', min_stars=10):
+                                  color='r', age_col='L23_AGE', min_stars=10):
     """
     Plot median stellar ages binned by abundance from APOGEE data.
     
@@ -300,7 +296,7 @@ def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None,
     label : str, optional
         The main scatter plot / error bar label. The default is None.
     age_col : str, optional
-        Name of column containing ages. The default is 'AGE'.
+        Name of column containing ages. The default is 'L23_AGE'.
     min_stars : int, optional
         The minimum number of stars in a bin required to plot the age interval.
         The default is 10.
@@ -324,7 +320,7 @@ def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None,
 
 
 def plot_apogee_median_ages(ax, apogee_sample, col, bin_edges, label=None, 
-                            color='r', age_col='AGE', min_stars=10):
+                            color='r', age_col='L23_AGE', min_stars=10):
     """
     Plot median stellar ages binned by abundance from APOGEE data.
     
@@ -341,7 +337,7 @@ def plot_apogee_median_ages(ax, apogee_sample, col, bin_edges, label=None,
     label : str, optional
         The main scatter plot / error bar label. The default is None.
     age_col : str, optional
-        Name of column containing ages. The default is 'AGE'.
+        Name of column containing ages. The default is 'L23_AGE'.
     min_stars : int, optional
         The minimum number of stars in a bin required to plot the age interval.
         The default is 10.

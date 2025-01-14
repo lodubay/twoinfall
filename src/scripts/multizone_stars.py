@@ -294,7 +294,7 @@ class MultizoneStars:
             apogee_data = pd.read_csv(paths.data/'APOGEE/sample.csv')
         rng = np.random.default_rng(seed)
         # Age uncertainty (Leung et al. 2023)
-        log_age_err = apogee_data['LOG_AGE_ERR'].median()
+        log_age_err = apogee_data['L23_LOG_AGE_ERR'].median()
         log_age_noise = rng.normal(scale=log_age_err, 
                                    size=noisy_stars.shape[0])
         noisy_stars['age'] *= 10 ** log_age_noise

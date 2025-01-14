@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import paths
-from utils import fits_to_pandas, box_smooth, kde2D, galactic_to_galactocentric
+from utils import fits_to_pandas, box_smooth, kde2D, galactic_to_galactocentric, quad_add
 
 # Sample galactocentric coordinate bounds
 GALR_LIM = (3., 15.)
@@ -17,14 +17,23 @@ ABSZ_LIM = (0., 2.)
 # Data file names
 ALLSTAR_FNAME = 'allStarLite-dr17-synspec_rev1.fits'
 LEUNG23_FNAME = 'nn_latent_age_dr17.csv'
+# Coefficients for [C/N] age fit polynomial
+CN_AGE_COEF = np.array([-1.90931538,  0.75218328,  0.25786775,  0.22440967, 
+                        -0.32223068, 9.99041179])
 # List of columns to include in the final sample
 SAMPLE_COLS = ['APOGEE_ID', 'RA', 'DEC', 'GALR', 'GALPHI', 'GALZ', 'SNREV',
                'TEFF', 'TEFF_ERR', 'LOGG', 'LOGG_ERR', 'O_H', 'O_H_ERR', 
                'FE_H', 'FE_H_ERR', 'O_FE', 'O_FE_ERR', 'FE_O', 'FE_O_ERR',
-               'AGE', 'AGE_ERR', 'LOG_AGE', 'LOG_AGE_ERR']
+               'C_N', 'C_N_ERR', 'CN_AGE', 'CN_LOG_AGE',
+               'L23_AGE', 'L23_AGE_ERR', 'L23_LOG_AGE', 'L23_LOG_AGE_ERR']
 
 def main():
-    APOGEESample.generate(verbose=True)
+    sample_df = APOGEESample.generate(verbose=True)
+    print(sample_df())
+    print(sample_df('CN_AGE').max())
+    print(sample_df('CN_AGE').min())
+    solar_sample = sample_df.region(galr_lim=(7, 9), absz_lim=(0, 0.5))
+    print(solar_sample('CN_AGE').median())
 
 class APOGEESample:
     """
@@ -175,18 +184,26 @@ class APOGEESample:
         sample['GALR'] = galr # kpc
         sample['GALPHI'] = galphi # deg
         sample['GALZ'] = galz # kpc
-        # Add column for [O/H]
-        sample['O_H'] = sample['O_FE'] + sample['FE_H']
-        sample['O_H_ERR'] = sample['O_FE_ERR'] # [X/Fe] and [X/H] errors are the same
-        # Add column for [Fe/O]
-        sample['FE_O'] = -sample['O_FE']
-        sample['FE_O_ERR'] = sample['O_FE_ERR']
         # Limit by galactocentric radius and z-height
         sample = sample[(sample['GALR'] >= GALR_LIM[0]) & 
                         (sample['GALR'] < GALR_LIM[1]) &
                         (sample['GALZ'].abs() >= ABSZ_LIM[0]) &
                         (sample['GALZ'].abs() < ABSZ_LIM[1])]
         sample.reset_index(inplace=True, drop=True)
+        # Add column for [O/H]
+        sample['O_H'] = sample['O_FE'] + sample['FE_H']
+        sample['O_H_ERR'] = sample['O_FE_ERR'] # [X/Fe] and [X/H] errors are the same
+        # Add column for [Fe/O]
+        sample['FE_O'] = -sample['O_FE']
+        sample['FE_O_ERR'] = sample['O_FE_ERR']
+        # Add column for [C/N]
+        sample['C_N'] = sample['C_FE'] - sample['N_FE']
+        sample['C_N_ERR'] = quad_add(sample['C_FE_ERR'], sample['N_FE_ERR'])
+        # Calculate [C/N]-based ages
+        sample['CN_LOG_AGE'] = recover_age_quad(
+            sample['C_N'].values, sample['FE_H'].values, CN_AGE_COEF
+        ) - 9.
+        sample['CN_AGE'] = 10 ** sample['CN_LOG_AGE']
         # Drop unneeded columns
         data = sample[SAMPLE_COLS].copy()
         # Write sample to csv file
@@ -221,7 +238,7 @@ class APOGEESample:
         except FileNotFoundError:
             raise FileNotFoundError('APOGEE sample file not found. Please run \
 ``python apogee_sample.py`` to generate it first.')
-        return cls(data, data_dir=data_dir, galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)        
+        return cls(data, data_dir=data_dir, galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
 
     def kde2D(self, xcol, ycol, bandwidth=0.03, overwrite=False):
         """
@@ -529,10 +546,10 @@ class APOGEESample:
         """
         cols = ['LogAge', 'LogAge_Error', 'Age', 'Age_Error']
         latent_ages = leung23_df[cols].copy()
-        latent_ages.columns = ['LOG_AGE', 'LOG_AGE_ERR', 
-                               'AGE', 'AGE_ERR']
+        latent_ages.columns = ['L23_LOG_AGE', 'L23_LOG_AGE_ERR', 
+                               'L23_AGE', 'L23_AGE_ERR']
         # Limit to stars with <40% age uncertainty per recommendation
-        frac_err = latent_ages['AGE_ERR'] / latent_ages['AGE']
+        frac_err = latent_ages['L23_AGE_ERR'] / latent_ages['L23_AGE']
         latent_ages.where(frac_err < 0.4, inplace=True)
         joined = apogee_df.join(latent_ages)
         return joined
@@ -591,6 +608,34 @@ def contour_levels_2D(arr2d, enclosed=[0.8, 0.3]):
             i += 1
         l += 0.01
     return levels
+
+
+def recover_age_quad(cn_arr, feh_arr, params):
+    """
+    Compute stellar ages via polynomial fit to [C/N] and [Fe/H].
+    
+    Parameters
+    ----------
+    cn_arr : array-like
+        Array of stellar [C/N] abundances.
+    feh_arr : array-like
+        Array of stellar [Fe/H] abundances. Must be same length as cn_arr.
+    params : array-like
+        Polynomial fit coefficients. Must have length 6.
+    
+    Returns
+    -------
+    array-like
+        Array of log10(stellar ages in years).
+    
+    Notes
+    -----
+    Thanks Jack.
+    """
+    assert len(cn_arr) == len(feh_arr)
+    c2,c1,f2,f1,c1f1,b = params
+    ages = (c2*cn_arr**2)+(c1*cn_arr)+(f2*feh_arr**2)+(f1*feh_arr)+(c1f1*feh_arr*cn_arr)+b 
+    return ages
 
 
 def read_kde(path):
