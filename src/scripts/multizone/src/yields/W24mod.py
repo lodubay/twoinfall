@@ -9,7 +9,7 @@ mfecc = 0.058
 mfeia = 0.7
 # Rate of SNe Ia per solar mass of stars
 # Ria = 1.3e-3 # Maoz & Graur (2017)
-Ria = 1.6e-3
+Ria = 1.7e-3
 
 # IMF-averaged CCSN yields
 # yield calibration is based on Weinberg++ 2023, eq. 10

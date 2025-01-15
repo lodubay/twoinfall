@@ -14,8 +14,9 @@ class equilibrium_mass_loading:
         The equilibrium [O/H] abundance at the Solar radius.
     recycling : float [default: 0.4]
         The instantaneous recycling parameter.
-    tau_star : float [default: 3.0]
-        The star formation efficiency timescale in Gyr.
+    tau_star : float [default: 0.0]
+        The star formation efficiency timescale in Gyr. If zero, this negates
+        the star formation correction factor.
     tau_sfh : float [default: 15.0]
         The star formation history timescale in Gyr.
     gradient : float [default: -0.08]
@@ -40,7 +41,7 @@ class equilibrium_mass_loading:
         - eta : float
             The mass-loading factor at the given radius.
     """
-    def __init__(self, equilibrium=0., recycling=0.4, tau_star=3., tau_sfh=15.,
+    def __init__(self, equilibrium=0., recycling=0.4, tau_star=0., tau_sfh=15.,
                  gradient=-0.08):
         # Calculate eta for exponential SFH to reach desired equilibrium [O/H]
         Z_alpha_eq = vice.solar_z["o"] * 10 ** equilibrium
