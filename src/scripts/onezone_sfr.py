@@ -93,11 +93,11 @@ def main():
     # Weight by SFR
     hist = vice.history(name)
     axs[0].scatter(hist["[fe/h]"][::10], hist["[o/fe]"][::10], 
-                   s=[20*h/max(hist["sfr"]) for h in hist["sfr"][::10]],
+                   s=[10*h/max(hist["sfr"]) for h in hist["sfr"][::10]],
                    c=model_color)
     # Mark every Gyr
     axs[0].scatter(hist["[fe/h]"][::100], hist["[o/fe]"][::100], 
-                   s=[5*h/max(hist["sfr"]) for h in hist["sfr"][::100]], 
+                   s=[2*h/max(hist["sfr"]) for h in hist["sfr"][::100]], 
                    c="w", zorder=10)
     
     plt.savefig(paths.figures / "onezone_sfr")
