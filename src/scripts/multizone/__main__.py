@@ -155,6 +155,12 @@ If -inf, infalling gas is always pristine. (Default: -inf).",
         default = float("-inf"),
         type = float
     )
+    parser.add_argument("--pre-alpha-enhancement",
+        help = "The [alpha/M] enhancement of the infalling gas at late times. \
+(Default: 0.0).",
+        default = 0.0,
+        type = float
+    )
 
     return parser
 
@@ -200,6 +206,7 @@ def model(args):
         radial_gas_velocity = args.radial_gas_velocity,
         outflows = not args.no_outflows,
         pre_enrichment = args.pre_enrichment,
+        pre_alpha_enhancement = args.pre_alpha_enhancement,
         migration_time_dep = args.migration_time_dependence,
         migration_radius_dep = args.migration_radial_dependence,
         migration_strength = args.migration_strength,

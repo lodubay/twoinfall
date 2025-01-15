@@ -101,6 +101,9 @@ class diskmodel(vice.milkyway):
         metallicity starts at 0 and increases exponentially to the specified
         value on a 2 Gyr timescale. If -inf, infalling gas is pristine 
         throughout the simulation.
+    pre_alpha_enhancement : ``float`` [default: 0]
+        The [alpha/M] enhancement of infalling gas at late times. Increases
+        the pre-enrichment abundance of O, Mg, and Si.
     kwargs : varying types
         Other keyword arguments to pass ``vice.milkyway``.
 
@@ -112,7 +115,8 @@ class diskmodel(vice.milkyway):
                  delay = 0.04, RIa = "plateau", RIa_kwargs={}, seed=42, 
                  radial_gas_velocity = 0., outflows=True, 
                  migration_time_dep=0.33, migration_radius_dep=0.61,
-                 migration_strength=2.68, pre_enrichment=float("-inf"), **kwargs):
+                 migration_strength=2.68, pre_enrichment=float("-inf"), 
+                 pre_alpha_enhancement=0., **kwargs):
         super().__init__(zone_width = zone_width, name = name,
             verbose = verbose, **kwargs)
         # Set the yields
@@ -201,11 +205,21 @@ class diskmodel(vice.milkyway):
             for i in range(self.n_zones):
                 self.zones[i].Zin = {}
                 for e in self.zones[i].elements:
-                    self.zones[i].Zin[e] = modified_exponential(
-                        norm = vice.solar_z[e] * 10**pre_enrichment,
-                        rise = 2,
-                        timescale = float("inf")
-                    )
+                    # Optional alpha-enhancement
+                    if e.lower() in ["o", "mg", "si"]:
+                        self.zones[i].Zin[e] = modified_exponential(
+                            norm = vice.solar_z[e] * 10**(
+                                pre_enrichment + pre_alpha_enhancement
+                            ),
+                            rise = 2,
+                            timescale = float("inf")
+                        )
+                    else:
+                        self.zones[i].Zin[e] = modified_exponential(
+                            norm = vice.solar_z[e] * 10**pre_enrichment,
+                            rise = 2,
+                            timescale = float("inf")
+                        )
         
         # CONSTANT GAS VELOCITY
         if radial_gas_velocity:
