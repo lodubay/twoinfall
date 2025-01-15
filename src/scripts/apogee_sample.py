@@ -24,7 +24,7 @@ CN_AGE_COEF = np.array([-1.90931538,  0.75218328,  0.25786775,  0.22440967,
 SAMPLE_COLS = ['APOGEE_ID', 'RA', 'DEC', 'GALR', 'GALPHI', 'GALZ', 'SNREV',
                'TEFF', 'TEFF_ERR', 'LOGG', 'LOGG_ERR', 'O_H', 'O_H_ERR', 
                'FE_H', 'FE_H_ERR', 'O_FE', 'O_FE_ERR', 'FE_O', 'FE_O_ERR',
-               'C_N', 'C_N_ERR', 'CN_AGE', 'CN_LOG_AGE',
+               'C_N', 'C_N_ERR', 'CN_AGE', 'CN_AGE_ERR', 'CN_LOG_AGE',
                'L23_AGE', 'L23_AGE_ERR', 'L23_LOG_AGE', 'L23_LOG_AGE_ERR']
 
 def main():
@@ -204,6 +204,7 @@ class APOGEESample:
             sample['C_N'].values, sample['FE_H'].values, CN_AGE_COEF
         ) - 9.
         sample['CN_AGE'] = 10 ** sample['CN_LOG_AGE']
+        sample['CN_AGE_ERR'] = 1. * np.ones(sample.shape[0])
         # Drop unneeded columns
         data = sample[SAMPLE_COLS].copy()
         # Write sample to csv file
