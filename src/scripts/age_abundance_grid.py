@@ -306,14 +306,14 @@ def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None,
     # Drop bins with few targets
     include = abundance_intervals['count'] >= min_stars
     abundance_intervals = abundance_intervals[include]
-    bin_edges_left = abundance_intervals.index.categories[include].left
-    bin_edges_right = abundance_intervals.index.categories[include].right
+    bin_edges_left = abundance_intervals.index.categories[include].left.values
+    bin_edges_right = abundance_intervals.index.categories[include].right.values
     bin_centers = (bin_edges_left + bin_edges_right) / 2
     ax.errorbar(bin_centers, abundance_intervals[0.5], 
                 xerr=(bin_centers - bin_edges_left,
                       bin_edges_right - bin_centers),
-                yerr=(abundance_intervals[0.5] - abundance_intervals[0.16], 
-                      abundance_intervals[0.84] - abundance_intervals[0.5]),
+                yerr=(abundance_intervals[0.5].values - abundance_intervals[0.16].values, 
+                      abundance_intervals[0.84].values - abundance_intervals[0.5].values),
                 color=color, linestyle='none', capsize=1, elinewidth=0.5,
                 capthick=0.5, marker='^', markersize=2, label=label,
     )
