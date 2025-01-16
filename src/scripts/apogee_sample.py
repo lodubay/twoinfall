@@ -29,11 +29,6 @@ SAMPLE_COLS = ['APOGEE_ID', 'RA', 'DEC', 'GALR', 'GALPHI', 'GALZ', 'SNREV',
 
 def main():
     sample_df = APOGEESample.generate(verbose=True)
-    print(sample_df())
-    print(sample_df('CN_AGE').max())
-    print(sample_df('CN_AGE').min())
-    solar_sample = sample_df.region(galr_lim=(7, 9), absz_lim=(0, 0.5))
-    print(solar_sample('CN_AGE').median())
 
 class APOGEESample:
     """
