@@ -262,6 +262,8 @@ class MultizoneStars:
         subset.reset_index(inplace=True, drop=True)
         if inplace:
             self.stars = subset
+            self.galr_lim = galr_lim
+            self.absz_lim = absz_lim
         else:
             return MultizoneStars(subset, name=self.name, 
                                   fullpath=self.fullpath, 
