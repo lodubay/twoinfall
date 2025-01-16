@@ -197,7 +197,7 @@ def plot_age_abundance_grid(mzs, col, apogee_sample=None, fname='',
 
 
 def plot_vice_median_abundances(ax, mzs, col, bin_edges, label=None,
-                                color='k', min_mass_frac=0.01):
+                                color='k', min_mass_frac=0.01, offset=0.):
     """
     Plot median stellar abundances binned by age from VICE multi-zone output.
     
@@ -217,6 +217,8 @@ def plot_vice_median_abundances(ax, mzs, col, bin_edges, label=None,
         The minimum stellar mass fraction in a bin required for that bin
         to be plotted. The default is 0.01, or 1% of the total mass in the
         VICE output subset.
+    offset : float, optional
+        Offset to age bin center, in Gyr, for visual clarity. The default is 0.
     """
     abundance_intervals = mzs.binned_intervals(col, 'age', bin_edges,
                                                quantiles=[0.16, 0.5, 0.84])
@@ -225,12 +227,12 @@ def plot_vice_median_abundances(ax, mzs, col, bin_edges, label=None,
     abundance_intervals = abundance_intervals[
         abundance_intervals['mass_fraction'] >= min_mass_frac
     ]
-    bin_edges_left = abundance_intervals.index.categories[include].left
-    bin_edges_right = abundance_intervals.index.categories[include].right
+    bin_edges_left = abundance_intervals.index.categories[include].left.values
+    bin_edges_right = abundance_intervals.index.categories[include].right.values
     bin_centers = (bin_edges_left + bin_edges_right) / 2
-    ax.errorbar(bin_centers, abundance_intervals[0.5], 
-                xerr=(bin_centers - bin_edges_left,
-                      bin_edges_right - bin_centers),
+    ax.errorbar(bin_centers + offset, abundance_intervals[0.5], 
+                xerr=((bin_centers - bin_edges_left) + offset,
+                      (bin_edges_right - bin_centers) - offset),
                 yerr=(abundance_intervals[0.5] - abundance_intervals[0.16], 
                       abundance_intervals[0.84] - abundance_intervals[0.5]),
                 color=color, linestyle='none', capsize=1, elinewidth=0.5,
@@ -279,7 +281,8 @@ def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None,
 
 
 def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None, 
-                                  color='r', age_col='L23_AGE', min_stars=10):
+                                  color='r', age_col='L23_AGE', min_stars=10,
+                                  offset=0.):
     """
     Plot median stellar ages binned by abundance from APOGEE data.
     
@@ -300,6 +303,8 @@ def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None,
     min_stars : int, optional
         The minimum number of stars in a bin required to plot the age interval.
         The default is 10.
+    offset : float, optional
+        Offset to age bin center, in Gyr, for visual clarity. The default is 0.
     """
     abundance_intervals = apogee_sample.binned_intervals(col, age_col, bin_edges, 
                                                          quantiles=[0.16, 0.5, 0.84])
@@ -309,9 +314,9 @@ def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None,
     bin_edges_left = abundance_intervals.index.categories[include].left.values
     bin_edges_right = abundance_intervals.index.categories[include].right.values
     bin_centers = (bin_edges_left + bin_edges_right) / 2
-    ax.errorbar(bin_centers, abundance_intervals[0.5], 
-                xerr=(bin_centers - bin_edges_left,
-                      bin_edges_right - bin_centers),
+    ax.errorbar(bin_centers + offset, abundance_intervals[0.5], 
+                xerr=((bin_centers - bin_edges_left) + offset,
+                      (bin_edges_right - bin_centers) - offset),
                 yerr=(abundance_intervals[0.5].values - abundance_intervals[0.16].values, 
                       abundance_intervals[0.84].values - abundance_intervals[0.5].values),
                 color=color, linestyle='none', capsize=1, elinewidth=0.5,

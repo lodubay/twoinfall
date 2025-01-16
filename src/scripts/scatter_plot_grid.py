@@ -10,7 +10,7 @@ import vice
 from _globals import GALR_BINS, ABSZ_BINS, TWO_COLUMN_WIDTH
 
 
-def plot_gas_abundance(ax, mzs, xcol, ycol, c='k', ls='-', lw=0.5):
+def plot_gas_abundance(ax, mzs, xcol, ycol, c='k', ls='-', lw=0.5, label=''):
     """
     Plot the ISM abundance tracks for the mean zone.
 
@@ -31,6 +31,8 @@ def plot_gas_abundance(ax, mzs, xcol, ycol, c='k', ls='-', lw=0.5):
         Line style. The default is '-'.
     lw : float, optional
         Line width. The default is 0.5.
+    label : str, optional
+        Line label. The default is ''.
 
     Returns
     -------
@@ -41,7 +43,7 @@ def plot_gas_abundance(ax, mzs, xcol, ycol, c='k', ls='-', lw=0.5):
     zone = int(0.5 * (mzs.galr_lim[0] + mzs.galr_lim[1]) / mzs.zone_width)
     zone_path = str(mzs.fullpath / ('zone%d' % zone))
     hist = vice.history(zone_path)
-    lines = ax.plot(hist[xcol], hist[ycol], c=c, ls=ls, linewidth=lw)
+    lines = ax.plot(hist[xcol], hist[ycol], c=c, ls=ls, linewidth=lw, label=label)
     return lines
 
 
