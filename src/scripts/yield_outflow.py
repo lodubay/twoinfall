@@ -17,7 +17,7 @@ from _globals import ONEZONE_DEFAULTS, END_TIME, ONE_COLUMN_WIDTH
 import paths
 from colormaps import paultol
 
-FE_CC_FRAC = 0.35
+AFE_CC = 0.45
 SNIA_FE_YIELD = 0.7 # Msun
 RADIUS = 8.
 ZONE_WIDTH = 2
@@ -124,8 +124,8 @@ def main():
     ax2.yaxis.set_major_locator(MultipleLocator(0.5))
     ax2.yaxis.set_minor_locator(MultipleLocator(0.1))
 
-    ax3.text(0.05, 0.95, r'$y^{\rm CC}_{\rm Fe} / y^{\rm CC}_{\rm O}=%s$' % FE_CC_FRAC, 
-             transform=ax3.transAxes, va='top')
+    # ax3.text(0.05, 0.95, r'$y^{\rm CC}_{\rm Fe} / y^{\rm CC}_{\rm O}=%s$' % FE_CC_FRAC, 
+    #          transform=ax3.transAxes, va='top')
     ax3.legend(frameon=False)
 
     ax4.set_ylabel('[O/Fe]')
@@ -134,7 +134,7 @@ def main():
     ax4.yaxis.set_major_locator(MultipleLocator(0.2))
     ax4.yaxis.set_minor_locator(MultipleLocator(0.05))
 
-    ax5.text(0.05, 0.95, r'Plateau DTD', transform=ax5.transAxes, va='top')
+    # ax5.text(0.05, 0.95, r'Plateau DTD', transform=ax5.transAxes, va='top')
     ax5.set_xlabel('Lookback Time [Gyr]')
     # ax5.legend(frameon=False)
 
@@ -148,7 +148,7 @@ def run_plot_model(axs, scale, params, yia_scale=1.,
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
     
-    scale_yields(scale, fe_cc_frac=FE_CC_FRAC, yia_scale=yia_scale)
+    scale_yields(scale, afe_cc=AFE_CC, yia_scale=yia_scale)
     # params['eta'] = equilibrium_mass_loading(tau_star=0.)(RADIUS)
     # params['eta'] *= eta_scale
     RIa = vice.yields.sneia.settings['fe'] / SNIA_FE_YIELD
@@ -199,7 +199,7 @@ def plot_abundance_history(axs, fullname, col, label='', c=None, ls='-'):
                    orientation='horizontal', color=c, ls=ls)
     
 
-def scale_yields(scale, fe_cc_frac=0.35, yia_scale=1.):
+def scale_yields(scale, afe_cc=0.45, yia_scale=1.):
     r"""
     Adopt yields scaled according to the Solar metallicity.
 
@@ -216,14 +216,14 @@ def scale_yields(scale, fe_cc_frac=0.35, yia_scale=1.):
     ----------
     scale : float
         Scale of total yields relative to the Solar abundance.
-    fe_cc_frac : float [default: 0.35]
-        Ratio of Fe to O produced by CC SNe.
+    afe_cc : float [default: 0.45]
+        Logarithmic ratio of O to Fe produced by CC SNe (the CC SN plateau).
     
     """
     vice.yields.ccsne.settings['o'] = scale * vice.solar_z['o']
-    vice.yields.ccsne.settings['fe'] = scale * fe_cc_frac * vice.solar_z['fe']
+    vice.yields.ccsne.settings['fe'] = scale * 10**-afe_cc * vice.solar_z['fe']
     vice.yields.sneia.settings['o'] = 0.
-    vice.yields.sneia.settings['fe'] = yia_scale * scale * (1 - fe_cc_frac) * vice.solar_z['fe']
+    vice.yields.sneia.settings['fe'] = yia_scale * scale * (1 - 10**-afe_cc) * vice.solar_z['fe']
 
 
 if __name__ == '__main__':
