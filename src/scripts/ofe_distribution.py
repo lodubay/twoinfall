@@ -35,7 +35,7 @@ def plot_ofe_distribution(mzs, apogee_sample, nbins=NBINS, xlim=OFE_LIM,
     # plot
     mdf_kwargs = {'bins': nbins, 'range': xlim, 'smoothing': smoothing}
     dfs.plot_multizone_mdfs(mzs, axs[:,0], '[o/fe]', colors, **mdf_kwargs)
-    dfs.plot_multizone_mdfs(apogee_sample, axs[:,1], 'O_FE', colors, **mdf_kwargs)
+    dfs.plot_multizone_mdfs(apogee_sample, axs[:,1], 'O_FE', colors, label='APOGEE', **mdf_kwargs)
     for ax in axs[:,0]:
         ax.set_ylim((0, None))
     fig.suptitle(mzs.name)
