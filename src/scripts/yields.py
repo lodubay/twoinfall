@@ -5,22 +5,18 @@ adopted in this paper.
 
 import pandas as pd
 import vice
-from multizone.src.yields import W24
 import paths
 
 def main():
-    ccsn_yields = []
-    snia_yields = []
-    elements = ['O', 'Mg', 'Si', 'Fe']
-    for el in elements:
-        ccsn_yields.append('\\num{%.2e}' % vice.yields.ccsne.settings[el])
-        snia_yields.append('\\num{%.2e}' % vice.yields.sneia.settings[el])
+    from multizone.src.yields import yZ1
+    yZ1_yields, yZ1_labels = make_column()
+    from multizone.src.yields import yZ3
+    yZ3_yields, yZ3_labels = make_column()
     df = pd.DataFrame({
-        'Element': elements,
-        '$y_{\\rm X}^{\\rm CC}$': ccsn_yields,
-        '$y_{\\rm X}^{\\rm Ia}$': snia_yields,
-    })
-    latex_table = df.to_latex(column_format='c|cc', index=False)
+        '$y/Z_\\odot=1$': yZ1_yields,
+        '$y/Z_\\odot=3$': yZ3_yields,
+    }, index=yZ1_labels)
+    latex_table = df.to_latex(column_format='c|cc', index=True)
     # Replace float 0s with int
     latex_table = latex_table.replace('0.00e+00', '0')
     # Replace \toprule, \midrule, \bottomrule with \hline
@@ -30,6 +26,18 @@ def main():
     # Write to output
     with open(paths.output / 'yields.tex', 'w') as f:
         f.write(latex_table)
+
+def make_column(elements = ['O', 'Fe']):
+    ccsn_yields = []
+    ccsn_labels = []
+    snia_yields = []
+    snia_labels = []
+    for el in elements:
+        ccsn_yields.append('\\num{%.2e}' % vice.yields.ccsne.settings[el])
+        ccsn_labels.append('$y_{\\rm %s}^{\\rm CC}$' % el)
+        snia_yields.append('\\num{%.2e}' % vice.yields.sneia.settings[el])
+        snia_labels.append('$y_{\\rm %s}^{\\rm Ia}$' % el)
+    return ccsn_yields + snia_yields, ccsn_labels + snia_labels
 
 if __name__ == '__main__':
     main()
