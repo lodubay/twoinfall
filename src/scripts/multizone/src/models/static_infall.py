@@ -20,6 +20,8 @@ class static_infall(constant):
     ----------
     radius : float
         The galactocentric radius in kpc of a given annulus in the model.
+    vgas : float [default: 0.0]
+        Radial gas velocity in kpc/Gyr. Positive for outward flow.
     dt : float [default : 0.01]
         The timestep size of the model in Gyr.
     dr : float [default : 0.1]
@@ -29,11 +31,11 @@ class static_infall(constant):
     in ``src/simulations/models/utils.py``.
     """
 
-    def __init__(self, radius, dt = 0.01, dr = 0.1, 
+    def __init__(self, radius, dt = 0.01, dr = 0.1, vgas = 0.,
                  mass_loading=vice.milkyway.default_mass_loading):
         super().__init__()
         area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
         tau_star = fiducial_sf_law(area)
         eta = mass_loading(radius)
-        self.amplitude *= normalize_ifrmode(self, gradient, tau_star, eta = eta,
-                                            dt = dt, dr = dr)
+        self.amplitude *= normalize_ifrmode(self, gradient, tau_star, radius, 
+                                            eta = eta, vgas = vgas, dt = dt, dr = dr)

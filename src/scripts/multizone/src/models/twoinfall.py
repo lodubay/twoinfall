@@ -32,6 +32,8 @@ class twoinfall(double_exponential):
         The timescale of the first exponential infall in Gyr.
     second_timescale : float [default: 10.0]
         The timescale of the second exponential infall in Gyr.
+    vgas : float [default: 0.0]
+        Radial gas velocity in kpc/Gyr. Positive for outward flow.
     dt : float [default : 0.01]
         The timestep size of the model in Gyr.
     dr : float [default : 0.1]
@@ -56,6 +58,7 @@ class twoinfall(double_exponential):
             onset = SECOND_ONSET, 
             first_timescale = FIRST_TIMESCALE, 
             second_timescale = SECOND_TIMESCALE,
+            vgas = 0.,
             dt = 0.01, 
             dr = 0.1
     ):
@@ -65,18 +68,18 @@ class twoinfall(double_exponential):
         # Calculate amplitude ratio
         self.ratio = self.ampratio(radius, thick_to_thin_ratio, 
                                    mass_loading = mass_loading, 
-                                   dr = dr, dt = dt)
+                                   vgas = vgas, dr = dr, dt = dt)
         # Normalize infall rate
         prefactor = self.normalize(radius, gradient, 
                                    mass_loading = mass_loading, 
-                                   dt = dt,  dr = dr)
+                                   vgas = vgas, dt = dt,  dr = dr)
         self.first.norm *= prefactor
         self.second.norm *= prefactor
 
 
     def ampratio(self, radius, thick_to_thin_ratio, 
                  mass_loading = vice.milkyway.default_mass_loading, 
-                 dt = 0.01, dr = 0.1, recycling = 0.4):
+                 vgas = 0., dt = 0.01, dr = 0.1, recycling = 0.4):
         r"""
         Calculate the ratio of the second infall amplitude to the first.
     
@@ -89,6 +92,8 @@ class twoinfall(double_exponential):
             function of radius in kpc.
         mass_loading : <function> [default: ``vice.milkyway.default_mass_loading``]
             The dimensionless mass-loading factor as a function of radius.
+        vgas : float [default: 0.0]
+            Radial gas velocity in kpc/Gyr. Positive for outward flow.
         dt : real number [default : 0.01]
             The timestep size in Gyr.
         dr : real number [default : 0.1]
@@ -105,7 +110,7 @@ class twoinfall(double_exponential):
         area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
         tau_star = twoinfall_sf_law(area, onset=self.onset)
         eta = mass_loading(radius)
-        times, sfh = integrate_infall(self, tau_star, eta, 
+        times, sfh = integrate_infall(self, tau_star, radius, eta=eta, vgas=vgas, 
                                       recycling=recycling, dt=dt)
         mstar_final = calculate_mstar(sfh, END_TIME, dt=dt, recycling=recycling)
         mstar_onset = calculate_mstar(sfh, self.onset, dt=dt, recycling=recycling)
@@ -115,7 +120,7 @@ class twoinfall(double_exponential):
     
     def normalize(self, radius, gradient, 
                   mass_loading = vice.milkyway.default_mass_loading, 
-                  dt = 0.01, dr = 0.1, recycling = 0.4):
+                  vgas = 0., dt = 0.01, dr = 0.1, recycling = 0.4):
         r"""
         Normalize the infall rate according to the desired surface density.
         
@@ -129,6 +134,8 @@ class twoinfall(double_exponential):
             Return value assumed to be unitless and unnormalized.
         mass_loading : <function> [default: ``vice.milkyway.default_mass_loading``]
             The dimensionless mass-loading factor as a function of radius.
+        vgas : float [default: 0.0]
+            Radial gas velocity in kpc/Gyr. Positive for outward flow.
         dt : real number [default : 0.01]
             The timestep size in Gyr.
         dr : real number [default : 0.1]
@@ -140,8 +147,9 @@ class twoinfall(double_exponential):
         area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
         tau_star = twoinfall_sf_law(area, onset=self.onset)
         eta = mass_loading(radius)
-        return normalize_ifrmode(self, gradient, tau_star, eta = eta,
-                                 dt = dt, dr = dr, recycling = recycling)
+        return normalize_ifrmode(self, gradient, tau_star, radius, 
+                                 eta = eta, vgas = vgas, dt = dt, dr = dr, 
+                                 recycling = recycling)
 
 
 def calculate_mstar(sfh, time, dt=0.01, recycling=0.4):

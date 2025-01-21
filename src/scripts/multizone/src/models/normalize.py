@@ -3,7 +3,7 @@ This file implements the normalization calculation in Appendix B of
 Johnson et al. (2021).
 """
 
-from ..._globals import MAX_SF_RADIUS, END_TIME, M_STAR_MW
+from ..._globals import MAX_SF_RADIUS, END_TIME, M_STAR_MW, GAS_DISK_SCALE_RADIUS
 import vice
 import math as m
 
@@ -61,8 +61,9 @@ def normalize(time_dependence, radial_gradient, dt = 0.01, dr = 0.1,
     return M_STAR_MW / ((1 - recycling) * radial_integral * time_integral)
 
 
-def normalize_ifrmode(time_dependence, radial_gradient, tau_star, eta=0.,
-                      Mg0=0, dt = 0.01, dr = 0.1, recycling = 0.4):
+def normalize_ifrmode(time_dependence, radial_gradient, tau_star, radius, 
+                      eta=0., vgas=0., Mg0=0, dt = 0.01, dr = 0.1, 
+                      recycling = 0.4):
     r"""
     Wrapper for ``normalize`` for models in infall mode.
     
@@ -80,6 +81,12 @@ def normalize_ifrmode(time_dependence, radial_gradient, tau_star, eta=0.,
         The star formation efficiency timescale. Accepts two parameters: 
         time in Gyr, and gas mass [Msun] or surface density [Msun kpc^-2].
         Returns a value with units of Gyr.
+    radius : float
+        The galactocentric radius in kpc to evaluate the normalization at.
+    eta : float [default: 0.0]
+        Dimensionless mass-loading factor.
+    vgas : float [default: 0.0]
+        Radial gas velocity in kpc/Gyr. Positive for outward flow.
     Mg0 : float [default: 0]
         Initial gas mass in Solar masses.
     dt : real number [default : 0.01]
@@ -98,14 +105,14 @@ def normalize_ifrmode(time_dependence, radial_gradient, tau_star, eta=0.,
         the specified radial gradient is produced.
         
     """
-    times, sfh = integrate_infall(time_dependence, tau_star, eta, 
-                                  recycling=recycling, dt=dt, Mg0=Mg0)
+    times, sfh = integrate_infall(time_dependence, tau_star, radius, eta=eta, 
+                                  vgas=vgas, recycling=recycling, dt=dt, Mg0=Mg0)
     return normalize(sfh, radial_gradient, dt = dt, dr = dr, 
                      recycling = recycling)
 
 
-def integrate_infall(time_dependence, tau_star, eta=0., recycling=0.4, dt=0.01,
-                     Mg0=0):
+def integrate_infall(time_dependence, tau_star, radius, eta=0., vgas=0., 
+                     recycling=0.4, dt=0.01, Mg0=0):
     r"""
     Calculate the star formation history from a prescribed infall rate history.
     
@@ -116,8 +123,12 @@ def integrate_infall(time_dependence, tau_star, eta=0., recycling=0.4, dt=0.01,
     tau_star : <function>
         The star formation efficiency timescale. Accepts two parameters: 
         time in Gyr, and gas mass [Msun] or surface density [Msun kpc^-2].
-    eta : float
+    radius : float
+        The galactocentric radius in kpc to integrate the infall at.
+    eta : float [default: 0.0]
         Dimensionless mass-loading factor.
+    vgas : float [default: 0.0]
+        Radial gas velocity in kpc/Gyr. Positive for outward flow.
     recycling : float [default: 0.4]
         Dimensionless recycling parameter.
     dt : float [default: 0.01]
@@ -141,7 +152,9 @@ def integrate_infall(time_dependence, tau_star, eta=0., recycling=0.4, dt=0.01,
         sfr = mgas / tau_star(time, mgas) # Msun / Gyr
         sfh.append(1.e-9 * sfr)
         mgas += time_dependence(time) * dt * 1.e9 # yr-Gyr conversion
-        mgas -= sfr * dt * (1 + eta - recycling)
+        # Radial gas flow coefficient
+        mu = -1 * tau_star(time, mgas) * vgas * (1 / radius - 1 / GAS_DISK_SCALE_RADIUS)
+        mgas -= sfr * dt * (1 + eta - recycling - mu)
         times.append(time)
         time += dt
     # Interpolate the resulting list

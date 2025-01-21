@@ -173,6 +173,8 @@ class diskmodel(vice.milkyway):
             for zone in self.zones: zone.Mg0 = 0.
             # specify mass-loading factor for infall mode normalization
             evol_kwargs["mass_loading"] = self.mass_loading
+            if radial_gas_velocity:
+                evol_kwargs["vgas"] = radial_gas_velocity * _KPC_PER_KM_ * _SECONDS_PER_GYR_
         else:
             self.mode = "sfr"
         # Star formation history
