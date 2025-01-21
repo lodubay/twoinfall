@@ -64,15 +64,7 @@
 \end{abstract}
 
 \section{Outline}
-
-\subsection{Outline of Key Plots}
-
-\begin{itemize}
-    \item The turn-over in [O/Fe] evolution due to the second infall epoch produces a peak in the stellar distribution at intermediate [O/Fe], which is not observed in APOGEE.
-    \item Attempts to fix the problem with the [O/Fe] distribution in the thin disk end up creating issues with other observables, such as the thick/thin disk surface density ratio, the SN Ia DTD, or the age-metallicity relation.
-    \item The equilibrium model, if accurate, places very strict limits on the two-infall model, moreso than for other models.
-    \item A short ($\sim200$ Myr) star formation hiatus early in the history of the disk is sufficient to produce a bimodal distribution of [O/Fe] without altering the gas infall prescription. This is distinct from the star formation hiatus produced by the two-infall model.
-\end{itemize}
+\input{outline.tex}
 
 \section{Introduction}
 
@@ -134,10 +126,10 @@ Motivated by constraints on the SFH by {\it Gaia}, \citet{spitoni_beyond_2023} p
         n               & 8         & \ref{sec:multizone-results} & Number of stellar populations formed per ring per time-step \\
         R_{\rm SF}      & 15.5 kpc  & \ref{sec:multizone-results} & Maximum radius of star formation \\
         M_{g,0}   & 0         & \ref{sec:sfh}     & Initial gas mass \\
-        \dot M_r    & continuous    & \ref{sec:multizone-results} & Recycling rate \citep[][Equation 2]{JohnsonWeinberg2020-Starbursts} \\
+        \dot M_r    & continuous    & \ref{sec:multizone-results} & Recycling rate \citep[][Equation 2]{johnson_impact_2020} \\
         \hline
         % DTD
-        R_{\rm Ia}(t)   & Equation \ref{eq:dtd-function}    & \ref{sec:dtd-models}  & delay-time distribution of Type Ia supernovae \\
+        R_{\rm Ia}(t)   & Equation \ref{eq:dtd-function}    & \ref{sec:dtd-models}  & Delay-time distribution of Type Ia supernovae \\
         t_D             & 40 Myr    & \ref{sec:dtd-models}  & Minimum SN Ia delay time \\
         N_{\rm Ia}/M_\star  & $2.2\times10^{-3}$ M$_\odot^{-1}$ & \ref{sec:yields}  & SNe Ia per unit mass of stars formed \citep{MaozMannucci2012-SNeIaReview} \\
         \hline
@@ -175,33 +167,31 @@ The population-averaged nucleosynthetic yields of CCSNe are still fairly uncerta
     \include{output/yields.tex}
 \end{table}
 
-\subsection{Outflows}
-\label{sec:outflows}
-
-
-
-\subsection{The SN Ia Delay-Time Distribution}
+\subsubsection{The SN Ia Delay-Time Distribution}
 \label{sec:dtd}
 
-\begin{figure*}
-    \centering
-    \includegraphics{figures/delay_time_distribution.pdf}
-    \caption{The model parameters are fixed at $\tau_1=1$ Gyr, $\tau_2=15$ Gyr, and $\tau_{\rm on}=3.2$ Gyr. Key takeaway: the size of the thin disk loop can be reduced by using an SN Ia DTD with more prompt events. However, this messes up the location of the high-alpha sequence.}
-    \label{fig:dtd}
-\end{figure*}
-
-Figure \ref{fig:dtd} illustrates the effect of the SN Ia DTD on the abundance predictions by the two-infall model. The fiducial plateau DTD produces the strongest high-$\alpha$ peak as well as the greatest separation between the two low-$\alpha$ peaks. The exponential DTD produces the most stars near Solar [O/Fe], but the low-$\alpha$ sequence is still distinctly bimodal. Finally, the power-law DTD shrinks the low-$\alpha$ loop such that there is only one low-$\alpha$ peak; however, this DTD produces high-$\alpha$ stars at metallicities much lower than observed, as discussed in \citet{dubay_galactic_2024}.
-
-We adopt the wide plateau DTD of \citet{dubay_galactic_2024} as our fiducial DTD.
-
+The SN Ia rate in units of ${\rm M}_\odot^{-1}\,{\rm yr}^{-1}$ is defined as
+\begin{equation}
+    R_{\rm Ia}(t) = 
+    \begin{cases}
+        \frac{N_{\rm Ia}}{M_\star}
+        \frac{f_{\rm Ia}(t)}{\int_{t_D}^{t_{\rm max}} f_{\rm Ia}(t') dt'}, & t \ge t_D \\
+        0 & t < t_D,
+    \end{cases}
+    \label{eq:dtd-function}
+\end{equation}
+where $t_D$ is the minimum SN Ia delay time, $t_{\rm max}$ is the lifetime of the disk, $N_{\rm Ia}/M_\star$ is the total number of SNe Ia per ${\rm M}_\odot$ of stars formed, and $f_{\rm Ia}$ is the un-normalized form of the DTD. Motivated by the results of \citet{dubay_galactic_2024}, we adopt a wide plateau DTD of the form
 \begin{equation}
     \label{eq:plateau-dtd}
-    f_{\rm Ia}^{\rm plat}(t) =
+    f_{\rm Ia}(t) =
     \begin{cases}
         1, & t < 1\,{\rm Gyr} \\
         (t/1\,{\rm Gyr})^{-1.1}, & t \ge 1\,{\rm Gyr}.
     \end{cases}
 \end{equation}
+
+\subsection{Outflows}
+\label{sec:outflows}
 
 \subsection{The Two-Infall Star Formation History}
 \label{sec:sfh}
@@ -284,7 +274,7 @@ We use estimated ages from \citet[][hereafter \citetalias{leung_variational_2023
 \begin{figure*}
     \centering
     \includegraphics{figures/onezone_params_low_yields.pdf}
-    \caption{Illustration of the effect of changing the infall history parameters on one-zone gas-phase abundances.}
+    \caption{Illustration of the effect of changing the infall history parameters on one-zone gas-phase abundances. For consistency, all models use the {\tt W24mod} yield set and assume $\eta=0.43$. (a) The first infall timescale $\tau_1$ adjusts the position and spread of the high-$\alpha$ sequence. (b) The second infall timescale $\tau_2$ adjusts the width of the low-$\alpha$ peak (separation of the low-$\alpha$ peaks) and the width of the MDF. (c) The onset time $t_{\rm on}$ has a minor effect on the position of the abundance distributions for values $t_{\rm on}\ge 3$ Gyr. While the ISM abundance at $t_{\rm on}$ varies widely for some parameter choices, it has a negligible impact on the stellar abundance distributions. Key takeaway: The second infall timescale $\tau_2$ is the most important parameter to fit the low-$\alpha$ sequence and MDF.}
     \label{fig:twoinfall-parameters-low-yields}
 \end{figure*}
 
@@ -298,7 +288,7 @@ We use estimated ages from \citet[][hereafter \citetalias{leung_variational_2023
 \begin{figure}
     \centering
     \includegraphics{figures/yield_outflow.pdf}
-    \caption{Key takeaway: the higher yields produce slower recent evolution of [O/H] and [Fe/H], but a greater rise in [O/Fe] after the second infall. In contrast, the lower yields lead to a more rapid evolution of [O/H] and [Fe/H], but a much smaller rise in [O/Fe].}
+    \caption{We manually adjusted the outflow mass-loading parameter $\eta$ and SN Ia yield $y ^{\rm Ia}_{\rm Fe}$ to match the data in the youngest age bin. Key takeaway: the higher yield sets produce slower recent evolution of [O/H] and [Fe/H], but a greater rise in [O/Fe] after the second infall. In contrast, the lower yield set leads to a more rapid evolution of [O/H] and [Fe/H], but a much smaller rise in [O/Fe] after the second infall.}
     \label{fig:onezone-dtd}
 \end{figure}
 
@@ -307,6 +297,15 @@ We use estimated ages from \citet[][hereafter \citetalias{leung_variational_2023
 
 \section{Discussion}
 \label{sec:discussion}
+
+\begin{figure*}
+    \centering
+    \includegraphics{figures/delay_time_distribution.pdf}
+    \caption{The model parameters are fixed at $\tau_1=1$ Gyr, $\tau_2=15$ Gyr, and $\tau_{\rm on}=3.2$ Gyr. Key takeaway: the size of the loop can be reduced by using an SN Ia DTD with more prompt events. However, this messes up the location of the high-alpha sequence.}
+    \label{fig:dtd}
+\end{figure*}
+
+Figure \ref{fig:dtd} illustrates the effect of the SN Ia DTD on the abundance predictions by the two-infall model. The fiducial plateau DTD produces the strongest high-$\alpha$ peak as well as the greatest separation between the two low-$\alpha$ peaks. The exponential DTD produces the most stars near Solar [O/Fe], but the low-$\alpha$ sequence is still distinctly bimodal. Finally, the power-law DTD shrinks the low-$\alpha$ loop such that there is only one low-$\alpha$ peak; however, this DTD produces high-$\alpha$ stars at metallicities much lower than observed, as discussed in \citet{dubay_galactic_2024}.
 
 \begin{figure}
     \centering
