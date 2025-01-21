@@ -91,7 +91,7 @@ def main(output_name, verbose=False, tracks=False, log_age=False,
     # Star formation history
     plot_sfh(output_name, style=style)
     # Stellar density gradient
-    plot_density_gradient(mzs, components=('twoinfall' in mzs.name))
+    plot_density_gradient(mzs, components=True)
     # Mass-loading factor
     plot_mass_loading(output_name)
     print('Done! Plots are located at %s' % str(parent_dir))
