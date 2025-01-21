@@ -6,6 +6,7 @@ model outputs and APOGEE data.
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
+from matplotlib.lines import Line2D
 import vice
 
 from multizone_stars import MultizoneStars
@@ -13,6 +14,8 @@ from utils import radial_gradient, weighted_quantile, get_bin_centers
 from colormaps import paultol
 from _globals import ONE_COLUMN_WIDTH, GALR_BINS, MAX_SF_RADIUS, ZONE_WIDTH
 import paths
+
+REFERENCE_GRADIENT = -0.07
 
 def main(style='paper'):
     plt.style.use(paths.styles / f'{style}.mplstyle')
@@ -22,11 +25,20 @@ def main(style='paper'):
                             tight_layout=True, sharex=True)
     
     output_names = [
-        'gaussian/outflow/no_gasflow/pristine/J21/twoinfall/diskmodel',
-        'gaussian/outflow/no_gasflow/pristine/W24/twoinfall/diskmodel'
+        'yields/W24mod/diskmodel',
+        'yields/J21/diskmodel',
+        'thin_disk_timescale/linear_7Gyr/diskmodel'
     ]
-    labels = ['J21', 'W24mod']
-    colors = [paultol.vibrant.colors[0], paultol.vibrant.colors[1]]
+    labels = [
+        r'Low yields, constant $\tau_2$', 
+        r'High yields, constant $\tau_2$', 
+        r'Low yields, variable $\tau_2$'
+    ]
+    colors = [
+        paultol.vibrant.colors[0], 
+        paultol.vibrant.colors[1],
+        paultol.vibrant.colors[2]
+    ]
     
     for i, output_name in enumerate(output_names):
         # Gas
@@ -34,7 +46,7 @@ def main(style='paper'):
         xarr = np.arange(0, MAX_SF_RADIUS, ZONE_WIDTH)
         axs[0].plot(xarr, radial_gradient(mout, '[o/h]'), 
                     color=colors[i], linestyle='-', 
-                    label='%s gas (present-day)' % labels[i])
+                    label=labels[i])
         axs[1].plot(xarr, radial_gradient(mout, '[fe/h]'), 
                     color=colors[i], linestyle='-')
         axs[2].plot(xarr, radial_gradient(mout, '[o/fe]'), 
@@ -53,14 +65,16 @@ def main(style='paper'):
                 weighted_quantile(subset.stars, '[o/fe]', 'mstar', quantile=0.5),
             ]
         axs[0].plot(get_bin_centers(GALR_BINS), median_abundances[0], 
-                    color=colors[i], marker='o', linestyle='none', 
-                    label='Stars (<100 Myr old)')
+                    color=colors[i], marker='o', linestyle='none')
         axs[1].plot(get_bin_centers(GALR_BINS), median_abundances[1], 
                     color=colors[i], marker='o', linestyle='none')
         axs[2].plot(get_bin_centers(GALR_BINS), median_abundances[2], 
                     color=colors[i], marker='o', linestyle='none')
     # Reference gradient and sun
-    axs[0].plot(xarr, -0.08 * (xarr - 8.0), 'k--', label='Reference (-0.08 dex/kpc)')
+    axs[0].plot(xarr, REFERENCE_GRADIENT * (xarr - 8.0), 'k--', 
+                label='Reference (%s dex/kpc)' % REFERENCE_GRADIENT)
+    axs[1].plot(xarr, REFERENCE_GRADIENT * (xarr - 8.0), 'k--', 
+                label='Reference (%s dex/kpc)' % REFERENCE_GRADIENT)
     axs[0].scatter([8], [0], marker='+', color='k')
     axs[1].scatter([8], [0], marker='+', color='k')
     axs[2].scatter([8], [0], marker='+', color='k')
@@ -80,8 +94,18 @@ def main(style='paper'):
     axs[2].set_ylabel('[O/Fe]')
     axs[2].yaxis.set_major_locator(MultipleLocator(0.1))
     axs[2].yaxis.set_minor_locator(MultipleLocator(0.02))
-    axs[2].set_xlabel('Radius [kpc]')    
+    axs[2].set_xlabel('Radius [kpc]')  
+
+    # Legends  
     axs[0].legend()
+    legend_elements = [
+        Line2D([0], [0], color='k', label='Present-day gas'),
+        Line2D([0], [0], marker='o', color='k', linestyle='none', 
+               label='Stars (<100 Myr old)'),
+        Line2D([0], [0], color='k', linestyle='--', 
+               label='Reference (%s dex/kpc)' % REFERENCE_GRADIENT)
+    ]
+    axs[1].legend(handles=legend_elements)
 
     # Save
     plt.savefig(paths.figures / 'abundance_gradients', dpi=300)
