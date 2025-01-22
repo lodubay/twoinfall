@@ -49,7 +49,7 @@ def plot_gas_abundance(ax, mzs, xcol, ycol, c='k', ls='-', lw=0.5, label=''):
 
 def setup_colorbar(fig, cmap=None, vmin=None, vmax=None, label='', 
                    width=0.02, pad=0.01, labelpad=0, lognorm=False, 
-                   bounds=[], extend='neither'):
+                   bounds=[], extend='neither', orientation='vertical'):
     """
     Configure a vertical colorbar with a specified colormap and normalization.
 
@@ -85,12 +85,20 @@ def setup_colorbar(fig, cmap=None, vmin=None, vmax=None, label='',
     """
     if type(cmap) == str:
         cmap = plt.get_cmap(cmap)
-    # Adjust subplots
-    plt.subplots_adjust(right=fig.subplotpars.right - (width + pad + 0.03))
-    # Define colorbar axis
-    height = fig.subplotpars.top - fig.subplotpars.bottom
-    cax = plt.axes([fig.subplotpars.right + pad, fig.subplotpars.bottom, 
-                    width, height])
+    if orientation == 'horizontal':
+        # Define colorbar axis
+        height = fig.subplotpars.right - fig.subplotpars.left
+        cax = plt.axes([fig.subplotpars.left, fig.subplotpars.bottom, 
+                        height, width])
+        # Adjust subplots
+        plt.subplots_adjust(bottom=fig.subplotpars.bottom + (width + pad + 0.03))
+    else:
+        # Adjust subplots
+        plt.subplots_adjust(right=fig.subplotpars.right - (width + pad + 0.03))
+        # Define colorbar axis
+        height = fig.subplotpars.top - fig.subplotpars.bottom
+        cax = plt.axes([fig.subplotpars.right + pad, fig.subplotpars.bottom, 
+                        width, height])
     # Set normalization
     if len(bounds) > 0:
         norm = BoundaryNorm(bounds, cmap.N, extend=extend)
@@ -98,7 +106,8 @@ def setup_colorbar(fig, cmap=None, vmin=None, vmax=None, label='',
         norm = LogNorm(vmin=vmin, vmax=vmax)
     else:
         norm = Normalize(vmin=vmin, vmax=vmax)
-    cbar = fig.colorbar(ScalarMappable(norm, cmap), cax)
+    cbar = fig.colorbar(ScalarMappable(norm, cmap), cax, 
+                        orientation=orientation)
     cbar.set_label(label, labelpad=labelpad)
     return cbar
 

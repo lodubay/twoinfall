@@ -37,31 +37,32 @@ def main(uncertainties=True, verbose=False, style='paper', cmap_name='winter_r')
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = plt.subplots(
         3, 2, sharex=True, sharey='row', 
-        figsize=(ONE_COLUMN_WIDTH, 1.5 * ONE_COLUMN_WIDTH),
+        figsize=(ONE_COLUMN_WIDTH, 1.67 * ONE_COLUMN_WIDTH),
         gridspec_kw={'hspace': 0, 'wspace': 0}
     )
     # Add colorbar
     birth_galr_bounds = [0, 2, 4, 6, 8, 10, 12, 14, MAX_SF_RADIUS]
     cbar = setup_colorbar(fig, cmap=cmap_name, bounds=birth_galr_bounds,
                           label=r'Birth $R_{\rm{gal}}$ [kpc]',
-                          width=0.04, pad=0.02, labelpad=2)
+                          width=0.02, pad=0.04, labelpad=2,
+                          orientation='horizontal')
 
     for j, yield_set in enumerate(YIELD_SETS):
-        axs[0,j].set_title(yield_set)
+        axs[0,j].set_title(f'{yield_set} yields')
         # Import VICE multizone outputs
         output_name = 'yields/%s/diskmodel' % yield_set
         mzs = MultizoneStars.from_output(output_name, verbose=verbose)
         mzs.region(galr_lim=(7, 9), absz_lim=(0, 2), inplace=True)
         # Model uncertainties
         if uncertainties:
-            mzs.model_uncertainty(apogee_sample.data, inplace=True)
+            mzs.model_uncertainty(solar_sample.data, inplace=True)
         for i, ycol in enumerate(['[o/h]', '[fe/h]', '[o/fe]']):
             mzs.scatter_plot(axs[i,j], 'age', ycol, color='galr_origin',
                              cmap=cmap_name, norm=cbar.norm)
             plot_gas_abundance(axs[i,j], mzs, 'lookback', ycol, ls='--', 
                                label='Gas abundance')
             plot_apogee_median_abundances(
-                axs[i,j], apogee_sample, vice_to_apogee_col(ycol), age_bins, 
+                axs[i,j], solar_sample, vice_to_apogee_col(ycol), age_bins, 
                 offset=-0.2, label='L23 medians'
             )
             plot_vice_median_abundances(
