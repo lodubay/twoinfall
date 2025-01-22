@@ -3,16 +3,16 @@ This script plots the outputs of one-zone models which illustrate the effect
 of the different two-infall model parameters - timescales and onset time.
 """
 
+import argparse
+
 import numpy as np
 import matplotlib.pyplot as plt
-from tqdm import tqdm
 import vice
 
-from multizone.src.yields import W24mod
+from multizone.src.yields import yZ1
 from utils import twoinfall_onezone
 from multizone.src import models
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH
-from colormaps import paultol
 from track_and_mdf import setup_axes, plot_vice_onezone
 import paths
 
@@ -29,36 +29,68 @@ LABELS = {
     'second_timescale': '\\tau_2',
     'onset': 't_{\\rm on}'
 }
-XLIM = (-1.8, 0.7)
-YLIM = (-0.16, 0.54)
+XLIM = (-1.9, 0.7)
+YLIM = (-0.18, 0.54)
 
-def main():
-    plt.style.use(paths.styles / 'paper.mplstyle')
-    plt.rcParams['axes.prop_cycle'] = plt.cycler('color', paultol.vibrant.colors)
+def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, fname='onezone_params', 
+         verbose=False, style='paper'):
+    # Set up figure and subfigures
+    plt.style.use(paths.styles / f'{style}.mplstyle')
     fig = plt.figure(figsize=(TWO_COLUMN_WIDTH, 0.36*TWO_COLUMN_WIDTH))
-    gs = fig.add_gridspec(7, 22, wspace=0.)
-    subfigs = [fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))]
-    print('\nFirst timescale')
-    axs0 = vary_param(subfigs[0], first_timescale=[0.1, 0.3, 1, 3],
-                      second_timescale=10, onset=3,
-                      xlim=XLIM, ylim=YLIM, label_index=3, verbose=True)
-    print('\nSecond timescale')
-    axs1 = vary_param(subfigs[1], second_timescale=[3, 5, 10, 30],
-                      first_timescale=1, onset=3,
-                      xlim=XLIM, ylim=YLIM, show_ylabel=False,
-                      label_index=0, verbose=True)
-    print('\nOnset time')
-    axs2 = vary_param(subfigs[2], onset=[1, 2, 3, 4, 5],
-                      first_timescale=1, second_timescale=10,
-                      xlim=XLIM, ylim=YLIM, show_ylabel=False,
-                      label_index=0, verbose=True)
-    plt.subplots_adjust(bottom=0.13, top=0.98, left=0.16, right=0.98, wspace=0.5)
-    fig.savefig(paths.figures / 'onezone_params', dpi=300)
+    gs = fig.add_gridspec(5, 16, wspace=0.)
+    subfigs = [
+        fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 6, 11), (6, 5, 5))
+    ]
+    # First panel: vary tau_1
+    if verbose:
+        print('\nFirst timescale')
+    axs0 = vary_param(
+        subfigs[0], 
+        first_timescale=[0.1, 0.3, 1, 3], 
+        second_timescale=fiducial['second_timescale'], 
+        onset=fiducial['onset'],
+        xlim=xlim, ylim=ylim, 
+        label_index=None, 
+        cmap_name='autumn', 
+        verbose=verbose
+    )
+    # Second panel: vary tau_2
+    if verbose:
+        print('\nSecond timescale')
+    axs1 = vary_param(
+        subfigs[1], 
+        second_timescale=[3, 5, 10, 30],
+        first_timescale=fiducial['first_timescale'], 
+        onset=fiducial['onset'],
+        xlim=xlim, ylim=ylim, 
+        show_ylabel=False,
+        label_index=0, 
+        cmap_name='summer', 
+        verbose=verbose
+    )
+    # Third panel: vary t_on
+    if verbose:
+        print('\nOnset time')
+    axs2 = vary_param(
+        subfigs[2], 
+        onset=[1, 2, 3, 4, 5],
+        first_timescale=fiducial['first_timescale'], 
+        second_timescale=fiducial['second_timescale'],
+        xlim=xlim, ylim=ylim, 
+        show_ylabel=False,
+        label_index=None, 
+        cmap_name='winter', 
+        verbose=verbose
+    )
+    plt.subplots_adjust(
+        bottom=0.13, top=0.98, left=0.16, right=0.98, wspace=0.5
+    )
+    fig.savefig(paths.figures / fname, dpi=300)
     plt.close()
 
 
-def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
-               label_index=0, verbose=False, cmap_name=None, **kwargs):
+def vary_param(subfig, first_timescale=1., second_timescale=10., onset=4.,
+               label_index=None, cmap_name=None, verbose=False, **kwargs):
     """
     Plot a series of onezone model outputs, varying one parameter of the 
     two-infall model while holding the others fixed.
@@ -66,6 +98,7 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
     Parameters
     ----------
     subfig : matplotlib.figure.Figure
+        Figure or subfigure in which to generate the axes.
     first_timescale : float, optional
         Timescale of the first infall in Gyr. If a list is passed, assumes
         this is the variable parameter and the others should be held fixed.
@@ -75,6 +108,13 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
     onset : float, optional
         Onset time of the second infall in Gyr. The default is 3.
     label_index : int, optional
+        Index of track to add time labels to. If None, no time labels are added.
+        The default is None.
+    cmap_name : str, optional
+        Name of colormap to draw line colors from. If None, line colors are
+        drawn from the default prop color cycle. The default is None.
+    verbose : bool, optional
+        Whether to print verbose output to terminal.
     **kwargs passed to track_and_mdf.setup_axes()
     """
     param_dict = {
@@ -114,10 +154,9 @@ def vary_param(subfig, first_timescale=0.1, second_timescale=3, onset=3,
         # Outflow mass-loading factor
         eta_func = models.equilibrium_mass_loading(
             equilibrium=0., 
-            # tau_sfh=param_dict['second_timescale'], 
+            tau_sfh=param_dict['second_timescale'], 
             tau_star=0. # for a consistent value of eta
         )
-        # eta_func = vice.milkyway.default_mass_loading
         eta = eta_func(RADIUS)
         # Run one-zone model
         name = output_name(*param_dict.values())
@@ -169,4 +208,22 @@ def output_name(tau1, tau2, onset, parent_dir=paths.data/'onezone'/'params'):
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        prog='onezone_params.py',
+        description='Plot the effect of different infall timescales and onset \
+time in one-zone models.'
+    )
+    parser.add_argument(
+        '-v', '--verbose', 
+        action='store_true',
+        help='Print verbose output to terminal.'
+    )
+    parser.add_argument(
+        '--style', 
+        type=str,
+        default='paper',
+        choices=['paper', 'poster', 'presentation'],
+        help='Plot style to use (default: paper).'
+    )
+    args = parser.parse_args()
+    main(**vars(args))
