@@ -62,12 +62,12 @@ def main(uncertainties=True, verbose=False, style='paper', cmap_name='winter_r')
                                label='Gas abundance')
             plot_apogee_median_abundances(
                 axs[i,j], apogee_sample, vice_to_apogee_col(ycol), age_bins, 
-                offset=0., label='L23 medians'
+                offset=-0.2, label='L23 medians'
             )
-            # plot_vice_median_abundances(
-            #     axs[i,j], mzs, ycol, age_bins, 
-            #     offset=0.2, label='Model medians'
-            # )
+            plot_vice_median_abundances(
+                axs[i,j], mzs, ycol, age_bins, 
+                offset=0.2, label='Model medians'
+            )
             if j == 0:
                 axs[i,j].set_ylabel(capitalize_abundance(ycol))
                 axs[i,j].yaxis.set_major_locator(
