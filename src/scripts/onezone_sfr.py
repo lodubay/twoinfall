@@ -8,8 +8,10 @@ import matplotlib.pyplot as plt
 
 import vice
 
-from multizone.src.yields import W24mod
+from multizone.src.yields import yZ1
+vice.yields.sneia.settings['fe'] *= 0.9
 from multizone.src.models import twoinfall_sf_law, equilibrium_mass_loading
+from multizone.src.models.mass_loading import no_outflows
 from track_and_mdf import setup_figure, plot_vice_onezone
 from apogee_sample import APOGEESample
 import paths
@@ -19,8 +21,8 @@ from colormaps import paultol
 
 RADIUS = 8.
 ZONE_WIDTH = 2.
-ONSET = 4.2
-FIRST_TIMESCALE = 0.3
+ONSET = 4.
+FIRST_TIMESCALE = 0.2
 SECOND_TIMESCALE = 10.
 FEH_LIM = (-1.4, 0.6)
 OFE_LIM = (-0.08, 0.48)
@@ -36,7 +38,7 @@ def main():
     # apogee_solar.plot_kde2D_contours(axs[0], "FE_H", "O_FE", c="k", lw=1,
     #                                  plot_kwargs={"zorder": 1})
     pcm = axs[0].hexbin(apogee_solar("FE_H"), apogee_solar("O_FE"),
-                  gridsize=50, bins="log",
+                  gridsize=50, #bins="log",
                   extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]],
                   cmap="Greys", linewidths=0.2)
     cax = axs[0].inset_axes([0.05, 0.05, 0.05, 0.8])
@@ -61,11 +63,12 @@ def main():
     # One-zone model parameters
     simtime = np.arange(0, 13.21, 0.01)
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
-    eta_func = equilibrium_mass_loading(
-        tau_star=0.,
-        # tau_sfh=SECOND_TIMESCALE, 
-        equilibrium=0.2
-    )
+    # eta_func = equilibrium_mass_loading(
+    #     tau_star=0.,
+    #     # tau_sfh=SECOND_TIMESCALE, 
+    #     equilibrium=0.2
+    # )
+    eta_func = no_outflows
     # eta_func = vice.milkyway.default_mass_loading
     ifr = twoinfall_onezone(
         RADIUS, 
