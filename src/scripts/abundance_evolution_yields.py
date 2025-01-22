@@ -7,7 +7,7 @@ import argparse
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+from matplotlib.ticker import MultipleLocator
 
 from age_abundance_grid import plot_apogee_median_abundances, \
     plot_vice_median_abundances, AXES_MAJOR_LOCATOR, AXES_MINOR_LOCATOR
@@ -18,7 +18,7 @@ from apogee_sample import APOGEESample
 from multizone_stars import MultizoneStars
 import paths
 
-OUTPUT_NAMES = ['yields/W24mod/diskmodel', 'yields/J21/diskmodel']
+YIELD_SETS = ['yZ1', 'yZ2']
 AXES_LIM = {
     '[o/h]': (-1.6, 0.6),
     '[fe/h]': (-1.6, 0.6),
@@ -46,8 +46,10 @@ def main(uncertainties=True, verbose=False, style='paper', cmap_name='winter_r')
                           label=r'Birth $R_{\rm{gal}}$ [kpc]',
                           width=0.04, pad=0.02, labelpad=2)
 
-    for j, output_name in enumerate(OUTPUT_NAMES):
+    for j, yield_set in enumerate(YIELD_SETS):
+        axs[0,j].set_title(yield_set)
         # Import VICE multizone outputs
+        output_name = 'yields/%s/diskmodel' % yield_set
         mzs = MultizoneStars.from_output(output_name, verbose=verbose)
         mzs.region(galr_lim=(7, 9), absz_lim=(0, 2), inplace=True)
         # Model uncertainties
@@ -78,8 +80,6 @@ def main(uncertainties=True, verbose=False, style='paper', cmap_name='winter_r')
 
 
     # Axes labels and formatting
-    axs[0,0].set_title('W24mod yields')
-    axs[0,1].set_title('J21 yields')
     axs[0,0].set_xlim(AXES_LIM['age'])
     for ax in axs[-1,:]:
         ax.set_xlabel('Age [Gyr]')
