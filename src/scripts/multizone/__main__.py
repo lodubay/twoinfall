@@ -156,7 +156,7 @@ an inward flow (default: 0).",
         help = "The outflow prescription as a function of Galactocentric radius.",
         type = str,
         choices = _OUTFLOW_PRESCRIPTIONS_,
-        default = "default"
+        default = "equilibrium"
     )
     parser.add_argument("--pre-enrichment",
         help = "The [X/H] abundance of the infalling gas at late times. \

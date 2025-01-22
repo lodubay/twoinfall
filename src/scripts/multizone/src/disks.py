@@ -119,7 +119,7 @@ class diskmodel(vice.milkyway):
     def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "twoinfall",
                  verbose = True, migration_mode = "gaussian", yields="yZ1",
                  delay = 0.04, RIa = "plateau", RIa_kwargs={}, seed=42, 
-                 radial_gas_velocity = 0., outflow_spec="default", 
+                 radial_gas_velocity = 0., outflow_spec="equilibrium", 
                  migration_time_dep=0.33, migration_radius_dep=0.61,
                  migration_strength=2.68, pre_enrichment=float("-inf"), 
                  pre_alpha_enhancement=0., **kwargs):
