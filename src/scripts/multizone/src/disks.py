@@ -96,6 +96,15 @@ class diskmodel(vice.milkyway):
         Random number generator seed.
     radial_gas_velocity : ``float`` [default: 0]
         Radial gas flow velocity in km/s. Positive denotes an outward gas flow.
+    outflow_spec : ``str`` [default: "default"]
+        Specification for the outflow prescription as a function of 
+        galactocentric radius.
+        Allowed values:
+
+        - "default"
+        - "equilibrium"
+        - "none"
+
     pre_enrichment : ``float`` [default: -inf]
         The [X/H] abundance of the infalling gas at late times. The infall
         metallicity starts at 0 and increases exponentially to the specified
@@ -113,7 +122,7 @@ class diskmodel(vice.milkyway):
     def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "twoinfall",
                  verbose = True, migration_mode = "gaussian", #yields="J21",
                  delay = 0.04, RIa = "plateau", RIa_kwargs={}, seed=42, 
-                 radial_gas_velocity = 0., outflows=True, 
+                 radial_gas_velocity = 0., outflow_spec="default", 
                  migration_time_dep=0.33, migration_radius_dep=0.61,
                  migration_strength=2.68, pre_enrichment=float("-inf"), 
                  pre_alpha_enhancement=0., **kwargs):
@@ -154,11 +163,11 @@ class diskmodel(vice.milkyway):
                     N = Nstars, mode = migration_mode, 
                     filename = analogdata_filename)
         # Outflow mass-loading factor (default inherits from vice.milkyway)
-        if not outflows:
-            self.mass_loading = models.mass_loading.no_outflows
-        elif "W24" in YIELDS:
-            # Mass-loading factor calibrated to produce equilibrium abundance
-            self.mass_loading = models.equilibrium_mass_loading()
+        self.mass_loading = {
+            "default" : vice.milkyway.default_mass_loading,
+            "equilibrium" : models.equilibrium_mass_loading(),
+            "none" : models.mass_loading.no_outflows
+        }[outflow_spec.lower()]
         # Set the SF mode - infall vs star formation rate
         evol_kwargs = {}
         if spec.lower() in [
