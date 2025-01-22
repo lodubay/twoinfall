@@ -15,6 +15,8 @@ elif YIELDS == "W24mod":
     from . import W24mod
 elif YIELDS == "yZ1":
     from . import yZ1
+elif YIELDS == "yZ2":
+    from . import yZ2
 elif YIELDS == "yZ3":
     from . import yZ3
 else:
