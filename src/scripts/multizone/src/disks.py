@@ -14,16 +14,13 @@ if vice.version[:2] < (1, 2):
     raise RuntimeError("""VICE version >= 1.2.0 is required to produce \
 Johnson et al. (2021) figures. Current: %s""" % (vice.__version__))
 else: pass
-from vice.toolkit import hydrodisk, J21_sf_law
-from .._globals import END_TIME, MAX_SF_RADIUS, ZONE_WIDTH, YIELDS
+from .._globals import END_TIME, MAX_SF_RADIUS
 from .migration import diskmigration, gaussian_migration, no_migration
 from . import models
 from . import dtds
-from . import yields
 from .models.utils import get_bin_number, interpolate, modified_exponential
 from .models.gradient import gradient
 import math as m
-import sys
 
 _SECONDS_PER_GYR_ = 3.1536e16
 _KPC_PER_KM_ = 3.24e-17
@@ -120,29 +117,37 @@ class diskmodel(vice.milkyway):
     """
 
     def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "twoinfall",
-                 verbose = True, migration_mode = "gaussian", #yields="J21",
+                 verbose = True, migration_mode = "gaussian", yields="yZ1",
                  delay = 0.04, RIa = "plateau", RIa_kwargs={}, seed=42, 
                  radial_gas_velocity = 0., outflow_spec="default", 
                  migration_time_dep=0.33, migration_radius_dep=0.61,
                  migration_strength=2.68, pre_enrichment=float("-inf"), 
                  pre_alpha_enhancement=0., **kwargs):
-        super().__init__(zone_width = zone_width, name = name,
-            verbose = verbose, **kwargs)
         # Set the yields
-        # if yields == "JW20":
-        #     from vice.yields.presets import JW20
-        # elif yields == "C22":
-        #     from .yields import C22
-        # elif yields == "F04":
-        #     from .yields import F04
-        # if yields == "W23":
+        if yields == "JW20":
+            from vice.yields.presets import JW20
+        elif yields == "C22":
+            from .yields import C22
+        elif yields == "F04":
+            from .yields import F04
+        elif yields == "W24":
             # Magg+ 2022 Solar abundances
-            # from .yields import W23
+            from .yields import W24
             # Magg22_ZX = 0.0225 # Z/X ratio
             # Y = vice.solar_z["he"]
             # self.Z_solar = Magg22_ZX * (1 - Y) / (1 + Magg22_ZX)
-        # else:
-        #     from .yields import J21
+        elif yields == "W24mod":
+            from .yields import W24mod
+        elif yields == "yZ1":
+            from .yields import yZ1
+        elif yields == "yZ2":
+            from .yields import yZ2
+        elif yields == "yZ3":
+            from .yields import yZ3
+        else:
+            from .yields import J21
+        super().__init__(zone_width = zone_width, name = name,
+            verbose = verbose, **kwargs)
         # Migration prescription
         if self.zone_width <= 0.2 and self.dt <= 0.02 and self.n_stars >= 6:
             Nstars = 3102519

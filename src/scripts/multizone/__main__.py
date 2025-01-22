@@ -40,7 +40,9 @@ _DELAY_MODELS_ = [
     "greggio05_single", 
     "greggio05_double"
 ]
-# _YIELD_SETS_ = ["F04", "JW20", "J21", "C22", "W23"]
+_YIELD_SETS_ = [
+    "F04", "JW20", "J21", "C22", "W24", "W24mod", "yZ1", "yZ2", "yZ3"
+]
 _OUTFLOW_PRESCRIPTIONS_ = [
     "default", # aka vice.milkyway.default_mass_loading
     "equilibrium",
@@ -133,12 +135,12 @@ underscores. (Default: \"fe_o\")""",
         type = float,
         default = _globals.ZONE_WIDTH
     )
-    # parser.add_argument("--yields",
-    #     help = "The nucleosynthetic yield set to use. (Default: 'J21')",
-    #     type = str,
-    #     choices = _YIELD_SETS_,
-    #     default = "J21"
-    # )
+    parser.add_argument("--yields",
+        help = "The nucleosynthetic yield set to use. (Default: 'yZ1')",
+        type = str,
+        choices = _YIELD_SETS_,
+        default = "yZ1"
+    )
     parser.add_argument("--seed", 
         help = "Seed for the random number generator.",
         type = int,
@@ -156,10 +158,6 @@ an inward flow (default: 0).",
         choices = _OUTFLOW_PRESCRIPTIONS_,
         default = "default"
     )
-    # parser.add_argument("--no-outflows",
-    #     help = "Disable mass-loaded outflows.",
-    #     action = "store_true"
-    # )
     parser.add_argument("--pre-enrichment",
         help = "The [X/H] abundance of the infalling gas at late times. \
 If -inf, infalling gas is always pristine. (Default: -inf).",
@@ -192,7 +190,6 @@ def model(args):
     # Save command-line arguments to a file
     with open(str(fullpath) + "_args.txt", "w") as f:
         f.write(args.name + "\n")
-        f.write("yields: %s\n" % _globals.YIELDS)
         f.writelines(["%s: %s\n" % (k, v) for k, v in vars(args).items() if k != "name"])
     # Parse RIa params into dict
     RIa_kwargs = {}
@@ -212,7 +209,7 @@ def model(args):
         RIa = args.RIa,
         RIa_kwargs = RIa_kwargs,
         delay = args.minimum_delay,
-        # yields = args.yields,
+        yields = args.yields,
         seed = args.seed,
         radial_gas_velocity = args.radial_gas_velocity,
         outflow_spec = args.outflows,
