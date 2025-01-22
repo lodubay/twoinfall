@@ -36,15 +36,17 @@ def main():
         'color', paultol.bright.colors)
 
     fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 3*ONE_COLUMN_WIDTH))
-    gs = fig.add_gridspec(3, 2, width_ratios=(1, 4), wspace=0., hspace=0.1)
+    gs = fig.add_gridspec(3, 2, width_ratios=(1, 4), wspace=0., hspace=0.)
     ax0 = fig.add_subplot(gs[0,0])
+    ax0.tick_params(axis='x', labelbottom=False)
     ax1 = fig.add_subplot(gs[0,1], sharey=ax0)
-    ax1.tick_params(axis='y', labelleft=False)
+    ax1.tick_params(axis='both', labelleft=False, labelbottom=False)
     ax2 = fig.add_subplot(gs[1,0], sharex=ax0)
+    ax2.tick_params(axis='x', labelbottom=False)
     ax3 = fig.add_subplot(gs[1,1], sharex=ax1, sharey=ax2)
-    ax3.tick_params(axis='y', labelleft=False)
-    ax4 = fig.add_subplot(gs[2,0], sharex=ax0)
-    ax5 = fig.add_subplot(gs[2,1], sharex=ax1, sharey=ax4)
+    ax3.tick_params(axis='both', labelleft=False, labelbottom=False)
+    ax4 = fig.add_subplot(gs[2,0], sharex=ax2)
+    ax5 = fig.add_subplot(gs[2,1], sharex=ax3, sharey=ax4)
     ax5.tick_params(axis='y', labelleft=False)
     axs = [[ax0, ax1], [ax2, ax3], [ax4, ax5]]
 
@@ -86,7 +88,6 @@ def main():
                                          smoothing=0.05)
     ax4.plot(ofe_df / max(ofe_df), get_bin_centers(bin_edges), 
              color=data_color, linestyle='-', marker=None)
-    
 
     params = ONEZONE_DEFAULTS
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
