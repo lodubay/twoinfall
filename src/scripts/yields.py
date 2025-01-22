@@ -19,7 +19,7 @@ def main():
         '$y/Z_\\odot=2$': yZ2_yields,
         '$y/Z_\\odot=3$': yZ3_yields,
     }, index=yZ1_labels)
-    latex_table = df.to_latex(column_format='c|cc', index=True)
+    latex_table = df.to_latex(column_format='c|ccc', index=True)
     # Replace float 0s with int
     latex_table = latex_table.replace('0.00e+00', '0')
     # Replace \toprule, \midrule, \bottomrule with \hline
