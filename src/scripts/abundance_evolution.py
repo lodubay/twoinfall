@@ -25,10 +25,10 @@ OUTPUT_NAMES = [
     'pre_enrichment/mh07_alpha00/diskmodel',
 ]
 LABELS = [
-    '(a) Fiducial',
-    r'(b) $y/Z_\odot=2$',
-    r'(c) $\sigma_{\rm RM8}=5.0$ kpc',
-    r'(d) ${\rm [X/H]}_{\rm CGM}=-0.7$',
+    '(a)\nFiducial',
+    '(b)\n' + r'$y/Z_\odot=2$',
+    '(c)\n' + r'$\sigma_{\rm RM8}=5.0$ kpc',
+    '(d)\n' + r'${\rm [X/H]}_{\rm CGM}=-0.7$',
 ]
 AXES_LIM = {
     '[o/h]': (-1.4, 0.4),
