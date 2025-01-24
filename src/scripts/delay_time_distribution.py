@@ -22,8 +22,8 @@ ZONE_WIDTH = 2.
 XLIM = (-1.4, 0.4)
 YLIM = (-0.14, 0.499)
 FIRST_INFALL = 1.
-SECOND_INFALL = 15.
-ONSET = 3.2
+SECOND_INFALL = 10.
+ONSET = 3.
 
 
 def main(style='paper'):
