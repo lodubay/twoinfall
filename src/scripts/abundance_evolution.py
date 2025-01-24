@@ -72,13 +72,13 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
                              cmap=cmap, norm=cbar.norm)
             plot_gas_abundance(axs[i,j], mzs, 'lookback', ycol, ls='--', 
                                label='Gas abundance')
-            plot_apogee_median_abundances(
-                axs[i,j], solar_sample, vice_to_apogee_col(ycol), age_bins, 
-                offset=-0.2, label='L23 medians'
-            )
             plot_vice_median_abundances(
                 axs[i,j], mzs, ycol, age_bins, 
                 offset=0.2, label='Model medians'
+            )
+            plot_apogee_median_abundances(
+                axs[i,j], solar_sample, vice_to_apogee_col(ycol), age_bins, 
+                offset=-0.2, label='L23 medians'
             )
             if j == 0:
                 axs[i,j].set_ylabel(capitalize_abundance(ycol))
