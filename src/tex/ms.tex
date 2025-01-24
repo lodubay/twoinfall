@@ -108,6 +108,10 @@ Motivated by constraints on the SFH by {\it Gaia}, \citet{spitoni_beyond_2023} p
 \section{Methods}
 \label{sec:methods}
 
+\todo{Copied from last paper.} We use the multi-zone GCE model tools in \vice developed by \citet{johnson_stellar_2021}. The basic setup of our models follows theirs. The disk is divided into concentric rings of width $\delta R_{\rm gal}=100$ pc. Stellar populations migrate radially under the prescription we describe in Appendix C, but each ring is otherwise described by a conventional one-zone GCE model with instantaneous mixing (see discussion in Section \ref{sec:onezone-results}). Following \citet{johnson_stellar_2021}, we do not implement radial gas flows \citep[e.g.,][]{LaceyFall1985-RadialGasFlows,BilitewskiSchonrich2012-RadialFlows}. Stellar populations are also assigned a distance from the midplane according to their age and final radius as described in Appendix C.
+
+\todo{Copied from last paper.} We run our models with a time-step size of $\Delta t=10$ Myr up to a maximum time of $t_{\rm max}=13.2$ Gyr. Following \citet{johnson_stellar_2021}, we set \vice to form $n=8$ stellar populations per ring per time-step, and we set a maximum star-formation radius of $R_{\rm SF} = 15.5$ kpc, such that $\dot\Sigma_\star=0$ for $R_{\rm gal}>R_{\rm SF}$. The model has a full radial extent of 20 kpc, allowing a purely migrated population to arise in the outer 4.5 kpc. We adopt continuous recycling, which accounts for the time-dependent return of mass from all previous generations of stars \citep[see Equation 2 from][]{JohnsonWeinberg2020-Starbursts}. We summarize these parameters in Table \ref{tab:multizone-parameters}.
+
 \begin{deluxetable*}{Cccl}
     \tablecaption{A summary of parameters and their fiducial values for our chemical evolution models (see discussion in Section \ref{sec:methods}). We omit some parameters that are unchanged from \citetalias{johnson_stellar_2021}; see their Table 1 for details.\label{tab:multizone-parameters}}
     \tablehead{
@@ -131,13 +135,6 @@ Motivated by constraints on the SFH by {\it Gaia}, \citet{spitoni_beyond_2023} p
         % DTD
         R_{\rm Ia}(t)   & Equation \ref{eq:dtd-function}    & \ref{sec:dtd-models}  & Delay-time distribution of Type Ia supernovae \\
         t_D             & 40 Myr    & \ref{sec:dtd-models}  & Minimum SN Ia delay time \\
-        N_{\rm Ia}/M_\star  & $2.2\times10^{-3}$ M$_\odot^{-1}$ & \ref{sec:yields}  & SNe Ia per unit mass of stars formed \citep{MaozMannucci2012-SNeIaReview} \\
-        \hline
-        % Nucleosynthetic yields
-        y_{\rm O}^{\rm CC}  & 0.015     & \ref{sec:yields}  & CCSN yield of O    \\
-        y_{\rm Fe}^{\rm CC} & 0.0012    & \ref{sec:yields}  & CCSN yield of Fe   \\
-        y_{\rm O}^{\rm Ia}  & 0         & \ref{sec:yields}  & SN Ia yield of O       \\
-        y_{\rm Fe}^{\rm Ia} & 0.00214   & \ref{sec:yields}  & SN Ia yield of Fe \\
         \hline
         % Star formation histories
         f_{\rm IO}(t|R_{\rm gal})   & Equation \ref{eq:insideout-sfh}   & \ref{sec:sfh} & Time-dependence of the inside-out SFR \\
@@ -158,7 +155,7 @@ Motivated by constraints on the SFH by {\it Gaia}, \citet{spitoni_beyond_2023} p
 \subsection{Nucleosynthetic Yields}
 \label{sec:yields}
 
-The population-averaged nucleosynthetic yields of CCSNe are still fairly uncertain. 
+The population-averaged nucleosynthetic yields of CCSNe are still fairly uncertain. This problem is exacerbated by the complexity of the CCSN explosion landscape \citep{sukhbold_core-collapse_2016}. Recently, \citet{weinberg_scale_2024} used a measurement of the mean Fe yield of CC SNe by \citet{rodriguez_iron_2023} and the observed \aFe plateau at low metallicity to infer population-averaged yields of $y^{\rm CC}/Z_\odot\approx1$ --- in other words, the scale of SN yields is similar to the Solar abundances.
 % This problem is exacerbated by the complexity of the CCSN explosion landscape \citep{sukhbold_core-collapse_2016}. We adopt the yields of \citet{weinberg_scale_2023}, who use a measurement of the mean Fe yield of CC SNe by \citet{rodriguez_iron_2023} and the observed \aFe plateau to infer population-averaged yields. The only difference here is that we assume that $20\%$ of Si in the Sun is produced by SNe Ia, which reduces the Si plateau to [Si/Fe]$_{\rm cc}=0.35$ and results in a non-zero value for $y_{\rm SI}^{\rm cc}$, unlike in \citet{weinberg_scale_2023}. Our yields are presented in Table \ref{tab:yields}.
 
 \begin{table}
@@ -168,10 +165,7 @@ The population-averaged nucleosynthetic yields of CCSNe are still fairly uncerta
     \include{output/yields.tex}
 \end{table}
 
-Adopting a mean Fe yield per SN Ia of $m_{\rm Fe}^{\rm Ia}=0.7$ M$_\odot$, the yield set $y/Z_\odot=1$ corresponds to an integrated SN Ia rate of $N_{\rm Ia}/M_\star=\num{1.79e-3}$ M$_\odot^{-1}$, and the higher set $y/Z_\odot=3$ corresponds to $N_{\rm Ia}/M_\star=\num{4.1e-3}$ M$_\odot^{-1}$.
-
-\subsubsection{The SN Ia Delay-Time Distribution}
-\label{sec:dtd}
+The final row of Table \ref{tab:yields} reports the integrated SN Ia rate $N_{\rm Ia}/M_\star$ from each yield set, assuming a mean Fe yield per SN Ia of $m_{\rm Fe}^{\rm Ia}=0.7$ M$_\odot$ \todo{(cite)}. We increased $y_{\rm Fe}^{\rm Ia}$ by a factor of 15--50\% relative to the Solar abundance in order to set the endpoint of our models at ${\rm [O/Fe]}\approx-0.05$ in the Solar neighborhood. Models which assume a lower value of $y_{\rm Fe}^{\rm Ia}$, in line with the value for $N_{\rm Ia}/M_\star=(1.3\pm0.1)\times10^{-3}\,{\rm M}_\odot$ found by \citet{maoz_star_2017}, are not able to reach solar [O/Fe] within the disk lifetime.
 
 The SN Ia rate in units of ${\rm M}_\odot^{-1}\,{\rm yr}^{-1}$ is defined as
 \begin{equation}
@@ -193,24 +187,56 @@ where $t_D$ is the minimum SN Ia delay time, $t_{\rm max}$ is the lifetime of th
     \end{cases}
 \end{equation}
 
+We discuss the implications of using a different DTD in Section \ref{sec:dtd-discussion}.
+
+\begin{figure}
+    \centering
+    \includegraphics{figures/yield_outflow.pdf}
+    \caption{We manually adjusted the outflow mass-loading parameter $\eta$ and SN Ia yield $y ^{\rm Ia}_{\rm Fe}$ to match the data in the youngest age bin. Key takeaway: the higher yield sets produce slower recent evolution of [O/H] and [Fe/H], but a greater rise in [O/Fe] after the second infall. In contrast, the lower yield set leads to a more rapid evolution of [O/H] and [Fe/H], but a much smaller rise in [O/Fe] after the second infall.}
+    \label{fig:onezone-dtd}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics{figures/onezone_sfr.pdf}
+    \caption{Key takeaway: a fundamental attribute of any two-infall model is a bump in the number of stars on the low-alpha sequence where the abundance track turns over. This is because the star formation rate is near its peak while the rate of chemical evolution has slowed considerably.}
+    \label{fig:onezone-sfr}
+\end{figure}
+
 \subsection{Outflows}
 \label{sec:outflows}
 
-\subsection{The Two-Infall Star Formation History}
+\subsection{The Gas Supply}
 \label{sec:sfh}
 
-\todo{Copied from last paper.} First proposed by \citet{chiappini_chemical_1997}, this model parameterizes the infall rate as two successive, exponentially declining bursts to explain the origin of the high- and low-$\alpha$ disk populations:
+The infall rate as a function of time and galactocentric radius can generically be described by
+\begin{equation}
+    \label{eq:infall-rate}
+    \dot\Sigma_{\rm in}(t,R_{\rm gal}) = A f_{\rm in}(t|R_{\rm gal}) g(R_{\rm gal}),
+\end{equation}
+where $g(R_{\rm gal})=\Sigma_\star(R_{\rm gal}) / \Sigma_\star(R_{\rm gal}=0)$ is the stellar density gradient, $f_{\rm in}$ is the infall rate over time, and $A$ is the normalization. Because we incorporate mass-loaded outflows, $A$ is not analytically solvable, so first we numerically integrate the star formation rate $\dot\Sigma_\star(t,R_{\rm gal})$ and then follow the procedure outlined in Appendix B of \citet{johnson_stellar_2021} to calculate $A$. The infall rate is normalized to produce a total disk stellar mass of $(5.17\pm1.11)\times 10^{10}\,{\rm M}_\odot$ \citep{licquia_improved_2015} and the stellar surface density gradient of \citet{bland-hawthorn_galaxy_2016}.
+
+The infall rate is described by two successive, exponentially declining bursts in time. The first infall component induces the formation of the thick disk, and the second component produces the thin disk. At a given galactocentric radius $R_{\rm gal}$, the un-normalized infall rate is
 \begin{equation}
     \label{eq:twoinfall-ifr}
-    f_{\rm TI}(t|R_{\rm gal}) = N_1(R_{\rm gal}) e^{-t/\tau_1} + N_2(R_{\rm gal}) e^{-(t-t_{\rm on})/\tau_2},
+    f_{\rm in}(t|R_{\rm gal}) = e^{-t/\tau_1} + f_{2/1}(R_{\rm gal}) e^{-(t-t_{\rm on})/\tau_2},
 \end{equation}
-% In this model, the first infall produces the thick disk and the second infall produces the thin disk. 
-where $\tau_1=1$ Gyr and $\tau_2=4$ Gyr are the exponential timescales of the first and second infall, respectively, and $t_{\rm on}=4$ Gyr is the onset time of the second infall \citep[based on typical values in, e.g.,][]{chiappini_chemical_1997,spitoni_galactic_2020,spitoni_apogee_2021}. $N_1$ and $N_2$ are the normalizations of the first and second infall, respectively, and their ratio $N_2/N_1$ is calculated so that the thick-to-thin-disk surface density ratio $f_\Sigma(R)=\Sigma_2(R)/\Sigma_1(R)$ is given by
+where $\tau_1$ and $\tau_2$ are the first and second infall timescales, respectively, $t_{\rm on}$ is the onset time of the second infall epoch, and $f_{2/1}$ is the ratio of the second infall amplitude to the first. Because we include outflows, the infall normalization is not analytically solvable. Instead, we numerically integrate the infall history and calculate $f_{2/1}$ so that the resulting stellar density profile follows a two-component disk, with the surface density ratio of the thick and thin disks given by
 \begin{equation}
-    f_\Sigma(R) = f_\Sigma(0) e^{R(1/R_2 - 1/R_1)}.
+    f_\Sigma(R) \equiv \frac{\Sigma_1(R)}{\Sigma_2(R)} = f_{\Sigma,0} e^{R(1/R_2 - 1/R_1)}.
 \end{equation}
-Following \citet{bland-hawthorn_galaxy_2016}, we adopt values for the thick disk scale radius $R_1=2.0$ kpc, thin disk scale radius $R_2=2.5$ kpc, and $f_\Sigma(0)=0.27$.
-We note that most previous studies which use the two-infall model \citep[e.g.][]{chiappini_chemical_1997,matteucci_new_2006,matteucci_effect_2009,spitoni_galactic_2019} do not consider gas outflows and instead adjust the nucleosynthetic yields to reproduce the solar abundance. We adopt radially-dependent outflows as in \citetalias{johnson_stellar_2021} (see their Section 2.4 for details) for all our SFHs, including two-infall. We discuss the implications of this difference in Section \ref{sec:two-infall-discussion}.
+We adopt a thick disk scale radius of $R_1=2.0$ kpc, a thin disk scale radius of $R_2=2.5$ kpc, and a central surface density ratio of $f_{\Sigma,0}=0.27$ \citet{bland-hawthorn_galaxy_2016}.
+
+\begin{figure*}
+    \centering
+    \includegraphics{figures/onezone_params.pdf}
+    \caption{Abundance tracks in the [O/Fe]--[Fe/H] plane for one-zone chemical evolution models which assume different values for the. Illustration of the effect of changing the infall history parameters on one-zone gas-phase abundances. For consistency, all models use the {\tt yZ1} yield set and assume $\eta=0.4$. (a) The first infall timescale $\tau_1$ adjusts the position and spread of the high-$\alpha$ sequence. (b) The second infall timescale $\tau_2$ adjusts the width of the low-$\alpha$ peak (separation of the low-$\alpha$ peaks) and the width of the MDF. (c) The onset time $t_{\rm on}$ has a minor effect on the position of the abundance distributions for values $t_{\rm on}\ge 3$ Gyr. While the ISM abundance at $t_{\rm on}$ varies widely for some parameter choices, it has a negligible impact on the stellar abundance distributions. Key takeaway: The second infall timescale $\tau_2$ is the most important parameter to fit the low-$\alpha$ sequence and MDF.}
+    \label{fig:twoinfall-parameters-low-yields}
+\end{figure*}
+
+\subsection{The Star Formation Law}
+
+We run {\tt VICE} in ``infall mode,'' where the gas infall density $\dot\Sigma_{\rm in}$ is specified along with the star formation effieciency (SFE) timescale $\tau_\star\equiv \Sigma_g / \dot\Sigma_\star$. The gas surface density $\Sigma_g$ and star formation rate $\dot\Sigma_\star$ are calculated from the two specified quantities assuming our star formation law, which is described below. The initial gas mass is zero.
 
 The star formation law follows a single power-law prescription: $\dot\Sigma_\star\propto\Sigma_g^N$, with $N=1.5$ following \citet{kennicutt_global_1998}. Previous work with this GCE model \citep[e.g.,][]{johnson_stellar_2021,dubay_galactic_2024} assumed a three-component power-law, but we adopt a simpler prescription to allow for a more direct comparison with previous two-infall studies \citep[e.g.,][]{spitoni_remind_2024}. In detail, we calculate the star formation efficiency (SFE) timescale $\tau_\star\equiv\Sigma_g/\dot\Sigma_\star$ according to the following:
 \begin{equation}
@@ -264,38 +290,7 @@ We restrict our sample to red giant branch and red clump stars with high-quality
 
 We use estimated ages from \citet[][hereafter \citetalias{leung_variational_2023}]{leung_variational_2023}, who use a variational encoder-decoder network which is trained on asteroseismic data to retrieve age estimates for APOGEE giants without contamination from age-abundance correlations. Importantly, the \citetalias{leung_variational_2023} ages do not plateau beyond $\sim10$ Gyr as they do in astroNN \citep{Mackereth2019-astroNN-Ages}. We use an age uncertainty cut of 40\% per the recommendations of \citetalias{leung_variational_2023}, which produces a total sample of \input{output/age_sample_size.txt}APOGEE stars with age estimates. We note that we use the full sample of \input{output/sample_size.txt}APOGEE stars unless we explicitly compare to age estimates. Table \ref{tab:sample} also presents the median uncertainties in the data for [Fe/H], [O/Fe], and age.
 
-\section{Exploring the Parameter Space in One-Zone Models}
-\label{sec:onezone-results}
-
-\begin{figure}
-    \centering
-    \includegraphics{figures/onezone_sfr.pdf}
-    \caption{Key takeaway: a fundamental attribute of any two-infall model is a bump in the number of stars on the low-alpha sequence where the abundance track turns over. This is because the star formation rate is near its peak while the rate of chemical evolution has slowed considerably.}
-    \label{fig:onezone-sfr}
-\end{figure}
-
-\begin{figure*}
-    \centering
-    \includegraphics{figures/onezone_params.pdf}
-    \caption{Illustration of the effect of changing the infall history parameters on one-zone gas-phase abundances. For consistency, all models use the {\tt yZ1} yield set and assume $\eta=0.4$. (a) The first infall timescale $\tau_1$ adjusts the position and spread of the high-$\alpha$ sequence. (b) The second infall timescale $\tau_2$ adjusts the width of the low-$\alpha$ peak (separation of the low-$\alpha$ peaks) and the width of the MDF. (c) The onset time $t_{\rm on}$ has a minor effect on the position of the abundance distributions for values $t_{\rm on}\ge 3$ Gyr. While the ISM abundance at $t_{\rm on}$ varies widely for some parameter choices, it has a negligible impact on the stellar abundance distributions. Key takeaway: The second infall timescale $\tau_2$ is the most important parameter to fit the low-$\alpha$ sequence and MDF.}
-    \label{fig:twoinfall-parameters-low-yields}
-\end{figure*}
-
-% \begin{figure*}
-%     \centering
-%     \includegraphics{figures/onezone_params_high_yields.pdf}
-%     \caption{Caption.}
-%     \label{fig:twoinfall-parameters-high-yields}
-% \end{figure*}
-
-\begin{figure}
-    \centering
-    \includegraphics{figures/yield_outflow.pdf}
-    \caption{We manually adjusted the outflow mass-loading parameter $\eta$ and SN Ia yield $y ^{\rm Ia}_{\rm Fe}$ to match the data in the youngest age bin. Key takeaway: the higher yield sets produce slower recent evolution of [O/H] and [Fe/H], but a greater rise in [O/Fe] after the second infall. In contrast, the lower yield set leads to a more rapid evolution of [O/H] and [Fe/H], but a much smaller rise in [O/Fe] after the second infall.}
-    \label{fig:onezone-dtd}
-\end{figure}
-
-\section{Multi-Zone Models}
+\section{Multi-Zone Model Results}
 \label{sec:multizone-results}
 
 \begin{figure}
@@ -307,6 +302,9 @@ We use estimated ages from \citet[][hereafter \citetalias{leung_variational_2023
 
 \section{Discussion}
 \label{sec:discussion}
+
+\subsection{The SN Ia Delay-Time Distribution}
+\label{sec:dtd-discussion}
 
 \begin{figure*}
     \centering
@@ -323,6 +321,9 @@ Figure \ref{fig:dtd} illustrates the effect of the SN Ia DTD on the abundance pr
     \caption{Caption.}
     \label{fig:onezone-sfe-hiatus}
 \end{figure}
+
+\subsection{Radial Gas Flows}
+\label{sec:radial-flows}
 
 \section{Conclusions}
 \label{sec:conclusions}
