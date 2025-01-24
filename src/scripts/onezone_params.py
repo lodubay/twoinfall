@@ -52,6 +52,7 @@ def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, fname='onezone_params',
         xlim=xlim, ylim=ylim, 
         label_index=None, 
         cmap_name='autumn', 
+        title='(a)',
         verbose=verbose
     )
     # Second panel: vary tau_2
@@ -66,6 +67,7 @@ def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, fname='onezone_params',
         show_ylabel=False,
         label_index=0, 
         cmap_name='summer', 
+        title='(b)',
         verbose=verbose
     )
     # Third panel: vary t_on
@@ -80,6 +82,7 @@ def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, fname='onezone_params',
         show_ylabel=False,
         label_index=None, 
         cmap_name='winter', 
+        title='(c)',
         verbose=verbose
     )
     plt.subplots_adjust(
@@ -135,7 +138,7 @@ def vary_param(subfig, first_timescale=1., second_timescale=10., onset=4.,
             other_params += '$%s=%s$ Gyr\n' % (LABELS[param], value)
     if var is None:
         raise ValueError('Please specify one variable parameter.')
-    axs = setup_axes(subfig, title='', xlabel='[Fe/H]', **kwargs)
+    axs = setup_axes(subfig, xlabel='[Fe/H]', **kwargs)
 
     dt = ONEZONE_DEFAULTS['dt']
     simtime = np.arange(0, END_TIME + dt, dt)
