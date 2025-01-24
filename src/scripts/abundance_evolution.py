@@ -25,10 +25,10 @@ OUTPUT_NAMES = [
     'pre_enrichment/mh07_alpha00/diskmodel',
 ]
 LABELS = [
-    'Fiducial',
-    r'$y/Z_\odot=2$',
-    r'$\sigma_{\rm RM8}=5.0$ kpc',
-    r'${\rm [X/H]}_{\rm CGM}=-0.7$',
+    '(a) Fiducial',
+    r'(b) $y/Z_\odot=2$',
+    r'(c) $\sigma_{\rm RM8}=5.0$ kpc',
+    r'(d) ${\rm [X/H]}_{\rm CGM}=-0.7$',
 ]
 AXES_LIM = {
     '[o/h]': (-1.4, 0.4),
@@ -36,12 +36,14 @@ AXES_LIM = {
     '[o/fe]': (-0.15, 0.5),
     'age': (-1, 14.99)
 }
+GALR_LIM = (7, 9)
+ABSZ_LIM = (0, 0.5)
 
 
 def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
     # Import APOGEE and astroNN data
     apogee_sample = APOGEESample.load()
-    solar_sample = apogee_sample.region(galr_lim=(7, 9), absz_lim=(0, 2))
+    solar_sample = apogee_sample.region(galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
     age_bins = np.arange(0, END_TIME + 2, 2)
 
     # Set up figure
@@ -61,7 +63,7 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
         axs[0,j].set_title(LABELS[j])
         # Import VICE multizone outputs
         mzs = MultizoneStars.from_output(output_name, verbose=verbose)
-        mzs.region(galr_lim=(7, 9), absz_lim=(0, 2), inplace=True)
+        mzs.region(galr_lim=GALR_LIM, absz_lim=ABSZ_LIM, inplace=True)
         # Model uncertainties
         if uncertainties:
             mzs.model_uncertainty(solar_sample.data, inplace=True)
