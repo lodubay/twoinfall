@@ -27,14 +27,51 @@ AXES_LIM = {
 }
 
 
-def main(uncertainties=True, verbose=False, style='paper', cmap_name='winter_r'):
+def main(verbose=False, style='paper', cmap='winter_r'):
+    plt.style.use(paths.styles / f'{style}.mplstyle')
+    fig, axs = plot_abundance_evolution_comparison(
+        [f'yields/{yield_set}/diskmodel' for yield_set in YIELD_SETS],
+        labels=[f'{yield_set} yields' for yield_set in YIELD_SETS],
+        uncertainties=True, verbose=verbose, cmap_name=cmap
+    )
+    
+    fig.savefig(paths.figures / 'abundance_evolution_yields')
+    plt.close()
+
+
+def plot_abundance_evolution_comparison(
+        output_names, 
+        labels=[], 
+        uncertainties=True, 
+        verbose=False, 
+        cmap_name='winter_r'
+    ):
+    """
+    Compare the abundance evolution of two multi-zone models.
+    
+    Parameters
+    ----------
+    output_names : list of strings of length 2
+        The two output names of VICE multi-zone models to compare.
+    labels : list of strings of length 2, optional
+        The column labels for each output. If an empty list, a part of
+        the output name is used. The default is [].
+    uncertainties : bool, optional
+        Whether to forward-model observational uncertainties in the model
+        outputs. The default is True.
+    verbose : bool, optional
+        Whether to print verbose output to terminal. The default is False.
+    cmap_name : str, optional
+        Name of colormap to color the points by birth radius. The default is
+        'winter_r'.
+    """
+    assert len(output_names) == 2
     # Import APOGEE and astroNN data
     apogee_sample = APOGEESample.load()
     solar_sample = apogee_sample.region(galr_lim=(7, 9), absz_lim=(0, 2))
     age_bins = np.arange(0, END_TIME + 2, 2)
 
     # Set up figure
-    plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = plt.subplots(
         3, 2, sharex=True, sharey='row', 
         figsize=(ONE_COLUMN_WIDTH, 1.67 * ONE_COLUMN_WIDTH),
@@ -47,10 +84,12 @@ def main(uncertainties=True, verbose=False, style='paper', cmap_name='winter_r')
                           width=0.02, pad=0.04, labelpad=2,
                           orientation='horizontal')
 
-    for j, yield_set in enumerate(YIELD_SETS):
-        axs[0,j].set_title(f'{yield_set} yields')
+    for j, output_name in enumerate(output_names):
+        if len(labels) == len(output_names):
+            axs[0,j].set_title(labels[j])
+        else:
+            axs[0,j].set_title(output_name.split('/')[1])
         # Import VICE multizone outputs
-        output_name = 'yields/%s/diskmodel' % yield_set
         mzs = MultizoneStars.from_output(output_name, verbose=verbose)
         mzs.region(galr_lim=(7, 9), absz_lim=(0, 2), inplace=True)
         # Model uncertainties
@@ -79,7 +118,6 @@ def main(uncertainties=True, verbose=False, style='paper', cmap_name='winter_r')
                 )
                 axs[i,j].set_ylim(AXES_LIM[ycol])
 
-
     # Axes labels and formatting
     axs[0,0].set_xlim(AXES_LIM['age'])
     for ax in axs[-1,:]:
@@ -88,10 +126,34 @@ def main(uncertainties=True, verbose=False, style='paper', cmap_name='winter_r')
     axs[0,0].xaxis.set_minor_locator(MultipleLocator(1))
     axs[0,-1].legend(loc='lower left', frameon=False, handletextpad=0.1,
                      borderpad=0.2, handlelength=1.5)
-    
-    fig.savefig(paths.figures / 'abundance_evolution_yields')
-    plt.close()
+
+    return fig, axs
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        prog='abundance_evolution_yields.py',
+        description='Compare age-abundance relations between multi-zone \
+outputs with different yield sets and APOGEE data.'
+    )
+    parser.add_argument(
+        '-v', '--verbose', 
+        action='store_true',
+        help='Print verbose output to terminal.'
+    )
+    parser.add_argument(
+        '--style', 
+        metavar='STYLE', 
+        type=str,
+        default='paper',
+        help='Plot style to use (default: paper).'
+    )
+    parser.add_argument(
+        '--cmap', 
+        metavar='COLORMAP', 
+        type=str,
+        default='winter_r',
+        help='Name of colormap for color-coding model output (default: winter_r).'
+    )
+    args = parser.parse_args()
+    main(**vars(args))
