@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 import vice
 
-from multizone.src.yields import J21
+from multizone.src.yields import yZ2
 from multizone.src import dtds
-from multizone.src.models import twoinfall_sf_law
+from multizone.src.models import twoinfall_sf_law, equilibrium_mass_loading
 from track_and_mdf import setup_axes, plot_vice_onezone
 from utils import twoinfall_onezone
 from colormaps import paultol
@@ -19,7 +19,7 @@ import paths
 
 RADIUS = 8.
 ZONE_WIDTH = 2.
-XLIM = (-1.3, 0.4)
+XLIM = (-1.4, 0.4)
 YLIM = (-0.14, 0.499)
 FIRST_INFALL = 1.
 SECOND_INFALL = 15.
@@ -95,7 +95,7 @@ def plot_onezone(fig, dtd_list, labels=[]):
         run_model(dtd)
         plot_vice_onezone(str(output_dir / dtd.name), 
                           fig=fig, axs=axs, label=labels[i],
-                          marker_labels=(i == 1),
+                          marker_labels=(i == 0),
                           markers=[0.3, 1, 3, 10],
                           ls=linestyles[i])
     if not missing_labels:
@@ -104,12 +104,14 @@ def plot_onezone(fig, dtd_list, labels=[]):
 
 
 def run_model(dtd, output_dir=paths.data / 'onezone' / 'dtd'):
+    eta_func = equilibrium_mass_loading(equilibrium=0., tau_star=0.)
     ifr = twoinfall_onezone(
         RADIUS, 
         first_timescale=FIRST_INFALL,
         second_timescale=SECOND_INFALL, 
         onset=ONSET,
-        dr=ZONE_WIDTH
+        dr=ZONE_WIDTH,
+        mass_loading=eta_func,
     )
     # Run one-zone model
     fullname = str(output_dir / dtd.name)
@@ -118,6 +120,7 @@ def run_model(dtd, output_dir=paths.data / 'onezone' / 'dtd'):
                          func=ifr,
                          mode='ifr',
                          **ONEZONE_DEFAULTS)
+    sz.eta = eta_func(RADIUS)
     sz.tau_star = twoinfall_sf_law(area, onset=ONSET)
     sz.RIa = dtd
     simtime = np.arange(0, END_TIME + DT, DT)
