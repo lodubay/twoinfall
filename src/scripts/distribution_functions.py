@@ -13,7 +13,7 @@ from _globals import ABSZ_BINS, GALR_BINS
 
 def plot_multizone_mdfs(mzs, axs, col='[fe/h]', colors=[], label='VICE', 
                         galr_bins=GALR_BINS, absz_bins=ABSZ_BINS, 
-                        titlepad=18, **kwargs):
+                        titlepad=None, **kwargs):
     """
     Plot [Fe/H] MDFs from a VICE multizone run.
     
@@ -45,7 +45,8 @@ def plot_multizone_mdfs(mzs, axs, col='[fe/h]', colors=[], label='VICE',
                 mdf, bin_edges = subset.mdf(col, **kwargs)
                 ax.plot(get_bin_centers(bin_edges), mdf, 
                         color=colors[j], linewidth=1)
-        axs[0].set_title(label, va='top', pad=titlepad)
+        # need y=0.0000001 to allow negative padding
+        axs[0].set_title(label, pad=titlepad, y=1.0000001)
     else:
         raise ValueError('Mismatch between number of axes and |z|-height bins.')
     

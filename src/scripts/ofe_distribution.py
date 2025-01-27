@@ -39,7 +39,7 @@ def plot_ofe_distribution(mzs, apogee_sample, nbins=NBINS, xlim=OFE_LIM,
     for ax in axs[:,0]:
         ax.set_ylim((0, None))
     fig.suptitle(mzs.name)
-    plt.subplots_adjust(top=0.85)
+    plt.subplots_adjust(top=0.88)
     # Save
     fname = mzs.name.replace('diskmodel', 'ofe_df.png')
     fullpath = paths.extra / fname
