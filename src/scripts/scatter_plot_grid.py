@@ -168,12 +168,13 @@ def setup_axes(galr_bins=GALR_BINS[:-1], absz_bins=ABSZ_BINS,
         ax.set_xlabel(xlabel, labelpad=xlabelpad)
     for i, ax in enumerate(axs[:,0]):
         ax.set_ylabel(ylabel, labelpad=ylabelpad)
-    for i, ax in enumerate(axs[:, row_label_col]):
-        # Label bins in z-height
-        absz_lim = (absz_bins[-(i+2)], absz_bins[-(i+1)])
-        ax.text(row_label_pos[0], row_label_pos[1], 
-                r'$%s\leq |z| < %s$ kpc' % absz_lim,
-                transform=ax.transAxes)
+    if row_label_col is not None:
+        for i, ax in enumerate(axs[:, row_label_col]):
+            # Label bins in z-height
+            absz_lim = (absz_bins[-(i+2)], absz_bins[-(i+1)])
+            ax.text(row_label_pos[0], row_label_pos[1], 
+                    r'$%s\leq |z| < %s$ kpc' % absz_lim,
+                    transform=ax.transAxes)
     # Label bins in Rgal
     for i, ax in enumerate(axs[0]):
         galr_lim = (galr_bins[i], galr_bins[i+1])
