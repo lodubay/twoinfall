@@ -209,19 +209,21 @@ We discuss the implications of using a different DTD in Section \ref{sec:dtd-dis
 \subsection{The Gas Supply}
 \label{sec:sfh}
 
+We run {\tt VICE} in ``infall mode,'' where we specify the gas infall density $\dot\Sigma_{\rm in}$ and the star formation effieciency (SFE) timescale $\tau_\star\equiv \Sigma_g / \dot\Sigma_\star$. The gas surface density $\Sigma_g$ and star formation rate $\dot\Sigma_\star$ are calculated from the two specified quantities according to our star formation law, which is described in Section \ref{sec:sf-law}, and assuming zero initial gas mass in all zones.
+
 The infall rate as a function of time and galactocentric radius can generically be described by
 \begin{equation}
     \label{eq:infall-rate}
     \dot\Sigma_{\rm in}(t,R_{\rm gal}) = A f_{\rm in}(t|R_{\rm gal}) g(R_{\rm gal}),
 \end{equation}
-where $g(R_{\rm gal})=\Sigma_\star(R_{\rm gal}) / \Sigma_\star(R_{\rm gal}=0)$ is the stellar density gradient, $f_{\rm in}$ is the infall rate over time, and $A$ is the normalization. Because we incorporate mass-loaded outflows, $A$ is not analytically solvable, so first we numerically integrate the star formation rate $\dot\Sigma_\star(t,R_{\rm gal})$ and then follow the procedure outlined in Appendix B of \citet{johnson_stellar_2021} to calculate $A$. The infall rate is normalized to produce a total disk stellar mass of $(5.17\pm1.11)\times 10^{10}\,{\rm M}_\odot$ \citep{licquia_improved_2015} and the stellar surface density gradient of \citet{bland-hawthorn_galaxy_2016}.
+where $g(R_{\rm gal})=\Sigma_\star(R_{\rm gal}) / \Sigma_\star(R_{\rm gal}=0)$ is the stellar density gradient, $f_{\rm in}$ is the infall rate over time, and $A$ is the normalization. Because we incorporate mass-loaded outflows, $A$ is not analytically solvable, so first we numerically integrate the star formation rate $\dot\Sigma_\star(t,R_{\rm gal})$ and then follow the procedure outlined in Appendix B of \citet{johnson_stellar_2021} to calculate $A$. The infall rate is normalized to produce a total disk stellar mass of $(5.17\pm1.11)\times 10^{10}\,{\rm M}_\odot$ \citep{licquia_improved_2015} and to match the stellar surface density gradient of \citet{bland-hawthorn_galaxy_2016}.
 
 The infall rate is described by two successive, exponentially declining bursts in time. The first infall component induces the formation of the thick disk, and the second component produces the thin disk. At a given galactocentric radius $R_{\rm gal}$, the un-normalized infall rate is
 \begin{equation}
     \label{eq:twoinfall-ifr}
     f_{\rm in}(t|R_{\rm gal}) = e^{-t/\tau_1} + f_{2/1}(R_{\rm gal}) e^{-(t-t_{\rm on})/\tau_2},
 \end{equation}
-where $\tau_1$ and $\tau_2$ are the first and second infall timescales, respectively, $t_{\rm on}$ is the onset time of the second infall epoch, and $f_{2/1}$ is the ratio of the second infall amplitude to the first. Because we include outflows, the infall normalization is not analytically solvable. Instead, we numerically integrate the infall history and calculate $f_{2/1}$ so that the resulting stellar density profile follows a two-component disk, with the surface density ratio of the thick and thin disks given by
+where $\tau_1$ and $\tau_2$ are the first and second infall timescales, respectively, $t_{\rm on}$ is the onset time of the second infall epoch, and $f_{2/1}$ is the ratio of the second infall amplitude to the first. We calculate $f_{2/1}$ for each zone such that the resulting stellar density profile follows a two-component disk, with the surface density ratio of the thick and thin disks given by
 \begin{equation}
     f_\Sigma(R) \equiv \frac{\Sigma_1(R)}{\Sigma_2(R)} = f_{\Sigma,0} e^{R(1/R_2 - 1/R_1)}.
 \end{equation}
@@ -235,8 +237,7 @@ We adopt a thick disk scale radius of $R_1=2.0$ kpc, a thin disk scale radius of
 \end{figure*}
 
 \subsection{The Star Formation Law}
-
-We run {\tt VICE} in ``infall mode,'' where the gas infall density $\dot\Sigma_{\rm in}$ is specified along with the star formation effieciency (SFE) timescale $\tau_\star\equiv \Sigma_g / \dot\Sigma_\star$. The gas surface density $\Sigma_g$ and star formation rate $\dot\Sigma_\star$ are calculated from the two specified quantities assuming our star formation law, which is described below. The initial gas mass is zero.
+\label{sec:sf-law}
 
 The star formation law follows a single power-law prescription: $\dot\Sigma_\star\propto\Sigma_g^N$, with $N=1.5$ following \citet{kennicutt_global_1998}. Previous work with this GCE model \citep[e.g.,][]{johnson_stellar_2021,dubay_galactic_2024} assumed a three-component power-law, but we adopt a simpler prescription to allow for a more direct comparison with previous two-infall studies \citep[e.g.,][]{spitoni_remind_2024}. In detail, we calculate the star formation efficiency (SFE) timescale $\tau_\star\equiv\Sigma_g/\dot\Sigma_\star$ according to the following:
 \begin{equation}
@@ -300,6 +301,11 @@ We use estimated ages from \citet[][hereafter \citetalias{leung_variational_2023
     \label{fig:abundance-evolution}
 \end{figure*}
 
+\begin{figure*}
+    \centering
+    \includegrac
+\end{figure*}
+
 \section{Discussion}
 \label{sec:discussion}
 
@@ -309,7 +315,7 @@ We use estimated ages from \citet[][hereafter \citetalias{leung_variational_2023
 \begin{figure*}
     \centering
     \includegraphics{figures/delay_time_distribution.pdf}
-    \caption{The model parameters are fixed at $\tau_1=1$ Gyr, $\tau_2=15$ Gyr, and $\tau_{\rm on}=3.2$ Gyr. Key takeaway: the size of the loop can be reduced by using an SN Ia DTD with more prompt events. However, this messes up the location of the high-alpha sequence.}
+    \caption{The effect of the SN Ia delay-time distribution (DTD) on chemical abundance tracks and stellar distributions. {\it Left:} The relative SN Ia rate as a function of time after star formation for each DTD model. The points illustrate the median delay times for each DTD. {\it Right:} Output of one-zone models which assume different SN Ia DTDs with the {\tt yZ2} yield set. The infall parameters are fixed at $\tau_1=1$ Gyr, $\tau_2=10$ Gyr, and $\tau_{\rm on}=3$ Gyr. {\bf Key takeaway:} the extent of the low-$\alpha$ sequence can be reduced by a more prompt SN Ia DTD, but the high-$\alpha$ sequence is also shifted to a more metal-poor regime.}
     \label{fig:dtd}
 \end{figure*}
 
