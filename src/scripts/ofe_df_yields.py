@@ -15,13 +15,18 @@ from _globals import TWO_COLUMN_WIDTH, GALR_BINS, ABSZ_BINS
 
 OUTPUT_NAMES = [
     'yields/yZ1/diskmodel',
-    'yields/yZ2/diskmodel'
+    'yields/yZ2/diskmodel',
+    'dtd/powerlaw_yZ2/diskmodel',
+    'pre_enrichment/mh07_alpha00_yZ2/diskmodel'
 ]
 LABELS = [
-    '(a)\n' + r'$y/Z_\odot=1$',
+    '(a)\nFiducial',
     '(b)\n' + r'$y/Z_\odot=2$',
-    '(c)\nAPOGEE'
+    '(c)\n' + r'$y/Z_\odot=2$ &' + '\nPower-law DTD',
+    '(d)\n' + r'$y/Z_\odot=2$ &' + '\n' + r'${\rm [X/H]}_{\rm CGM}=-0.7$',
+    '(e)\nAPOGEE'
 ]
+LABEL_PADS = [6, 4, -6, -8, 6]
 NBINS = 100
 OFE_LIM = (-0.15, 0.55)
 SMOOTH_WIDTH = 0.05
@@ -30,9 +35,10 @@ SMOOTH_WIDTH = 0.05
 def main(style='paper', cmap='plasma_r'):
     # Set up figure
     plt.style.use(paths.styles / f'{style}.mplstyle')
-    fig, axs = dfs.setup_axes(ncols=3, figure_width=0.6 * TWO_COLUMN_WIDTH,
+    fig, axs = dfs.setup_axes(ncols=5, figure_width=TWO_COLUMN_WIDTH,
                               cmap=cmap, xlabel='[O/Fe]', xlim=OFE_LIM,
-                              major_tick_spacing=0.2, major_minor_tick_ratio=4.)
+                              major_tick_spacing=0.2, major_minor_tick_ratio=4.,
+                              cbar_width=0.4)
     colors = get_color_list(plt.get_cmap(cmap), GALR_BINS)
     apogee_sample = APOGEESample.load()
     apogee_index = len(OUTPUT_NAMES)
@@ -41,7 +47,7 @@ def main(style='paper', cmap='plasma_r'):
         mzs = MultizoneStars.from_output(output_name)
         mzs.model_uncertainty(apogee_sample.data, inplace=True)
         dfs.plot_multizone_mdfs(mzs, axs[:,i], '[o/fe]', colors, label=LABELS[i],
-                                **mdf_kwargs)
+                                titlepad=LABEL_PADS[i], **mdf_kwargs)
     dfs.plot_multizone_mdfs(apogee_sample, axs[:,apogee_index], 'O_FE', colors, 
                             label=LABELS[apogee_index], **mdf_kwargs)
     for ax in axs[:,0]:
