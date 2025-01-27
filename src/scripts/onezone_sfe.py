@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import vice
 
-from multizone.src.yields import J21
+from multizone.src.yields import yZ1
 from multizone.src.models import twoinfall_sf_law
 from multizone.src.models import equilibrium_mass_loading
 from track_and_mdf import setup_figure, plot_vice_onezone
@@ -38,12 +38,10 @@ def main():
     simtime = np.arange(0, END_TIME + dt, dt)
 
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
-    # eta_func = equilibrium_mass_loading(
-    #     tau_star=2., 
-    #     tau_sfh=15., 
-    #     equilibrium=0.
-    # )
-    eta_func = vice.milkyway.default_mass_loading
+    eta_func = equilibrium_mass_loading(
+        tau_star=0., 
+        equilibrium=0.
+    )
     ifr = twoinfall_onezone(
         RADIUS, 
         first_timescale=1.,
