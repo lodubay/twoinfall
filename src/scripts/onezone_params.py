@@ -30,7 +30,7 @@ LABELS = {
     'onset': 't_{\\rm on}'
 }
 XLIM = (-1.9, 0.7)
-YLIM = (-0.18, 0.54)
+YLIM = (-0.2, 0.499)
 
 def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, fname='onezone_params', 
          verbose=False, style='paper'):
