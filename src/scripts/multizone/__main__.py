@@ -191,6 +191,7 @@ def model(args):
     with open(str(fullpath) + "_args.txt", "w") as f:
         f.write(args.name + "\n")
         f.writelines(["%s: %s\n" % (k, v) for k, v in vars(args).items() if k != "name"])
+        f.write("thick_to_thin_ratio: %s\n" % _globals.THICK_TO_THIN_RATIO)
     # Parse RIa params into dict
     RIa_kwargs = {}
     if '=' in args.RIa_params:
