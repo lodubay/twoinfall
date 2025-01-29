@@ -282,9 +282,9 @@ def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None,
 
 def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None, 
                                   color='r', age_col='L23_AGE', min_stars=10,
-                                  offset=0.):
+                                  alpha=0.3):
     """
-    Plot median stellar ages binned by abundance from APOGEE data.
+    Plot APOGEE stellar abundance medians and 1-sigma range binned by age.
     
     Parameters
     ----------
@@ -303,8 +303,13 @@ def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None,
     min_stars : int, optional
         The minimum number of stars in a bin required to plot the age interval.
         The default is 10.
-    offset : float, optional
-        Offset to age bin center, in Gyr, for visual clarity. The default is 0.
+    alpha : float, optional
+        Transparency of the 1-sigma range. The default is 0.3.
+    
+    Returns
+    -------
+    spatch : matplotlib.patches.StepPatch
+    pcol : matplotlib.collections.FillBetweenPolyCollection
     """
     abundance_intervals = apogee_sample.binned_intervals(col, age_col, bin_edges, 
                                                          quantiles=[0.16, 0.5, 0.84])
@@ -314,14 +319,19 @@ def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None,
     bin_edges_left = abundance_intervals.index.categories[include].left.values
     bin_edges_right = abundance_intervals.index.categories[include].right.values
     bin_centers = (bin_edges_left + bin_edges_right) / 2
-    ax.errorbar(bin_centers + offset, abundance_intervals[0.5], 
-                xerr=((bin_centers - bin_edges_left) + offset,
-                      (bin_edges_right - bin_centers) - offset),
-                yerr=(abundance_intervals[0.5].values - abundance_intervals[0.16].values, 
-                      abundance_intervals[0.84].values - abundance_intervals[0.5].values),
-                color=color, linestyle='none', capsize=1, elinewidth=0.5,
-                capthick=0.5, marker='^', markersize=2, label=label,
+    bin_edges = np.append(bin_edges_left, bin_edges_right[-1:])
+    # need to duplicate the last item to include the last bin
+    pcol = ax.fill_between(
+        bin_edges, 
+        np.append(abundance_intervals[0.16].values, abundance_intervals[0.16].values[-1:]),
+        np.append(abundance_intervals[0.84].values, abundance_intervals[0.84].values[-1:]),
+        step='post',
+        color=color, alpha=alpha, label=label, edgecolor='none',
     )
+    # plot median line
+    spatch = ax.stairs(abundance_intervals[0.5].values, edges=bin_edges,
+                       baseline=None, color=color)
+    return spatch, pcol
 
 
 def plot_apogee_median_ages(ax, apogee_sample, col, bin_edges, label=None, 

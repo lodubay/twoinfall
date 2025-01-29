@@ -420,7 +420,7 @@ class MultizoneStars:
             Number of randomly sampled points to plot if sampled == True. The 
             default is 10000.
         markersize : float, optional
-            Scatter plot marker size. The default is 0.5.
+            Scatter plot marker size. The default is 0.1.
         kwargs passed to Axes.scatter()
         """
         if sampled and self.nstars > 0:

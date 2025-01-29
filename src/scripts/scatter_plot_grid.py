@@ -10,7 +10,7 @@ import vice
 from _globals import GALR_BINS, ABSZ_BINS, TWO_COLUMN_WIDTH
 
 
-def plot_gas_abundance(ax, mzs, xcol, ycol, c='k', ls='-', lw=0.5, label=''):
+def plot_gas_abundance(ax, mzs, xcol, ycol, c='k', ls='-', lw=1, label=''):
     """
     Plot the ISM abundance tracks for the mean zone.
 
@@ -141,6 +141,9 @@ def setup_axes(galr_bins=GALR_BINS[:-1], absz_bins=ABSZ_BINS,
     row_label_pos : tuple, optional
         The (x, y) position, in axis coordinates, of the row label text.
         The default is (0.07, 0.88).
+    row_label_col : int or NoneType, optional
+        Index of the column in which to include the row labels. If None,
+        no row labels are added.
     spacing : float, optional
         Sets the wspace and hspace parameters in subplots_adjust. The default
         is 0.

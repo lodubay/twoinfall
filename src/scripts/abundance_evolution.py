@@ -31,8 +31,8 @@ LABELS = [
     '(d)\n' + r'${\rm [X/H]}_{\rm CGM}=-0.7$',
 ]
 AXES_LIM = {
-    '[o/h]': (-1.4, 0.4),
-    '[fe/h]': (-1.4, 0.4),
+    '[o/h]': (-1.2, 0.4),
+    '[fe/h]': (-1.2, 0.4),
     '[o/fe]': (-0.15, 0.5),
     'age': (-1, 14.99)
 }
@@ -69,16 +69,17 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
             mzs.model_uncertainty(solar_sample.data, inplace=True)
         for i, ycol in enumerate(['[o/h]', '[fe/h]', '[o/fe]']):
             mzs.scatter_plot(axs[i,j], 'age', ycol, color='galr_origin',
-                             cmap=cmap, norm=cbar.norm)
-            plot_gas_abundance(axs[i,j], mzs, 'lookback', ycol, ls='--', 
-                               label='Gas abundance')
-            plot_vice_median_abundances(
-                axs[i,j], mzs, ycol, age_bins, 
-                offset=0.2, label='Model medians'
+                             cmap=cmap, norm=cbar.norm, markersize=0.5)
+            lines = plot_gas_abundance(
+                axs[i,j], mzs, 'lookback', ycol, ls='-', label='Gas abundance'
             )
-            plot_apogee_median_abundances(
+            # plot_vice_median_abundances(
+            #     axs[i,j], mzs, ycol, age_bins, 
+            #     offset=0.2, label='Model medians'
+            # )
+            spatch, pcol = plot_apogee_median_abundances(
                 axs[i,j], solar_sample, vice_to_apogee_col(ycol), age_bins, 
-                offset=-0.2, label='L23 medians'
+                label='L23 medians'
             )
             if j == 0:
                 axs[i,j].set_ylabel(capitalize_abundance(ycol))
@@ -96,8 +97,12 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
         ax.set_xlabel('Age [Gyr]')
     axs[0,0].xaxis.set_major_locator(MultipleLocator(5))
     axs[0,0].xaxis.set_minor_locator(MultipleLocator(1))
-    axs[0,-1].legend(loc='lower left', frameon=False, handletextpad=0.1,
-                     borderpad=0.2, handlelength=1.5)
+    axs[0,-1].legend(
+        [lines[0], (spatch, pcol)],
+        ['Gas abundance', 'APOGEE data'],
+        loc='lower left', frameon=False, handletextpad=0.5,
+        borderpad=0.2, handlelength=1.5
+    )
     # cbar.ax.yaxis.set_major_locator(MultipleLocator(2))
 
     fig.savefig(paths.figures / 'abundance_evolution')
