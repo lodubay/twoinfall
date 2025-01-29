@@ -70,7 +70,7 @@
 
 % To add: Carme Gallart (2019) three-infall-ish, Kobayashi metallicity limit for SNe Ia and sub-Chandra
 
-The two-infall model has long been proposed to explain the formation of the Milky Way's thick and thin disks. The infall history of any given region of the disk is described by two successive, exponentially declining bursts, whose timescale may vary as a function of radius. The first infall, which forms the thick disk, has a short timescale, typically on the order of $\sim0.1-1$ Gyr. The second infall forms the thin disk and has a much longer timescale, typically $\sim4-10$ Gyr.
+The two-infall model has long been proposed to explain the formation of the Milky Way's thick and thin disks. The infall history of any given region of the disk is described by two successive, exponentially declining bursts, which explain the origin of the thick and thin disks respectively.
 
 \subsection{Summary of Two-Infall Papers}
 
@@ -113,41 +113,26 @@ Motivated by constraints on the SFH by {\it Gaia}, \citet{spitoni_beyond_2023} p
 \todo{Copied from last paper.} We run our models with a time-step size of $\Delta t=10$ Myr up to a maximum time of $t_{\rm max}=13.2$ Gyr. Following \citet{johnson_stellar_2021}, we set \vice to form $n=8$ stellar populations per ring per time-step, and we set a maximum star-formation radius of $R_{\rm SF} = 15.5$ kpc, such that $\dot\Sigma_\star=0$ for $R_{\rm gal}>R_{\rm SF}$. The model has a full radial extent of 20 kpc, allowing a purely migrated population to arise in the outer 4.5 kpc. We adopt continuous recycling, which accounts for the time-dependent return of mass from all previous generations of stars \citep[see Equation 2 from][]{JohnsonWeinberg2020-Starbursts}. We summarize these parameters in Table \ref{tab:multizone-parameters}.
 
 \begin{deluxetable*}{Cccl}
-    \tablecaption{A summary of parameters and their fiducial values for our chemical evolution models (see discussion in Section \ref{sec:methods}). We omit some parameters that are unchanged from \citetalias{johnson_stellar_2021}; see their Table 1 for details.\label{tab:multizone-parameters}}
+    \tablecaption{A summary of variables and their fiducial values for our chemical evolution models (see discussion in Section \ref{sec:methods}).\label{tab:multizone-parameters}}
     \tablehead{
         \colhead{Quantity} & \colhead{Fiducial Value(s)} & \colhead{Section} & \colhead{Description}
     }
     \startdata
         % Multi-zone model parameters
-        R_{\rm gal}     & [0, 20] kpc   & \ref{sec:multizone-results} & Galactocentric radius \\
-        \delta R_{\rm gal}  & 100 pc    & \ref{sec:multizone-results} & Width of each concentric ring \\
-        \Delta R_{\rm gal}  & N/A       & \ref{app:migration} & Change in orbital radius due to stellar migration \\
-        p(\Delta R_{\rm gal}|\tau,R_{\rm form}) & Equation \ref{eq:radial-migration}    & \ref{app:migration} & Probability density function of radial migration distance \\
-        z                   & [-3, 3] kpc                & \ref{app:migration} & Distance from Galactic midplane at present day \\
-        p(z|\tau,R_{\rm final}) & Equation \ref{eq:sech-pdf}            & \ref{app:migration} & Probability density function of Galactic midplane distance\\
-        \Delta t        & 10 Myr    & \ref{sec:multizone-results} & Time-step size \\
-        t_{\rm max}     & 13.2 Gyr  & \ref{sec:multizone-results} & Disk lifetime \\
-        n               & 8         & \ref{sec:multizone-results} & Number of stellar populations formed per ring per time-step \\
-        R_{\rm SF}      & 15.5 kpc  & \ref{sec:multizone-results} & Maximum radius of star formation \\
-        M_{g,0}   & 0         & \ref{sec:sfh}     & Initial gas mass \\
-        \dot M_r    & continuous    & \ref{sec:multizone-results} & Recycling rate \citep[][Equation 2]{johnson_impact_2020} \\
-        \hline
-        % DTD
-        R_{\rm Ia}(t)   & Equation \ref{eq:dtd-function}    & \ref{sec:dtd-models}  & Delay-time distribution of Type Ia supernovae \\
-        t_D             & 40 Myr    & \ref{sec:dtd-models}  & Minimum SN Ia delay time \\
-        \hline
+        \sigma_{\rm RM8}    & 2.68 kpc  & \ref{sec:migration}   & Radial migration strength \\
+        % Outflows
+        R_\eta          & 5.4 kpc   & \ref{sec:outflows}    & Outflow scale radius \\
+        % Yields
+        y/Z_\odot       & 1         & \ref{sec:yields}  & Nucleosynthetic yield scaling (see Table \ref{tab:yields}) \\
+        f_{\rm Ia}(t)   & Plateau   & \ref{sec:yields}  & Delay-time distribution of Type Ia supernovae \\
+        t_D             & 40 Myr    & \ref{sec:yields}  & Minimum SN Ia delay time \\
         % Star formation histories
-        f_{\rm IO}(t|R_{\rm gal})   & Equation \ref{eq:insideout-sfh}   & \ref{sec:sfh} & Time-dependence of the inside-out SFR \\
-        f_{\rm LB}(t|R_{\rm gal})   & Equation \ref{eq:lateburst-sfh}   & \ref{sec:sfh} & Time-dependence of the late-burst SFR \\
-        \tau_{\rm rise}             & 2 Gyr     & \ref{sec:sfh} & SFR rise timescale for inside-out and early-burst models \\
-        \tau_{\rm EB}(t)          & Equation \ref{eq:earlyburst-taustar}  & \ref{sec:sfh}   & Time-dependence of the early-burst SFE timescale \\
-        f_{\rm EB}(t|R_{\rm gal})   & Equation \ref{eq:earlyburst-ifr}  & \ref{sec:sfh} & Time-dependence of the early-burst infall rate \\
-        f_{\rm TI}(t|R_{\rm gal})   & Equation \ref{eq:twoinfall-ifr}   & \ref{sec:sfh} & Time-dependence of the two-infall infall rate \\
-        \hline
-        % One-zone parameters
-        \tau_\star                    & 2 Gyr & \ref{sec:onezone-results} & SFE timescale in one-zone models \\
-        \eta(R_{\rm gal}=8\,{\rm kpc})  & 2.15  & \ref{sec:onezone-results} & Outflow mass-loading factor at the solar annulus \\
-        \tau_{\rm sfh}(R_{\rm gal}=8\,{\rm kpc})    & 15.1 Gyr  & \ref{sec:sfh} & SFH timescale at the solar annulus \\
+        % f_{\rm in}(t|R_{\rm gal})   & Equation \ref{eq:infall-rate}   & \ref{sec:sfh} & Time-dependence of the gas infall rate \\
+        \tau_1          & 1 Gyr     & \ref{sec:sfh}     & Timescale of the first infall epoch \\
+        \tau_2          & 15 Gyr    & \ref{sec:sfh}     & Timescale of the second infall epoch \\
+        t_{\rm on}      & 4.2       & \ref{sec:sfh}     & Onset time of the second infall epoch \\
+        f_{\Sigma,0}    & 0.27      & \ref{sec:sfh}     & Central thick/thin disk surface density ratio \\
+        {\rm [X/H]}_{\rm CGM}   & Pristine  &           & Pre-enrichment of infalling gas
     \enddata
 \end{deluxetable*}
 \vspace{-24pt}
@@ -206,6 +191,18 @@ We discuss the implications of using a different DTD in Section \ref{sec:dtd-dis
 \subsection{Outflows}
 \label{sec:outflows}
 
+\begin{equation}
+    \eta(R_{\rm gal}) = \eta_\odot \exp\Big(\frac{R_{\rm gal}-R_\odot}{R_\eta}\Big)
+\end{equation}
+
+\begin{equation}
+    \eta_\odot = \frac{y_{\rm O}^{\rm CC}}{Z_{\rm O,\odot}} - 1 + r
+\end{equation}
+
+\begin{equation}
+    R_\eta = -\frac{1}{\nabla{\rm [O/H]}_{\rm eq} \times\ln(10)}
+\end{equation}
+
 \subsection{The Gas Supply}
 \label{sec:sfh}
 
@@ -227,13 +224,15 @@ where $\tau_1$ and $\tau_2$ are the first and second infall timescales, respecti
 \begin{equation}
     f_\Sigma(R) \equiv \frac{\Sigma_1(R)}{\Sigma_2(R)} = f_{\Sigma,0} e^{R(1/R_2 - 1/R_1)}.
 \end{equation}
-We adopt a thick disk scale radius of $R_1=2.0$ kpc, a thin disk scale radius of $R_2=2.5$ kpc, and a central surface density ratio of $f_{\Sigma,0}=0.27$ \citet{bland-hawthorn_galaxy_2016}.
+We adopt a thick disk scale radius of $R_1=2.0$ kpc, a thin disk scale radius of $R_2=2.5$ kpc, and a central surface density ratio of $f_{\Sigma,0}=0.27$ \citep{bland-hawthorn_galaxy_2016}.
+
+The parameters of Equation \ref{eq:infall-rate} have an important effect on the model output. Previous studies of the two-infall model have adopted values for the infall parameters of $\tau_1\sim0.1-1$ Gyr, $\tau_2\sim4-10$ Gyr, and $t_{\rm on}\sim4$ Gyr. Figure \ref{fig:twoinfall-parameters} illustrates the effect of varying each of these parameters on gas abundance tracks and stellar abundance distributions in a one-zone model. The first infall timescale $\tau_1$ primarily affects the stellar distribution along the high-$\alpha$ sequence, with negligible effect on the low-$\alpha$ sequence (a). On the other hand, the second infall timescale $\tau_2$ controls the width of the MDF and the [O/Fe] distribution of the low-$\alpha$ sequence, with a shorter $\tau_2$ producing a distribution which is skewed to higher [O/Fe] (b). The onset time $t_{\rm on}$ strongly affects the overall stellar abundance distribution for values $t_{\rm on}\leq2$ Gyr, but in this case the gas tracks do not produce the characteristic loop characteristic of the two-infall model. For $t_{\rm on}>2$ Gyr, varying $t_{\rm on}$ results in a minor shift to the mean of the MDF and little change to the [O/Fe] distributions, even though the abundance tracks in [O/Fe]--[Fe/H] space appear very different. We find that $\tau_2$ is the most important parameter to tune in order to reproduce the observed stellar abundance distributions.
 
 \begin{figure*}
     \centering
     \includegraphics{figures/onezone_params.pdf}
-    \caption{Gas abundance tracks in the [O/Fe]--[Fe/H] plane for one-zone chemical evolution models which assume different values for the infall history parameters. In each panel, one parameter is varied according to the legend while the other two are held fixed. The open symbols along each curve mark logarithmic steps in time, as denoted in panel (b). The marginal panels show the corresponding stellar abundance distributions, which are convolved with a Gaussian kernel with a width of 0.02 dex for visual clarity. All models use the {\tt yZ1} yield set and assume $\eta=0.4$. {\bf (a)} The first infall timescale $\tau_1$ primarily affects the stellar distribution along the high-$\alpha$ sequence. {\bf (b)} The second infall timescale $\tau_2$ affects the [O/Fe] distribution of the low-$\alpha$ sequence and the width of the MDF. {\bf (c)} The onset time $t_{\rm on}$ has a minor effect on the position of the abundance distributions for values $t_{\rm on}\ge 3$ Gyr. While the ISM abundance at $t_{\rm on}$ varies widely for some parameter choices, it has a negligible impact on the stellar abundance distributions. {\bf Key takeaway:} The second infall timescale $\tau_2$ is the most important parameter to fit the low-$\alpha$ sequence and MDF.}
-    \label{fig:twoinfall-parameters-low-yields}
+    \caption{Gas abundance tracks in the [O/Fe]--[Fe/H] plane for one-zone chemical evolution models which assume different values for the infall history parameters. In each panel, one parameter is varied according to the legend while the other two are held fixed. The open symbols along each curve mark logarithmic steps in time, as denoted in panel (b). The marginal panels show the corresponding stellar abundance distributions, which are convolved with a Gaussian kernel with a width of 0.02 dex for visual clarity. All models use the {\tt yZ1} yield set and assume $\eta=0.4$.}
+    \label{fig:twoinfall-parameters}
 \end{figure*}
 
 \subsection{The Star Formation Law}
@@ -258,6 +257,25 @@ where $\Sigma_{g,0} = 10^8\,{\rm M}_\odot\,{\rm kpc}^{-2}$ and $\tau_{\rm mol}(t
     \end{cases}
 \end{equation}
 \todo{Talk about the implications of this prefactor or reference a future section which discusses this.}
+
+\subsection{Stellar Migration}
+\label{sec:migration}
+
+\begin{equation}
+    \sigma_{\rm RM} = \sigma_{\rm RM8} \Big(\frac{\tau}{8\,{\rm Gyr}}\Big)^{0.33} \Big(\frac{R_{\rm form}}{8\,{\rm kpc}}\Big)^{0.61}
+    \label{eq:radial-migration}
+\end{equation}
+
+\begin{equation}
+    p(z|\tau,R_{\rm final}) = \frac{1}{4 h_z} {\rm sech}^2\Big(\frac{z_{\rm final}}{2 h_z(\tau,R_{\rm final})}\Big).
+    \label{eq:sech-pdf}
+\end{equation}
+
+\begin{equation}
+    h_z(\tau,R_{\rm final}) = (h_{z,s}/e^2) \exp(\tau/\tau_s + R_{\rm final}/R_s)
+    \label{eq:scale-height}
+\end{equation}
+where $h_{z,s}=0.24$ kpc is the scale height at $\tau_s=7$ Gyr and $R_s=6$ kpc.
 
 \subsection{Observational Sample}
 \label{sec:observational-sample}
@@ -294,18 +312,22 @@ We use estimated ages from \citet[][hereafter \citetalias{leung_variational_2023
 \section{Multi-Zone Model Results}
 \label{sec:multizone-results}
 
+\subsection{Stellar Abundance Distributions}
+
+\begin{figure*}
+    \centering
+    \includegraphics{src/tex/figures/ofe_df_yields.pdf}
+    \caption{Stellar [O/Fe] distributions produced by multi-zone models (a--d) and as observed by APOGEE (d). Stars are binned by Galactocentric radius, represented by the color scale, and absolute midplane distance $|z|$, represented by the different rows. Each distribution is normalized so that the area under the curve is 1, and the vertical scale is consistent across each row. The median APOGEE abundance uncertainties were forward-modeled onto the model outputs. For visual clarity, each distribution is smoothed with a box-car of width 0.05 dex. Model (a) assumes the fiducial parameters and the {\tt yZ1} yield set, whereas models (b--d) assume the {\tt yZ2} yield set. Model (c) also assumes a power-law SN Ia DTD, while model (d) assumes the infalling gas has metallicity ${\rm [O/H]}_{\rm CGM}={\rm [Fe/H]}_{\rm CGM}=-0.7$. The distributions from APOGEE DR17 are plotted in column (e) for reference. {\bf Key takeaway:} The high-yield case produces a peak at intermediate [O/Fe] which is prominent in most galactic regions, which can be mitigated by pre-enriched infall.}
+    \label{fig:ofe-df-yields}
+\end{figure*}
+
+\subsection{Age--Abundance Relations}
+
 \begin{figure*}
     \centering
     \includegraphics{figures/abundance_evolution.pdf}
     \caption{Stellar age--abundance relations produced by select multi-zone models. Each point represents a stellar population drawn from the Solar neighborhood near the mid-plane ($7\leq R_{\rm gal}\leq 9$ kpc, $0\leq |z| \leq 0.5$ kpc) and is color-coded by its birth radius. For visual clarity, we plot a only random mass-weighted sample of \num{10000} points in each panel. The dashed line plots the ISM abundance at $R_{\rm gal}=8$ kpc over time. The black points plot the median abundance of stars in 2 Gyr-wide age bins, and the vertical error bars represent the 16th and 84th percentiles of the age distribution. Similarly, the red points with error bars plot the median APOGEE abundances for stars with age estimates from \citet{leung_variational_2023}. Each column shows results from a different multi-zone model: {\bf (a)} our fiducial model, with $y/Z_\odot=1$, $\sigma_{\rm RM8}=2.7$ kpc, and pristine gas infall; {\bf (b)} a model with higher yields $y/Z_\odot=2$; {\bf (c)} a model with greater radial migration strength $\sigma_{\rm RM8}=5$ kpc; and {\bf (d)} a model which assumes the infalling gas has metallicity ${\rm [O/H]}_{\rm CGM}={\rm [Fe/H]}_{\rm CGM}=-0.7$. {\bf Key takeaway:} the fiducial model shows two discrepancies with the data: a major dilution event at a lookback time of $\sim9$ Gyr and non-zero abundance evolution at late times. Only model (b) with higher yields can mitigate both of these issues.}
     \label{fig:abundance-evolution}
-\end{figure*}
-
-\begin{figure*}
-    \centering
-    \includegraphics{src/tex/figures/ofe_df_yields.pdf}
-    \caption{Stellar [O/Fe] distributions produced by multi-zone models (a, b) and as observed by APOGEE (c). Stars are binned by Galactocentric radius, represented by the color scale, and absolute midplane distance $|z|$, represented by the different rows. Each distribution is normalized so that the area under the curve is 1, and the vertical scale is consistent across each row. {\bf (a)} Multi-zone model output assuming the {\tt yZ1} yield set. {\bf (b)} Model output assuming the {\tt yZ2} yield set. {\bf (c)} The distributions from APOGEE DR17 for reference. {\bf Key takeaway:} }
-    \label{fig:ofe-df-yields}
 \end{figure*}
 
 \section{Discussion}
