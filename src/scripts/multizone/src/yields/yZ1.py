@@ -5,7 +5,7 @@ import vice
 
 SOLAR_SCALE = 1.0 # y_O / Z_O,Sun
 AFE_CC = 0.45 # CCSN [a/Fe] plateau
-YIA_SCALE = 1.5 # arbitrary scaling of yIa to adjust chemical evolution endpoint
+YIA_SCALE = 1.3 # arbitrary scaling of yIa to adjust chemical evolution endpoint
 
 # IMF-averaged CCSN yields
 vice.yields.ccsne.settings["o"] = SOLAR_SCALE * vice.solar_z["o"]

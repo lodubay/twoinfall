@@ -97,13 +97,13 @@ def main():
 
     # 3x yields, similar to J21
     params['eta'] = 2.5
-    run_plot_model(axs, 3, params, yia_scale=1.15)
+    run_plot_model(axs, 3, params, yia_scale=1.0)
     # 2x yields
     params['eta'] = 1.45
-    run_plot_model(axs, 2, params, yia_scale=1.25)
+    run_plot_model(axs, 2, params, yia_scale=1.1)
     # Solar yields, similar to W24
     params['eta'] = 0.23
-    run_plot_model(axs, 1, params, yia_scale=1.5)
+    run_plot_model(axs, 1, params, yia_scale=1.3)
 
     ax0.set_ylabel('[O/H]')
     ax0.set_xlim((1.2, 0))
