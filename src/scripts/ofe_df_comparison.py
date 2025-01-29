@@ -55,7 +55,7 @@ def main(style='paper', cmap='plasma_r'):
     highlight_panels(fig, axs, 
                      [(0,apogee_index), (1, apogee_index), (2, apogee_index)])
     # Save
-    plt.savefig(paths.figures / 'ofe_df_yields')
+    plt.savefig(paths.figures / 'ofe_df_comparison')
     plt.close()
 
 
