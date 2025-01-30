@@ -18,12 +18,12 @@ from _globals import ONEZONE_DEFAULTS, END_TIME, DT, TWO_COLUMN_WIDTH
 import paths
 
 RADIUS = 8.
-ZONE_WIDTH = 2.
+ZONE_WIDTH = 2.0
 XLIM = (-1.4, 0.4)
-YLIM = (-0.14, 0.499)
+YLIM = (-0.16, 0.499)
 FIRST_INFALL = 1.
-SECOND_INFALL = 10.
-ONSET = 3.
+SECOND_INFALL = 15.
+ONSET = 4.2
 
 
 def main(style='paper'):
