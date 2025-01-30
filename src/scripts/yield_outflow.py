@@ -25,8 +25,8 @@ FIRST_INFALL = 1
 SECOND_INFALL = 15.
 ONSET = 4.2
 
-OH_LIM = (-1.2, 0.4)
-FEH_LIM = (-1.2, 0.4)
+OH_LIM = (-1.2, 0.5)
+FEH_LIM = (-1.2, 0.5)
 OFE_LIM = (-0.15, 0.5)
 
 
@@ -96,13 +96,13 @@ def main():
     params['RIa'] = dtds.plateau()
 
     # 3x yields, similar to J21
-    params['eta'] = 2.5
+    params['eta'] = 2.4
     run_plot_model(axs, 3, params, yia_scale=1.0)
     # 2x yields
-    params['eta'] = 1.45
+    params['eta'] = 1.4
     run_plot_model(axs, 2, params, yia_scale=1.1)
     # Solar yields, similar to W24
-    params['eta'] = 0.23
+    params['eta'] = 0.2
     run_plot_model(axs, 1, params, yia_scale=1.3)
 
     ax0.set_ylabel('[O/H]')
@@ -114,10 +114,10 @@ def main():
     ax1.set_xlim((-1, 14))
     ax1.xaxis.set_major_locator(MultipleLocator(5))
     ax1.xaxis.set_minor_locator(MultipleLocator(1))
-    ax1.text(0.05, 0.95, r'$\tau_1=%s$ Gyr' % FIRST_INFALL, 
-             transform=ax1.transAxes, va='top')
-    ax1.text(0.05, 0.89, r'$\tau_2=%s$ Gyr' % SECOND_INFALL, 
-             transform=ax1.transAxes, va='top')
+    # ax1.text(0.05, 0.95, r'$\tau_1=%s$ Gyr' % FIRST_INFALL, 
+    #          transform=ax1.transAxes, va='top')
+    # ax1.text(0.05, 0.89, r'$\tau_2=%s$ Gyr' % SECOND_INFALL, 
+    #          transform=ax1.transAxes, va='top')
     ax1.legend(frameon=False)
     
     ax2.set_ylabel('[Fe/H]')
