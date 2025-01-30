@@ -25,8 +25,8 @@ FIRST_INFALL = 1
 SECOND_INFALL = 15.
 ONSET = 4.2
 
-OH_LIM = (-1.2, 0.5)
-FEH_LIM = (-1.2, 0.5)
+OH_LIM = (-1.1, 0.6)
+FEH_LIM = (-1.1, 0.6)
 OFE_LIM = (-0.15, 0.5)
 
 
@@ -61,33 +61,33 @@ def main():
                  yerr=(oh_bins[0.5] - oh_bins[0.16], 
                        oh_bins[0.84] - oh_bins[0.5]),
                  linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0, label='Median (L23)')
+                 zorder=0, label='APOGEE')
     feh_bins = local_sample.binned_intervals('FE_H', 'L23_AGE', age_bins)
     ax3.errorbar(age_bin_centers, feh_bins[0.5], xerr=0.5,
                  yerr=(feh_bins[0.5] - feh_bins[0.16], 
                        feh_bins[0.84] - feh_bins[0.5]),
                  linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0, label='Median (L23)')
+                 zorder=0)
     ofe_bins = local_sample.binned_intervals('O_FE', 'L23_AGE', age_bins)
     ax5.errorbar(age_bin_centers, ofe_bins[0.5], xerr=0.5,
                  yerr=(ofe_bins[0.5] - ofe_bins[0.16], 
                        ofe_bins[0.84] - ofe_bins[0.5]),
                  linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0, label='Median (L23)')
+                 zorder=0)
     
     # Plot APOGEE abundance distributions in marginal panels
     oh_df, bin_edges = local_sample.mdf(col='O_H', range=OH_LIM, 
-                                        smoothing=0.05)
+                                        smoothing=0.1)
     ax0.plot(oh_df / max(oh_df), get_bin_centers(bin_edges),
-             color=data_color, linestyle='-', marker=None)
+             color=data_color, linestyle='-', linewidth=2, marker=None)
     feh_df, bin_edges = local_sample.mdf(col='FE_H', range=FEH_LIM, 
-                                         smoothing=0.05)
+                                         smoothing=0.1)
     ax2.plot(feh_df / max(feh_df), get_bin_centers(bin_edges),
-             color=data_color, linestyle='-', marker=None)
+             color=data_color, linestyle='-', linewidth=2, marker=None)
     ofe_df, bin_edges = local_sample.mdf(col='O_FE', range=OFE_LIM, 
                                          smoothing=0.05)
     ax4.plot(ofe_df / max(ofe_df), get_bin_centers(bin_edges), 
-             color=data_color, linestyle='-', marker=None)
+             color=data_color, linestyle='-', linewidth=2, marker=None)
 
     params = ONEZONE_DEFAULTS
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
@@ -127,7 +127,7 @@ def main():
 
     # ax3.text(0.05, 0.95, r'$y^{\rm CC}_{\rm Fe} / y^{\rm CC}_{\rm O}=%s$' % FE_CC_FRAC, 
     #          transform=ax3.transAxes, va='top')
-    ax3.legend(frameon=False)
+    # ax3.legend(frameon=False)
 
     ax4.set_ylabel('[O/Fe]')
     ax4.set_xlabel('P([X/H])', size='small')
@@ -169,8 +169,6 @@ def run_plot_model(axs, scale, params, yia_scale=1.,
     )
     # Run one-zone model
     name = '%sxSol_Eta%s' % (scale, params['eta'])
-    # if eta_scale != 1:
-    #     name += '_%sxEta' % eta_scale
     fullname = str(output_dir / name)
     sz = vice.singlezone(name=fullname,
                          func=ifr,
@@ -180,14 +178,8 @@ def run_plot_model(axs, scale, params, yia_scale=1.,
     sz.run(simtime, overwrite=True)
 
     # Plots
-    plot_abundance_history(
-        axs[0], fullname, '[o/h]', c=c, ls=ls,
-        label=r'$y^{\rm CC}_{\rm O} / Z_\odot = %s$, $\eta=%s$' % (
-            scale, params['eta']
-        ))
-    plot_abundance_history(
-        axs[1], fullname, '[fe/h]', c=c, ls=ls, 
-        label=r'$y^{\rm Ia}_{\rm Fe} = %s$' % round(vice.yields.sneia.settings['fe'], 4))
+    plot_abundance_history(axs[0], fullname, '[o/h]', c=c, ls=ls, label=label)
+    plot_abundance_history(axs[1], fullname, '[fe/h]', c=c, ls=ls)
     plot_abundance_history(axs[2], fullname, '[o/fe]', label='', c=c, ls=ls)
 
 
