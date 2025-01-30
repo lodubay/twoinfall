@@ -10,7 +10,7 @@ import vice
 from _globals import GALR_BINS, ABSZ_BINS, TWO_COLUMN_WIDTH
 
 
-def plot_gas_abundance(ax, mzs, xcol, ycol, c='k', ls='-', lw=1, label=''):
+def plot_gas_abundance(ax, mzs, xcol, ycol, c='k', ls='-', lw=0.5, label=''):
     """
     Plot the ISM abundance tracks for the mean zone.
 

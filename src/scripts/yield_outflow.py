@@ -53,8 +53,10 @@ def main():
     # Plot APOGEE abundances + Leung et al. (2023) ages
     apogee_sample = APOGEESample.load()
     local_sample = apogee_sample.region(galr_lim=(7, 9), absz_lim=(0, 0.5))
-    age_bins = np.arange(14)
+    age_bin_width = 1. # Gyr
+    age_bins = np.arange(0, 13 + age_bin_width, age_bin_width)
     age_bin_centers = get_bin_centers(age_bins)
+    print(local_sample.binned_modes('O_H', 'L23_AGE', age_bins))
     oh_bins = local_sample.binned_intervals('O_H', 'L23_AGE', age_bins)
     data_color = '0.7'
     ax1.errorbar(age_bin_centers, oh_bins[0.5], xerr=0.5,

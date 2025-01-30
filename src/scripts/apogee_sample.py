@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 import paths
 from utils import fits_to_pandas, box_smooth, kde2D, galactic_to_galactocentric, quad_add
+from stats import skewnormal_mode_sample, jackknife_summary_statistic
+from _globals import RANDOM_SEED
 
 # Sample galactocentric coordinate bounds
 GALR_LIM = (3., 15.)
@@ -424,6 +426,48 @@ class APOGEESample:
         df = pd.concat(param_quantiles, axis=1)
         df.columns = quantiles + ['count']
         return df
+
+    def binned_modes(self, col, bin_col, bin_edges, 
+                     sample_bins=np.linspace(-3, 2, 1001)):
+        """
+        Calculate the mode of a parameter in bins of a secondary parameter.
+        
+        Parameters
+        ----------
+        col : str
+            Data column corresponding to the first parameter, for which the
+            intervals will be calculated in each bin.
+        bin_col : str
+            Data column corresponding to the second (binning) parameter.
+        bin_edges : array-like
+            List or array of bin edges for the secondary parameter.
+        sample_bins : array-like, optional
+            Bins on the primary parameter.
+        
+        Returns
+        -------
+        """
+        # Remove entries with no age estimate
+        data = self.data.dropna(subset=col)
+        grouped = data.groupby(
+            pd.cut(data[bin_col], bin_edges), observed=False
+        )[col]
+        modes = grouped.apply(
+            skewnormal_mode_sample, include_groups=False, bins=sample_bins
+        )
+        jackknife_mode = lambda x: jackknife_summary_statistic(
+            x, skewnormal_mode_sample, n_resamples=10, seed=RANDOM_SEED, bins=sample_bins
+        )
+        errors = grouped.apply(
+            jackknife_mode, 
+            # args=(skewnormal_mode_sample), 
+            # n_resamples=10, seed=RANDOM_SEED, bins=sample_bins
+        )
+        counts = grouped.count()
+        df = pd.concat([modes, errors, grouped.count()], axis=1)
+        df.columns = ['mode', 'error', 'count']
+        return df
+        
         
     @property
     def data(self):

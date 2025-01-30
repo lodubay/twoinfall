@@ -71,7 +71,8 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
             mzs.scatter_plot(axs[i,j], 'age', ycol, color='galr_origin',
                              cmap=cmap, norm=cbar.norm, markersize=0.5)
             lines = plot_gas_abundance(
-                axs[i,j], mzs, 'lookback', ycol, ls='-', label='Gas abundance'
+                axs[i,j], mzs, 'lookback', ycol, ls='-', lw=1, 
+                label='Gas abundance'
             )
             # plot_vice_median_abundances(
             #     axs[i,j], mzs, ycol, age_bins, 
