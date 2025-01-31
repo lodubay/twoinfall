@@ -142,7 +142,6 @@ Motivated by constraints on the SFH by {\it Gaia}, \citet{spitoni_beyond_2023} p
 \label{sec:yields}
 
 The population-averaged nucleosynthetic yields of CCSNe are still fairly uncertain. This problem is exacerbated by the complexity of the CCSN explosion landscape \citep{sukhbold_core-collapse_2016}. Recently, \citet{weinberg_scale_2024} used a measurement of the mean Fe yield of CC SNe by \citet{rodriguez_iron_2023} and the observed \aFe plateau at low metallicity to infer population-averaged yields of $y/Z_\odot\approx1$ --- in other words, the scale of SN yields relative to the Solar abundance is of order unity.
-% This problem is exacerbated by the complexity of the CCSN explosion landscape \citep{sukhbold_core-collapse_2016}. We adopt the yields of \citet{weinberg_scale_2023}, who use a measurement of the mean Fe yield of CC SNe by \citet{rodriguez_iron_2023} and the observed \aFe plateau to infer population-averaged yields. The only difference here is that we assume that $20\%$ of Si in the Sun is produced by SNe Ia, which reduces the Si plateau to [Si/Fe]$_{\rm cc}=0.35$ and results in a non-zero value for $y_{\rm SI}^{\rm cc}$, unlike in \citet{weinberg_scale_2023}. Our yields are presented in Table \ref{tab:yields}.
 
 \begin{table}
     \centering
@@ -178,20 +177,13 @@ We discuss the implications of using a different DTD in Section \ref{sec:dtd-dis
 
 Figure \ref{fig:yield-outflow} illustrates the effect of the yield scaling on the abundance evolution in one-zone models. All models feature a rapid dilution of the ISM metallicity by $\sim0.5-0.8$ dex, visible in the top two panels, brought on by the infall of pristine gas at $t_{\rm max}$. For the model with $y/Z_\odot=1$, this dilution persists for some time and the metallicity does not return to Solar until the present day. The models with higher yields and outflows recover from this dilution more quickly, returning to Solar metallicity by $\sim5$ Gyr ago. However, the high-yield models experience a decline in [O/Fe] of $\sim0.2$ dex between the second infall and the present day, contrasted with the smaller decline of $\sim0.1$ dex in the low-yield model.
 
-Figure \ref{fig:yield-outflow} also indicates the mode of the APOGEE abundance distributions in 1 Gyr-wide age bins. As explained by \citet{johnson_milky_2024}, the mode is expected to be less sensitive to the effects of radial migration than other statistical measures. The data show that the evolution in [O/H] is close to flat over the past 5 Gyr. The behavior of the $y/Z_\odot=2$ and $y/Z_\odot=3$ models closely matches this trend in the data, whereas the $y/Z_\odot=1$ model shows significant evolution of $\sim0.2$ dex during the same time period. The [Fe/H] abundance in the data does increase slightly at late times, likely due to the delayed contribution of Fe from SNe Ia. Between lookback times of $\sim5-9$ Gyr, the modes of [O/H] and [Fe/H] are actually higher than the present-day, likely due to a larger population of migrated stars relative to stars born in-situ at those times. The 
+Figure \ref{fig:yield-outflow} also indicates the mode of the APOGEE abundance distributions in 1 Gyr-wide age bins. As explained by \citet{johnson_milky_2024}, the mode is expected to be less sensitive to the effects of radial migration than other statistical measures. The data show that the evolution in [O/H] is close to flat over the past 5 Gyr. The behavior of the $y/Z_\odot=2$ and $y/Z_\odot=3$ models closely matches this trend in the data, whereas the $y/Z_\odot=1$ model shows significant evolution of $\sim0.2$ dex during the same time period. The [Fe/H] abundance in the data does increase slightly at late times, likely due to the delayed contribution of Fe from SNe Ia. Between lookback times of $\sim5-9$ Gyr, the modes of [O/H] and [Fe/H] are actually higher than the present-day, likely due to a larger population of migrated stars relative to stars born in-situ at those times. The [O/Fe] evolution of all three models is nearly identical over the past 5 Gyr, and shows a similar evolution to the data apart from a $\sim0.05$ dex offset. \todo{Is this offset a problem? I could raise the SN Ia yields, but the global distributions would not match quite as well.}
 
 \begin{figure}
     \centering
     \includegraphics{figures/yield_outflow.pdf}
-    \caption{The abundance evolution of three one-zone models with different yield and outflow settings. Table \ref{tab:yields} presents the population-averaged yields for each model. The gray points with error bars indicate the mode of the APOGEE abundances from the Solar neighborhood ($7\leq R_{\rm gal}\leq 9$ kpc, $0\leq|z|\leq0.5$ kpc) binned by the \citet{leung_variational_2023} age estimates.}
+    \caption{The abundance evolution of three one-zone models with different yield and outflow settings. Table \ref{tab:yields} presents the population-averaged yields for each model. The gray points with error bars indicate the mode of the APOGEE abundance distributions from the Solar neighborhood ($7\leq R_{\rm gal}\leq 9$ kpc, $0\leq|z|\leq0.5$ kpc) in 1 Gyr-wide bins of the \citet{leung_variational_2023} age estimates.}
     \label{fig:yield-outflow}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics{figures/onezone_sfr.pdf}
-    \caption{Key takeaway: a fundamental attribute of any two-infall model is a bump in the number of stars on the low-alpha sequence where the abundance track turns over. This is because the star formation rate is near its peak while the rate of chemical evolution has slowed considerably.}
-    \label{fig:onezone-sfr}
 \end{figure}
 
 \subsection{Outflows}
@@ -256,6 +248,13 @@ In most of our models, we assume the infalling gas is pristine (i.e., $Z_{\rm in
     Z_{\rm in}(t) = (1 - \exp(-t/\tau_{\rm rise})) Z_\odot 10^{{\rm [X/H]}_{\rm CGM}}.
 \end{equation}
 In this case, the metallicity rises from 0 with a timescale $\tau_{\rm rise}=2$ Gyr and plateaus at ${\rm [X/H]}_{\rm CGM}={\rm [O/H]}_{\rm CGM}={\rm [Fe/H]}_{\rm CGM}$. We also investigate cases where the CGM is $\alpha$-enhanced, i.e., ${\rm [O/Fe]}_{\rm CGM}>0$.
+
+\begin{figure}
+    \centering
+    \includegraphics{figures/onezone_sfr.pdf}
+    \caption{Key takeaway: a fundamental attribute of any two-infall model is a bump in the number of stars on the low-alpha sequence where the abundance track turns over. This is because the star formation rate is near its peak while the rate of chemical evolution has slowed considerably.}
+    \label{fig:onezone-sfr}
+\end{figure}
 
 \subsection{The Star Formation Law}
 \label{sec:sf-law}
