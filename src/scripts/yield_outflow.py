@@ -25,9 +25,9 @@ FIRST_INFALL = 1
 SECOND_INFALL = 15.
 ONSET = 4.2
 
-OH_LIM = (-0.6, 0.6)
+OH_LIM = (-0.6, 0.8)
 FEH_LIM = (-0.8, 0.6)
-OFE_LIM = (-0.15, 0.55)
+OFE_LIM = (-0.15, 0.5)
 
 
 def main():
@@ -35,7 +35,7 @@ def main():
     plt.rcParams['axes.prop_cycle'] = plt.cycler(
         'color', paultol.bright.colors)
 
-    fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 2.*ONE_COLUMN_WIDTH))
+    fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 2.2*ONE_COLUMN_WIDTH))
     gs = fig.add_gridspec(3, 2, width_ratios=(1, 4), wspace=0., hspace=0.)
     ax0 = fig.add_subplot(gs[0,0])
     ax0.tick_params(axis='x', labelbottom=False)
@@ -116,7 +116,7 @@ def main():
     #          transform=ax1.transAxes, va='top')
     # ax1.text(0.05, 0.89, r'$\tau_2=%s$ Gyr' % SECOND_INFALL, 
     #          transform=ax1.transAxes, va='top')
-    ax5.legend(frameon=False)
+    ax1.legend(frameon=False, loc='upper left')
     
     ax2.set_ylabel('[Fe/H]')
     ax2.set_ylim(FEH_LIM)
