@@ -56,24 +56,20 @@ def main():
     age_bin_width = 1. # Gyr
     age_bins = np.arange(0, 13 + age_bin_width, age_bin_width)
     age_bin_centers = get_bin_centers(age_bins)
-    print(local_sample.binned_modes('O_H', 'L23_AGE', age_bins))
-    oh_bins = local_sample.binned_intervals('O_H', 'L23_AGE', age_bins)
-    data_color = '0.7'
-    ax1.errorbar(age_bin_centers, oh_bins[0.5], xerr=0.5,
-                 yerr=(oh_bins[0.5] - oh_bins[0.16], 
-                       oh_bins[0.84] - oh_bins[0.5]),
+    oh_bins = local_sample.binned_modes('O_H', 'L23_AGE', age_bins)
+    data_color = '0.6'
+    ax1.errorbar(age_bin_centers, oh_bins['mode'], 
+                 xerr=age_bin_width/2, yerr=oh_bins['error'],
                  linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0, label='APOGEE')
-    feh_bins = local_sample.binned_intervals('FE_H', 'L23_AGE', age_bins)
-    ax3.errorbar(age_bin_centers, feh_bins[0.5], xerr=0.5,
-                 yerr=(feh_bins[0.5] - feh_bins[0.16], 
-                       feh_bins[0.84] - feh_bins[0.5]),
+                 zorder=0, label='APOGEE modes')
+    feh_bins = local_sample.binned_modes('FE_H', 'L23_AGE', age_bins)
+    ax3.errorbar(age_bin_centers, feh_bins['mode'], 
+                 xerr=age_bin_width/2, yerr=feh_bins['error'],
                  linestyle='none', c=data_color, capsize=1, marker='.',
                  zorder=0)
-    ofe_bins = local_sample.binned_intervals('O_FE', 'L23_AGE', age_bins)
-    ax5.errorbar(age_bin_centers, ofe_bins[0.5], xerr=0.5,
-                 yerr=(ofe_bins[0.5] - ofe_bins[0.16], 
-                       ofe_bins[0.84] - ofe_bins[0.5]),
+    ofe_bins = local_sample.binned_modes('O_FE', 'L23_AGE', age_bins)
+    ax5.errorbar(age_bin_centers, ofe_bins['mode'], 
+                 xerr=age_bin_width/2, yerr=ofe_bins['error'],
                  linestyle='none', c=data_color, capsize=1, marker='.',
                  zorder=0)
     
