@@ -25,9 +25,9 @@ FIRST_INFALL = 1
 SECOND_INFALL = 15.
 ONSET = 4.2
 
-OH_LIM = (-1.1, 0.6)
-FEH_LIM = (-1.1, 0.6)
-OFE_LIM = (-0.15, 0.5)
+OH_LIM = (-0.6, 0.6)
+FEH_LIM = (-0.8, 0.6)
+OFE_LIM = (-0.15, 0.55)
 
 
 def main():
@@ -35,7 +35,7 @@ def main():
     plt.rcParams['axes.prop_cycle'] = plt.cycler(
         'color', paultol.bright.colors)
 
-    fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 3*ONE_COLUMN_WIDTH))
+    fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 2.*ONE_COLUMN_WIDTH))
     gs = fig.add_gridspec(3, 2, width_ratios=(1, 4), wspace=0., hspace=0.)
     ax0 = fig.add_subplot(gs[0,0])
     ax0.tick_params(axis='x', labelbottom=False)
@@ -66,12 +66,12 @@ def main():
     ax3.errorbar(age_bin_centers, feh_bins['mode'], 
                  xerr=age_bin_width/2, yerr=feh_bins['error'],
                  linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0)
+                 zorder=0, label='APOGEE modes')
     ofe_bins = local_sample.binned_modes('O_FE', 'L23_AGE', age_bins)
     ax5.errorbar(age_bin_centers, ofe_bins['mode'], 
                  xerr=age_bin_width/2, yerr=ofe_bins['error'],
                  linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0)
+                 zorder=0, label='APOGEE modes')
     
     # Plot APOGEE abundance distributions in marginal panels
     oh_df, bin_edges = local_sample.mdf(col='O_H', range=OH_LIM, 
@@ -116,7 +116,7 @@ def main():
     #          transform=ax1.transAxes, va='top')
     # ax1.text(0.05, 0.89, r'$\tau_2=%s$ Gyr' % SECOND_INFALL, 
     #          transform=ax1.transAxes, va='top')
-    ax1.legend(frameon=False)
+    ax5.legend(frameon=False)
     
     ax2.set_ylabel('[Fe/H]')
     ax2.set_ylim(FEH_LIM)
@@ -177,8 +177,8 @@ def run_plot_model(axs, scale, params, yia_scale=1.,
 
     # Plots
     plot_abundance_history(axs[0], fullname, '[o/h]', c=c, ls=ls, label=label)
-    plot_abundance_history(axs[1], fullname, '[fe/h]', c=c, ls=ls)
-    plot_abundance_history(axs[2], fullname, '[o/fe]', label='', c=c, ls=ls)
+    plot_abundance_history(axs[1], fullname, '[fe/h]', c=c, ls=ls, label=label)
+    plot_abundance_history(axs[2], fullname, '[o/fe]', c=c, ls=ls, label=label)
 
 
 def plot_abundance_history(axs, fullname, col, label='', c=None, ls='-'):
