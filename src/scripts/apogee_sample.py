@@ -8,8 +8,10 @@ from numbers import Number
 from pathlib import Path
 import numpy as np
 import pandas as pd
+from astropy.table import Table
 import paths
-from utils import fits_to_pandas, box_smooth, kde2D, galactic_to_galactocentric, quad_add
+from utils import box_smooth, kde2D, galactic_to_galactocentric, quad_add, \
+    decode, split_multicol
 from stats import skewnormal_mode_sample, jackknife_summary_statistic
 from _globals import RANDOM_SEED
 
@@ -17,7 +19,7 @@ from _globals import RANDOM_SEED
 GALR_LIM = (3., 15.)
 ABSZ_LIM = (0., 2.)
 # Data file names
-ALLSTAR_FNAME = 'allStarLite-dr17-synspec_rev1.fits'
+ALLSTAR_FNAME = 'allStar-dr17-synspec_rev1.fits'
 LEUNG23_FNAME = 'nn_latent_age_dr17.csv'
 # Coefficients for [C/N] age fit polynomial
 CN_AGE_COEF = np.array([-1.90931538,  0.75218328,  0.25786775,  0.22440967, 
@@ -154,11 +156,10 @@ class APOGEESample:
             # Download DR17 allStar file from SDSS server
             if verbose: 
                 print('Downloading allStar file (this will take a few minutes)...')
-            # get_allStar_dr17()
             url_write('https://data.sdss.org/sas/dr17/apogee/spectro/aspcap/dr17/synspec_rev1/%s' \
                       % ALLSTAR_FNAME, savedir=data_dir)
         if verbose: print('Importing allStar file...')
-        apogee_catalog = fits_to_pandas(apogee_catalog_path, hdu=1)
+        apogee_catalog = APOGEESample.allStar_to_pandas(apogee_catalog_path)
         # Add ages from row-matched datasets BEFORE any cuts
         # Add ages from Leung et al. (2023)
         leung23_catalog_path = data_dir / LEUNG23_FNAME
@@ -166,7 +167,6 @@ class APOGEESample:
             # Download Leung+ 2023 data from GitHub
             if verbose:
                 print('Downloading Leung et al. (2023) age data...')
-            # get_Leung2023_ages()
             url_write('https://raw.githubusercontent.com/henrysky/astroNN_ages/main/%s.gz' \
                       % LEUNG23_FNAME, savedir=data_dir)
         if verbose: print('Joining with latent age catalog...')
@@ -197,11 +197,7 @@ class APOGEESample:
         sample['C_N'] = sample['C_FE'] - sample['N_FE']
         sample['C_N_ERR'] = quad_add(sample['C_FE_ERR'], sample['N_FE_ERR'])
         # Calculate [C/N]-based ages
-        sample['CN_LOG_AGE'] = recover_age_quad(
-            sample['C_N'].values, sample['FE_H'].values, CN_AGE_COEF
-        ) - 9.
-        sample['CN_AGE'] = 10 ** sample['CN_LOG_AGE']
-        sample['CN_AGE_ERR'] = 1. * np.ones(sample.shape[0])
+        sample = APOGEESample.generate_cn_ages(sample)
         # Drop unneeded columns
         data = sample[SAMPLE_COLS].copy()
         # Write sample to csv file
@@ -568,6 +564,59 @@ class APOGEESample:
         return self.data[self.data['AGE'].notna()].shape[0]
     
     @staticmethod
+    def generate_cn_ages(apogee_df):
+        """
+        Calculate [C/N]-based ages for a subset of the APOGEE sample.
+        
+        Parameters
+        ----------
+        apogee_df : pandas.DataFrame
+            Full APOGEE dataset (post-cuts okay), must include [C/N] data.
+        
+        Returns
+        -------
+        pandas.DataFrame
+            [C/N]-based ages and errors indexed on APOGEE IDs.
+        
+        Reference
+        ---------
+        Roberts, J. et al (in prep)
+        """
+        # Hard edge cuts
+        goldregion = apogee_df[
+            (apogee_df['FE_H'] >= -0.9) & (apogee_df['FE_H'] < 0.45) & 
+            (apogee_df['LOGG'] >= 1.5) & (apogee_df['LOGG'] < 3.26) &
+            (apogee_df['C_N'] >= -0.75) & (apogee_df['C_N'] < 1.0) &
+            (apogee_df['TEFF'] >= 4000) & (apogee_df['TEFF'] < 5200)
+        ].copy()
+        # Get evolutionary state
+        goldregion = evol_state(goldregion)
+        LRGB = goldregion[
+            (goldregion['EVOL_STATE'] == 1) & (goldregion['LOGG'] >= 2.5)
+        ]
+        URGB = goldregion[
+            (goldregion['EVOL_STATE'] == 1) & (goldregion['LOGG'] < 2.5)
+        ]
+        RC = goldregion[goldregion['EVOL_STATE'] == 2]
+        # Remove [Fe/H] < -0.4 for URGB and RC stars, then re-merge
+        cn_age_region = pd.concat([
+            LRGB, URGB[URGB['FE_H'] >= -0.4], RC[RC['FE_H'] >= -0.4]
+        ])
+        cn_age_region['CN_LOG_AGE'] = recover_age_quad(
+            cn_age_region['C_N'].values, cn_age_region['FE_H'].values, CN_AGE_COEF
+        ) - 9.
+        cn_age_region['CN_AGE'] = 10 ** cn_age_region['CN_LOG_AGE']
+        # Temporary errors
+        cn_age_region['CN_AGE_ERR'] = 1. * np.ones(cn_age_region.shape[0])
+        cn_age_region['CN_LOG_AGE_ERR'] = np.abs(
+            cn_age_region['CN_AGE_ERR'] / (cn_age_region['CN_AGE'] * np.log(10))
+        )
+        apogee_df = apogee_df.join(cn_age_region[
+            ['CN_AGE', 'CN_AGE_ERR', 'CN_LOG_AGE', 'CN_LOG_AGE_ERR']
+        ])
+        return apogee_df
+    
+    @staticmethod
     def join_latent_ages(apogee_df, leung23_df):
         """
         Join ages from Leung et al. (2023) to the row-matched APOGEE dataset.
@@ -625,6 +674,34 @@ class APOGEESample:
         df.reset_index(inplace=True, drop=True)
         return df
 
+    @staticmethod
+    def allStar_to_pandas(path):
+        """
+        Read the allStar fits file and convert to a pandas DataFrame.
+        
+        Parameters
+        ----------
+        path : pathlib.Path or string
+            Path to allStar fits file.
+        
+        Returns
+        -------
+        pandas.DataFrame
+        """
+        # Read FITS file into astropy table
+        table = Table.read(path, format='fits', hdu=1)
+        # Filter out multidimensional columns
+        cols = [name for name in table.colnames if len(table[name].shape) <= 1]
+        # Convert byte-strings to ordinary strings and convert to pandas
+        apogee_catalog = decode(table[cols].to_pandas())
+        # Get multidimensional column names from HDU3
+        array_info = Table.read(path, format='fits', hdu=3)
+        param_symbols = [f'{s.decode()}_RAW' for s in array_info['PARAM_SYMBOL'][0]]
+        # Get uncalibrated values from FPARAM multidimensional column
+        fparams = split_multicol(table['FPARAM'], names=param_symbols)
+        apogee_catalog = apogee_catalog.join(fparams)
+        return apogee_catalog
+
 
 def contour_levels_2D(arr2d, enclosed=[0.8, 0.3]):
     """
@@ -676,6 +753,44 @@ def recover_age_quad(cn_arr, feh_arr, params):
     c2,c1,f2,f1,c1f1,b = params
     ages = (c2*cn_arr**2)+(c1*cn_arr)+(f2*feh_arr**2)+(f1*feh_arr)+(c1f1*feh_arr*cn_arr)+b 
     return ages
+
+
+def evol_state(dataplot, verbose=False):
+    """
+    Using Warfield's APOK2 paper to separate RGB from RC stars
+    1 is RGB, 2 is RC
+
+    References
+    ----------
+    Warfield et al. (2024), ApJ 167:208
+    """
+    #Calculate Reference Temperature
+    alp = 4427.1779
+    bet = -399.5105
+    gam = 553.1705
+    Tref = alp + (bet*dataplot['M_H_RAW']) + (gam*(dataplot['LOGG_RAW']-2.5))
+   
+    #Calculate Equation A4 value
+    a = 0.05915
+    b = 0.003455
+    c = 155.1
+    criterion = a - (b*((c*dataplot['M_H_RAW']) + dataplot['TEFF_RAW'] - Tref)) - (dataplot['C_M_RAW'] - dataplot['N_M_RAW'])
+   
+    #Apply Criterion
+    loggrgb = dataplot['LOGG'] < 2.3 #These stars always RGB
+    critrgb = criterion > 0 #A4 > 0 is RGB (Swapped from the paper)
+    rgb = np.logical_or(loggrgb,critrgb) #Either case makes RGB
+    critrc = criterion <= 0 #A4 < 0 is RC (Swapped from the paper)
+    rc = np.logical_and(np.invert(loggrgb),critrc) #Must be A4<0 and not urgb
+    if verbose: #double check the counts to make sure nothing got missed or double counted
+        print(f"{sum(rc)} RC stars and {sum(rgb)} RGB stars")
+        print(f"{dataplot.shape[0]} Total stars: Difference of {dataplot.shape[0] - (sum(rc) + sum(rgb))}")
+    #Create output flags
+    flagger = np.zeros(dataplot.shape[0])
+    flagger[rgb] = flagger[rgb] + 1
+    flagger[rc] = flagger[rc] + 2
+    dataplot['EVOL_STATE'] = flagger
+    return dataplot
 
 
 def read_kde(path):

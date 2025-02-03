@@ -216,6 +216,37 @@ def fits_to_pandas(path, **kwargs):
     return df
 
 
+def split_multicol(multicol, names=[]):
+    """
+    Split a multi-dimensional column from an Astropy table into a DataFrame.
+    
+    Parameters
+    ----------
+    multicol : astropy Table multidimensional column
+    names : list, optional
+        List of column names.
+    
+    Returns
+    -------
+    pandas.DataFrame
+    """
+    # Make sure it's a multidimensional column
+    if len(multicol.shape) != 2:
+        raise ValueError('Input column has wrong dimensionality.')
+    # Generate column names if needed
+    if names == []:
+        names = [multicol.name + str(i) for i in range(multicol.shape[1])]
+    if len(names) != multicol.shape[1]:
+        raise ValueError('Length of names does not match number of columns.')
+    # Convert to DataFrame
+    # This is kind of dumb but I needed to avoid an "endianness" problem
+    data = np.array(multicol.data)
+    data_dict = dict()
+    for i in range(multicol.shape[1]):
+        data_dict[names[i]] = list(data[:,i])
+    return pd.DataFrame(data_dict)
+
+
 def decode(df):
     """
     Decode DataFrame with byte strings into ordinary strings.
