@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from astropy.table import Table
 import paths
-from utils import box_smooth, kde2D, galactic_to_galactocentric, quad_add, \
+from utils import fits_to_pandas, box_smooth, kde2D, galactic_to_galactocentric, quad_add, \
     decode, split_multicol
 from stats import skewnormal_mode_sample, jackknife_summary_statistic
 from _globals import RANDOM_SEED
@@ -19,7 +19,7 @@ from _globals import RANDOM_SEED
 GALR_LIM = (3., 15.)
 ABSZ_LIM = (0., 2.)
 # Data file names
-ALLSTAR_FNAME = 'allStar-dr17-synspec_rev1.fits'
+ALLSTAR_FNAME = 'allStarLite-dr17-synspec_rev1.fits'
 LEUNG23_FNAME = 'nn_latent_age_dr17.csv'
 # Coefficients for [C/N] age fit polynomial
 CN_AGE_COEF = np.array([-1.90931538,  0.75218328,  0.25786775,  0.22440967, 
@@ -159,7 +159,7 @@ class APOGEESample:
             url_write('https://data.sdss.org/sas/dr17/apogee/spectro/aspcap/dr17/synspec_rev1/%s' \
                       % ALLSTAR_FNAME, savedir=data_dir)
         if verbose: print('Importing allStar file...')
-        apogee_catalog = APOGEESample.allStar_to_pandas(apogee_catalog_path)
+        apogee_catalog = fits_to_pandas(apogee_catalog_path, hdu=1)
         # Add ages from row-matched datasets BEFORE any cuts
         # Add ages from Leung et al. (2023)
         leung23_catalog_path = data_dir / LEUNG23_FNAME
@@ -768,13 +768,13 @@ def evol_state(dataplot, verbose=False):
     alp = 4427.1779
     bet = -399.5105
     gam = 553.1705
-    Tref = alp + (bet*dataplot['M_H_RAW']) + (gam*(dataplot['LOGG_RAW']-2.5))
+    Tref = alp + (bet*dataplot['FE_H_SPEC']) + (gam*(dataplot['LOGG_SPEC']-2.5))
    
     #Calculate Equation A4 value
     a = 0.05915
     b = 0.003455
     c = 155.1
-    criterion = a - (b*((c*dataplot['M_H_RAW']) + dataplot['TEFF_RAW'] - Tref)) - (dataplot['C_M_RAW'] - dataplot['N_M_RAW'])
+    criterion = a - (b*((c*dataplot['FE_H_SPEC']) + dataplot['TEFF_SPEC'] - Tref)) - (dataplot['C_FE_SPEC'] - dataplot['N_FE_SPEC'])
    
     #Apply Criterion
     loggrgb = dataplot['LOGG'] < 2.3 #These stars always RGB
