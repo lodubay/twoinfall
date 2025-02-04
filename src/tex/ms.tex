@@ -233,7 +233,7 @@ where $\tau_1$ and $\tau_2$ are the first and second infall timescales, respecti
 \end{equation}
 We adopt a thick disk scale radius of $R_1=2.0$ kpc, a thin disk scale radius of $R_2=2.5$ kpc, and a central surface density ratio of $f_{\Sigma,0}=0.27$ \citep{bland-hawthorn_galaxy_2016}.
 
-The parameters of Equation \ref{eq:infall-rate} have important effects on the chemical evolution of the model. Previous studies of the two-infall model have adopted values for the infall parameters of $\tau_1\sim0.1-1$ Gyr, $\tau_2\sim4-10$ Gyr, and $t_{\rm max}\sim4$ Gyr. Figure \ref{fig:twoinfall-parameters} illustrates the effect of varying each of these parameters on gas abundance tracks and stellar abundance distributions in a one-zone model. The first infall timescale $\tau_1$ primarily affects the stellar distribution along the high-$\alpha$ sequence, with negligible effect on the low-$\alpha$ sequence (a). On the other hand, the second infall timescale $\tau_2$ controls the width of the MDF and the [O/Fe] distribution of the low-$\alpha$ sequence, with a shorter $\tau_2$ producing a distribution which is skewed to higher [O/Fe] (b). The time of maximum infall $t_{\rm max}$ strongly affects the overall stellar abundance distribution for values $t_{\rm max}\leq2$ Gyr, but in this case the gas tracks do not produce the characteristic loop characteristic of the two-infall model. For $t_{\rm max}>2$ Gyr, varying $t_{\rm max}$ results in a minor shift to the mean of the MDF and little change to the [O/Fe] distributions, even though the abundance tracks in [O/Fe]--[Fe/H] space appear very different. We find that $\tau_2$ is the most important parameter to tune in order to reproduce the observed stellar abundance distributions.
+The parameters of Equation \ref{eq:infall-rate} have important effects on the chemical evolution of the model. Previous studies of the two-infall model have adopted values for the infall parameters of $\tau_1\sim0.1-1$ Gyr, $\tau_2\sim4-10$ Gyr, and $t_{\rm max}\sim4$ Gyr. Figure \ref{fig:twoinfall-parameters} illustrates the effect of varying each of these parameters on gas abundance tracks and stellar abundance distributions in a one-zone model. The first infall timescale $\tau_1$ primarily affects the stellar distribution along the high-$\alpha$ sequence, with negligible effect on the low-$\alpha$ sequence (a). On the other hand, the second infall timescale $\tau_2$ controls the width of the MDF and the [O/Fe] distribution of the low-$\alpha$ sequence, with a shorter $\tau_2$ producing a distribution which is skewed to higher [O/Fe] (b). The time of maximum infall $t_{\rm max}$ (c) strongly affects the overall stellar abundance distribution for values $t_{\rm max}\leq2$ Gyr, but in this case the gas tracks do not produce the characteristic abundance loop. For $t_{\rm max}>2$ Gyr, varying $t_{\rm max}$ results in a minor shift to the mean of the MDF and little change to the [O/Fe] distributions, even though the abundance tracks in [O/Fe]--[Fe/H] space appear very different. We find that $\tau_2$ is the most important parameter to tune in order to reproduce the observed stellar abundance distributions.
 
 \begin{figure*}
     \centering
@@ -259,19 +259,19 @@ In this case, the metallicity rises from 0 with a timescale $\tau_{\rm rise}=2$ 
 \subsection{The Star Formation Law}
 \label{sec:sf-law}
 
-The star formation law follows a single power-law prescription: $\dot\Sigma_\star\propto\Sigma_g^N$, with $N=1.5$ following \citet{kennicutt_global_1998}. Previous work with this GCE model \citep[e.g.,][]{johnson_stellar_2021,dubay_galactic_2024} assumed a three-component power-law, but we adopt a simpler prescription to allow for a more direct comparison with previous two-infall studies \citep[e.g.,][]{spitoni_remind_2024}. In detail, we calculate the star formation efficiency (SFE) timescale $\tau_\star\equiv\Sigma_g/\dot\Sigma_\star$ according to the following:
+The star formation law follows a single power-law prescription: $\dot\Sigma_\star\propto\Sigma_g^N$, with $N=1.5$ following \citet{kennicutt_global_1998}. Previous work with this GCE model \citep[e.g.,][]{johnson_stellar_2021,dubay_galactic_2024} assumed a three-component power-law, but we adopt a single power-law prescription in this work to allow for a more direct comparison with previous two-infall studies \citep[e.g.,][]{spitoni_remind_2024}. In detail, we calculate the star formation efficiency (SFE) timescale $\tau_\star\equiv\Sigma_g/\dot\Sigma_\star$ according to the following:
 \begin{equation}
     \label{eq:sf-law}
     \tau_\star = 
     \begin{cases}
-        \epsilon(t) \tau_{\rm mol}(t),   & \Sigma_g \ge \Sigma_{g,0} \\
-        \epsilon(t) \tau_{\rm mol}(t) \Big(\frac{\Sigma_g}{\Sigma_{g,0}}\Big)^{-1/2}, & \Sigma_g < \Sigma_{g,0}
+        \varepsilon(t) \tau_{\rm mol}(t),   & \Sigma_g \ge \Sigma_{g,0} \\
+        \varepsilon(t) \tau_{\rm mol}(t) \Big(\frac{\Sigma_g}{\Sigma_{g,0}}\Big)^{-1/2}, & \Sigma_g < \Sigma_{g,0}
     \end{cases}
 \end{equation}
-where $\Sigma_{g,0} = 10^8\,{\rm M}_\odot\,{\rm kpc}^{-2}$ and $\tau_{\rm mol}(t)=\tau_{\rm mol,0}(t/t_0)^\gamma$ with $\gamma=1/2$ and $\tau_{\rm mol,0}=2$ Gyr. Previous two-infall studies \citep[e.g.,][]{nissen_high-precision_2020} have adopted a higher SFE during the first infall epoch than during the second, which we emulate through the pre-factor $\epsilon$:
+where $\Sigma_{g,0} = 10^8\,{\rm M}_\odot\,{\rm kpc}^{-2}$ and $\tau_{\rm mol}(t)=\tau_{\rm mol,0}(t/t_0)^\gamma$ with $\gamma=1/2$ and $\tau_{\rm mol,0}=2$ Gyr. Previous two-infall studies \citep[e.g.,][]{nissen_high-precision_2020} have adopted a higher SFE during the first infall epoch than during the second, which we emulate through the pre-factor $\varepsilon$:
 \begin{equation}
     \label{eq:sfe-prefactor}
-    \epsilon(t) = 
+    \varepsilon(t) = 
     \begin{cases}
         0.5, & t < t_{\rm max} \\
         1.0, & t \ge t_{\rm max}.
