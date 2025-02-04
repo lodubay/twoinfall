@@ -17,8 +17,8 @@ from _globals import END_TIME, ONEZONE_DEFAULTS, ONE_COLUMN_WIDTH
 from utils import twoinfall_onezone
 
 RADIUS = 8.
-XLIM = (-1.6, 0.6)
-YLIM = (-0.18, 0.48)
+XLIM = (-2, 0.4)
+YLIM = (-0.12, 0.499)
 ONSET = 4.2
 ZONE_WIDTH = 2
 
@@ -42,21 +42,23 @@ def main():
         tau_star=0., 
         equilibrium=0.
     )
-    ifr = twoinfall_onezone(
-        RADIUS, 
-        first_timescale=1.,
-        second_timescale=15., 
-        onset=ONSET,
-        mass_loading=eta_func,
-        dr=ZONE_WIDTH
-    )
 
-    tau_star_list = [twoinfall_sf_law(area, onset=ifr.onset, factor=1.),
-                     twoinfall_sf_law(area, onset=ifr.onset, factor=0.5),
-                     twoinfall_sf_law(area, onset=ifr.onset, factor=0.2)]
+    tau_star_list = [twoinfall_sf_law(area, onset=ONSET, factor=1.),
+                     twoinfall_sf_law(area, onset=ONSET, factor=0.5),
+                     twoinfall_sf_law(area, onset=ONSET, factor=0.2)]
     names = ['factor10', 'factor05', 'factor02']
     labels = ['Fiducial', 'Variable (2x)', 'Variable (5x)']
     for i, tau_star in enumerate(tau_star_list):
+        # Initialize infall rate
+        ifr = twoinfall_onezone(
+            RADIUS, 
+            first_timescale=1.,
+            second_timescale=15., 
+            onset=ONSET,
+            mass_loading=eta_func,
+            dr=ZONE_WIDTH,
+            sfe_prefactor=tau_star.factor
+        )
         # Run one-zone model
         name = str(output_dir / names[i])
         sz = vice.singlezone(name=name,
@@ -70,9 +72,9 @@ def main():
                           fig=fig, axs=axs,
                           linestyle='-',
                           color=None,
-                          label=labels[i],
-                          marker_labels=(i == 2),
-                          markers=[0.3, 1, 3, 5, 10])
+                          label=str(tau_star.factor),
+                          marker_labels=(i == 1),
+                          markers=[0.3, 1, 3, 6, 10])
         # Thick-to-thin ratio
         hist = vice.history(name)
         onset_idx = int(ifr.onset / dt)
@@ -83,9 +85,10 @@ def main():
     # Adjust axis limits
     axs[1].set_ylim(bottom=0)
     axs[2].set_xlim(left=0)
-    axs[0].legend(frameon=False, loc='lower left', title='SFE')
+    axs[0].legend(frameon=False, loc='lower left', 
+                  title=r'$\varepsilon(t<t_{\rm max})$')
     
-    fig.savefig(paths.figures / 'onezone_sfe', dpi=300)
+    fig.savefig(paths.figures / 'sfe_prefactor', dpi=300)
     plt.close()
 
 
