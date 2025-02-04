@@ -179,7 +179,7 @@ def vary_param(subfig, first_timescale=1., second_timescale=10., onset=4.,
                           color=color, 
                           label=f'{val:.1f}', 
                           marker_labels=(i==label_index),
-                          markers=[0.3, 1, 3, 10])
+                          markers=[0.3, 1, 3, 6, 10])
         if verbose:
             print('Value:', val)
             print('Eta:', eta)
