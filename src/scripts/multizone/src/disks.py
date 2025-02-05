@@ -99,8 +99,9 @@ class diskmodel(vice.milkyway):
         galactocentric radius.
         Allowed values:
 
-        - "default"
+        - "J21"
         - "equilibrium"
+        - "bespoke"
         - "none"
 
     pre_enrichment : ``float`` [default: -inf]
@@ -168,12 +169,23 @@ class diskmodel(vice.milkyway):
             self.migration.stars = diskmigration(self.annuli,
                     N = Nstars, mode = migration_mode, 
                     filename = analogdata_filename)
-        # Outflow mass-loading factor (default inherits from vice.milkyway)
-        self.mass_loading = {
-            "default" : vice.milkyway.default_mass_loading,
-            "equilibrium" : models.equilibrium_mass_loading(),
-            "none" : models.mass_loading.no_outflows
-        }[outflow_spec.lower()]
+        # Outflow mass-loading factor
+        if outflow_spec == "J21":
+            self.mass_loading = vice.milkyway.default_mass_loading
+        elif outflow_spec == "bespoke":
+            if yields == "yZ1":
+                self.mass_loading = models.mass_loading.yZ1()
+            elif yields == "yZ2":
+                self.mass_loading = models.mass_loading.yZ2()
+            else:
+                self.mass_loading = models.equilibrium_mass_loading()
+        else:
+            self.mass_loading = models.equilibrium_mass_loading()
+        # self.mass_loading = {
+        #     "J21" : vice.milkyway.default_mass_loading,
+        #     "equilibrium" : models.equilibrium_mass_loading(),
+        #     "none" : models.mass_loading.no_outflows
+        # }[outflow_spec.lower()]
         # Set the SF mode - infall vs star formation rate
         evol_kwargs = {}
         if spec.lower() in [

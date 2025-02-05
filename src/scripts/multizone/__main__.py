@@ -45,8 +45,9 @@ _YIELD_SETS_ = [
     "F04", "JW20", "J21", "C22", "W24", "W24mod", "yZ1", "yZ2", "yZ3"
 ]
 _OUTFLOW_PRESCRIPTIONS_ = [
-    "default", # aka vice.milkyway.default_mass_loading
+    "J21", # aka vice.milkyway.default_mass_loading
     "equilibrium",
+    "bespoke", # different prescriptions tuned to each yield set
     "none"
 ]
 

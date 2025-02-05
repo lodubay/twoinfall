@@ -35,3 +35,6 @@ THIN_DISK_SCALE_RADIUS = 2.5 # kpc
 THICK_DISK_SCALE_RADIUS = 2.0 # kpc
 THICK_TO_THIN_RATIO = 0.27 # at r = 0
 GAS_DISK_SCALE_RADIUS = 3.6 # kpc
+
+# Exponential scale radius of the outflow mass-loading factor
+ETA_SCALE_RADIUS = 5 # kpc
