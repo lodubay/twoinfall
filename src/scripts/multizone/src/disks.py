@@ -52,6 +52,7 @@ class diskmodel(vice.milkyway):
         - "twoinfall_inner"
         - "earlyburst"
         - "static_infall"
+        - "oneinfall"
     
     verbose : ``bool`` [default : True]
         Whether or not the run the models with verbose output.
@@ -181,7 +182,8 @@ class diskmodel(vice.milkyway):
             "twoinfall_linvar",
             "twoinfall_expvar",
             "earlyburst", 
-            "static_infall"
+            "static_infall",
+            "oneinfall"
         ]:
             self.mode = "ifr"
             for zone in self.zones: zone.Mg0 = 0.
@@ -329,6 +331,7 @@ class star_formation_history:
                 "twoinfall_inner":    models.twoinfall_inner,
                 "earlyburst":         models.earlyburst_ifr,
                 "static_infall":      models.static_infall,
+                "oneinfall":          models.oneinfall,
             }[spec.lower()]((i + 0.5) * zone_width, dr = zone_width, dt = dt,
                             **kwargs))
             i += 1

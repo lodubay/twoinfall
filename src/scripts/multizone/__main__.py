@@ -25,6 +25,7 @@ _EVOLUTION_MODELS_ = [
     "lateburst", 
     "outerburst",
     "earlyburst", 
+    "oneinfall",
     "static_infall",
     "twoinfall", 
     "twoinfall_linvar", 

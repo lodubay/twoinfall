@@ -6,6 +6,7 @@ __all__ = [
     "static", 
     "static_infall", 
     "earlyburst_ifr", 
+    "oneinfall",
     "twoinfall",
     "twoinfall_linvar", 
     "twoinfall_expvar", 
@@ -23,6 +24,7 @@ from .outerburst import outerburst
 from .static import static
 from .static_infall import static_infall
 from .earlyburst_ifr import earlyburst_ifr
+from .oneinfall import oneinfall
 from .twoinfall import twoinfall
 from .twoinfall_linvar import twoinfall_linvar
 from .twoinfall_expvar import twoinfall_expvar
