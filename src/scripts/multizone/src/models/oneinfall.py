@@ -37,7 +37,7 @@ class oneinfall(exponential):
                  mass_loading = vice.milkyway.default_mass_loading):
         super().__init__(timescale = insideout.timescale(radius))
         area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
-        tau_star = fiducial_sf_law(area, onset=self.onset)
+        tau_star = fiducial_sf_law(area)
         eta = mass_loading(radius)
         self.norm *= normalize_ifrmode(self, gradient, tau_star, radius, 
                                        eta=eta, vgas = vgas, dt = dt, dr = dr)
