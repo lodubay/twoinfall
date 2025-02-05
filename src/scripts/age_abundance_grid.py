@@ -282,7 +282,7 @@ def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None,
 
 def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None, 
                                   color='r', age_col='L23_AGE', min_stars=10,
-                                  alpha=0.3):
+                                  alpha=0.2):
     """
     Plot APOGEE stellar abundance medians and 1-sigma range binned by age.
     
