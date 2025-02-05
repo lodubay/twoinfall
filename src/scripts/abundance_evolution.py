@@ -80,7 +80,7 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
             # )
             spatch, pcol = plot_apogee_median_abundances(
                 axs[i,j], solar_sample, vice_to_apogee_col(ycol), age_bins, 
-                age_col='L23_AGE', label='L23 medians'
+                age_col='L23_AGE', label='APOGEE data', color='Grey',
             )
             if j == 0:
                 axs[i,j].set_ylabel(capitalize_abundance(ycol))
