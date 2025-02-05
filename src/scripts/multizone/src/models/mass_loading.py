@@ -41,7 +41,7 @@ class exponential_mass_loading:
 class yZ1(exponential_mass_loading):
     """Subclass of ``exponential_mass_loading`` tuned to the yZ1 yields."""
     def __init__(self):
-        super().__init__(0.2, 5.0)
+        super().__init__(0.2, 4.0)
 
 
 class yZ2(exponential_mass_loading):
