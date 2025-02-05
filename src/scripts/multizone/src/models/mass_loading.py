@@ -42,7 +42,7 @@ class equilibrium_mass_loading:
             The mass-loading factor at the given radius.
     """
     def __init__(self, equilibrium=0., recycling=0.4, tau_star=0., tau_sfh=15.,
-                 gradient=-0.08):
+                 gradient=-0.06):
         # Calculate eta for exponential SFH to reach desired equilibrium [O/H]
         Z_alpha_eq = vice.solar_z["o"] * 10 ** equilibrium
         yield_ratio = vice.yields.ccsne.settings["o"] / Z_alpha_eq
