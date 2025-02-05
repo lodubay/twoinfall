@@ -15,7 +15,7 @@ from colormaps import paultol
 from _globals import ONE_COLUMN_WIDTH, GALR_BINS, MAX_SF_RADIUS, ZONE_WIDTH
 import paths
 
-REFERENCE_GRADIENT = -0.07
+REFERENCE_GRADIENT = -0.06
 
 def main(style='paper'):
     plt.style.use(paths.styles / f'{style}.mplstyle')
@@ -25,19 +25,24 @@ def main(style='paper'):
                             tight_layout=True, sharex=True)
     
     output_names = [
-        'yields/W24mod/diskmodel',
-        'yields/J21/diskmodel',
+        'gradient_tests/oneinfall/diskmodel',
+        # 'gradient_tests/twoinfall/diskmodel',
+        'gradient_tests/twoinfall_expvar/diskmodel',
+        'gradient_tests/twoinfall_expvar_scale5kpc/diskmodel',
         'thin_disk_timescale/linear_7Gyr/diskmodel'
     ]
     labels = [
-        r'Low yields, constant $\tau_2$', 
-        r'High yields, constant $\tau_2$', 
-        r'Low yields, variable $\tau_2$'
+        r'One-infall, $R_\eta=7$ kpc, yZ1', 
+        # r'Two-infall, yZ1', 
+        r'Two-infall, $R_\eta=7$ kpc, yZ1',
+        r'Two-infall, $R_\eta=5$ kpc, yZ1',
+        r'Two-infall, linear $\tau_2$, yZ1'
     ]
     colors = [
         paultol.vibrant.colors[0], 
         paultol.vibrant.colors[1],
-        paultol.vibrant.colors[2]
+        paultol.vibrant.colors[2],
+        paultol.vibrant.colors[3]
     ]
     
     for i, output_name in enumerate(output_names):
@@ -71,8 +76,7 @@ def main(style='paper'):
         axs[2].plot(get_bin_centers(GALR_BINS), median_abundances[2], 
                     color=colors[i], marker='o', linestyle='none')
     # Reference gradient and sun
-    axs[0].plot(xarr, REFERENCE_GRADIENT * (xarr - 8.0), 'k--', 
-                label='Reference (%s dex/kpc)' % REFERENCE_GRADIENT)
+    axs[0].plot(xarr, REFERENCE_GRADIENT * (xarr - 8.0), 'k--')
     axs[1].plot(xarr, REFERENCE_GRADIENT * (xarr - 8.0), 'k--', 
                 label='Reference (%s dex/kpc)' % REFERENCE_GRADIENT)
     axs[0].scatter([8], [0], marker='+', color='k')
