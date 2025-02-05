@@ -58,22 +58,22 @@ def main():
     age_bin_centers = get_bin_centers(age_bins)
     
     # Plot [C/N] ages
-    data_color = 'purple'
-    oh_bins = local_sample.binned_modes('O_H', 'CN_AGE', age_bins)
-    ax1.errorbar(age_bin_centers, oh_bins['mode'], 
-                 xerr=age_bin_width/2, yerr=oh_bins['error'],
-                 linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0, label='[C/N] modes')
-    feh_bins = local_sample.binned_modes('FE_H', 'CN_AGE', age_bins)
-    ax3.errorbar(age_bin_centers, feh_bins['mode'], 
-                 xerr=age_bin_width/2, yerr=feh_bins['error'],
-                 linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0, label='[C/N] modes')
-    ofe_bins = local_sample.binned_modes('O_FE', 'CN_AGE', age_bins)
-    ax5.errorbar(age_bin_centers, ofe_bins['mode'], 
-                 xerr=age_bin_width/2, yerr=ofe_bins['error'],
-                 linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0, label='[C/N] modes')
+    # data_color = 'purple'
+    # oh_bins = local_sample.binned_modes('O_H', 'CN_AGE', age_bins)
+    # ax1.errorbar(age_bin_centers, oh_bins['mode'], 
+    #              xerr=age_bin_width/2, yerr=oh_bins['error'],
+    #              linestyle='none', c=data_color, capsize=1, marker='.',
+    #              zorder=0, label='[C/N] modes')
+    # feh_bins = local_sample.binned_modes('FE_H', 'CN_AGE', age_bins)
+    # ax3.errorbar(age_bin_centers, feh_bins['mode'], 
+    #              xerr=age_bin_width/2, yerr=feh_bins['error'],
+    #              linestyle='none', c=data_color, capsize=1, marker='.',
+    #              zorder=0, label='[C/N] modes')
+    # ofe_bins = local_sample.binned_modes('O_FE', 'CN_AGE', age_bins)
+    # ax5.errorbar(age_bin_centers, ofe_bins['mode'], 
+    #              xerr=age_bin_width/2, yerr=ofe_bins['error'],
+    #              linestyle='none', c=data_color, capsize=1, marker='.',
+    #              zorder=0, label='[C/N] modes')
     
     # Plot L23 ages
     data_color = '0.6'
