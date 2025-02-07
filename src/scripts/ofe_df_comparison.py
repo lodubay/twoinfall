@@ -14,10 +14,10 @@ import paths
 from _globals import TWO_COLUMN_WIDTH, GALR_BINS, ABSZ_BINS
 
 OUTPUT_NAMES = [
-    'yields/yZ1/diskmodel',
-    'yields/yZ2/diskmodel',
-    'dtd/powerlaw_yZ2/diskmodel',
-    'pre_enrichment/mh07_alpha00_yZ2/diskmodel'
+    'yZ1/mass_loading/equilibrium/diskmodel',
+    'yZ2/mass_loading/equilibrium/diskmodel',
+    'yZ2/dtd/powerlaw/diskmodel',
+    'yZ2/pre_enrichment/mh07_alpha00/diskmodel'
 ]
 LABELS = [
     '(a)\nFiducial',
