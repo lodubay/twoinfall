@@ -112,7 +112,7 @@ def plot_sfh(output_name, style='paper', cmap='plasma_r', fname='sfh.png'):
     # axs[0].set_ylim((3e-4, 0.1))
     axs[1].set_title(r'$\dot \Sigma_\star$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
     axs[1].set_yscale('log')
-    # axs[1].set_ylim((3e-5, 0.1))
+    axs[1].set_ylim((1e-5, 1e-1))
     axs[2].set_title(r'$\Sigma_g$ [M$_{\odot}\,\rm{kpc}^{-2}$]')
     axs[2].set_yscale('log')
     axs[2].set_ylim((1e5, 3e8))
@@ -143,8 +143,8 @@ def plot_sfh(output_name, style='paper', cmap='plasma_r', fname='sfh.png'):
                     len(history['time']) - 1)]
         axs[3].plot(history['time'][1:], tau_star, color=color, ls=linestyle,
                     label=label)
-    axs[1].legend(frameon=False, title=r'$R_{\rm gal}$ [kpc]', ncols=2, 
-                  loc='best', borderpad=0.2, labelspacing=0.2, columnspacing=1.2)
+    axs[0].legend(frameon=False, title=r'$R_{\rm gal}$ [kpc]', ncols=2, 
+                  loc='lower right', borderpad=0.2, labelspacing=0.2, columnspacing=1.2)
     # Save
     fullpath = paths.extra / output_name.replace('diskmodel', fname)
     if not fullpath.parents[0].exists():
