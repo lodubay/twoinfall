@@ -26,7 +26,7 @@ ZONE_WIDTH = 2
 def main():
     plt.style.use(paths.styles / 'paper.mplstyle')
     plt.rcParams['axes.prop_cycle'] = plt.cycler(
-        'color', paultol.vibrant.colors)
+        'color', paultol.highcontrast.colors)
 
     output_dir = paths.data / 'onezone' / 'sfe'
     if not output_dir.exists():
@@ -46,6 +46,7 @@ def main():
     tau_star_list = [twoinfall_sf_law(area, onset=ONSET, factor=1.),
                      twoinfall_sf_law(area, onset=ONSET, factor=0.5),
                      twoinfall_sf_law(area, onset=ONSET, factor=0.2)]
+    color_list = [paultol.highcontrast.colors[0], 'k', paultol.highcontrast.colors[2]]
     names = ['factor10', 'factor05', 'factor02']
     labels = ['Fiducial', 'Variable (2x)', 'Variable (5x)']
     for i, tau_star in enumerate(tau_star_list):
@@ -71,7 +72,7 @@ def main():
         plot_vice_onezone(name,
                           fig=fig, axs=axs,
                           linestyle='-',
-                          color=None,
+                          color=color_list[i],
                           label=str(tau_star.factor),
                           marker_labels=(i == 1),
                           markers=[0.3, 1, 3, 6, 10])
