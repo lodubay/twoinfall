@@ -44,4 +44,5 @@ class twoinfall_linvar(twoinfall):
         ----
         Follows the prescription from Chiappinni et al. (2001).
         """
-        return 1.033 * max(radius, 3) - 1.27
+        # return 1.033 * max(radius, 3) - 1.27
+        return 15.0 + 2.0 * (max(radius, 1) - 8.0)
