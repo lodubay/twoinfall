@@ -27,7 +27,7 @@ FIDUCIAL = {
 LABELS = {
     'first_timescale': '\\tau_1',
     'second_timescale': '\\tau_2',
-    'onset': 't_{\\rm on}'
+    'onset': 't_{\\rm max}'
 }
 XLIM = (-1.9, 0.7)
 YLIM = (-0.2, 0.499)
