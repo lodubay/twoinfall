@@ -68,7 +68,7 @@ def plot_mdf_by_age(mzs, col='[fe/h]', smoothing=SMOOTH_WIDTH, xlim=FEH_LIM,
     # Save
     simple_colname = col[1:-1].replace('/', '')
     fname = mzs.name.replace('diskmodel', ('%s_df_by_age.png' % simple_colname))
-    fullpath = paths.extra / fname
+    fullpath = paths.extra / 'multizone' / fname
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)

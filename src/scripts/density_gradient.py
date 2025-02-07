@@ -72,7 +72,7 @@ def plot_density_gradient(mzs, components=False, style='paper', label='VICE',
     # ax.set_title('1 km/s radial gas flows')
     
     # Save
-    fullpath = paths.extra / mzs.name.replace('diskmodel', fname)
+    fullpath = paths.extra / 'multizone' / mzs.name.replace('diskmodel', fname)
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)

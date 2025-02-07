@@ -189,7 +189,7 @@ def plot_age_abundance_grid(mzs, col, apogee_sample=None, fname='',
     # Save
     if fname == '':
         fname = 'age_%s_grid.png' % col[1:-1].replace('/', '')
-    fullpath = paths.extra / mzs.name.replace('diskmodel', fname)
+    fullpath = paths.extra / 'multizone' / mzs.name.replace('diskmodel', fname)
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)

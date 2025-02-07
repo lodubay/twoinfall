@@ -24,77 +24,83 @@ from utils import get_bin_centers, get_color_list, radial_gradient, weighted_qua
 import paths
 from _globals import TWO_COLUMN_WIDTH, ZONE_WIDTH, GALR_BINS, ONE_COLUMN_WIDTH, MAX_SF_RADIUS
 
-def main(output_name, verbose=False, tracks=False, log_age=False, 
+def main(output_names, verbose=False, tracks=False, log_age=False, 
          uncertainties=False, apogee_data=False, style='paper'):
     # Import APOGEE data
     apogee_sample = APOGEESample.load()
-    # Import multizone stars data
-    mzs = MultizoneStars.from_output(output_name)
-    parent_dir = paths.extra / 'multizone' / mzs.name.replace('diskmodel', '')
-    # Forward-model APOGEE uncertainties
-    mzs_copy = mzs.copy() # Version without forward-modeled uncertainties
-    if uncertainties:
-        mzs.model_uncertainty(inplace=True, apogee_data=apogee_sample.data)
-    # Abundance gradients
-    plot_abundance_gradients(mzs, uncertainties=uncertainties, style=style)
-    # Age vs [O/H]
-    plot_age_abundance_grid(mzs, '[o/h]', color_by='galr_origin', cmap='winter_r', 
-                            apogee_sample=apogee_sample,
-                            style=style, log=log_age, verbose=verbose,
-                            medians=apogee_data, tracks=tracks)
-    if apogee_data:
+    for output_name in output_names:
+        print(output_name)
+        # Import multizone stars data
+        try:
+            mzs = MultizoneStars.from_output(output_name)
+        except: 
+            print('No multizone output found.')
+            continue
+        parent_dir = paths.extra / 'multizone' / mzs.name.replace('diskmodel', '')
+        # Forward-model APOGEE uncertainties
+        mzs_copy = mzs.copy() # Version without forward-modeled uncertainties
+        if uncertainties:
+            mzs.model_uncertainty(inplace=True, apogee_data=apogee_sample.data)
+        # Abundance gradients
+        plot_abundance_gradients(mzs, uncertainties=uncertainties, style=style)
+        # Age vs [O/H]
         plot_age_abundance_grid(mzs, '[o/h]', color_by='galr_origin', cmap='winter_r', 
-                                apogee_sample=apogee_sample, bin_by_age=True,
+                                apogee_sample=apogee_sample,
                                 style=style, log=log_age, verbose=verbose,
-                                medians=apogee_data, tracks=tracks,
-                                fname='age_oh_grid_by_age.png')
-    # Age vs [Fe/H]
-    plot_age_abundance_grid(mzs, '[fe/h]', color_by='galr_origin', cmap='winter_r', 
-                            apogee_sample=apogee_sample,
-                            style=style, log=log_age, verbose=verbose,
-                            medians=apogee_data, tracks=tracks)
-    if apogee_data:
+                                medians=apogee_data, tracks=tracks)
+        if apogee_data:
+            plot_age_abundance_grid(mzs, '[o/h]', color_by='galr_origin', cmap='winter_r', 
+                                    apogee_sample=apogee_sample, bin_by_age=True,
+                                    style=style, log=log_age, verbose=verbose,
+                                    medians=apogee_data, tracks=tracks,
+                                    fname='age_oh_grid_by_age.png')
+        # Age vs [Fe/H]
         plot_age_abundance_grid(mzs, '[fe/h]', color_by='galr_origin', cmap='winter_r', 
-                                apogee_sample=apogee_sample, bin_by_age=True,
+                                apogee_sample=apogee_sample,
                                 style=style, log=log_age, verbose=verbose,
-                                medians=apogee_data, tracks=tracks,
-                                fname='age_feh_grid_by_age.png')
-    # Age vs [O/Fe]
-    plot_age_abundance_grid(mzs, '[o/fe]', color_by='[fe/h]', cmap='viridis', 
-                            apogee_sample=apogee_sample,
-                            style=style, log=log_age, verbose=verbose,
-                            medians=apogee_data, tracks=tracks)
-    if apogee_data:
+                                medians=apogee_data, tracks=tracks)
+        if apogee_data:
+            plot_age_abundance_grid(mzs, '[fe/h]', color_by='galr_origin', cmap='winter_r', 
+                                    apogee_sample=apogee_sample, bin_by_age=True,
+                                    style=style, log=log_age, verbose=verbose,
+                                    medians=apogee_data, tracks=tracks,
+                                    fname='age_feh_grid_by_age.png')
+        # Age vs [O/Fe]
         plot_age_abundance_grid(mzs, '[o/fe]', color_by='[fe/h]', cmap='viridis', 
-                                apogee_sample=apogee_sample, bin_by_age=True,
+                                apogee_sample=apogee_sample,
                                 style=style, log=log_age, verbose=verbose,
-                                medians=apogee_data, tracks=tracks,
-                                fname='age_ofe_grid_by_age.png')
-    # Abundance distributions
-    plot_feh_distribution(mzs, apogee_sample, style=style)
-    plot_ofe_distribution(mzs, apogee_sample, style=style)
-    # Abundance distributions as a function of age
-    plot_mdf_by_age(mzs_copy, col='[fe/h]', xlim=(-1.2, 0.7), style=style)
-    plot_mdf_by_age(mzs_copy, col='[o/h]', xlim=(-1.0, 0.7), style=style)
-    # plot_mdf_by_age(mzs, col='[o/fe]', xlim=(-0.15, 0.55), smoothing=0.02)
-    # MDF width as a function of age
-    plot_mdf_widths(mzs_copy, col='[fe/h]', style=style)
-    plot_mdf_widths(mzs_copy, col='[o/h]', style=style)
-    # [O/Fe] vs [Fe/H]
-    plot_ofe_feh_grid(mzs, apogee_sample, tracks=tracks, cmap='winter_r',
-                      apogee_contours=apogee_data, style=style)
-    # [O/Fe] vs [Fe/H], color-coded by age
-    plot_ofe_feh_grid(mzs, apogee_sample, tracks=tracks,
-                      apogee_contours=apogee_data, style=style,
-                      color_by='age', cmap='Spectral_r', 
-                      fname='ofe_feh_age_grid.png')
-    # Star formation history
-    plot_sfh(output_name, style=style)
-    # Stellar density gradient
-    plot_density_gradient(mzs, components=True)
-    # Mass-loading factor
-    plot_mass_loading(output_name)
-    print('Done! Plots are located at %s' % str(parent_dir))
+                                medians=apogee_data, tracks=tracks)
+        if apogee_data:
+            plot_age_abundance_grid(mzs, '[o/fe]', color_by='[fe/h]', cmap='viridis', 
+                                    apogee_sample=apogee_sample, bin_by_age=True,
+                                    style=style, log=log_age, verbose=verbose,
+                                    medians=apogee_data, tracks=tracks,
+                                    fname='age_ofe_grid_by_age.png')
+        # Abundance distributions
+        plot_feh_distribution(mzs, apogee_sample, style=style)
+        plot_ofe_distribution(mzs, apogee_sample, style=style)
+        # Abundance distributions as a function of age
+        plot_mdf_by_age(mzs_copy, col='[fe/h]', xlim=(-1.2, 0.7), style=style)
+        plot_mdf_by_age(mzs_copy, col='[o/h]', xlim=(-1.0, 0.7), style=style)
+        # plot_mdf_by_age(mzs, col='[o/fe]', xlim=(-0.15, 0.55), smoothing=0.02)
+        # MDF width as a function of age
+        plot_mdf_widths(mzs_copy, col='[fe/h]', style=style)
+        plot_mdf_widths(mzs_copy, col='[o/h]', style=style)
+        # [O/Fe] vs [Fe/H]
+        plot_ofe_feh_grid(mzs, apogee_sample, tracks=tracks, cmap='winter_r',
+                        apogee_contours=apogee_data, style=style)
+        # [O/Fe] vs [Fe/H], color-coded by age
+        plot_ofe_feh_grid(mzs, apogee_sample, tracks=tracks,
+                        apogee_contours=apogee_data, style=style,
+                        color_by='age', cmap='Spectral_r', 
+                        fname='ofe_feh_age_grid.png')
+        # Star formation history
+        plot_sfh(output_name, style=style)
+        # Stellar density gradient
+        plot_density_gradient(mzs, components=True)
+        # Mass-loading factor
+        plot_mass_loading(output_name)
+        print('Done! Plots are located at %s' % str(parent_dir))
 
 
 def plot_sfh(output_name, style='paper', cmap='plasma_r', fname='sfh.png'):
@@ -246,10 +252,11 @@ if __name__ == '__main__':
         description='Generate multiple diagnostic plots for the given multizone output.'
     )
     parser.add_argument(
-        'output_name', 
+        'output_names', 
         metavar='NAME',
         type=str,
-        help='Name of VICE multizone output located within src/data/multizone.'
+        nargs='+',
+        help='Name(s) of VICE multizone output located within src/data/multizone.'
     )
     parser.add_argument(
         '-v', '--verbose', 

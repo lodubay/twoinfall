@@ -51,7 +51,7 @@ def plot_mdf_widths(mzs, col='[fe/h]', style='paper', cmap='plasma_r'):
     # Save
     simple_colname = col[1:-1].replace('/', '')
     fname = mzs.name.replace('diskmodel', ('%s_df_widths.png' % simple_colname))
-    fullpath = paths.extra / fname
+    fullpath = paths.extra / 'multizone' / fname
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)

@@ -91,7 +91,7 @@ def plot_ofe_feh_grid(mzs, apogee_sample, tracks=True, apogee_contours=True,
                      loc='upper right', handlelength=0.6, handletextpad=0.4)
     
     # Save
-    fullpath = paths.extra / mzs.name.replace('diskmodel', fname)
+    fullpath = paths.extra / 'multizone' / mzs.name.replace('diskmodel', fname)
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)

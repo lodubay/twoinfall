@@ -43,7 +43,7 @@ def plot_feh_distribution(mzs, apogee_sample, nbins=NBINS, xlim=FEH_LIM,
     plt.subplots_adjust(top=0.88)
     # Save
     fname = mzs.name.replace('diskmodel', 'feh_df.png')
-    fullpath = paths.extra / fname
+    fullpath = paths.extra / 'multizone' / fname
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)
