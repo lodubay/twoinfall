@@ -30,7 +30,7 @@ def main(output_name, verbose=False, tracks=False, log_age=False,
     apogee_sample = APOGEESample.load()
     # Import multizone stars data
     mzs = MultizoneStars.from_output(output_name)
-    parent_dir = paths.extra / mzs.name.replace('diskmodel', '')
+    parent_dir = paths.extra / 'multizone' / mzs.name.replace('diskmodel', '')
     # Forward-model APOGEE uncertainties
     mzs_copy = mzs.copy() # Version without forward-modeled uncertainties
     if uncertainties:
@@ -146,7 +146,7 @@ def plot_sfh(output_name, style='paper', cmap='plasma_r', fname='sfh.png'):
     axs[0].legend(frameon=False, title=r'$R_{\rm gal}$ [kpc]', ncols=2, 
                   loc='lower right', borderpad=0.2, labelspacing=0.2, columnspacing=1.2)
     # Save
-    fullpath = paths.extra / output_name.replace('diskmodel', fname)
+    fullpath = paths.extra / 'multizone' / output_name.replace('diskmodel', fname)
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)
@@ -172,7 +172,7 @@ def plot_mass_loading(output_name, style='paper', fname='mass_loading.png'):
     ax.set_xlabel(r"$R_{\rm gal}$ [kpc]")
     ax.set_ylabel(r"$\eta\equiv\dot\Sigma_{\rm out}/\dot\Sigma_\star$")
     # Save
-    fullpath = paths.extra / output_name.replace('diskmodel', fname)
+    fullpath = paths.extra / 'multizone' / output_name.replace('diskmodel', fname)
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)
@@ -233,7 +233,7 @@ def plot_abundance_gradients(mzs, uncertainties=False, style='paper'):
     axs[2].set_xlabel('Radius [kpc]')    
     axs[0].legend()
     # Save
-    fullpath = paths.extra / mzs.name.replace('diskmodel', 'abundance_gradients.png')
+    fullpath = paths.extra / 'multizone' / mzs.name.replace('diskmodel', 'abundance_gradients.png')
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)
@@ -242,7 +242,7 @@ def plot_abundance_gradients(mzs, uncertainties=False, style='paper'):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        prog='extra_plots.py',
+        prog='multizone_plots.py',
         description='Generate multiple diagnostic plots for the given multizone output.'
     )
     parser.add_argument(
