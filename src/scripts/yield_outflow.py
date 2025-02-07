@@ -109,7 +109,7 @@ def main():
 
     params = ONEZONE_DEFAULTS
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
-    params['tau_star'] = twoinfall_sf_law(area)
+    params['tau_star'] = twoinfall_sf_law(area, onset=ONSET)
     params['eta'] = 0. # dummy value
     params['RIa'] = dtds.plateau()
 
