@@ -6,14 +6,15 @@ adopted in this paper.
 import pandas as pd
 import vice
 import paths
+from multizone.src import outflows
 
 def main():
     from multizone.src.yields import yZ1
-    yZ1_yields, yZ1_labels = make_column()
+    yZ1_yields, yZ1_labels = make_column(eta=outflows.yZ1())
     from multizone.src.yields import yZ2
-    yZ2_yields, yZ2_labels = make_column()
+    yZ2_yields, yZ2_labels = make_column(eta=outflows.yZ2())
     from multizone.src.yields import yZ3
-    yZ3_yields, yZ3_labels = make_column()
+    yZ3_yields, yZ3_labels = make_column(eta=outflows.yZ3())
     df = pd.DataFrame({
         '$y/Z_\\odot=1$': yZ1_yields,
         '$y/Z_\\odot=2$': yZ2_yields,
@@ -32,7 +33,7 @@ def main():
     with open(paths.output / 'yields.tex', 'w') as f:
         f.write(latex_table)
 
-def make_column(elements = ['O', 'Fe'], mfeia=0.7):
+def make_column(elements = ['O', 'Fe'], mfeia=0.7, eta=outflows.yZ1()):
     ccsn_yields = []
     ccsn_labels = []
     snia_yields = []
@@ -43,9 +44,15 @@ def make_column(elements = ['O', 'Fe'], mfeia=0.7):
         snia_yields.append('\\num{%.2e}' % vice.yields.sneia.settings[el])
         snia_labels.append('$y_{\\rm %s}^{\\rm Ia}$' % el)
     # Calculate SN Ia rates assuming a mean Fe mass per SN
-    snia_labels.append('$N_{\\rm Ia}/M_\\star$')
+    snia_labels.append('$N_{\\rm Ia}/M_\\star\\,[{\\rm M}_\\odot^{-1}]$')
     snia_yields.append('\\num{%.2e}' % (vice.yields.sneia.settings['fe'] / mfeia))
-    return ccsn_yields + snia_yields, ccsn_labels + snia_labels
+    # Yield-specific outflow parameters
+    outflow_params = [f'{eta.solar_value:.1f}', f'{eta.scale_radius:.1f}']
+    outflow_labels = ['$\\eta_\\odot$', '$R_\\eta$ [kpc]']
+    # All parameters and labels
+    params = ccsn_yields + snia_yields + outflow_params
+    labels = ccsn_labels + snia_labels + outflow_labels
+    return params, labels
 
 if __name__ == '__main__':
     main()

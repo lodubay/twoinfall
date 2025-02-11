@@ -14,7 +14,6 @@ __all__ = [
     "fiducial_sf_law", 
     "earlyburst_sf_law", 
     "twoinfall_sf_law", 
-    "equilibrium_mass_loading", 
     "two_component_disk",
 ]
 
@@ -32,5 +31,4 @@ from .twoinfall_inner import twoinfall_inner
 from .fiducial_sf_law import fiducial_sf_law
 from .earlyburst_sf_law import earlyburst_sf_law
 from .twoinfall_sf_law import twoinfall_sf_law
-from .mass_loading import equilibrium_mass_loading
 from .diskmodel import two_component_disk

@@ -9,7 +9,7 @@ import vice
 
 from multizone.src.yields import yZ1
 from multizone.src.models import twoinfall_sf_law
-from multizone.src.models import equilibrium_mass_loading
+from multizone.src import outflows
 from track_and_mdf import setup_figure, plot_vice_onezone
 from colormaps import paultol
 import paths
@@ -18,7 +18,7 @@ from utils import twoinfall_onezone
 
 RADIUS = 8.
 XLIM = (-2, 0.4)
-YLIM = (-0.12, 0.499)
+YLIM = (-0.08, 0.499)
 ONSET = 4.2
 ZONE_WIDTH = 2
 
@@ -38,10 +38,7 @@ def main():
     simtime = np.arange(0, END_TIME + dt, dt)
 
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
-    eta_func = equilibrium_mass_loading(
-        tau_star=0., 
-        equilibrium=0.
-    )
+    eta_func = outflows.yZ1()
 
     tau_star_list = [twoinfall_sf_law(area, onset=ONSET, factor=1.),
                      twoinfall_sf_law(area, onset=ONSET, factor=0.5),

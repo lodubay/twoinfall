@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 
 import vice
 
-from multizone.src.yields import W24
-from multizone.src import models
+from multizone.src.yields import yZ1
+from multizone.src import models, outflows
 from track_and_mdf import setup_figure, plot_vice_onezone
 import paths
 from _globals import ONEZONE_DEFAULTS, ZONE_WIDTH
@@ -29,7 +29,7 @@ def main():
     
     simtime = np.arange(0, 13.21, 0.01)
     
-    eta_func = models.equilibrium_mass_loading(
+    eta_func = outflows.equilibrium(
         tau_star=2., tau_sfh=10., alpha_h_eq=0.1
     )
     

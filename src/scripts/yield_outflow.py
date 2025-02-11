@@ -9,7 +9,7 @@ from matplotlib.ticker import MultipleLocator
 import vice
 
 from apogee_sample import APOGEESample
-from multizone.src.models import twoinfall_sf_law, equilibrium_mass_loading
+from multizone.src.models import twoinfall_sf_law
 from multizone.src import dtds
 from utils import twoinfall_onezone, get_bin_centers
 from track_and_mdf import plot_mdf_curve
@@ -168,8 +168,6 @@ def run_plot_model(axs, scale, params, yia_scale=1.,
         output_dir.mkdir(parents=True)
     
     scale_yields(scale, afe_cc=AFE_CC, yia_scale=yia_scale)
-    # params['eta'] = equilibrium_mass_loading(tau_star=0.)(RADIUS)
-    # params['eta'] *= eta_scale
     RIa = vice.yields.sneia.settings['fe'] / SNIA_FE_YIELD
     if label == '':
         label = r'$y/Z_\odot = %s$, $\eta=%s$' % (

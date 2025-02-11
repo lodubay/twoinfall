@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 import vice
 
 from multizone.src.yields import yZ1
-vice.yields.sneia.settings['fe'] *= 0.9
-from multizone.src.models import twoinfall_sf_law, equilibrium_mass_loading
-from multizone.src.models.mass_loading import no_outflows
+# vice.yields.sneia.settings['fe'] *= 0.9
+from multizone.src.models import twoinfall_sf_law
+from multizone.src import outflows
 from track_and_mdf import setup_figure, plot_vice_onezone
 from apogee_sample import APOGEESample
 import paths
@@ -63,13 +63,7 @@ def main():
     # One-zone model parameters
     simtime = np.arange(0, 13.21, 0.01)
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
-    # eta_func = equilibrium_mass_loading(
-    #     tau_star=0.,
-    #     # tau_sfh=SECOND_TIMESCALE, 
-    #     equilibrium=0.2
-    # )
-    eta_func = no_outflows
-    # eta_func = vice.milkyway.default_mass_loading
+    eta_func = outflows.equilibrium(equilibrium=0.2, tau_star=0)
     ifr = twoinfall_onezone(
         RADIUS, 
         first_timescale=FIRST_TIMESCALE, 

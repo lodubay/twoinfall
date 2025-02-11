@@ -9,8 +9,8 @@ from matplotlib.ticker import FuncFormatter
 import vice
 
 from multizone.src.yields import yZ2
-from multizone.src import dtds
-from multizone.src.models import twoinfall_sf_law, equilibrium_mass_loading
+from multizone.src import dtds, outflows
+from multizone.src.models import twoinfall_sf_law
 from track_and_mdf import setup_axes, plot_vice_onezone
 from utils import twoinfall_onezone
 from colormaps import paultol
@@ -104,7 +104,7 @@ def plot_onezone(fig, dtd_list, labels=[]):
 
 
 def run_model(dtd, output_dir=paths.data / 'onezone' / 'dtd'):
-    eta_func = equilibrium_mass_loading(equilibrium=0., tau_star=0.)
+    eta_func = outflows.equilibrium(equilibrium=0., tau_star=0.)
     ifr = twoinfall_onezone(
         RADIUS, 
         first_timescale=FIRST_INFALL,

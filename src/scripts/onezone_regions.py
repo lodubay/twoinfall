@@ -9,8 +9,8 @@ from tqdm import tqdm
 import vice
 
 import paths
-from multizone.src.yields import W24mod
-from multizone.src import models, dtds
+from multizone.src.yields import yZ1
+from multizone.src import models, dtds, outflows
 from multizone.src.models.gradient import gradient
 from apogee_sample import APOGEESample
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH
@@ -30,7 +30,7 @@ def main():
     gs = fig.add_gridspec(7, 22, wspace=0.)
     subfigs = [fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))]
     # Outflow mass-loading factor
-    eta_func = models.equilibrium_mass_loading(equilibrium=0.2, tau_star=0.)
+    eta_func = outflows.yZ1()
     # eta_func = vice.milkyway.default_mass_loading
     axs0 = plot_region(subfigs[0], 6, eta=eta_func, 
                        color=paultol.highcontrast.colors[2],
@@ -45,7 +45,7 @@ def main():
     fig.savefig(paths.figures / 'onezone_regions', dpi=300)
     plt.close()
     
-def plot_region(fig, radius, dr=4., eta=models.equilibrium_mass_loading(), 
+def plot_region(fig, radius, dr=4., eta=outflows.equilibrium(), 
                 output_dir=paths.data/'onezone'/'regions', 
                 color=None, **kwargs):
     axs = setup_axes(fig, title='', xlabel='[O/H]', **kwargs)

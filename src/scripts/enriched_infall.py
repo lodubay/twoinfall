@@ -10,7 +10,8 @@ import vice
 
 # from multizone.src.yields import W24
 from multizone.src.yields import J21
-from multizone.src.models import twoinfall_sf_law, equilibrium_mass_loading
+from multizone.src.models import twoinfall_sf_law
+from multizone.src import outflows
 from track_and_mdf import setup_axes, plot_vice_onezone
 from apogee_sample import APOGEESample
 import paths
@@ -40,7 +41,7 @@ def main():
     dt = params['dt']
     simtime = np.arange(0, END_TIME + dt, dt)
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
-    # eta_func = equilibrium_mass_loading()
+    # eta_func = outflows.equilibrium()
     eta_func = vice.milkyway.default_mass_loading
     params['eta'] = eta_func(RADIUS)
     ifr = twoinfall_onezone(RADIUS, onset=ONSET, mass_loading=eta_func, dt=dt, 

@@ -18,6 +18,7 @@ from .._globals import END_TIME, MAX_SF_RADIUS
 from .migration import diskmigration, gaussian_migration, no_migration
 from . import models
 from . import dtds
+from . import outflows
 from .models.utils import get_bin_number, interpolate, modified_exponential
 from .models.gradient import gradient
 import math as m
@@ -174,18 +175,15 @@ class diskmodel(vice.milkyway):
             self.mass_loading = vice.milkyway.default_mass_loading
         elif outflow_spec == "bespoke":
             if yields == "yZ1":
-                self.mass_loading = models.mass_loading.yZ1()
+                self.mass_loading = outflows.yZ1()
             elif yields == "yZ2":
-                self.mass_loading = models.mass_loading.yZ2()
+                self.mass_loading = outflows.yZ2()
+            elif yields == "yZ3":
+                self.mass_loading = outflows.yZ3()
             else:
-                self.mass_loading = models.equilibrium_mass_loading()
+                self.mass_loading = outflows.equilibrium()
         else:
-            self.mass_loading = models.equilibrium_mass_loading()
-        # self.mass_loading = {
-        #     "J21" : vice.milkyway.default_mass_loading,
-        #     "equilibrium" : models.equilibrium_mass_loading(),
-        #     "none" : models.mass_loading.no_outflows
-        # }[outflow_spec.lower()]
+            self.mass_loading = outflows.equilibrium()
         # Set the SF mode - infall vs star formation rate
         evol_kwargs = {}
         if spec.lower() in [

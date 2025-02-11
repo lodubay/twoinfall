@@ -1,11 +1,15 @@
+"""
+Classes and methods for the outflow mass-loading factor.
+"""
+
 import math as m
+from numbers import Number
 import vice
-from ..._globals import ETA_SCALE_RADIUS
 
 
-class exponential_mass_loading:
+class exponential:
     r"""
-    An exponential outflow mass-loading parameter $\eta$.
+    An exponential outflow mass-loading parameter $\eta(R_{\rm gal})$.
 
     Parameters
     ----------
@@ -36,21 +40,65 @@ class exponential_mass_loading:
 
     def __call__(self, radius):
         return self.solar_value * m.exp((radius - 8.0) / self.scale_radius)
+    
+    @property
+    def solar_value(self):
+        """
+        float
+            The mass-loading factor at the Solar annulus.
+        """
+        return self._solar_value
+    
+    @solar_value.setter
+    def solar_value(self, value):
+        if isinstance(value, Number):
+            if value > 0:
+                self._solar_value = value
+            else:
+                raise ValueError("Mass-loading factor must be positive.")
+        else:
+            raise TypeError(f"Parameter ``solar_value`` must be a float. \
+Got: {type(value)}")
+        
+    @property
+    def scale_radius(self):
+        """
+        float
+            The exponential scale radius of the mass-loading factor in kpc.
+        """
+        return self._scale_radius
+    
+    @scale_radius.setter
+    def scale_radius(self, value):
+        if isinstance(value, Number):
+            if value > 0:
+                self._scale_radius = value
+            else:
+                raise ValueError("Scale radius must be positive.")
+        else:
+            raise TypeError(f"Parameter ``scale_radius`` must be a float. \
+Got: {type(value)}")
 
 
-class yZ1(exponential_mass_loading):
+class yZ1(exponential):
     """Subclass of ``exponential_mass_loading`` tuned to the yZ1 yields."""
     def __init__(self):
-        super().__init__(0.2, 4.0)
+        super().__init__(0.2, 4.2)
 
 
-class yZ2(exponential_mass_loading):
+class yZ2(exponential):
     """Subclass of ``exponential_mass_loading`` tuned to the yZ2 yields."""
     def __init__(self):
-        super().__init__(1.4, 5.0)
+        super().__init__(1.4, 5.4)
 
 
-class equilibrium_mass_loading(exponential_mass_loading):
+class yZ3(exponential):
+    """Subclass of ``exponential_mass_loading`` tuned to the yZ3 yields."""
+    def __init__(self):
+        super().__init__(2.4, 5.4)
+
+
+class equilibrium(exponential):
     """
     An exponential outflow mass-loading parameter.
     

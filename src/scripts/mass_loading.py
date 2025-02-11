@@ -6,8 +6,8 @@ radius.
 import numpy as np
 import matplotlib.pyplot as plt
 
-from multizone.src.yields import W24
-from multizone.src.models import equilibrium_mass_loading
+from multizone.src.yields import yZ1
+from multizone.src import outflows
 import paths
 
 
@@ -17,7 +17,7 @@ def main():
     fig, ax = plt.subplots(tight_layout=True)
     
     radii = np.arange(0, 15.5, 0.1)
-    eta_func = equilibrium_mass_loading()
+    eta_func = outflows.equilibrium()
     ax.plot(radii, [eta_func(r) for r in radii], "k-")
     
     ax.axvline(8, color="r", ls="--")
