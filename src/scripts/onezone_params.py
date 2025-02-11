@@ -19,7 +19,7 @@ import paths
 RADIUS = 8.
 ZONE_WIDTH = 2.
 FIDUCIAL = {
-    'first_timescale': 0.3,
+    'first_timescale': 1.,
     'second_timescale': 10.,
     'onset': 4.
 }
