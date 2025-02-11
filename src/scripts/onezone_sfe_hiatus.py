@@ -7,8 +7,10 @@ import matplotlib.pyplot as plt
 
 import vice
 
-from multizone.src.yields import J21
+from multizone.src.yields import yZ2
+vice.yields.sneia.settings['fe'] *= 10**-0.1
 from multizone.src.models.utils import exponential
+from multizone.src import outflows
 from track_and_mdf import setup_figure, plot_vice_onezone
 from apogee_sample import APOGEESample
 import paths
@@ -18,14 +20,14 @@ from colormaps import paultol
 
 RADIUS = 8.
 ZONE_WIDTH = 2.
-HIATUS_ONSET = 1.0
-HIATUS_DURATION = 0.3
+HIATUS_ONSET = 1.4
+HIATUS_DURATION = 0.2
 TAU_STAR_BASE = 2.0
 TAU_STAR_ENHANCEMENT = 10
 FEH_LIM = (-1.6, 0.6)
 OFE_LIM = (-0.08, 0.48)
 
-def main():
+def main(verbose=True):
     plt.style.use(paths.styles / 'paper.mplstyle')
     plt.rcParams['axes.prop_cycle'] = plt.cycler('color', paultol.bright.colors)
     fig, axs = setup_figure(xlim=FEH_LIM, ylim=OFE_LIM)
@@ -36,9 +38,9 @@ def main():
     # apogee_solar.plot_kde2D_contours(axs[0], 'FE_H', 'O_FE', c='k', lw=1,
     #                                  plot_kwargs={'zorder': 1})
     pcm = axs[0].hexbin(apogee_solar('FE_H'), apogee_solar('O_FE'),
-                  gridsize=50, bins='log',
+                  gridsize=50, #bins='log',
                   extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]],
-                  cmap='Greys', linewidths=0.2)
+                  cmap='binary', linewidths=0.2)
     cax = axs[0].inset_axes([0.05, 0.05, 0.05, 0.8])
     fig.colorbar(pcm, cax=cax, orientation='vertical', label='# APOGEE Stars')
     
@@ -59,6 +61,9 @@ def main():
     
     # One-zone model parameters
     simtime = np.arange(0, 13.21, 0.01)
+    eta = outflows.equilibrium()
+    if verbose:
+        print('Eta = ', eta(RADIUS))
 
     # Reference: constant tau_star
     name = str(output_dir / 'constant')
@@ -70,13 +75,14 @@ def main():
         **ONEZONE_DEFAULTS
     )
     sz.tau_star = TAU_STAR_BASE
+    sz.eta = eta(RADIUS)
     sz.run(simtime, overwrite=True)
     plot_vice_onezone(name, fig=fig, axs=axs, label='Fiducial', 
                       linestyle='--', marker_labels=True)
 
     # SFE hiatus model
     name = str(output_dir / 'onset13_width02')
-    tau_star = tau_star_burst(onset=1.3, duration=0.2)
+    tau_star = tau_star_burst(onset=HIATUS_ONSET, duration=HIATUS_DURATION)
     sz = vice.singlezone(
         name = name,
         func = ifr,
@@ -84,6 +90,7 @@ def main():
         **ONEZONE_DEFAULTS
     )
     sz.tau_star = tau_star
+    sz.eta = eta(RADIUS)
     sz.run(simtime, overwrite=True)
     plot_vice_onezone(name, fig=fig, axs=axs, label='SFE Hiatus')
     axs[0].legend(loc='upper right')
