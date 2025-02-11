@@ -11,7 +11,7 @@ import vice
 
 from multizone.src.yields import yZ1
 from utils import twoinfall_onezone
-from multizone.src import models
+from multizone.src import models, outflows
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH
 from track_and_mdf import setup_axes, plot_vice_onezone
 import paths
@@ -19,7 +19,7 @@ import paths
 RADIUS = 8.
 ZONE_WIDTH = 2.
 FIDUCIAL = {
-    'first_timescale': 1.,
+    'first_timescale': 0.3,
     'second_timescale': 10.,
     'onset': 4.
 }
@@ -30,7 +30,7 @@ LABELS = {
     'onset': 't_{\\rm max}'
 }
 XLIM = (-1.9, 0.7)
-YLIM = (-0.2, 0.499)
+YLIM = (-0.14, 0.499)
 
 def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, fname='onezone_params', 
          verbose=False, style='paper'):
@@ -155,11 +155,7 @@ def vary_param(subfig, first_timescale=1., second_timescale=10., onset=4.,
         else:
             color = None
         # Outflow mass-loading factor
-        eta_func = models.equilibrium_mass_loading(
-            equilibrium=0., 
-            tau_sfh=param_dict['second_timescale'], 
-            tau_star=0. # for a consistent value of eta
-        )
+        eta_func = outflows.yZ1()
         eta = eta_func(RADIUS)
         # Run one-zone model
         name = output_name(*param_dict.values())
