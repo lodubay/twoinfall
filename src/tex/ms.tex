@@ -105,7 +105,58 @@ Motivated by constraints on the SFH by {\it Gaia}, \citet{spitoni_beyond_2023} p
 
 \citet{spitoni_remind_2024}
 
-\section{Methods}
+\section{Observational Sample}
+\label{sec:observational-sample}
+
+\begin{table*}
+    \centering
+    \caption{Sample selection parameters and median uncertainties from APOGEE DR17 (see Section \ref{sec:observational-sample}).}
+    \label{tab:sample}
+    \begin{tabular}{lll}
+        \hline\hline
+        \multicolumn{1}{c}{Parameter} & \multicolumn{1}{c}{Range or Value} & \multicolumn{1}{c}{Notes} \\
+        \hline
+        $\log g$            & $1.0 < \log g < 3.8$          & Select giants only \\
+        $T_{\rm eff}$       & $3500 < T_{\rm eff} < 5500$ K & Reliable temperature range \\
+        $S/N$               & $S/N > 80$                    & Required for accurate stellar parameters \\
+        ASPCAPFLAG Bits     & $\notin$ 23                   & Remove stars flagged as bad \\
+        EXTRATARG Bits      & $\notin$ 0, 1, 2, 3, or 4     & Select main red star sample only \\
+        Age                 & $\sigma_{\rm Age} < 40\%$     & Age uncertainty from \citetalias{leung_variational_2023} \\
+        $R_{\rm gal}$     & $3 < R_{\rm gal} < 15$ kpc    & Eliminate bulge \& extreme outer-disk stars \\
+        $|z|$               & $|z| < 2$ kpc                 & Eliminate halo stars \\
+        \hline
+    \end{tabular}
+\end{table*}
+
+\begin{table*}
+\centering
+\caption{Number of APOGEE stars in each Galactic region.}
+\label{tab:apogee-regions}
+\input{output/apogee_regions_table.tex}
+\end{table*}
+
+\begin{table*}
+    \centering
+    \caption{Median and dispersion in APOGEE parameter uncertainties.}
+    \label{tab:uncertainties}
+    \begin{tabular}{lcc}
+        \hline\hline
+        \multicolumn{1}{c}{Parameter} & \multicolumn{1}{c}{Median Uncertainty} & \multicolumn{1}{c}{Uncertainty Dispersion ($95\%-5\%$)} \\
+        \hline
+        [Fe/H]          & $0.0089$   & $0.0060$ \\
+        ${\rm [O/Fe]}$  & $0.019$    & $0.031$ \\
+        log(Age/Gyr)    & $0.10$     & $0.16$ \\
+        \hline
+    \end{tabular}
+\end{table*}
+
+We compare our models against stellar abundances from the Apache Point Observatory Galactic Evolution Experiment \citep[APOGEE;][]{majewski_apache_2017} data release 17 \citep[DR17;][]{abdurrouf_seventeenth_2022}. APOGEE data were obtained from infrared spectrographs \citep{wilson_apache_2019} mounted on the 2.5-meter Sloan Foundation Telescope \citep{gunn_25_2006} at Apache Point Observatory and the Ir{\'e}n{\'e}e DuPont Telescope \citep{bowen_optical_1973} at Las Campanas Observatory. The data reduction pipeline is described by \citet{nidever_data_2015}, and APOGEE Stellar Parameter and Chemical Abundance Pipeline (ASPCAP) is detailed by \citet{holtzman_abundances_2015}, \citet{garcia_perez_aspcap_2016}, and \citet{jonsson_apogee_2020}.
+
+We obtain a sample of \input{output/sample_size.txt} red giant branch and red clump stars with high-quality spectra using the selection criteria listed in Table \ref{tab:sample}, which are adapted from \citet{hayden_chemical_2015}. We use the \citet{bailer-jones_estimating_2021} photo-geometric distance estimates from {\it Gaia} Early Data Release 3 \citep{gaia_collaboration_gaia_2016,gaia_collaboration_gaia_2021} included in the APOGEE DR17 catalog. When calculating the galactocentric radius $R_{\rm gal}$ and midplane distance $z$ of each star, we assume the distance between the Sun and the Galactic center is $R_\odot=8.122$ kpc \citep{gravity_collaboration_detection_2018} and the Solar midplane distance is $z_\odot=20.8$ pc \citep{bennett_vertical_2019}. Table \ref{tab:apogee-regions} presents the number of APOGEE stars in bins of $R_{\rm gal}$ and $|z|$; typical distance uncertainties are much smaller than the bin width. \todo{Mention calibrated abundances.}
+
+\todo{Taken from last paper.} We use estimated ages from \citet[][hereafter \citetalias{leung_variational_2023}]{leung_variational_2023}, who use a variational encoder-decoder network which is trained on asteroseismic data to retrieve age estimates for APOGEE giants without contamination from age-abundance correlations. Importantly, the \citetalias{leung_variational_2023} ages do not plateau beyond $\sim10$ Gyr as they do in astroNN \citep{mackereth_dynamical_2019}. We use an age uncertainty cut of 40\% per the recommendations of \citetalias{leung_variational_2023}, which produces a total sample of \input{output/age_sample_size.txt} APOGEE stars with age estimates. We note that we use the full sample of \input{output/sample_size.txt} APOGEE stars unless we explicitly compare to age estimates. Table \ref{tab:uncertainties} presents the median and dispersion ($95^{\rm th} - 5^{\rm th}$ percentile difference) of the uncertainty in [Fe/H], [O/Fe], and log(age).
+
+\section{Chemical Evolution Models \& Parameter Selection}
 \label{sec:methods}
 
 \todo{Copied from last paper.} We use the multi-zone GCE model tools in \vice developed by \citet{johnson_stellar_2021}. The basic setup of our models follows theirs. The disk is divided into concentric rings of width $\delta R_{\rm gal}=100$ pc. Stellar populations migrate radially under the prescription we describe in Appendix C, but each ring is otherwise described by a conventional one-zone GCE model with instantaneous mixing. Following \citet{johnson_stellar_2021}, we do not implement radial gas flows \citep[e.g.,][]{lacey_chemical_1985,bilitewski_radial_2012}. Stellar populations are also assigned a distance from the midplane according to their age and final radius as described in Appendix C.
@@ -150,7 +201,7 @@ The population-averaged nucleosynthetic yields of CCSNe are still fairly uncerta
     \label{tab:yields}
 \end{table}
 
-We increased $y_{\rm Fe}^{\rm Ia}$ by a factor of 30\% and 10\% for the {\tt yZ1} and {\tt yZ2} yield sets, respectively, to ensure our models could reach ${\rm [O/Fe]}\approx0.0$ by the end time. The final row of Table \ref{tab:yields} reports the integrated SN Ia rate $N_{\rm Ia}/M_\star$ from each yield set, assuming a mean Fe yield per SN Ia of $\bar m_{\rm Fe}^{\rm Ia}=0.7$ M$_\odot$ \citep{mazzali_common_2007,howell_effect_2009} \todo{(are there more recent citations?)}. The rate for the {\tt yZ1} yield set is slightly higher than the volumetric rate of $N_{\rm Ia}/M_\star=(1.3\pm0.1)\times10^{-3}\,{\rm M}_\odot^{-1}$ reported by \citet{maoz_star_2017}, but is consistent with their measurement of $N_{\rm Ia}/M_\star=(1.6\pm0.3)\times10^{-3}\,{\rm M}_\odot^{-1}$ for field galaxies. The rate for the {\tt yZ2} yield set is consistent with the measurement of $N_{\rm Ia}/M_\star=(2.2\pm1.0)\times10^{-3}\,{\rm M}_\odot^{-1}$ by \citet{maoz_type-ia_2012}.
+We increased $y_{\rm Fe}^{\rm Ia}$ by a factor of 30\% and 10\% for the {\tt yZ1} and {\tt yZ2} yield sets, respectively, to ensure our models could reach ${\rm [O/Fe]}\approx0.0$ by the end time. The final row of Table \ref{tab:yields} reports the integrated SN Ia rate $N_{\rm Ia}/M_\star$ from each yield set, assuming a mean Fe yield per SN Ia of $\overline m_{\rm Fe}^{\rm Ia}=0.7$ M$_\odot$ \citep{mazzali_common_2007,howell_effect_2009} \todo{(are there more recent citations?)}. The rate for the {\tt yZ1} yield set is slightly higher than the volumetric rate of $N_{\rm Ia}/M_\star=(1.3\pm0.1)\times10^{-3}\,{\rm M}_\odot^{-1}$ reported by \citet{maoz_star_2017}, but is consistent with their measurement of $N_{\rm Ia}/M_\star=(1.6\pm0.3)\times10^{-3}\,{\rm M}_\odot^{-1}$ for field galaxies. The rate for the {\tt yZ2} yield set is consistent with the measurement of $N_{\rm Ia}/M_\star=(2.2\pm1.0)\times10^{-3}\,{\rm M}_\odot^{-1}$ by \citet{maoz_type-ia_2012}.
 
 The SN Ia rate in units of ${\rm M}_\odot^{-1}\,{\rm yr}^{-1}$ is defined as
 \begin{equation}
@@ -318,57 +369,6 @@ We note that the final midplane distance is assigned at the end of the model run
 
 The parameters of Equations \ref{eq:radial-migration} and \ref{eq:scale-height} were chosen to fit the stellar migration patterns in the {\tt h277} hydrodynamical simulation \citep{christensen_implementing_2012}. A more complete discussion of the migration scheme and its consequences can be found in Appendix C of \citet{dubay_galactic_2024}.
 
-\subsection{Observational Sample}
-\label{sec:observational-sample}
-
-\begin{table*}
-    \centering
-    \caption{Sample selection parameters and median uncertainties from APOGEE DR17 (see Section \ref{sec:observational-sample}).}
-    \label{tab:sample}
-    \begin{tabular}{lll}
-        \hline\hline
-        \multicolumn{1}{c}{Parameter} & \multicolumn{1}{c}{Range or Value} & \multicolumn{1}{c}{Notes} \\
-        \hline
-        $\log g$            & $1.0 < \log g < 3.8$          & Select giants only \\
-        $T_{\rm eff}$       & $3500 < T_{\rm eff} < 5500$ K & Reliable temperature range \\
-        $S/N$               & $S/N > 80$                    & Required for accurate stellar parameters \\
-        ASPCAPFLAG Bits     & $\notin$ 23                   & Remove stars flagged as bad \\
-        EXTRATARG Bits      & $\notin$ 0, 1, 2, 3, or 4     & Select main red star sample only \\
-        Age                 & $\sigma_{\rm Age} < 40\%$     & Age uncertainty from \citetalias{leung_variational_2023} \\
-        $R_{\rm gal}$     & $3 < R_{\rm gal} < 15$ kpc    & Eliminate bulge \& extreme outer-disk stars \\
-        $|z|$               & $|z| < 2$ kpc                 & Eliminate halo stars \\
-        \hline
-    \end{tabular}
-\end{table*}
-
-\begin{table*}
-\centering
-\caption{Number of APOGEE stars in each Galactic region.}
-\label{tab:apogee-regions}
-\input{output/apogee_regions_table.tex}
-\end{table*}
-
-\begin{table*}
-    \centering
-    \caption{Median and dispersion in APOGEE parameter uncertainties.}
-    \label{tab:uncertainties}
-    \begin{tabular}{lcc}
-        \hline\hline
-        \multicolumn{1}{c}{Parameter} & \multicolumn{1}{c}{Median Uncertainty} & \multicolumn{1}{c}{Uncertainty Dispersion ($95\%-5\%$)} \\
-        \hline
-        [Fe/H]          & $0.0089$   & $0.0060$ \\
-        ${\rm [O/Fe]}$  & $0.019$    & $0.031$ \\
-        log(Age/Gyr)    & $0.10$     & $0.16$ \\
-        \hline
-    \end{tabular}
-\end{table*}
-
-We compare our models against stellar abundances from the Apache Point Observatory Galactic Evolution Experiment \citep[APOGEE;][]{majewski_apache_2017} data release 17 \citep[DR17;][]{abdurrouf_seventeenth_2022}. APOGEE data were obtained from infrared spectrographs \citep{wilson_apache_2019} mounted on the 2.5-meter Sloan Foundation Telescope \citep{gunn_25_2006} at Apache Point Observatory and the Ir{\'e}n{\'e}e DuPont Telescope \citep{bowen_optical_1973} at Las Campanas Observatory. The data reduction pipeline is described by \citet{nidever_data_2015}, and APOGEE Stellar Parameter and Chemical Abundance Pipeline (ASPCAP) is detailed by \citet{holtzman_abundances_2015}, \citet{garcia_perez_aspcap_2016}, and \citet{jonsson_apogee_2020}.
-
-We obtain a sample of \input{output/sample_size.txt} red giant branch and red clump stars with high-quality spectra using the selection criteria listed in Table \ref{tab:sample}, which are adapted from \citet{hayden_chemical_2015}. We use the \citet{bailer-jones_estimating_2021} photo-geometric distance estimates from {\it Gaia} Early Data Release 3 \citep{gaia_collaboration_gaia_2016,gaia_collaboration_gaia_2021} included in the APOGEE DR17 catalog. When calculating the galactocentric radius $R_{\rm gal}$ and midplane distance $z$ of each star, we assume the distance between the Sun and the Galactic center is $R_\odot=8.122$ kpc \citep{gravity_collaboration_detection_2018} and the Solar midplane distance is $z_\odot=20.8$ pc \citep{bennett_vertical_2019}. Table \ref{tab:apogee-regions} presents the number of APOGEE stars in bins of $R_{\rm gal}$ and $|z|$; typical distance uncertainties are much smaller than the bin width. \todo{Mention calibrated abundances.}
-
-\todo{Taken from last paper.} We use estimated ages from \citet[][hereafter \citetalias{leung_variational_2023}]{leung_variational_2023}, who use a variational encoder-decoder network which is trained on asteroseismic data to retrieve age estimates for APOGEE giants without contamination from age-abundance correlations. Importantly, the \citetalias{leung_variational_2023} ages do not plateau beyond $\sim10$ Gyr as they do in astroNN \citep{mackereth_dynamical_2019}. We use an age uncertainty cut of 40\% per the recommendations of \citetalias{leung_variational_2023}, which produces a total sample of \input{output/age_sample_size.txt} APOGEE stars with age estimates. We note that we use the full sample of \input{output/sample_size.txt} APOGEE stars unless we explicitly compare to age estimates. Table \ref{tab:uncertainties} presents the median and dispersion ($95^{\rm th} - 5^{\rm th}$ percentile difference) of the uncertainty in [Fe/H], [O/Fe], and log(age).
-
 \section{Multi-Zone Model Results}
 \label{sec:multizone-results}
 
@@ -407,8 +407,8 @@ Finally, as in Section \ref{sec:abundance-distributions}, we investigate a model
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{The SN Ia Delay-Time Distribution}
-\label{sec:dtd-discussion}
+% \subsection{The SN Ia Delay-Time Distribution}
+% \label{sec:dtd-discussion}
 
 % \begin{figure*}
 %     \centering
