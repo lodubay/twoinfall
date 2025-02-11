@@ -325,8 +325,8 @@ def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None,
         bin_edges, 
         np.append(abundance_intervals[0.16].values, abundance_intervals[0.16].values[-1:]),
         np.append(abundance_intervals[0.84].values, abundance_intervals[0.84].values[-1:]),
-        step='post',
-        color=color, alpha=alpha, label=label, edgecolor='none',
+        step='post', 
+        color=color, alpha=alpha, label=label, edgecolor=color, linestyle='--'
     )
     # plot median line
     spatch = ax.stairs(abundance_intervals[0.5].values, edges=bin_edges,
