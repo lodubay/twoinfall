@@ -293,13 +293,15 @@ We adopt a thick disk scale radius of $R_1=2.0$ kpc, a thin disk scale radius of
 
 % The parameters of Equation \ref{eq:infall-rate} have important effects on the chemical evolution of the model. 
 % Previous studies of the two-infall model have adopted values for the infall parameters of $\tau_1\sim0.1-1$ Gyr, $\tau_2\sim3-10$ Gyr, and $t_{\rm max}\sim3-5$ Gyr. 
-Figure \ref{fig:twoinfall-parameters} illustrates the effect of varying the infall parameters on gas abundance tracks and stellar abundance distributions in a one-zone model. We note that all our models are normalized to produce the same thick-to-thin-disk mass ratio. The first infall timescale $\tau_1$, shown in panel (a), primarily affects the stellar distribution along the high-$\alpha$ sequence. Though $\tau_1$ has an apparently large effect on the size of the low-$\alpha$ loop, the effect on the stellar abundance distribution of the low-$\alpha$ sequence is quite small due to the low number of stars formed between $t\sim3-6$ Gyr. We adopt $\tau_1=1$ Gyr for our fiducial value, in line with \citet{spitoni_galactic_2020} but longer than, e.g., \citet{nissen_high-precision_2020} or \citet{spitoni_apogee_2021}, in order to set the peak of the high-$\alpha$ sequence at ${\rm [O/Fe]}\approx+0.3$. 
+Figure \ref{fig:twoinfall-parameters} illustrates the effect of varying the infall parameters on gas abundance tracks and stellar abundance distributions in a one-zone model. The first infall timescale $\tau_1$, shown in panel (a), primarily affects the stellar distribution along the high-$\alpha$ sequence. Though $\tau_1$ has an apparently large effect on the size of the low-$\alpha$ loop, the effect on the stellar abundance distribution of the low-$\alpha$ sequence is quite small due to the low number of stars formed between $t\sim3-6$ Gyr. We adopt $\tau_1=1$ Gyr for our fiducial value, in line with \citet{spitoni_galactic_2020} but longer than, e.g., \citet{nissen_high-precision_2020} or \citet{spitoni_apogee_2021}, in order to set the peak of the high-$\alpha$ sequence at ${\rm [O/Fe]}\approx+0.3$. 
 
 Panel (b) of Figure \ref{fig:twoinfall-parameters} shows that 
 % the second infall timescale $\tau_2$ is the most important parameter to tune in order to reproduce the observed stellar abundance distributions. 
 the second infall timescale $\tau_2$ controls the width of the MDF and the low-$\alpha$ [O/Fe] distribution. A shorter $\tau_2$ produces a broader [O/Fe] distribution which is skewed to higher [O/Fe], while a longer $\tau_2$ produces both a narrower low-$\alpha$ sequence and a narrower MDF. We note that our maximum value of $\tau_2=30$ Gyr is very close to a constant infall rate, so a further increase in $\tau_2$ has diminishing returns. Between $\tau_2=3-30$ Gyr, the endpoint of the abundance tracks shifts by $\sim0.2$ dex in [Fe/H] and $\sim0.1$ dex in [O/Fe], which could affect the model's ability to reproduce the present-day abundance of the Solar neighborhood. We adopt a fiducial value of $\tau_2=15$ Gyr for the Solar neighborhood in order to minimize the width of the low-$\alpha$ [O/Fe] distribution while still approaching Solar [Fe/H] at late times. This value is in line with the infall timescale recovered by \citet{spitoni_galactic_2020}, and similar to the local star formation timescale adopted by \citet{johnson_stellar_2021}, but significantly longer than the timescales found by \citet{nissen_high-precision_2020} and \citet{spitoni_apogee_2021}. In \todo{Section X}, we explore the effect of varying $\tau_2$ with radius in multi-zone models.
 
 Finally, panel (c) of Figure \ref{fig:twoinfall-parameters} shows that the time of maximum infall $t_{\rm max}$ (c) strongly affects the overall stellar abundance distribution for values $t_{\rm max}\leq2$ Gyr, but in this case the gas tracks do not produce the characteristic abundance loop. For $t_{\rm max}>2$ Gyr, varying $t_{\rm max}$ results in a minor shift to the mean of the MDF and little change to the [O/Fe] distributions, even though the abundance tracks in [O/Fe]--[Fe/H] space appear very different. The value of $t_{\rm max}$ also slightly adjusts the ISM abundance endpoint, as a longer $t_{\rm max}$ means the chemical evolution ``reset'' from the second infall occurs closer to the present day (see discussion in Section \ref{sec:age-abundance}. We adopt a fiducial value of $t_{\rm max}=4.2$ Gyr so that the second infall occurs at a lookback time of 9 Gyr, younger than the median age of the thick disk in the APOKASC-3 catalog of $9.14\pm0.05$ Gyr \citep{pinsonneault_apokasc-3_2024}. This value is generally in line with previous two-infall studies \citep[e.g.,][]{nissen_high-precision_2020,spitoni_galactic_2020,spitoni_apogee_2021}.
+
+We note that all our models are normalized to produce the same thick-to-thin-disk mass ratio regardless of the infall parameters. The high-$\alpha$ sequence appears much less prominent in our [O/Fe] distributions in Figure \ref{fig:twoinfall-parameters} than in the data because the model outputs include only stars which were formed in-situ at the Solar annulus. In our multi-zone models, most of the high-$\alpha$ stars present in the Solar neighborhood have migrated from the inner Galaxy.
 
 In most of our models, we assume the infalling gas is pristine (i.e., $Z_{\rm in}=0$). However, the circumgalactic medium (CGM) from which the infalling gas is drawn could be previously enriched, either from gas stripped from dwarf galaxies or from SNe in the halo \todo{(citations; any measurements of CGM metallicity?)}. For this reason, we also test cases where the infalling gas is pre-enriched and its metallicity is described by
 \begin{equation}
@@ -372,7 +374,7 @@ The parameters of Equations \ref{eq:radial-migration} and \ref{eq:scale-height} 
 \section{Multi-Zone Model Results}
 \label{sec:multizone-results}
 
-\subsection{Stellar Abundance Distributions}
+\subsection{Present-Day Abundances}
 \label{sec:abundance-distributions}
 
 \begin{figure*}
@@ -388,7 +390,16 @@ In columns (c) and (d) of Figure \ref{fig:ofe-df}, we attempt to mitigate the is
 
 Finally, in model (d) the metallicity of the infalling gas increases to ${\rm [X/H]}_{\rm CGM}=-0.7$ at late times. We choose this value because it is the maximum which can plausibly still reproduce the disk abundances; any higher and the infalling gas would be more metal-rich than the most metal-poor thin disk stars. This model results in very similar [O/Fe] distributions to the $y/Z_\odot=1$ case. We assume that the infalling gas has ${\rm [O/Fe]}=0$ at all times; an alternate run with ${\rm [O/Fe]}=+0.3$ shifted the distribution towards higher [O/Fe], worsening agreement with observations. In summary, pre-enriched gas infall may be necessary for the two-infall model to match the observed [O/Fe] distribution across the disk.
 
-\subsection{Age--Abundance Relations}
+\begin{figure}
+    \centering
+    \includegraphics{figures/ofe_feh_density.pdf}
+    \caption{The density of stars in the [O/Fe]--[Fe/H] plane from multi-zone models with (a) $y/Z_\odot=1$ and (b) $y/Z_\odot=2$, and (c) from the APOGEE DR17 catalog. Stars are restricted to the region defined by $7\leq R_{\rm gal}< 9$ kpc and $0.5\leq|z|<1$ kpc to highlight the $\alpha$-bimodality.}
+    \label{fig:ofe-feh-density}
+\end{figure}
+
+Figure \ref{fig:ofe-feh-density} illustrates the origin of the intermediate-$\alpha$ peak predicted by the two-infall model at mid to high Galactic latitudes. Between $0.5\leq|z|<1$ kpc, both the models with $y/Z_\odot=1$ and $y/Z_\odot=2$ predict an over-density of stars near the abundance turn-over (${\rm [Fe/H]}\approx-0.3$, ${\rm [O/Fe]}\approx0.1-0.2$), which is not seen in the APOGEE sample. Additionally, it is clear that the shape of the low-$\alpha$ sequence in the model results (a concave-down ``comma'') is different from the data (a concave-up ``swoosh'').
+
+\subsection{Abundance Evolution}
 \label{sec:age-abundance}
 
 \begin{figure*}
@@ -403,6 +414,9 @@ The dilution effect discussed in \ref{sec:yields} is clearly seen in the multi-z
 The observed rise in the median abundance of stars with ages of $\sim4-8$ Gyr is thought to be due to radial migration, as those stars are more likely to have migrated from the dense inner metal-rich regions of the Galaxy during that time. Although our fiducial model does include a prescription for radial migration, the majority of stars in that age range in column (a) have sub-Solar abundances. Column (c) of Figure \ref{fig:abundance-evolution} presents a model with $y/Z_\odot=1$ but with a stronger migration prescription of $\sigma_{\rm RM8}=5$ kpc. Here, the stars which make up the present-day Solar neighborhood are drawn from a wider range of birth $R_{\rm gal}$, producing a broader abundance distribution for any given age. However, even though this prescription is much stronger than the estimates of, e.g., \citet{frankel_measuring_2018}, the model cannot reproduce the observed age--abundance trends in [O/H] and [Fe/H].
 
 Finally, as in Section \ref{sec:abundance-distributions}, we investigate a model where the gas infall is pre-enriched to ${\rm [O/H]}={\rm [Fe/H]}=-0.7$. As shown in column (d) of Figure \ref{fig:abundance-evolution}, this mitigates but does not completely solve the two discrepancies. The dilution effect of the second infall is reduced to the $\sim0.3$-dex level as the gas which replenishes the Galaxy's reservoir is no longer pristine; however, the width of the stellar abundance distribution is also reduced, \todo{because why?}. The late-time gas abundance evolution is similar to the fiducial model, but it ends at slightly super-Solar metallicity --- an effect which can be compensated by a slightly increased value of $\eta$. Overall, no modification to the $y/Z_\odot=1$ model is able to overcome both the dilution and late-time evolution issues.
+
+\subsection{Abundances Across the Disk}
+\label{sec:disk-abundances}
 
 \section{Discussion}
 \label{sec:discussion}
@@ -425,16 +439,22 @@ Finally, as in Section \ref{sec:abundance-distributions}, we investigate a model
 \subsection{Star Formation Hiatus}
 \label{sec:sfe-hiatus}
 
-The two-infall model falls into the broader category of GCE models which reproduce the $\alpha$-bimodality by halting or severely limiting star formation for some duration. For the two-infall model, this phase of low star formation immediately precedes the second infall epoch and is due to the relatively short timescale of the first infall epoch. However, as we have shown, the dilution of the ISM resulting from the second infall poses a challenge when comparing to age--abundance data.
-
-A bursty infall history is not the only way to produce a gap in the star formation history. \citep{beane_rising_2024} present 
-
 \begin{figure}
     \centering
     \includegraphics{figures/onezone_sfe_hiatus.pdf}
-    \caption{Abundance tracks and distributions from one-zone models which experience an efficiency-driven starburst. The blue dashed curve represents the fiducial model that has an exponentially declining infall rate and constant star formation efficiency timescale $\tau_\star=2$ Gyr. The red solid curve plots the output of a model which experiences an enhancement of $\tau_\star$ by a factor of 10, for a duration of 200 Myr, starting at $t=1.4$ Gyr. The greyscale histogram presents the number density of APOGEE stars in [O/Fe]--[Fe/H] space, and the gray histograms in the marginal panels show the APOGEE stellar abundance distributions.}
+    \caption{Abundance tracks and distributions from one-zone models which experience an efficiency-driven starburst. The blue dashed curve represents the fiducial model that has an exponentially declining infall rate and constant star formation efficiency timescale $\tau_\star=2$ Gyr. The red solid curve plots the output of a model which experiences an enhancement of $\tau_\star$ by a factor of 10, for a duration of 200 Myr, starting at $t=1.4$ Gyr. Both models assume the {\tt yZ2} yield set, with $y_{\rm Fe}^{\rm Ia}$ reduced by 20\% to better match the model endpoint with the data, and $\eta=1.4$. The greyscale histogram presents the number density of APOGEE stars in the Solar annulus ($7\leq R_{\rm gal}\leq 9$ kpc, $0\leq|z|\leq2$ kpc) in [O/Fe]--[Fe/H] space, and the gray histograms in the marginal panels show the APOGEE stellar abundance distributions.}
     \label{fig:onezone-sfe-hiatus}
 \end{figure}
+
+The two-infall model falls into the broader category of GCE models which reproduce the $\alpha$-bimodality by halting or severely limiting star formation for some duration. For the two-infall model, this phase of low star formation immediately precedes the second infall epoch and is due to the relatively short timescale of the first infall epoch. However, as we have shown, the dilution of the ISM resulting from the second infall poses a challenge when comparing to age--abundance data.
+
+A bursty infall history is not the only way to produce a gap in the star formation history. \citet{beane_rising_2024} present a simulated galaxy from the Illustris TNG50 suite that exhibits MW-like bimodality. They argue that the $\alpha$-bimodality is brought on by a brief ($\sim300$ Myr) quiescent period caused by bar formation. The virial mass of their galaxy grows steadily throughout this period, unlike in our two-infall model where the mass grows by a factor of \todo{X} during the 1 Gyr following the second infall.
+
+While our semi-analytic model does not include a Galactic bar, we can explore the effects of a star formation hiatus by artificially boosting the SFE timescale $\tau_\star$ for a period of time. Figure \ref{fig:onezone-sfe-hiatus} illustrates the effect of this SFE-driven hiatus in a one-zone model with an exponentially declining infall rate. During the quiescent period, the [O/Fe] ratio slowly declines due to the delayed contribution of Fe from SNe Ia. Meanwhile, the gas mass continues to increase even as star formation is suppressed. When $\tau_\star$ is lowered at the end of the quiescent period, the high gas mass sparks a moderate star formation burst which causes stellar abundances to ``pile up'' at similar [O/Fe] values. The trough between the high- and low-$\alpha$ sequences results from the star formation returning to pre-quiescence behavior.
+
+Our simple hiatus model offers a few parameters which control the chemical evolution. The onset time of the SFE hiatus controls the position of the high-$\alpha$ sequence: a later onset places the peak at lower [O/Fe]. The duration of the star formation hiatus \todo{(and the $\tau_\star$ enhancement factor?)} controls the strength of the high-$\alpha$ peak.
+
+The parameters of the SFE hiatus in Figure \ref{fig:onezone-sfe-hiatus} were chosen to match the APOGEE stellar [O/Fe] distribution as closely as possible. However, there are some differences in detail, such as the dearth of stars at ${\rm [O/Fe]}\approx+0.35$ due to the star formation hiatus. We intend this model to illustrate another path to reproducing the $\alpha$-bimodality. Most of the high-$\alpha$ stars present in the Solar annulus have likely migrated from the inner Galaxy, where perhaps this SFE-driven hiatus was concentrated.
 
 \section{Conclusions}
 \label{sec:conclusions}
