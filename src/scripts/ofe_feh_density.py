@@ -5,11 +5,13 @@ This script plots 2D density histograms of multi-zone models.
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
+import vice
 
 from multizone_stars import MultizoneStars
 from apogee_sample import APOGEESample
-from _globals import ONE_COLUMN_WIDTH
+from _globals import ONE_COLUMN_WIDTH, ZONE_WIDTH
 import paths
+from colormaps import paultol
 
 OUTPUT_NAMES = [
     'yZ1/mass_loading/bespoke/diskmodel',
@@ -44,30 +46,39 @@ def main(style='paper', cmap='Blues'):
         subset = mzs.region(galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
         pcm = ax.hexbin(
             subset('[fe/h]'), subset('[o/fe]'),
-            # C=subset('galr_origin'), reduce_C_function=np.median,
-            # C=subset('age'), reduce_C_function=np.median,
-            C=subset('mstar') / 1e6,
-            reduce_C_function=np.sum, #bins='log',
+            C=100 * subset('mstar') / subset('mstar').sum(),
+            reduce_C_function=np.sum, vmax=1.3,
             gridsize=GRIDSIZE, cmap=cmap, linewidths=0.1,
             extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]]
         )
         cax = axs[i].inset_axes([1.05, 0.05, 0.05, 0.9])
-        fig.colorbar(pcm, cax=cax, orientation='vertical',
-                     label=r'Stellar mass [$\times10^6$ M$_\odot$]')
+        cbar = fig.colorbar(pcm, cax=cax, orientation='vertical')
+        cbar.ax.set_ylabel('Percent of stellar mass', labelpad=4)
+        # Gas abundance track, weighted by SFR
+        galr_mean = (GALR_LIM[1] + GALR_LIM[0]) / 2.
+        zone = int(galr_mean / ZONE_WIDTH)
+        multioutput = vice.output(str(subset.fullpath))
+        hist = multioutput.zones[f'zone{zone}'].history
+        axs[i].plot(hist['[fe/h]'], hist['[o/fe]'], color='k', marker='none', linewidth=2)
+        for tstart in np.arange(1, 15, 2):
+            axs[i].plot(
+                hist['[fe/h]'][100*tstart:min(100*(tstart+1),len(hist['[o/fe]'])-1)], 
+                hist['[o/fe]'][100*tstart:min(100*(tstart+1),len(hist['[o/fe]'])-1)], 
+                color='w', marker='none', linewidth=1
+            )
 
     axs[-1].set_title(LABELS[-1], y=0.85)
     subset = apogee_sample.region(galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
     pcm = axs[-1].hexbin(
         subset('FE_H'), subset('O_FE'),
-        #    C=subset('L23_AGE'), reduce_C_function=np.median,
         C=np.ones(subset.nstars),
-        reduce_C_function=np.sum, #bins='log',
-        gridsize=GRIDSIZE, cmap=cmap, linewidths=0.2,
+        reduce_C_function=np.sum,
+        gridsize=GRIDSIZE, cmap='Reds', linewidths=0.2,
         extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]]
     )
     cax = axs[-1].inset_axes([1.05, 0.05, 0.05, 0.9])
-    fig.colorbar(pcm, cax=cax, orientation='vertical',
-                 label='Number of stars')
+    cbar = fig.colorbar(pcm, cax=cax, orientation='vertical')
+    cbar.ax.set_ylabel('Number of stars')
     
     # Axes limits
     axs[0].set_xlim(FEH_LIM)
