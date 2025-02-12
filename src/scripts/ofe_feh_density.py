@@ -22,8 +22,8 @@ LABELS = [
     r'(b) $y/Z_\odot=2$',
     '(c) APOGEE'
 ]
-FEH_LIM = (-1.1, 0.6)
-OFE_LIM = (-0.1, 0.55)
+FEH_LIM = (-1.2, 0.6)
+OFE_LIM = (-0.15, 0.55)
 GALR_LIM = (7, 9)
 ABSZ_LIM = (0.5, 1)
 GRIDSIZE = 50
@@ -49,7 +49,8 @@ def main(style='paper', cmap='Blues'):
             C=100 * subset('mstar') / subset('mstar').sum(),
             reduce_C_function=np.sum, vmax=1.3,
             gridsize=GRIDSIZE, cmap=cmap, linewidths=0.1,
-            extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]]
+            extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]],
+            marginals=True
         )
         cax = axs[i].inset_axes([1.05, 0.05, 0.05, 0.9])
         cbar = fig.colorbar(pcm, cax=cax, orientation='vertical')
@@ -74,7 +75,8 @@ def main(style='paper', cmap='Blues'):
         C=np.ones(subset.nstars),
         reduce_C_function=np.sum,
         gridsize=GRIDSIZE, cmap='Reds', linewidths=0.2,
-        extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]]
+        extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]],
+        marginals=True
     )
     cax = axs[-1].inset_axes([1.05, 0.05, 0.05, 0.9])
     cbar = fig.colorbar(pcm, cax=cax, orientation='vertical')
