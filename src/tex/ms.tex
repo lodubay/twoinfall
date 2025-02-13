@@ -163,7 +163,7 @@ We run multi-zone GCE models using the Versatile Integrator for Chemical Evoluti
 
 Within each ring, chemical evolution proceeds according to a conventional one-zone GCE model with instantaneous mixing and continuous recycling. Stellar populations migrate between zones as described in Section \ref{sec:migration}, allowing the long-lived progenitors of SNe Ia to enrich areas of the Galaxy outside of their birth zones. We inhibit star formation past $R_{\rm gal}>15.5$ kpc, so stars in the outer 4.5 kpc of the model disk represent a purely migrated population. We also assign a final midplane distance to each stellar population as described in Section \ref{sec:migration}. We do not incorporate radial gas flows between the different zones, but we discuss their potential implications in Section \ref{sec:radial-flows}.
 
-We discuss our assumptions about the nucleosynthetic yields in Section \ref{sec:yields}, and we detail our outflow prescription in Section \ref{sec:outflows}. We describe the infall history and parameter selection in Section \ref{sec:sfh}, and we present our star formation law in Section \ref{sec:sf-law}. We briefly summarize the stellar migration prescription in Section \ref{sec:migration}. Table \ref{tab:multizone-parameters} summarizes the most relevant variables and their fiducial values in this work.
+We discuss our assumptions about the nucleosynthetic yields in Section \ref{sec:yields}, and we detail our outflow prescription in Section \ref{sec:outflows}. We describe the gas supply in Section \ref{sec:sfh}, we detail the infall parameter selection in Section \ref{sec:parameter-selection}, and we present our star formation law in Section \ref{sec:sf-law}. We briefly summarize the stellar migration prescription in Section \ref{sec:migration}. Table \ref{tab:multizone-parameters} summarizes the most relevant variables and their fiducial values in this work.
 
 \begin{deluxetable*}{Cccl}
     \tablecaption{A summary of variables and their fiducial values for our chemical evolution models (see discussion in Section \ref{sec:methods}).\label{tab:multizone-parameters}}
@@ -180,12 +180,12 @@ We discuss our assumptions about the nucleosynthetic yields in Section \ref{sec:
         % Outflows
         \eta_\odot      & 0.2       & \ref{sec:outflows}    & Outflow mass-loading factor in the Solar annulus ($\eta\equiv \dot\Sigma_{\rm out}/\dot\Sigma_\star$) \\
         R_\eta          & 4.2 kpc   & \ref{sec:outflows}    & Exponential outflow scale radius \\
-        % f_{\rm in}(t|R_{\rm gal})   & Equation \ref{eq:infall-rate}   & \ref{sec:sfh} & Time-dependence of the gas infall rate \\
-        \tau_1          & 1 Gyr     & \ref{sec:sfh}     & Timescale of the first infall epoch \\
-        \tau_2          & 15 Gyr    & \ref{sec:sfh}     & Timescale of the second infall epoch \\
-        t_{\rm max}      & 4.2      & \ref{sec:sfh}     & Time of maximum gas infall (onset of second infall) \\
         f_{\Sigma,0}    & 0.27      & \ref{sec:sfh}     & Central thick/thin disk surface density ratio \\
         {\rm [X/H]}_{\rm CGM}   & Pristine  & \ref{sec:sfh}     & Metallicity of infalling gas \\
+        \tau_1          & 1 Gyr     & \ref{sec:parameter-selection}     & Timescale of the first infall epoch \\
+        \tau_2(R_\odot)  & 15 Gyr    & \ref{sec:parameter-selection}     & Timescale of the second infall epoch at the Solar annulus \\
+        R_{\tau_2}   & 7 kpc     & \ref{sec:parameter-selection}      & Exponential scale radius of the second infall timescale \\
+        t_{\rm max}      & 4.2 Gyr  & \ref{sec:parameter-selection}     & Time of maximum gas infall (onset of second infall) \\
         \sigma_{\rm RM8}    & 2.68 kpc  & \ref{sec:migration}   & Radial migration strength
     \enddata
 \end{deluxetable*}
@@ -286,6 +286,16 @@ where $\tau_1$ and $\tau_2$ are the first and second infall timescales, respecti
 \end{equation}
 We adopt a thick disk scale radius of $R_1=2.0$ kpc, a thin disk scale radius of $R_2=2.5$ kpc, and a central surface density ratio of $f_{\Sigma,0}=0.27$ \citep{bland-hawthorn_galaxy_2016}.
 
+In most of our models, we assume the infalling gas is pristine (i.e., $Z_{\rm in}=0$). However, the circumgalactic medium (CGM) from which the infalling gas is drawn could be previously enriched, either from gas stripped from dwarf galaxies or from SNe in the halo \todo{(citations; any measurements of CGM metallicity?)}. For this reason, we also test cases where the infalling gas is pre-enriched and its metallicity is described by
+\begin{equation}
+    \label{eq:pre-enrichment}
+    Z_{\rm in}(t) = (1 - \exp(-t/\tau_{\rm rise})) Z_\odot 10^{{\rm [X/H]}_{\rm CGM}}.
+\end{equation}
+In this case, the metallicity rises from 0 with a timescale $\tau_{\rm rise}=2$ Gyr and plateaus at ${\rm [X/H]}_{\rm CGM}={\rm [O/H]}_{\rm CGM}={\rm [Fe/H]}_{\rm CGM}$. We also investigate cases where the CGM is $\alpha$-enhanced, i.e., ${\rm [O/Fe]}_{\rm CGM}>0$.
+
+\subsection{Infall Rate Parameter Selection}
+\label{sec:parameter-selection}
+
 \begin{figure*}
     \centering
     \includegraphics{figures/onezone_params.pdf}
@@ -299,30 +309,28 @@ Figure \ref{fig:twoinfall-parameters} illustrates the effect of varying the infa
 
 Panel (b) of Figure \ref{fig:twoinfall-parameters} shows that 
 % the second infall timescale $\tau_2$ is the most important parameter to tune in order to reproduce the observed stellar abundance distributions. 
-the second infall timescale $\tau_2$ controls the width of the MDF and the low-$\alpha$ [O/Fe] distribution. A shorter $\tau_2$ produces a broader [O/Fe] distribution which is skewed to higher [O/Fe], while a longer $\tau_2$ produces both a narrower low-$\alpha$ sequence and a narrower MDF. We note that our maximum value of $\tau_2=30$ Gyr is very close to a constant infall rate, so a further increase in $\tau_2$ has diminishing returns. Between $\tau_2=3-30$ Gyr, the endpoint of the abundance tracks shifts by $\sim0.2$ dex in [Fe/H] and $\sim0.1$ dex in [O/Fe], which could affect the model's ability to reproduce the present-day abundance of the Solar neighborhood. We adopt a fiducial value of $\tau_2=15$ Gyr for the Solar neighborhood in order to minimize the width of the low-$\alpha$ [O/Fe] distribution while still approaching Solar [Fe/H] at late times. This value is in line with the infall timescale recovered by \citet{spitoni_galactic_2020}, and similar to the local star formation timescale adopted by \citet{johnson_stellar_2021}, but significantly longer than the timescales found by \citet{nissen_high-precision_2020} and \citet{spitoni_apogee_2021}. In \todo{Section X}, we explore the effect of varying $\tau_2$ with radius in multi-zone models.
+the second infall timescale $\tau_2$ controls the width of the MDF and the low-$\alpha$ [O/Fe] distribution. A shorter $\tau_2$ produces a broader [O/Fe] distribution which is skewed to higher [O/Fe], while a longer $\tau_2$ produces both a narrower low-$\alpha$ sequence and a narrower MDF. We note that our maximum value of $\tau_2=30$ Gyr is very close to a constant infall rate, so a further increase in $\tau_2$ has diminishing returns. Between $\tau_2=3-30$ Gyr, the endpoint of the abundance tracks shifts by $\sim0.2$ dex in [Fe/H] and $\sim0.1$ dex in [O/Fe], which could affect the model's ability to reproduce the present-day abundance of the Solar neighborhood. We adopt a fiducial value of $\tau_2=15$ Gyr for the Solar neighborhood in order to minimize the width of the low-$\alpha$ [O/Fe] distribution while still approaching Solar [Fe/H] at late times. This value is in line with the infall timescale recovered by \citet{spitoni_galactic_2020}, and similar to the local star formation timescale adopted by \citet{johnson_stellar_2021}, but significantly longer than the timescales found by \citet{nissen_high-precision_2020} and \citet{spitoni_apogee_2021}. 
+% In \todo{Section X}, we explore the effect of varying $\tau_2$ with radius in multi-zone models.
+
+In our multi-zone models, we vary the second infall timescale with radius to produce inside-out growth of the disk. Previous multi-zone two-infall studies \citep[e.g.,][]{chiappini_abundance_2001,palla_chemical_2020} scale $\tau_2$ linearly with radius, with $\tau_2\approx1$ Gyr in the inner disk and $\tau_2=7$ Gyr at the Solar annulus. This prescription was adopted to match the metallicity distribution of the Solar neighborhood and the bulge in the absence of mass-loaded outflows \citep{romano_mass_2000}. We instead adopt an exponential $\tau_2 - R_{\rm gal}$ relation, with $\tau_2(R_\odot)=15$ Gyr at the Solar annulus and a scale radius $R_{\tau_2}=7$ kpc. This is similar to the star formation history timescale of \citet{johnson_stellar_2021}, which was based on the  stellar age gradients in Milky Way-like spirals observed by \citet{sanchez_spatially_2020}. We also run models with a linear prescription and with a uniform value for $\tau_2$ and find little difference in our key results.
 
 Finally, panel (c) of Figure \ref{fig:twoinfall-parameters} shows that the time of maximum infall $t_{\rm max}$ (c) strongly affects the overall stellar abundance distribution for values $t_{\rm max}\leq2$ Gyr, but in this case the gas tracks do not produce the characteristic abundance loop. For $t_{\rm max}>2$ Gyr, varying $t_{\rm max}$ results in a minor shift to the mean of the MDF and little change to the [O/Fe] distributions, even though the abundance tracks in [O/Fe]--[Fe/H] space appear very different. The value of $t_{\rm max}$ also slightly adjusts the ISM abundance endpoint, as a longer $t_{\rm max}$ means the chemical evolution ``reset'' from the second infall occurs closer to the present day (see discussion in Section \ref{sec:age-abundance}. We adopt a fiducial value of $t_{\rm max}=4.2$ Gyr so that the second infall occurs at a lookback time of 9 Gyr, younger than the median age of the thick disk in the APOKASC-3 catalog of $9.14\pm0.05$ Gyr \citep{pinsonneault_apokasc-3_2024}. This value is generally in line with previous two-infall studies \citep[e.g.,][]{nissen_high-precision_2020,spitoni_galactic_2020,spitoni_apogee_2021}.
 
 We note that all our models are normalized to produce the same thick-to-thin-disk mass ratio regardless of the infall parameters. The high-$\alpha$ sequence appears much less prominent in our [O/Fe] distributions in Figure \ref{fig:twoinfall-parameters} than in the data because the model outputs include only stars which were formed in-situ at the Solar annulus. In our multi-zone models, most of the high-$\alpha$ stars present in the Solar neighborhood have migrated from the inner Galaxy.
 
-In most of our models, we assume the infalling gas is pristine (i.e., $Z_{\rm in}=0$). However, the circumgalactic medium (CGM) from which the infalling gas is drawn could be previously enriched, either from gas stripped from dwarf galaxies or from SNe in the halo \todo{(citations; any measurements of CGM metallicity?)}. For this reason, we also test cases where the infalling gas is pre-enriched and its metallicity is described by
-\begin{equation}
-    \label{eq:pre-enrichment}
-    Z_{\rm in}(t) = (1 - \exp(-t/\tau_{\rm rise})) Z_\odot 10^{{\rm [X/H]}_{\rm CGM}}.
-\end{equation}
-In this case, the metallicity rises from 0 with a timescale $\tau_{\rm rise}=2$ Gyr and plateaus at ${\rm [X/H]}_{\rm CGM}={\rm [O/H]}_{\rm CGM}={\rm [Fe/H]}_{\rm CGM}$. We also investigate cases where the CGM is $\alpha$-enhanced, i.e., ${\rm [O/Fe]}_{\rm CGM}>0$.
-
-% \begin{figure}
-%     \centering
-%     \includegraphics{figures/onezone_sfr.pdf}
-%     \caption{Key takeaway: a fundamental attribute of any two-infall model is a bump in the number of stars on the low-alpha sequence where the abundance track turns over. This is because the star formation rate is near its peak while the rate of chemical evolution has slowed considerably.}
-%     \label{fig:onezone-sfr}
-% \end{figure}
-
 \subsection{The Star Formation Law}
 \label{sec:sf-law}
 
-The star formation law follows a single power-law prescription: $\dot\Sigma_\star\propto\Sigma_g^N$, with $N=1.5$ following \citet{kennicutt_global_1998}. Previous work with this GCE model \citep[e.g.,][]{johnson_stellar_2021,dubay_galactic_2024} assumed a three-component power-law, but we adopt a single power-law prescription in this work to allow for a more direct comparison with previous two-infall studies \citep[e.g.,][]{spitoni_remind_2024}. In detail, we calculate the star formation efficiency (SFE) timescale $\tau_\star\equiv\Sigma_g/\dot\Sigma_\star$ according to the following:
+The star formation law follows a single power-law prescription: $\dot\Sigma_\star\propto\Sigma_g^N$, with $N=1.5$ following \citet{kennicutt_global_1998}. Previous work with this GCE model \citep[e.g.,][]{johnson_stellar_2021,dubay_galactic_2024} assumed a three-component power-law, but we adopt a single power-law prescription in this work to allow for a more direct comparison with previous two-infall studies \citep[e.g.,][]{spitoni_remind_2024}. 
+
+\begin{figure}
+    \centering
+    \includegraphics{src/tex/figures/sfe_prefactor.pdf}
+    \caption{Effect of the SFE timescale pre-factor $\varepsilon$ on abundance tracks and distributions in a one-zone model (see Section \ref{sec:sf-law}). All models are normalized to produce roughly the same ratio of thick to thin disk stars regardless of the value of $\varepsilon$ during the first infall epoch.}
+    \label{fig:sfe-prefactor}
+\end{figure}
+
+In detail, we calculate the star formation efficiency (SFE) timescale $\tau_\star\equiv\Sigma_g/\dot\Sigma_\star$ according to the following:
 \begin{equation}
     \label{eq:sf-law}
     \tau_\star = 
@@ -341,13 +349,6 @@ where $\Sigma_{g,0} = 10^8\,{\rm M}_\odot\,{\rm kpc}^{-2}$ and $\tau_{\rm mol}(t
     \end{cases}
 \end{equation}
 A lower value of $\varepsilon(t<t_{\rm max})$ leads to more efficient star formation during the first infall epoch. Figure \ref{fig:sfe-prefactor} illustrates that this pre-factor largely affects the metallicity of the high-$\alpha$ sequence, with a smaller $\varepsilon$ producing faster enrichment during the first infall and stronger dilution after $t_{\rm max}$. The pre-factor has virtually no effect on the overall [O/Fe] distribution because the model is normalized to produce the same thick-to-thin-disk mass ratio regardless of the details of the star formation law. We adopt $\varepsilon(t<t_{\rm max})=0.5$ for consistency with the two-infall literature.
-
-\begin{figure}
-    \centering
-    \includegraphics{src/tex/figures/sfe_prefactor.pdf}
-    \caption{Effect of the SFE timescale pre-factor $\varepsilon$ on abundance tracks and distributions in a one-zone model (see Section \ref{sec:sf-law}). All models are normalized to produce roughly the same ratio of thick to thin disk stars regardless of the value of $\varepsilon$ during the first infall epoch.}
-    \label{fig:sfe-prefactor}
-\end{figure}
 
 \subsection{Stellar Migration}
 \label{sec:migration}
@@ -462,6 +463,10 @@ The parameters of the SFE hiatus in Figure \ref{fig:onezone-sfe-hiatus} were cho
 
 \section{Conclusions}
 \label{sec:conclusions}
+
+\begin{itemize}
+    \item
+\end{itemize}
 
 \section*{Acknowledgements}
 
