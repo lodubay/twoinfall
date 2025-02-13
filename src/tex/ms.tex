@@ -159,9 +159,11 @@ We obtain a sample of \input{output/sample_size.txt} red giant branch and red cl
 \section{Chemical Evolution Models \& Parameter Selection}
 \label{sec:methods}
 
-\todo{Copied from last paper.} We use the multi-zone GCE model tools in \vice developed by \citet{johnson_stellar_2021}. The basic setup of our models follows theirs. The disk is divided into concentric rings of width $\delta R_{\rm gal}=100$ pc. Stellar populations migrate radially under the prescription we describe in Appendix C, but each ring is otherwise described by a conventional one-zone GCE model with instantaneous mixing. Following \citet{johnson_stellar_2021}, we do not implement radial gas flows \citep[e.g.,][]{lacey_chemical_1985,bilitewski_radial_2012}. Stellar populations are also assigned a distance from the midplane according to their age and final radius as described in Appendix C.
+We run multi-zone GCE models using the Versatile Integrator for Chemical Evolution \citep[{\tt VICE};][]{johnson_impact_2020}. The basic format of our models follows \citet{johnson_stellar_2021} and \citet{dubay_galactic_2024}. We set up a disk with radial extent $0\leq R_{\rm gal}<20$ kpc that is divided into concentric rings of width $\delta R_{\rm gal}=100$ pc. We use a time-step size of $\Delta t=10$ Myr and a resolution of $n=8$ stellar populations per time-step per ring, and we run our models up to a final time of $t_{\rm final}=13.2$ Gyr.
 
-\todo{Copied from last paper.} We run our models with a time-step size of $\Delta t=10$ Myr up to a maximum time of $t_{\rm final}=13.2$ Gyr. Following \citet{johnson_stellar_2021}, we set \vice to form $n=8$ stellar populations per ring per time-step, and we set a maximum star-formation radius of $R_{\rm SF} = 15.5$ kpc, such that $\dot\Sigma_\star=0$ for $R_{\rm gal}>R_{\rm SF}$. The model has a full radial extent of 20 kpc, allowing a purely migrated population to arise in the outer 4.5 kpc. We adopt continuous recycling, which accounts for the time-dependent return of mass from all previous generations of stars \citep[see Equation 2 from][]{johnson_impact_2020}. We summarize these parameters in Table \ref{tab:multizone-parameters}.
+Within each ring, chemical evolution proceeds according to a conventional one-zone GCE model with instantaneous mixing and continuous recycling. Stellar populations migrate between zones as described in Section \ref{sec:migration}, allowing the long-lived progenitors of SNe Ia to enrich areas of the Galaxy outside of their birth zones. We inhibit star formation past $R_{\rm gal}>15.5$ kpc, so stars in the outer 4.5 kpc of the model disk represent a purely migrated population. We also assign a final midplane distance to each stellar population as described in Section \ref{sec:migration}. We do not incorporate radial gas flows between the different zones, but we discuss their potential implications in Section \ref{sec:radial-flows}.
+
+We discuss our assumptions about the nucleosynthetic yields in Section \ref{sec:yields}, and we detail our outflow prescription in Section \ref{sec:outflows}. We describe the infall history and parameter selection in Section \ref{sec:sfh}, and we present our star formation law in Section \ref{sec:sf-law}. We briefly summarize the stellar migration prescription in Section \ref{sec:migration}. Table \ref{tab:multizone-parameters} summarizes the most relevant variables and their fiducial values in this work.
 
 \begin{deluxetable*}{Cccl}
     \tablecaption{A summary of variables and their fiducial values for our chemical evolution models (see discussion in Section \ref{sec:methods}).\label{tab:multizone-parameters}}
@@ -196,7 +198,7 @@ The population-averaged nucleosynthetic yields of CCSNe are still fairly uncerta
 
 \begin{table}
     \centering
-    \caption{Nucleosynthetic yield sets.}
+    \caption{Nucleosynthetic yields and outflow prescriptions.}
     \include{output/yields.tex}
     \label{tab:yields}
 \end{table}
@@ -310,12 +312,12 @@ In most of our models, we assume the infalling gas is pristine (i.e., $Z_{\rm in
 \end{equation}
 In this case, the metallicity rises from 0 with a timescale $\tau_{\rm rise}=2$ Gyr and plateaus at ${\rm [X/H]}_{\rm CGM}={\rm [O/H]}_{\rm CGM}={\rm [Fe/H]}_{\rm CGM}$. We also investigate cases where the CGM is $\alpha$-enhanced, i.e., ${\rm [O/Fe]}_{\rm CGM}>0$.
 
-\begin{figure}
-    \centering
-    \includegraphics{figures/onezone_sfr.pdf}
-    \caption{Key takeaway: a fundamental attribute of any two-infall model is a bump in the number of stars on the low-alpha sequence where the abundance track turns over. This is because the star formation rate is near its peak while the rate of chemical evolution has slowed considerably.}
-    \label{fig:onezone-sfr}
-\end{figure}
+% \begin{figure}
+%     \centering
+%     \includegraphics{figures/onezone_sfr.pdf}
+%     \caption{Key takeaway: a fundamental attribute of any two-infall model is a bump in the number of stars on the low-alpha sequence where the abundance track turns over. This is because the star formation rate is near its peak while the rate of chemical evolution has slowed considerably.}
+%     \label{fig:onezone-sfr}
+% \end{figure}
 
 \subsection{The Star Formation Law}
 \label{sec:sf-law}
@@ -374,7 +376,7 @@ The parameters of Equations \ref{eq:radial-migration} and \ref{eq:scale-height} 
 \section{Multi-Zone Model Results}
 \label{sec:multizone-results}
 
-\subsection{Present-Day Abundances}
+\subsection{Local Abundance Patterns}
 \label{sec:abundance-distributions}
 
 \begin{figure*}
@@ -384,20 +386,22 @@ The parameters of Equations \ref{eq:radial-migration} and \ref{eq:scale-height} 
     \label{fig:ofe-df}
 \end{figure*}
 
-As discussed in Section \ref{sec:sfh}, the two-infall model generically predicts {\it three} peaks in the [O/Fe] distribution which correspond to the high-$\alpha$ sequence, the abundance ``turn-over'' after the second infall, and finally the late-time low-$\alpha$ sequence. Figure \ref{fig:ofe-df} compares [O/Fe] distributions across the Galactic disk produced by four different multi-zone models with the distributions observed in APOGEE DR17. For the fiducial model (a) with $y/Z_\odot=1$, the latter two peaks are close together and the overall effect is similar to the observed distribution. With a higher yield set, however, there is a $\sim0.2$ dex separation between the low- and intermediate-$\alpha$ peaks, because the CCSN element production after the second infall is more efficient. As a result, model (b) predicts a high density of stars in the APOGEE ``trough.''
+The two-infall model generically predicts {\it three} peaks in the [O/Fe] distribution which correspond to the high-$\alpha$ sequence, the abundance ``turn-over'' after the second infall, and finally the late-time low-$\alpha$ sequence. Figure \ref{fig:ofe-df} compares [O/Fe] distributions across the Galactic disk produced by four different multi-zone models with the distributions observed in APOGEE DR17. For the fiducial model (a) with $y/Z_\odot=1$, the latter two peaks are close together and the overall effect is similar to the observed distribution. With a higher yield set, however, there is a $\sim0.2$ dex separation between the low- and intermediate-$\alpha$ peaks, because the CCSN element production after the second infall is more efficient. As a result, model (b) predicts a high density of stars in the APOGEE ``trough.''
 
-In columns (c) and (d) of Figure \ref{fig:ofe-df}, we attempt to mitigate the issue of the intermediate-$\alpha$ peak for the $y/Z_\odot=2$ yield set. Model (c) switches out our fiducial DTD with a power-law DTD, which decreases the timescale for Fe production (see Figure \ref{fig:dtd}). However, as shown by \citet{dubay_galactic_2024}, models with a power-law DTD struggle to reproduce the high-$\alpha$ sequence for a wide range of star formation histories, and the results are no different for this two-infall model. 
+In columns (c) and (d) of Figure \ref{fig:ofe-df}, we attempt to mitigate the issue of the intermediate-$\alpha$ peak for the $y/Z_\odot=2$ yield set. Model (c) switches out our fiducial DTD with a power-law DTD, which decreases the timescale for Fe production. However, as shown by \citet{dubay_galactic_2024}, models with a power-law DTD struggle to reproduce the high-$\alpha$ sequence for a wide range of star formation histories, and the results are no different for this two-infall model. 
 
 Finally, in model (d) the metallicity of the infalling gas increases to ${\rm [X/H]}_{\rm CGM}=-0.7$ at late times. We choose this value because it is the maximum which can plausibly still reproduce the disk abundances; any higher and the infalling gas would be more metal-rich than the most metal-poor thin disk stars. This model results in very similar [O/Fe] distributions to the $y/Z_\odot=1$ case. We assume that the infalling gas has ${\rm [O/Fe]}=0$ at all times; an alternate run with ${\rm [O/Fe]}=+0.3$ shifted the distribution towards higher [O/Fe], worsening agreement with observations. In summary, pre-enriched gas infall may be necessary for the two-infall model to match the observed [O/Fe] distribution across the disk.
 
 \begin{figure}
     \centering
     \includegraphics{figures/ofe_feh_density.pdf}
-    \caption{The density of stars in the [O/Fe]--[Fe/H] plane from multi-zone models with (a) $y/Z_\odot=1$ and (b) $y/Z_\odot=2$, and (c) from the APOGEE DR17 catalog. Stars are restricted to the region defined by $7\leq R_{\rm gal}< 9$ kpc and $0.5\leq|z|<1$ kpc to highlight the $\alpha$-bimodality.}
+    \caption{The density of stars in the [O/Fe]--[Fe/H] plane from multi-zone models with (a) $y/Z_\odot=1$ and (b) $y/Z_\odot=2$, and (c) from the APOGEE DR17 catalog. The curves in panels (a) and (b) plot the ISM abundance of the Solar annulus over time, and the alternating black and white segments mark time intervals of 1 Gyr. Stars are restricted to the region defined by $7\leq R_{\rm gal}< 9$ kpc and $0.5\leq|z|<1$ kpc to highlight the $\alpha$-bimodality.}
     \label{fig:ofe-feh-density}
 \end{figure}
 
-Figure \ref{fig:ofe-feh-density} illustrates the origin of the intermediate-$\alpha$ peak predicted by the two-infall model at mid to high Galactic latitudes. Between $0.5\leq|z|<1$ kpc, both the models with $y/Z_\odot=1$ and $y/Z_\odot=2$ predict an over-density of stars near the abundance turn-over (${\rm [Fe/H]}\approx-0.3$, ${\rm [O/Fe]}\approx0.1-0.2$), which is not seen in the APOGEE sample. Additionally, it is clear that the shape of the low-$\alpha$ sequence in the model results (a concave-down ``comma'') is different from the data (a concave-up ``swoosh'').
+Figure \ref{fig:ofe-feh-density} illustrates the origin of the intermediate-$\alpha$ peak predicted by the two-infall model at mid to high Galactic latitudes. Between $0.5\leq|z|<1$ kpc, both the models with $y/Z_\odot=1$ and $y/Z_\odot=2$ predict an over-density of stars near the abundance turn-over (${\rm [Fe/H]}\approx-0.3$, ${\rm [O/Fe]}\approx0.1-0.2$), which is not seen in the APOGEE sample. This over-density occurs because the overall rate of chemical evolution slows $\sim2$ Gyr after the second infall, at the same time as the delayed enrichment from SNe Ia reverses the evolution of [O/Fe]. This is a generic prediction of {\it any} two-infall model regardless of its specific parameters, though its impact can be mitigated through parameter choices which act to compress the distance between the low- and intermediate-$\alpha$ peaks, as in models (c) and (d) of Figure \ref{fig:ofe-df}.
+
+Additionally, the shape of the low-$\alpha$ sequence in the model results (a concave-down ``comma'') is clearly different from the data (a concave-up ``swoosh''). \todo{Not sure what this means because the inside-out SFH has the same issue. Maybe it's related to radial migration?}
 
 \subsection{Abundance Evolution}
 \label{sec:age-abundance}
