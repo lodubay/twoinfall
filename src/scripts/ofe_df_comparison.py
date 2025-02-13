@@ -14,8 +14,8 @@ import paths
 from _globals import TWO_COLUMN_WIDTH, GALR_BINS, ABSZ_BINS
 
 OUTPUT_NAMES = [
-    'yZ1/mass_loading/bespoke/diskmodel',
-    'yZ2/mass_loading/bespoke/diskmodel',
+    'yZ1/fiducial/diskmodel',
+    'yZ2/fiducial/diskmodel',
     'yZ2/dtd/powerlaw/diskmodel',
     'yZ2/pre_enrichment/mh07_alpha00/diskmodel'
 ]

@@ -14,8 +14,8 @@ import paths
 from colormaps import paultol
 
 OUTPUT_NAMES = [
-    'yZ1/mass_loading/bespoke/diskmodel',
-    'yZ2/mass_loading/bespoke/diskmodel'
+    'yZ1/fiducial/diskmodel',
+    'yZ2/fiducial/diskmodel'
 ]
 LABELS = [
     r'(a) $y/Z_\odot=1$',

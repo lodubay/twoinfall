@@ -4,7 +4,6 @@ the two-infall model with a radially-dependent second infall timescale.
 """
 
 import math as m
-from .insideout import insideout
 from .twoinfall import twoinfall
 
 _SCALE_RADIUS_ = 7 # kpc
@@ -19,11 +18,9 @@ class twoinfall_expvar(twoinfall):
     ----------
     radius : float
         The galactocentric radius in kpc of a given annulus in the model.
-    Re : float [default: 5]
-        Effective radius of the Galaxy in kpc.
     
     Other parameters, arguments, and functionality are inherited from 
-    ``twoinfall``. The timescale function is inherited from ``insideout``.
+    ``twoinfall``.
     """
     def __init__(self, radius, **kwargs):
         super().__init__(
