@@ -51,12 +51,13 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
                            title=MODEL_LABELS[i])
     # Plot APOGEE data
     plot_mdf_evolution(apogee_data, axs[-1], col=vice_to_apogee_col(col), 
-                       smoothing=smoothing, cmap=cmap, title='(c) APOGEE', 
+                       smoothing=smoothing, cmap=cmap, 
+                       title='(c) APOGEE ([C/N]-derived ages)', 
                        age_col='CN_AGE')
     
     # Add colorbar at left
     cbar = setup_colorbar(fig, cmap=cmap, bounds=AGE_BINS,
-                          label=r'[C/N]-derived age [Gyr]',
+                          label=r'Stellar age [Gyr]',
                           width=0.015, pad=0.015, labelpad=2)
     
     for i in range(len(axs[0,:])):
