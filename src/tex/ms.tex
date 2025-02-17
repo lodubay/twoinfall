@@ -154,6 +154,8 @@ We compare our models against stellar abundances from the Apache Point Observato
 
 We obtain a sample of \input{output/sample_size.txt} red giant branch and red clump stars with high-quality spectra using the selection criteria listed in Table \ref{tab:sample}, which are adapted from \citet{hayden_chemical_2015}. We use the \citet{bailer-jones_estimating_2021} photo-geometric distance estimates from {\it Gaia} Early Data Release 3 \citep{gaia_collaboration_gaia_2016,gaia_collaboration_gaia_2021} included in the APOGEE DR17 catalog. When calculating the galactocentric radius $R_{\rm gal}$ and midplane distance $z$ of each star, we assume the distance between the Sun and the Galactic center is $R_\odot=8.122\,{\rm kpc}$ \citep{gravity_collaboration_detection_2018} and the Solar midplane distance is $z_\odot=20.8\,{\rm pc}$ \citep{bennett_vertical_2019}. Table \ref{tab:apogee-regions} presents the number of APOGEE stars in bins of $R_{\rm gal}$ and $|z|$; typical distance uncertainties are much smaller than the bin width. \todo{Mention calibrated abundances.}
 
+We supplement the APOGEE DR17 abundance data with two different age catalogs.
+
 \todo{Taken from last paper.} We use estimated ages from \citet[][hereafter \citetalias{leung_variational_2023}]{leung_variational_2023}, who use a variational encoder-decoder network which is trained on asteroseismic data to retrieve age estimates for APOGEE giants without contamination from age-abundance correlations. Importantly, the \citetalias{leung_variational_2023} ages do not plateau beyond $\sim10\,{\rm Gyr}$ as they do in astroNN \citep{mackereth_dynamical_2019}. We use an age uncertainty cut of 40\% per the recommendations of \citetalias{leung_variational_2023}, which produces a total sample of \input{output/age_sample_size.txt} APOGEE stars with age estimates. We note that we use the full sample of \input{output/sample_size.txt} APOGEE stars unless we explicitly compare to age estimates. Table \ref{tab:uncertainties} presents the median and dispersion ($95^{\rm th} - 5^{\rm th}$ percentile difference) of the uncertainty in [Fe/H], [O/Fe], and log(age).
 
 \section{Chemical Evolution Models \& Parameter Selection}
@@ -434,7 +436,7 @@ Finally, as in Section \ref{sec:abundance-distributions}, we investigate a model
 \begin{figure*}
     \centering
     \includegraphics[width=0.9\linewidth]{figures/mdf_evolution.pdf}
-    \caption{Evolution of the MDF across the Galactic disk.}
+    \caption{Evolution of the MDF across the Galactic disk. Each panel presents the normalized stellar [Fe/H] distribution within a {2 kpc}-wide annulus, color-coded by the age bin. Rows (a) and (b) present the distributions from multi-zone GCE models, while row (c) presents the distributions from APOGEE DR17 with ages derived from [C/N] abundances (see Section \ref{sec:observational-sample}). Distributions are restricted to $0\leq|z|<0.5\,{\rm kpc}$ and boxcar-smoothed with a width of {0.1 dex} in all panels.}
     \label{fig:mdf-evolution}
 \end{figure*}
 
