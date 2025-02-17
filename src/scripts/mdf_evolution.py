@@ -16,9 +16,12 @@ import paths
 
 GALR_BINS = [3, 5, 7, 9, 11, 13]
 AGE_BINS = [0, 2, 4, 6, 8, 10]
+# AGE_BINS = [0, 2, 4, 6, 8, 10, 13]
+# AGE_BINS = [0, 1, 3, 5, 7, 9, 13]
 ABSZ_LIM = (0, 0.5)
 NBINS = 100
 SMOOTH_WIDTH = 0.1
+# FEH_LIM = (-1.1, 0.6)
 FEH_LIM = (-0.8, 0.6)
 YSCALE = 1e7
 
@@ -80,7 +83,6 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
     for ax in axs[:,0]:
         ax.set_ylim((0, None))
     axs[1,0].set_ylabel('Normalized PDF')
-    # axs[0,-1].legend(frameon=False, title='Age Bin [Gyr]')
     axs[0,0].xaxis.set_major_locator(MultipleLocator(0.5))
     axs[0,0].xaxis.set_minor_locator(MultipleLocator(0.1))
     axs[0,0].set_xlim(FEH_LIM)
@@ -106,34 +108,20 @@ def plot_mdf_evolution(obj, axs, col='[fe/h]', smoothing=SMOOTH_WIDTH,
     for i in range(len(GALR_BINS)-1):
         galr_lim = GALR_BINS[i:i+2]
         region_subset = obj.region(galr_lim=galr_lim, absz_lim=ABSZ_LIM)
+        # for j in reversed(list(range(len(AGE_BINS)-1))):
         for j in range(len(AGE_BINS)-1):
             age_lim = AGE_BINS[j:j+2]
             age_subset = region_subset.filter({age_col: tuple(age_lim)})
-            # subset = obj.filter({
-            #     'age': tuple(age_lim), 
-            #     'galr_final': tuple(galr_lim), 
-            #     'zfinal': (0, 0.5)
-            # })
-            # Plot un-normalized MDFs
-            # mdf, bin_edges = subset.mdf(col, range=xlim, bins=nbins, 
-            #                             smoothing=smoothing, density=False)
-            # axs[0,i].plot(get_bin_centers(bin_edges), mdf / YSCALE, 
-            #               color=colors[j], linewidth=1, 
-            #               label='%s - %s' % tuple(age_lim))
             # Plot normalized MDFs
-            mdf, bin_edges = age_subset.mdf(
-                col, range=xlim, bins=nbins, smoothing=smoothing
-            )
-            axs[i].plot(
-                get_bin_centers(bin_edges), mdf, 
-                color=colors[j], linewidth=1, 
-                label='%s - %s' % tuple(age_lim)
-            )
-            # Plot MDF widths
-            # per1 = weighted_quantile(age_subset.stars, val=col, weight='mstar', quantile=0.16)
-            # med = weighted_quantile(age_subset.stars, val=col, weight='mstar', quantile=0.5)
-            # per2 = weighted_quantile(age_subset.stars, val=col, weight='mstar', quantile=0.84)
-            # axs[i].errorbar(med, 5.0 - 0.1*j, xerr=[[per2-med], [med-per1]], fmt='none', ecolor=colors[j])
+            if age_subset.nstars > 100:
+                mdf, bin_edges = age_subset.mdf(
+                    col, range=xlim, bins=nbins, smoothing=smoothing
+                )
+                axs[i].plot(
+                    get_bin_centers(bin_edges), mdf, 
+                    color=colors[j], linewidth=1, #alpha=alpha,
+                    label='%s - %s' % tuple(age_lim)
+                )
 
 
 if __name__ == '__main__':
