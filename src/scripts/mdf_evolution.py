@@ -27,17 +27,17 @@ OUTPUT_NAMES = [
     'yZ2/pre_enrichment/mh07_alpha00/diskmodel'
 ]
 MODEL_LABELS = [
-    r'$y/Z_\odot=1$, ${\rm [X/H]}_{\rm CGM}=-0.7$',
-    r'$y/Z_\odot=2$, ${\rm [X/H]}_{\rm CGM}=-0.7$'
+    r'(a) $y/Z_\odot=1$, ${\rm [X/H]}_{\rm CGM}=-0.7$',
+    r'(b) $y/Z_\odot=2$, ${\rm [X/H]}_{\rm CGM}=-0.7$'
 ]
 
 def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = plt.subplots(
         3, len(GALR_BINS)-1,
-        figsize=(TWO_COLUMN_WIDTH, 0.6 * TWO_COLUMN_WIDTH), 
+        figsize=(TWO_COLUMN_WIDTH, 0.5 * TWO_COLUMN_WIDTH), 
         sharex=True, sharey='row', 
-        gridspec_kw={'hspace': 0.2, 'wspace': 0.1}
+        gridspec_kw={'hspace': 0.25, 'wspace': 0.1}
     )
     # Plot multizone outputs
     apogee_data = APOGEESample.load()
@@ -48,19 +48,20 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
                            title=MODEL_LABELS[i])
     # Plot APOGEE data
     plot_mdf_evolution(apogee_data, axs[-1], col=vice_to_apogee_col(col), 
-                       smoothing=smoothing, cmap=cmap, title='APOGEE', age_col='CN_AGE')
+                       smoothing=smoothing, cmap=cmap, title='(c) APOGEE', 
+                       age_col='CN_AGE')
     
     # Add colorbar at left
     cbar = setup_colorbar(fig, cmap=cmap, bounds=AGE_BINS,
                           label=r'[C/N]-derived age [Gyr]',
-                          width=0.02, pad=0.01, labelpad=2)
+                          width=0.015, pad=0.015, labelpad=2)
     
     for i in range(len(axs[0,:])):
         galr_lim = GALR_BINS[i:i+2]
         # axs[0,i].text(0.5, 0.95, r'$%s \leq R_{\rm gal} < %s$ kpc' % tuple(galr_lim),
         #               ha='center', va='top', transform=axs[0,i].transAxes)
         axs[0,i].set_title(r'$%s \leq R_{\rm gal} < %s$ kpc' % tuple(galr_lim),
-                           size=plt.rcParams['font.size'], pad=8)
+                           size=plt.rcParams['font.size'], pad=10)
         axs[-1,i].set_xlabel(capitalize_abundance(col))
     
     # Remove spines and y-axis labels
@@ -78,7 +79,7 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
     # Format axes
     for ax in axs[:,0]:
         ax.set_ylim((0, None))
-        ax.set_ylabel('Normalized PDF')
+    axs[1,0].set_ylabel('Normalized PDF')
     # axs[0,-1].legend(frameon=False, title='Age Bin [Gyr]')
     axs[0,0].xaxis.set_major_locator(MultipleLocator(0.5))
     axs[0,0].xaxis.set_minor_locator(MultipleLocator(0.1))
@@ -97,7 +98,7 @@ def plot_mdf_evolution(obj, axs, col='[fe/h]', smoothing=SMOOTH_WIDTH,
     colors = get_color_list(plt.get_cmap(cmap), AGE_BINS)
     # axs[2].set_title(title)
     axs[2].text(
-        0.5, 1.05, title, 
+        0.5, 1.08, title, 
         ha='center', va='top', 
         transform=axs[2].transAxes,
         size=plt.rcParams['axes.titlesize']
