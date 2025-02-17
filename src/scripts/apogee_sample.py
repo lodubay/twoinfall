@@ -116,12 +116,12 @@ class APOGEESample:
             if isinstance(cols, str):
                 if cols not in self.data.columns:
                     raise ValueError('Parameter "cols" must be an element ' + \
-                                     'of stars.columns.')
+                                     'of data.columns.')
             elif isinstance(cols, list):
                 if all([isinstance(c, str) for c in cols]):
                     if not all([c in self.data.columns for c in cols]):
                         raise ValueError('Each element of "cols" must be ' + \
-                                         'an element of stars.columns.')
+                                         'an element of data.columns.')
                 else:
                     raise TypeError('Each element of "cols" must be a string.')
             else:
@@ -281,7 +281,7 @@ class APOGEESample:
         filename = 'r%s-%s_z%s-%s.dat' % (self.galr_lim + self.absz_lim)
         return self.data_dir / 'kde' / kde_dir / filename
     
-    def mdf(self, col='FE_H', bins=100, range=None, smoothing=0.):
+    def mdf(self, col='FE_H', bins=100, range=None, smoothing=0., density=True):
         """
         Calculate the metallicity distribution function (MDF).
         
@@ -309,7 +309,7 @@ class APOGEESample:
             [Fe/H] bins including left and right edges, of length len(mdf)+1.
         """
         mdf, bin_edges = np.histogram(self.data[col], bins=bins, range=range, 
-                                      density=True)
+                                      density=density)
         if smoothing > 0.:
             mdf = box_smooth(mdf, bin_edges, smoothing)
         return mdf, bin_edges
@@ -349,6 +349,56 @@ class APOGEESample:
         levels = contour_levels_2D(scaled_density, enclosed=enclosed)
         ax.contour(xx, yy, scaled_density, levels, colors=c,
                    linewidths=lw, linestyles=ls, **plot_kwargs)
+        
+    def filter(self, filterdict, inplace=False):
+        """
+        Filter data by the given parameter bounds.
+        
+        Parameters
+        ----------
+        filterdict : dict
+            Dictionary containing the parameters and bounds with which to
+            filter the data. Each key must be a column in the data and
+            each value must be a tuple of lower and upper bounds. If either
+            element in the tuple is None, the corresponding limit will not be
+            applied.
+        inplace : bool, optional
+            If True, modifies the data of the current instance. If False,
+            returns a new instance with the filtered data. The default is
+            False.
+        """
+        data_copy = self.data.copy()
+        if isinstance(filterdict, dict):
+            for key in filterdict.keys():
+                # Error handling
+                if key not in self.data.columns:
+                    raise ValueError('Keys in "filterdict" must be data',
+                                     'column names.')
+                elif not isinstance(filterdict[key], tuple):
+                    raise TypeError('Each value in "filterdict" must be a',
+                                    'tuple of length 2.')
+                elif len(filterdict[key]) != 2:
+                    raise ValueError('Each value in "filterdict" must be a',
+                                     'tuple of length 2.')
+                elif not all([isinstance(val, Number) or val is None \
+                              for val in filterdict[key]]):
+                    raise TypeError('Each element of the tuple must be numeric',
+                                    'or NoneType.')
+                else:
+                    colmin, colmax = filterdict[key]
+                    if colmin is not None:
+                        data_copy = data_copy[data_copy[key] >= colmin]
+                    if colmax is not None:
+                        data_copy = data_copy[data_copy[key] < colmax]
+            if inplace:
+                self.data = data_copy
+            else:
+                return APOGEESample(data_copy, data_dir=self.data_dir, 
+                                    galr_lim=self.galr_lim, 
+                                    absz_lim=self.absz_lim)
+        else:
+            raise TypeError('Parameter "filterdict" must be a dict. Got:',
+                            type(filterdict))
     
     def region(self, galr_lim=(3, 15), absz_lim=(0, 2), inplace=False):
         """
