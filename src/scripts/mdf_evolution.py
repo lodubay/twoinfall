@@ -4,13 +4,14 @@ radii for APOGEE and several multi-zone models.
 """
 
 import argparse
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
 from multizone_stars import MultizoneStars
 from apogee_sample import APOGEESample
 from scatter_plot_grid import setup_colorbar
-from utils import get_color_list, get_bin_centers, capitalize_abundance, weighted_quantile, vice_to_apogee_col
+from utils import get_color_list, get_bin_centers, capitalize_abundance, vice_to_apogee_col
 from _globals import TWO_COLUMN_WIDTH
 import paths
 
@@ -24,6 +25,7 @@ SMOOTH_WIDTH = 0.1
 # FEH_LIM = (-1.1, 0.6)
 FEH_LIM = (-0.8, 0.6)
 YSCALE = 1e7
+AGE_COL = 'CN_AGE'
 
 OUTPUT_NAMES = [
     'yZ1/pre_enrichment/mh07_alpha00/diskmodel',
@@ -53,7 +55,7 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
     plot_mdf_evolution(apogee_data, axs[-1], col=vice_to_apogee_col(col), 
                        smoothing=smoothing, cmap=cmap, 
                        title='(c) APOGEE ([C/N]-derived ages)', 
-                       age_col='CN_AGE')
+                       age_col=AGE_COL, indicate_mode=True)
     
     # Add colorbar at left
     cbar = setup_colorbar(fig, cmap=cmap, bounds=AGE_BINS,
@@ -62,8 +64,7 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
     
     for i in range(len(axs[0,:])):
         galr_lim = GALR_BINS[i:i+2]
-        # axs[0,i].text(0.5, 0.95, r'$%s \leq R_{\rm gal} < %s$ kpc' % tuple(galr_lim),
-        #               ha='center', va='top', transform=axs[0,i].transAxes)
+        # Column labels
         axs[0,i].set_title(r'$%s \leq R_{\rm gal} < %s$ kpc' % tuple(galr_lim),
                            size=plt.rcParams['font.size'], pad=10)
         axs[-1,i].set_xlabel(capitalize_abundance(col))
@@ -94,17 +95,24 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
 
 def plot_mdf_evolution(obj, axs, col='[fe/h]', smoothing=SMOOTH_WIDTH, 
                        xlim=FEH_LIM, cmap='Spectral_r', nbins=NBINS, title='',
-                       age_col='age'):
+                       age_col='age', indicate_mode=False):
     """
     Plot the MDF in bins of Rgal for different ages.
     """
     colors = get_color_list(plt.get_cmap(cmap), AGE_BINS)
-    # axs[2].set_title(title)
+    # Row label with white background
     axs[2].text(
-        0.5, 1.08, title, 
+        0.5, 1.1, title, 
         ha='center', va='top', 
         transform=axs[2].transAxes,
-        size=plt.rcParams['axes.titlesize']
+        size=plt.rcParams['axes.titlesize'],
+        bbox={
+            'facecolor': 'w',
+            'edgecolor': 'none',
+            'boxstyle': 'round',
+            'pad': 0.15,
+            'alpha': 1.,
+        }
     )
     for i in range(len(GALR_BINS)-1):
         galr_lim = GALR_BINS[i:i+2]
@@ -123,6 +131,10 @@ def plot_mdf_evolution(obj, axs, col='[fe/h]', smoothing=SMOOTH_WIDTH,
                     color=colors[j], linewidth=1, #alpha=alpha,
                     label='%s - %s' % tuple(age_lim)
                 )
+                if indicate_mode and j == 0:
+                    mode = np.argmax(mdf)
+                    axs[i].axvline(bin_edges[mode:mode+2].mean(), 
+                                   color='gray', ls=':')
 
 
 if __name__ == '__main__':
