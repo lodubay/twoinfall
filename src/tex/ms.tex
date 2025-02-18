@@ -53,6 +53,9 @@
 \affiliation{Observatories of the Carnegie Institution for Science, 813 Santa Barbara St., Pasadena CA 91101, USA}
 \affiliation{\osuaffil}
 \affiliation{\ccappaffil}
+\author[0000-0002-2854-5796]{John D. Roberts}
+\affiliation{\osuaffil}
+\affiliation{\ccappaffil}
 % \author[0000-0001-7775-7261]{David H. Weinberg}
 \author{coauthors}
 
@@ -121,7 +124,7 @@ Motivated by constraints on the SFH by {\it Gaia}, \citet{spitoni_beyond_2023} p
         $S/N$               & $S/N > 80$                    & Required for accurate stellar parameters \\
         ASPCAPFLAG Bits     & $\notin$ 23                   & Remove stars flagged as bad \\
         EXTRATARG Bits      & $\notin$ 0, 1, 2, 3, or 4     & Select main red star sample only \\
-        Age                 & $\sigma_{\rm Age} < 40\%$     & Age uncertainty from \citetalias{leung_variational_2023} \\
+        Latent age          & $\sigma_\tau/\tau < 40\%$     & Age uncertainty from \citet{leung_variational_2023} \\
         $R_{\rm gal}$     & $3 < R_{\rm gal} < 15\,{\rm kpc}$    & Eliminate bulge \& extreme outer-disk stars \\
         $|z|$               & $|z| < 2\,{\rm kpc}$                 & Eliminate halo stars \\
         \hline
@@ -145,18 +148,21 @@ Motivated by constraints on the SFH by {\it Gaia}, \citet{spitoni_beyond_2023} p
         \hline
         [Fe/H]          & $0.0089$   & $0.0060$ \\
         ${\rm [O/Fe]}$  & $0.019$    & $0.031$ \\
-        log(Age/Gyr)    & $0.10$     & $0.16$ \\
+        $\tau_{\rm latent}/{\rm Gyr}$    & 1.0   & $0.16$ \\
+        $\tau_{\rm [C/N]}/{\rm Gyr}$     & 1.0   & \todo{N/A} \\
         \hline
     \end{tabular}
 \end{table*}
 
 We compare our models against stellar abundances from the Apache Point Observatory Galactic Evolution Experiment \citep[APOGEE;][]{majewski_apache_2017} data release 17 \citep[DR17;][]{abdurrouf_seventeenth_2022}. APOGEE data were obtained from infrared spectrographs \citep{wilson_apache_2019} mounted on the 2.5-meter Sloan Foundation Telescope \citep{gunn_25_2006} at Apache Point Observatory and the Ir{\'e}n{\'e}e DuPont Telescope \citep{bowen_optical_1973} at Las Campanas Observatory. The data reduction pipeline is described by \citet{nidever_data_2015}, and APOGEE Stellar Parameter and Chemical Abundance Pipeline (ASPCAP) is detailed by \citet{holtzman_abundances_2015}, \citet{garcia_perez_aspcap_2016}, and \citet{jonsson_apogee_2020}.
 
-We obtain a sample of \input{output/sample_size.txt} red giant branch and red clump stars with high-quality spectra using the selection criteria listed in Table \ref{tab:sample}, which are adapted from \citet{hayden_chemical_2015}. We use the \citet{bailer-jones_estimating_2021} photo-geometric distance estimates from {\it Gaia} Early Data Release 3 \citep{gaia_collaboration_gaia_2016,gaia_collaboration_gaia_2021} included in the APOGEE DR17 catalog. When calculating the galactocentric radius $R_{\rm gal}$ and midplane distance $z$ of each star, we assume the distance between the Sun and the Galactic center is $R_\odot=8.122\,{\rm kpc}$ \citep{gravity_collaboration_detection_2018} and the Solar midplane distance is $z_\odot=20.8\,{\rm pc}$ \citep{bennett_vertical_2019}. Table \ref{tab:apogee-regions} presents the number of APOGEE stars in bins of $R_{\rm gal}$ and $|z|$; typical distance uncertainties are much smaller than the bin width. \todo{Mention calibrated abundances.}
+We obtain a sample of \num{171635} red giant branch and red clump stars with high-quality spectra using the selection criteria listed in Table \ref{tab:sample}, which are adapted from \citet{hayden_chemical_2015}. Table \ref{tab:uncertainties} presents the median statistical uncertainty and uncertainty dispersion ($95^{\rm th} - 5^{\rm th}$ percentile difference) of the calibrated [Fe/H] and [O/Fe] abundances for our sample. We use the \citet{bailer-jones_estimating_2021} photo-geometric distance estimates from {\it Gaia} Early Data Release 3 \citep{gaia_collaboration_gaia_2016,gaia_collaboration_gaia_2021} included in the APOGEE DR17 catalog. When calculating the galactocentric radius $R_{\rm gal}$ and midplane distance $z$ of each star, we assume the distance between the Sun and the Galactic center is $R_\odot=8.122\,{\rm kpc}$ \citep{gravity_collaboration_detection_2018} and the Solar midplane distance is $z_\odot=20.8\,{\rm pc}$ \citep{bennett_vertical_2019}. Table \ref{tab:apogee-regions} presents the number of APOGEE stars in bins of $R_{\rm gal}$ and $|z|$; typical distance uncertainties are much smaller than the bin width.
 
-We supplement the APOGEE DR17 abundance data with two different age catalogs.
+We supplement the APOGEE DR17 abundance data with two different age catalogs. The first is the ``latent'' age estimates from \citet{leung_variational_2023}, who train a variational encoder-decoder network on asteroseismic data for APOGEE red giants. This catalog has two main advantages for our purposes: their method is designed to reduce contamination from abundance information (in particular [$\alpha$/Fe]), and the recovered ages do not plateau at $\sim10\,{\rm Gyr}$ as they do in some other neural network-derived age catalogs \citep[e.g.,][]{mackereth_dynamical_2019}. Following the recommendations of \citet{leung_variational_2023}, we use an upper limit on the relative age uncertainty of 40\%. This produces a sample of \num{57607} stars with latent age estimates, of which \num{14871} are in the Solar neighborhood ($7\leq R_{\rm gal}<9\,{\rm kpc}$, $0\leq|z|<0.5\,{\rm kpc}$). The median uncertainty in $\log({\rm age}/{\rm Gyr})$ is 0.10 (see Table \ref{tab:uncertainties}).
 
-\todo{Taken from last paper.} We use estimated ages from \citet[][hereafter \citetalias{leung_variational_2023}]{leung_variational_2023}, who use a variational encoder-decoder network which is trained on asteroseismic data to retrieve age estimates for APOGEE giants without contamination from age-abundance correlations. Importantly, the \citetalias{leung_variational_2023} ages do not plateau beyond $\sim10\,{\rm Gyr}$ as they do in astroNN \citep{mackereth_dynamical_2019}. We use an age uncertainty cut of 40\% per the recommendations of \citetalias{leung_variational_2023}, which produces a total sample of \input{output/age_sample_size.txt} APOGEE stars with age estimates. We note that we use the full sample of \input{output/sample_size.txt} APOGEE stars unless we explicitly compare to age estimates. Table \ref{tab:uncertainties} presents the median and dispersion ($95^{\rm th} - 5^{\rm th}$ percentile difference) of the uncertainty in [Fe/H], [O/Fe], and log(age).
+Our second age catalog uses the [C/N]--age relation for red giant branch and red clump stars. 
+\todo{Paragraph describing [C/N]-derived ages (get help from Jack).}
+This method has the benefit of providing age estimates for luminous giants, which increases the sample size at farther distances from the Sun. However, systematic effects of the [C/N]--age relation mean that these ages are most trustworthy in the range $1\sim10$ Gyr. We estimate ages for \num{113464} stars across the disk, including \num{20995} in the Solar neighborhood.
 
 \section{Chemical Evolution Models \& Parameter Selection}
 \label{sec:methods}
@@ -484,7 +490,9 @@ The parameters of the SFE hiatus in Figure \ref{fig:onezone-sfe-hiatus} were cho
 \label{sec:conclusions}
 
 \begin{itemize}
-    \item
+    \item The ``turn-over'' in the evolution of [O/Fe] following the second infall produces a low-$\alpha$ sequence with a fundamentally different abundance structure than observed. A low yield set ($y/Z_\odot=1$) coupled with lower outflows, or pre-enrichment of the infalling gas, can bring the stellar [O/Fe] distributions more in line with the data.
+    \item The large quantity of pristine gas accreted in the Solar neighborhood during the second infall phase rapidly dilutes the ISM metallicity by $\sim0.5$ dex. Models with a low yield set ($y/Z_\odot=1$) remain at sub-Solar metallicity until the present day, in stark contrast to the observed local age--metallicity relation. This issue can be mitigated with higher yields and outflows, but not by pre-enriched infall or radial migration.
+    \item Our models predict that the MDF evolves to higher metallicity over time throughout the disk. This contrasts with the APOGEE data, which show very little change in the mode over the past $\sim6-8$ Gyr.
 \end{itemize}
 
 \section*{Acknowledgements}
