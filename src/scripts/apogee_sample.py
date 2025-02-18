@@ -513,6 +513,24 @@ class APOGEESample:
         df = pd.concat([modes, errors, grouped.count()], axis=1)
         df.columns = ['mode', 'error', 'count']
         return df
+                    
+    
+    def count_notna(self, col):
+        """
+        Count the number of stars in the dataset with real values for the
+        given parameter.
+
+        Parameters
+        ----------
+        col : str
+            Data column.
+        
+        Returns
+        -------
+        int
+            Number of stars in the sample with age estimates.
+        """
+        return self.data[self.data[col].notna()].shape[0]
         
         
     @property
@@ -604,14 +622,6 @@ class APOGEESample:
             Total number of stars in the sample.
         """
         return self.data.shape[0]
-                    
-    @property
-    def nstars_ages(self):
-        """
-        int
-            Number of stars in the sample with age estimates.
-        """
-        return self.data[self.data['AGE'].notna()].shape[0]
     
     @staticmethod
     def generate_cn_ages(apogee_df):
