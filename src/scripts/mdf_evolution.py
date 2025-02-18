@@ -17,24 +17,12 @@ import paths
 
 GALR_BINS = [3, 5, 7, 9, 11, 13]
 AGE_BINS = [0, 2, 4, 6, 8, 10]
-# AGE_BINS = [0, 2, 4, 6, 8, 10, 13]
-# AGE_BINS = [0, 1, 3, 5, 7, 9, 13]
 ABSZ_LIM = (0, 0.5)
 NBINS = 100
 SMOOTH_WIDTH = 0.1
-# FEH_LIM = (-1.1, 0.6)
 FEH_LIM = (-0.8, 0.6)
 YSCALE = 1e7
 AGE_COL = 'CN_AGE'
-
-OUTPUT_NAMES = [
-    'yZ1/pre_enrichment/mh07_alpha00/diskmodel',
-    'yZ2/pre_enrichment/mh07_alpha00/diskmodel'
-]
-MODEL_LABELS = [
-    r'(a) $y/Z_\odot=1$, ${\rm [X/H]}_{\rm CGM}=-0.7$',
-    r'(b) $y/Z_\odot=2$, ${\rm [X/H]}_{\rm CGM}=-0.7$'
-]
 
 def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
     plt.style.use(paths.styles / f'{style}.mplstyle')
@@ -44,13 +32,22 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
         sharex=True, sharey='row', 
         gridspec_kw={'hspace': 0.25, 'wspace': 0.1}
     )
+
+    output_names = [
+        'yZ1/pre_enrichment/mh07_alpha00/diskmodel',
+        'yZ2/pre_enrichment/mh07_alpha00/diskmodel'
+    ]
+    model_labels = [
+        r'(a) $y/Z_\odot=1$, ${\rm %s}_{\rm CGM}=-0.7$' % capitalize_abundance(col),
+        r'(b) $y/Z_\odot=2$, ${\rm %s}_{\rm CGM}=-0.7$' % capitalize_abundance(col)
+    ]
     # Plot multizone outputs
     apogee_data = APOGEESample.load()
-    for i, output_name in enumerate(OUTPUT_NAMES):
+    for i, output_name in enumerate(output_names):
         mzs = MultizoneStars.from_output(output_name)
         # mzs.model_uncertainty(apogee_data=apogee_data.data)
         plot_mdf_evolution(mzs, axs[i], col=col, smoothing=smoothing, cmap=cmap,
-                           title=MODEL_LABELS[i])
+                           title=model_labels[i])
     # Plot APOGEE data
     plot_mdf_evolution(apogee_data, axs[-1], col=vice_to_apogee_col(col), 
                        smoothing=smoothing, cmap=cmap, 
