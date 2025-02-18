@@ -502,7 +502,7 @@ class APOGEESample:
             skewnormal_mode_sample, include_groups=False, bins=sample_bins
         )
         jackknife_mode = lambda x: jackknife_summary_statistic(
-            x, skewnormal_mode_sample, n_resamples=10, seed=RANDOM_SEED, bins=sample_bins
+            x, skewnormal_mode_sample, n_resamples=25, seed=RANDOM_SEED, bins=sample_bins
         )
         errors = grouped.apply(
             jackknife_mode, 
