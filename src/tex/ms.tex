@@ -51,9 +51,9 @@
 \affiliation{\ccappaffil}
 \author[0000-0002-6534-8783]{James W.\ Johnson}
 \affiliation{Observatories of the Carnegie Institution for Science, 813 Santa Barbara St., Pasadena CA 91101, USA}
-\affiliation{\osuaffil}
-\affiliation{\ccappaffil}
-\author[0000-0002-2854-5796]{John D. Roberts}
+% \affiliation{\osuaffil}
+% \affiliation{\ccappaffil}
+\author[0000-0002-2854-5796]{John D.\ Roberts}
 \affiliation{\osuaffil}
 \affiliation{\ccappaffil}
 % \author[0000-0001-7775-7261]{David H. Weinberg}
@@ -63,19 +63,20 @@
 \email{dubay.11@osu.edu}
 
 \begin{abstract}
-    Abstract.
+    % The Milky Way's stellar disk can be separated into multiple chemically and kinematically distinct components. 
+    The two-infall model has long been proposed to explain the formation of the Milky Way's thick and thin disks through two consecutive gas accretion epochs. It has successfully reproduced observed abundance patterns in the Solar neighborhood and across the disk. However, few studies have explored a two-infall with significant mass-loaded outflows
 \end{abstract}
 
-\section{Outline}
-\input{outline.tex}
+% \section{Outline}
+% \input{outline.tex}
 
 \section{Introduction}
-
-% To add: Carme Gallart (2019) three-infall-ish, Kobayashi metallicity limit for SNe Ia and sub-Chandra
 
 The two-infall model has long been proposed to explain the formation of the Milky Way's thick and thin disks. The infall history of any given region of the disk is described by two successive, exponentially declining bursts, which explain the origin of the thick and thin disks respectively.
 
 \subsection{Summary of Two-Infall Papers}
+
+% To add: Carme Gallart (2019) three-infall-ish, Kobayashi metallicity limit for SNe Ia and sub-Chandra
 
 % Summary of two-infall papers
 \citet{matteucci_galactic_1989} modeled the galaxy with a two-component model, a one-zone model for the halo and concentric shell zones for the disk. They used a simple exponential gas infall (so not yet a two-infall model), where the infall timescale increased proportionally with radius. They studied cases with primordial and pre-enriched gas infall, finding that the former produces a more realistic metallicity distribution in the Solar neighborhood. Their inside-out disk evolution produced good agreement with observed abundance gradients.
@@ -97,6 +98,8 @@ The two-infall model has long been proposed to explain the formation of the Milk
 \citet{grisoni_ambre_2017} argue for a ``parallel'' scenario, where the thick and thin disks form simultaneously but with very different infall timescales (0.1 and 7 Gyr, respectively). They compare their models with stellar abundances from the AMBRE sample of solar-neighborhood dwarfs. They argue that the parallel scenario can produce metal-rich high-alpha stars in situ, whereas in the two-infall scenario these stars would have to migrate from the inner disk.
 
 \citet{palla_chemical_2020} explored radial gas flows, variable star formation efficiency of the thin disk, and the onset time of the second infall (but not the infall timescales). They find that inside-out formation (i.e., longer infall timescales in the outer disk) is not sufficient to reproduce observed abundance gradients, and that radial gas flows, possibly in combination with a radially-varying star formation law, are key. Pre-enriched infall in the inner disk ($R<8\,{\rm kpc}$) at the level of -0.5 dex also improves agreement with data.
+
+\citet{palla_mgfe_2022} test prescriptions for radial migration but assume that it does not affect supernova enrichment (i.e., that most supernovae explode near the star's birthplace).
 
 % Radial gas flows
 Some two-infall studies \citep[e.g.,][]{spitoni_effects_2011,palla_chemical_2020,palla_mapping_2024} implement inward radial gas flows with velocity $\sim1$ km s$^{-1}$ in order to reproduce the radial abundance gradient without Galactic outflows.
@@ -156,13 +159,14 @@ Motivated by constraints on the SFH by {\it Gaia}, \citet{spitoni_beyond_2023} p
 
 We compare our models against stellar abundances from the Apache Point Observatory Galactic Evolution Experiment \citep[APOGEE;][]{majewski_apache_2017} data release 17 \citep[DR17;][]{abdurrouf_seventeenth_2022}. APOGEE data were obtained from infrared spectrographs \citep{wilson_apache_2019} mounted on the 2.5-meter Sloan Foundation Telescope \citep{gunn_25_2006} at Apache Point Observatory and the Ir{\'e}n{\'e}e DuPont Telescope \citep{bowen_optical_1973} at Las Campanas Observatory. The data reduction pipeline is described by \citet{nidever_data_2015}, and APOGEE Stellar Parameter and Chemical Abundance Pipeline (ASPCAP) is detailed by \citet{holtzman_abundances_2015}, \citet{garcia_perez_aspcap_2016}, and \citet{jonsson_apogee_2020}.
 
-We obtain a sample of \num{171635} red giant branch and red clump stars with high-quality spectra using the selection criteria listed in Table \ref{tab:sample}, which are adapted from \citet{hayden_chemical_2015}. Table \ref{tab:uncertainties} presents the median statistical uncertainty and uncertainty dispersion ($95^{\rm th} - 5^{\rm th}$ percentile difference) of the calibrated [Fe/H] and [O/Fe] abundances for our sample. We use the \citet{bailer-jones_estimating_2021} photo-geometric distance estimates from {\it Gaia} Early Data Release 3 \citep{gaia_collaboration_gaia_2016,gaia_collaboration_gaia_2021} included in the APOGEE DR17 catalog. When calculating the galactocentric radius $R_{\rm gal}$ and midplane distance $z$ of each star, we assume the distance between the Sun and the Galactic center is $R_\odot=8.122\,{\rm kpc}$ \citep{gravity_collaboration_detection_2018} and the Solar midplane distance is $z_\odot=20.8\,{\rm pc}$ \citep{bennett_vertical_2019}. Table \ref{tab:apogee-regions} presents the number of APOGEE stars in bins of $R_{\rm gal}$ and $|z|$; typical distance uncertainties are much smaller than the bin width.
+We obtain a sample of \num{171635} red giant branch and red clump stars with high-quality spectra using the selection criteria listed in Table \ref{tab:sample}, which are adapted from \citet{hayden_chemical_2015}. Table \ref{tab:uncertainties} presents the median statistical uncertainty and uncertainty dispersion ($95^{\rm th} - 5^{\rm th}$ percentile difference) of the calibrated [Fe/H] and [O/Fe] abundances for our sample. When calculating the galactocentric radius $R_{\rm gal}$ and midplane distance $z$ of each star, we use the \citet{bailer-jones_estimating_2021} photo-geometric distance estimates from {\it Gaia} Early Data Release 3 \citep{gaia_collaboration_gaia_2016,gaia_collaboration_gaia_2021} included in the APOGEE DR17 catalog and we adopt the Galactic coordinates of the Sun $(R,z)_\odot=(8.122, 0.0208)\,{\rm kpc}$ \citep{gravity_collaboration_detection_2018,bennett_vertical_2019}. Table \ref{tab:apogee-regions} presents the number of APOGEE stars in bins of $R_{\rm gal}$ and $|z|$; typical distance uncertainties are much smaller than the bin width.
 
 We supplement the APOGEE DR17 abundance data with two different age catalogs. The first is the ``latent'' age estimates from \citet{leung_variational_2023}, who train a variational encoder-decoder network on asteroseismic data for APOGEE red giants. This catalog has two main advantages for our purposes: their method is designed to reduce contamination from abundance information (in particular [$\alpha$/Fe]), and the recovered ages do not plateau at $\sim10\,{\rm Gyr}$ as they do in some other neural network-derived age catalogs \citep[e.g.,][]{mackereth_dynamical_2019}. Following the recommendations of \citet{leung_variational_2023}, we use an upper limit on the relative age uncertainty of 40\%. This produces a sample of \num{57607} stars with latent age estimates, of which \num{14871} are in the Solar neighborhood ($7\leq R_{\rm gal}<9\,{\rm kpc}$, $0\leq|z|<0.5\,{\rm kpc}$). The median uncertainty in $\log({\rm age}/{\rm Gyr})$ is 0.10 (see Table \ref{tab:uncertainties}).
 
 Our second age catalog uses the [C/N]--age relation for red giant branch and red clump stars. 
 \todo{Paragraph describing [C/N]-derived ages (get help from Jack).}
 This method has the benefit of providing age estimates for luminous giants, which increases the sample size at farther distances from the Sun. However, systematic effects of the [C/N]--age relation mean that these ages are most trustworthy in the range $1\sim10$ Gyr. We estimate ages for \num{113464} stars across the disk, including \num{20995} in the Solar neighborhood.
+\todo{Note about metallicity cutoff for luminous giants.}
 
 \section{Chemical Evolution Models \& Parameter Selection}
 \label{sec:methods}
@@ -307,7 +311,7 @@ In this case, the metallicity rises from 0 with a timescale $\tau_{\rm rise}=2\,
 \begin{figure*}
     \centering
     \includegraphics{figures/onezone_params.pdf}
-    \caption{Gas abundance tracks in the [O/Fe]--[Fe/H] plane for one-zone chemical evolution models which assume different values for the infall history parameters. In each panel, one parameter is varied according to the legend while the other two are held fixed. The open symbols along each curve mark logarithmic steps in time, as denoted in panel (b). The marginal panels show the corresponding stellar abundance distributions, which are convolved with a Gaussian kernel with a width of 0.02 dex for visual clarity. All models use the {\tt yZ1} yield set and assume $\eta=0.4$.}
+    \caption{Gas abundance tracks in the [O/Fe]--[Fe/H] plane for one-zone chemical evolution models which assume different values for the infall history parameters. In each panel, one parameter is varied according to the legend while the other two are held fixed. The open symbols along each curve mark logarithmic steps in time, as denoted in panel (b). The marginal panels show the corresponding stellar abundance distributions, which are convolved with a Gaussian kernel with a width of 0.02 dex for visual clarity. All models use the {\tt yZ1} yield set and assume $\eta=0.2$.}
     \label{fig:twoinfall-parameters}
 \end{figure*}
 
@@ -449,6 +453,7 @@ Finally, as in Section \ref{sec:abundance-distributions}, we investigate a model
 The discrepancies between the predicted and observed abundance evolution discussed in Section \ref{sec:age-abundance} are also seen across the disk. Figure \ref{fig:mdf-evolution} shows the evolution of the MDF with age across five radial bins. We select the $y/Z_\odot=1$ and $y/Z_\odot=2$ models with pre-enriched infall due to the relative success of these models in the previous sections. We use the [C/N]-derived age estimates for the APOGEE sample due to the larger sample size in the most distant regions of the disk; we limit the comparison to ages $\leq10$ Gyr because of large systematic uncertainties for the oldest stars, as discussed in Section \ref{sec:observational-sample}. The two-infall model predicts a very broad MDF for ages $>10$ Gyr because of the rapid enrichment of the ISM during the first infall epoch.
 
 Figure \ref{fig:mdf-evolution} shows that even with pre-enriched infall, both of our models predict that the MDF shifts to the left going from younger to older populations. On the other hand, the data show that the MDF broadens with age, which we attribute to radial migration, but its peak does not shift substantially over the past $\sim6-8$ Gyr. While the mode of the MDF shifts depending on the radial bin, its evolution is remarkably consistent over the entire disk, in line with the equilibrium scenario of \citet{johnson_milky_2024}.
+\todo{Note about metallicity cutoff for luminous giants.}
 
 On the other hand, the model predictions for the MDF in the $8-10\,{\rm Gyr}$ age bin are strikingly similar to the APOGEE MDF. The two-infall model predicts a bimodal distribution: the metal-rich component comprises stars formed during the last Gyr of the first infall epoch, and the metal-poor component is stars formed during the first Gyr of the second infall epoch (post-dilution). The data show this same bimodal structure in all but the outermost radial bin, with peaks at ${\rm [Fe/H]}\approx-0.3$ and $+0.3$. While the location of the model peaks depends on $R_{\rm gal}$, in the data they are quite consistent from the innermost to the outermost bin.
 
@@ -576,7 +581,7 @@ participating in the {\it Gaia} Multilateral Agreement.
 % From the Center for Belonging and Social Change, https://cbsc.osu.edu/about-us/land-acknowledgement
 We would like to acknowledge the land that The Ohio State University occupies is the ancestral and contemporary territory of the Shawnee, Potawatomi, Delaware, Miami, Peoria, Seneca, Wyandotte, Ojibwe and many other Indigenous peoples. Specifically, the university resides on land ceded in the 1795 Treaty of Greeneville and the forced removal of tribes through the Indian Removal Act of 1830. As a land grant institution, we want to honor the resiliency of these tribal nations and recognize the historical contexts that has and continues to affect the Indigenous peoples of this land.
 
-\software{\vice \citep{johnson_impact_2020}, Astropy \citep{astropy_collaboration_astropy_2013,astropy_collaboration_astropy_2018,astropy_collaboration_astropy_2022}, scikit-learn \citep{pedregosa_scikit-learn_2011}, SciPy \citep{virtanen_scipy_2020}, Matplotlib \citep{hunter_matplotlib_2007}}
+\software{\vice \citep{johnson_impact_2020}, Astropy \citep{astropy_collaboration_astropy_2013,astropy_collaboration_astropy_2018,astropy_collaboration_astropy_2022}, scikit-learn \citep{pedregosa_scikit-learn_2011}, SciPy \citep{virtanen_scipy_2020}, Matplotlib \citep{hunter_matplotlib_2007}.}
 
 \appendix
 
