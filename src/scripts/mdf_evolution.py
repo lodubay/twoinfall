@@ -90,7 +90,7 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
             age_lim = AGE_BINS[k:k+2]
             age_subset = region_subset.filter({AGE_COL: tuple(age_lim)})
             # Plot normalized MDFs
-            if age_subset.nstars > 100:# and age_lim[0] >= 1 and age_lim[1] <= 10:
+            if age_subset.nstars > 100 and age_lim[0] >= 1 and age_lim[1] <= 10:
                 mdf, bin_edges = age_subset.mdf(
                     vice_to_apogee_col(col), 
                     range=XLIM, bins=NBINS, smoothing=smoothing
