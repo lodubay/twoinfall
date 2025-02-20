@@ -51,7 +51,7 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
     apogee_data = APOGEESample.load()
     for i, output_name in enumerate(output_names):
         mzs = MultizoneStars.from_output(output_name)
-        # mzs.model_uncertainty(apogee_data=apogee_data.data)
+        mzs.model_uncertainty(apogee_data=apogee_data.data, age_col=AGE_COL, inplace=True)
         axes_title_background(axs[i,2], model_labels[i])
         for j in range(len(GALR_BINS)-1):
             galr_lim = GALR_BINS[j:j+2]

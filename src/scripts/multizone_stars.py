@@ -271,7 +271,8 @@ class MultizoneStars:
                                   galr_lim=galr_lim, absz_lim=absz_lim, 
                                   noisy=self.noisy)
     
-    def model_uncertainty(self, apogee_data=None, inplace=False, seed=RANDOM_SEED):
+    def model_uncertainty(self, apogee_data=None, inplace=False, 
+                          seed=RANDOM_SEED, age_col='L23_AGE'):
         """
         Forward-model observational uncertainties from median data errors.
         Star particle data are modified in-place, so only run this once!
@@ -295,11 +296,16 @@ class MultizoneStars:
         if apogee_data is None:
             apogee_data = pd.read_csv(paths.data/'APOGEE/sample.csv')
         rng = np.random.default_rng(seed)
-        # Age uncertainty (Leung et al. 2023)
-        log_age_err = apogee_data['L23_LOG_AGE_ERR'].median()
-        log_age_noise = rng.normal(scale=log_age_err, 
-                                   size=noisy_stars.shape[0])
-        noisy_stars['age'] *= 10 ** log_age_noise
+        if age_col == 'CN_AGE':
+            age_med_err = apogee_data['CN_AGE_ERR'].median()
+            age_noise = rng.normal(scale=age_med_err, size=noisy_stars.shape[0])
+            noisy_stars['age'] += age_noise
+        else:
+            # Age uncertainty (Leung et al. 2023)
+            log_age_err = apogee_data['L23_LOG_AGE_ERR'].median()
+            log_age_noise = rng.normal(scale=log_age_err, 
+                                    size=noisy_stars.shape[0])
+            noisy_stars['age'] *= 10 ** log_age_noise
         # [Fe/H] uncertainty
         feh_med_err = apogee_data['FE_H_ERR'].median()
         feh_noise = rng.normal(scale=feh_med_err, size=noisy_stars.shape[0])
