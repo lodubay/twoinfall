@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NSTARS=2
+NSTARS=8
 OUTFLOWS=bespoke
 EVOLUTION=twoinfall_expvar
 
