@@ -261,7 +261,7 @@ class APOGEESample:
         if path.exists() and not overwrite:
             xx, yy, logz = read_kde(path)
         else:
-            xx, yy, logz = kde2D(self.data['FE_H'], self.data['O_FE'], bandwidth)
+            xx, yy, logz = kde2D(self.data[xcol], self.data[ycol], bandwidth)
             save_kde(xx, yy, logz, path)
         return xx, yy, logz
 

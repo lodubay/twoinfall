@@ -17,6 +17,7 @@ AGE_BINS = [1, 2, 4, 6, 8, 10]
 # AGE_BINS = [1, 3, 5, 7, 9, 13]
 # AGE_BINS = [0, 2, 4, 6, 8, 10, 13]
 FEH_LIM = (-0.9, 0.5)
+# FEH_LIM = (-0.7, 0.7)
 OFE_LIM = (-0.15, 0.55)
 ABSZ_LIM = (0, 0.5)
 GRIDSIZE = 20
