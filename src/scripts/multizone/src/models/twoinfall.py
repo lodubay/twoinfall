@@ -1,6 +1,13 @@
 r"""
 This file declares the time-dependence of the star formation history at a
 given radius under the two-infall model.
+
+Contents
+-------
+twoinfall : object
+    The time-dependence of the infall rate for the two-infall model.
+calculate_mstar : <function>
+    Calculate the stellar mass at a given time from the star formation history.
 """
 
 from ..._globals import END_TIME
@@ -53,8 +60,6 @@ class twoinfall(double_exponential):
     -------
     ampratio(radius) : float
         Calculate the ratio of the second infall amplitude to the first.
-    normalize(radius) : float
-        Normalize the infall rate according to the desired surface density.
     """
     def __init__(
             self, 
