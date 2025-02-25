@@ -74,6 +74,7 @@ class twoinfall(double_exponential):
             dr = 0.1,
             sfe1 = 2.,
             sfe2 = 1.,
+            niter = 5,
     ):
         super().__init__(onset=onset, ratio=1.)
         self.first.timescale = first_timescale 
@@ -84,22 +85,24 @@ class twoinfall(double_exponential):
             area, onset=self.onset, sfe1=sfe1, sfe2=sfe2,
         )
         eta = mass_loading(radius)
-        # Calculate amplitude ratio
-        self.ratio = self.ampratio(
-            radius, thick_to_thin_ratio, 
-            eta = eta, vgas = vgas, dr = dr, dt = dt
-        )
-        # Normalize infall rate
-        prefactor = normalize_ifrmode(
-            self, gradient, self.tau_star, radius, 
-            eta = eta, vgas = vgas, dt = dt, dr = dr, recycling = 0.4
-        )
-        self.first.norm *= prefactor
-        self.second.norm *= prefactor
+        # Run several times to converge
+        for i in range(niter):
+            # Calculate amplitude ratio
+            self.ratio *= self.ampratio(
+                radius, thick_to_thin_ratio, 
+                eta = eta, vgas = vgas, dt = dt
+            )
+            # Normalize infall rate
+            prefactor = normalize_ifrmode(
+                self, gradient, self.tau_star, radius, 
+                eta = eta, vgas = vgas, dt = dt, dr = dr, recycling = 0.4
+            )
+            self.first.norm *= prefactor
+            self.second.norm *= prefactor
 
 
     def ampratio(self, radius, thick_to_thin_ratio, eta=0., 
-                 vgas = 0., dt = 0.01, dr = 0.1, recycling = 0.4):
+                 vgas = 0., dt = 0.01, recycling = 0.4):
         r"""
         Calculate the ratio of the second infall amplitude to the first.
     
