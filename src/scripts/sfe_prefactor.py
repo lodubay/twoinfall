@@ -40,9 +40,9 @@ def main():
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
     eta_func = outflows.yZ1()
 
-    tau_star_list = [twoinfall_sf_law(area, onset=ONSET, factor=1.),
-                     twoinfall_sf_law(area, onset=ONSET, factor=0.5),
-                     twoinfall_sf_law(area, onset=ONSET, factor=0.2)]
+    tau_star_list = [twoinfall_sf_law(area, onset=ONSET, sfe1=1., sfe2=1.),
+                     twoinfall_sf_law(area, onset=ONSET, sfe1=2., sfe2=1.),
+                     twoinfall_sf_law(area, onset=ONSET, sfe1=5., sfe2=1.)]
     color_list = [paultol.highcontrast.colors[0], 'k', paultol.highcontrast.colors[2]]
     names = ['factor10', 'factor05', 'factor02']
     labels = ['Fiducial', 'Variable (2x)', 'Variable (5x)']
@@ -55,7 +55,8 @@ def main():
             onset=ONSET,
             mass_loading=eta_func,
             dr=ZONE_WIDTH,
-            sfe_prefactor=tau_star.factor
+            sfe1=tau_star.sfe1,
+            sfe2=tau_star.sfe2
         )
         # Run one-zone model
         name = str(output_dir / names[i])
@@ -70,7 +71,7 @@ def main():
                           fig=fig, axs=axs,
                           linestyle='-',
                           color=color_list[i],
-                          label=str(tau_star.factor),
+                          label=str(1/tau_star.sfe1),
                           marker_labels=(i == 1),
                           markers=[0.3, 1, 3, 6, 10])
         # Thick-to-thin ratio

@@ -38,9 +38,12 @@ class twoinfall(double_exponential):
         The timestep size of the model in Gyr.
     dr : float [default : 0.1]
         The width of the annulus in kpc.
-    sfe_prefactor : float [default; 0.5]
-        The pre-factor on the SFE timescale during the first infall epoch
-        (lower value means higher star formation efficiency).
+    sfe1 : float [default: 2.0]
+        The pre-factor on the star formation efficiency during the 
+        first infall epoch (higher value means longer SFE timescale).
+    sfe2 : float [default: 1.0]
+        The pre-factor on the star formation efficiency during the 
+        second infall epoch (higher value means longer SFE timescale).
     
     Attributes
     ----------
@@ -64,12 +67,17 @@ class twoinfall(double_exponential):
             vgas = 0.,
             dt = 0.01, 
             dr = 0.1,
-            sfe_prefactor = 0.5
+            sfe1 = 2.,
+            sfe2 = 1.,
     ):
         super().__init__(onset=onset, ratio=1.)
         self.first.timescale = first_timescale 
         self.second.timescale = second_timescale
-        self.sfe_prefactor = sfe_prefactor
+        # Initialize the star formation law
+        area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
+        self.tau_star = twoinfall_sf_law(
+            area, onset=self.onset, sfe1=sfe1, sfe2=sfe2,
+        )
         # Calculate amplitude ratio
         self.ratio = self.ampratio(radius, thick_to_thin_ratio, 
                                    mass_loading = mass_loading, 
@@ -112,13 +120,9 @@ class twoinfall(double_exponential):
         float
             The amplitude ratio between the second and first infalls.
         """
-        area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
-        tau_star = twoinfall_sf_law(
-            area, onset=self.onset, factor=self.sfe_prefactor
-        )
         eta = mass_loading(radius)
-        times, sfh = integrate_infall(self, tau_star, radius, eta=eta, vgas=vgas, 
-                                      recycling=recycling, dt=dt)
+        times, sfh = integrate_infall(self, self.tau_star, radius, eta=eta, 
+                                      vgas=vgas, recycling=recycling, dt=dt)
         mstar_final = calculate_mstar(sfh, END_TIME, dt=dt, recycling=recycling)
         mstar_onset = calculate_mstar(sfh, self.onset, dt=dt, recycling=recycling)
         ratio = thick_to_thin_ratio(radius)
@@ -151,12 +155,8 @@ class twoinfall(double_exponential):
             The instantaneous recycling mass fraction for a single stellar
             population. The default is calculated for the Kroupa IMF.
         """
-        area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
-        tau_star = twoinfall_sf_law(
-            area, onset=self.onset, factor=self.sfe_prefactor
-        )
         eta = mass_loading(radius)
-        return normalize_ifrmode(self, gradient, tau_star, radius, 
+        return normalize_ifrmode(self, gradient, self.tau_star, radius, 
                                  eta = eta, vgas = vgas, dt = dt, dr = dr, 
                                  recycling = recycling)
 
