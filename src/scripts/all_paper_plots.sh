@@ -7,6 +7,7 @@ python yields.py
 # Plots
 python yield_outflow.py
 python onezone_params.py
+python spitoni_comparison.py
 python sfe_prefactor.py
 python star_formation_history.py
 python ofe_df_comparison.py

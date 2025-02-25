@@ -9,9 +9,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import vice
 
-from multizone.src.yields import J21
+from multizone.src.yields import yZ2
 from multizone.src.models.gradient import gradient, thick_to_thin_ratio
 from multizone.src.models.diskmodel import two_component_disk
+from multizone.src.models.normalize import normalize_ifrmode
 from multizone.src.models import twoinfall_sf_law, twoinfall
 from track_and_mdf import setup_figure, plot_vice_onezone
 # from utils import twoinfall_onezone
@@ -21,7 +22,7 @@ from colormaps import paultol
 
 RADIUS = 8.
 ZONE_WIDTH = 0.1
-ONSET = 3.2
+ONSET = 4.2
 
 def main():
     plt.style.use(paths.styles / 'paper.mplstyle')
@@ -114,13 +115,14 @@ class twoinfall_ampratio(twoinfall):
                  mass_loading=vice.milkyway.default_mass_loading,
                  dt = 0.01, dr = 0.1, **kwargs):
         super().__init__(radius, **kwargs)
+        eta = mass_loading(radius)
         # Re-compute normalization with different thick-to-thin ratio
-        self.ratio = self.ampratio(radius, thick_thin_function, 
-                                   mass_loading=mass_loading, 
-                                   dt=dt, dr=dr)
-        prefactor = self.normalize(radius, gradient, 
-                                   mass_loading = mass_loading, 
-                                   dt = dt,  dr = dr)
+        self.ratio *= self.ampratio(radius, thick_thin_function, 
+                                   eta=eta, dt=dt)
+        prefactor = normalize_ifrmode(
+            self, gradient, self.tau_star, radius, 
+            eta = eta, dt = dt, dr = dr, recycling = 0.4
+        )
         area = m.pi * ((radius + dr/2)**2 - (radius - dr/2)**2)
         self.first.norm *= prefactor * area * gradient(radius)
         self.second.norm *= prefactor * area * gradient(radius)

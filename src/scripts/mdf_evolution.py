@@ -138,7 +138,7 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
     plt.close()
 
 
-def axes_title_background(ax, text, bgcolor='w', x=0.5, y=1.1):
+def axes_title_background(ax, text, bgcolor='w', x=0.5, y=1.12):
     ax.text(
         x, y, text, 
         ha='center', va='top', 
@@ -148,7 +148,7 @@ def axes_title_background(ax, text, bgcolor='w', x=0.5, y=1.1):
             'facecolor': bgcolor,
             'edgecolor': 'none',
             'boxstyle': 'round',
-            'pad': 0.15,
+            'pad': 0.1,
             'alpha': 1.,
         }
     )
