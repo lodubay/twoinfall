@@ -71,44 +71,22 @@
 
 \section{Introduction}
 
-The two-infall model has long been proposed to explain the formation of the Milky Way's thick and thin disks. The infall history of any given region of the disk is described by two successive, exponentially declining bursts, which explain the origin of the thick and thin disks respectively.
+\todo{Hook, summary of alpha-bimodality.}
 
-\subsection{Summary of Two-Infall Papers}
+% Summary of two-infall literature
+The two-infall model was first developed by \citet{chiappini_chemical_1997} to explain the origin of the thick and thin disks. Though the model has been revised and refined since, the basic premise remains the same: the rate of gas infall onto the Galaxy is described by two consecutive, exponentially declining bursts. The relatively low infall rate between the two bursts leads to a hiatus in the star formation rate, and the delayed production of Fe by SNe Ia allows the gas abundance to evolve between the high- and low-$\alpha$ sequences without producing many stars in between. Varying the timescale of the second infall produced inside-out disk growth and a radial abundance gradient. Additionally, the two-infall model of \citet{chiappini_chemical_1997} successfully reproduced Solar neighborhood abundance distributions and the age--metallicity relation.
 
-% To add: Carme Gallart (2019) three-infall-ish, Kobayashi metallicity limit for SNe Ia and sub-Chandra
+Subsequent studies refined the two-infall model to reproduce abundance data across the disk \citep[e.g.,][]{chiappini_abundance_2001,chiappini_oxygen_2003}, and others have explored in its context the SN Ia delay-time distribution \citep{matteucci_effect_2009,palicio_analytic_2023}, modifications to the recycling treatment such as galactic fountains and a metal cooling timescale \citep{spitoni_effects_2009}, radial gas flows \citep{spitoni_effects_2011,palla_chemical_2020}, a variable star formation efficiency \citep{spitoni_effects_2011,palla_chemical_2020}, radial stellar migration \citep{spitoni_effect_2015,palla_mgfe_2022}, azimuthal abundance variations due to spiral modes \citep{spitoni_2d_2019}, and pre-enriched gas infall \citep{palla_chemical_2020,spitoni_remind_2024}. Recently, \citet{spitoni_beyond_2023} and \citet{palla_mapping_2024} proposed a third gas accretion event in the last $\sim3$ Gyr to match the inferred star formation history from {\it Gaia} \citep{ruiz-lara_recurrent_2020} and explain the recent abundance evolution of the Solar neighborhood.
 
-% Summary of two-infall papers
-\citet{matteucci_galactic_1989} modeled the galaxy with a two-component model, a one-zone model for the halo and concentric shell zones for the disk. They used a simple exponential gas infall (so not yet a two-infall model), where the infall timescale increased proportionally with radius. They studied cases with primordial and pre-enriched gas infall, finding that the former produces a more realistic metallicity distribution in the Solar neighborhood. Their inside-out disk evolution produced good agreement with observed abundance gradients.
+\todo{Observational evidence.} \citet{nissen_high-precision_2020} measured abundances and estimated ages for nearby Solar-type stars and reported two sequences in the age--metallicity distribution which could be explained by the two-infall model.
 
-\citet{chiappini_chemical_1997} presented the first two-infall model of the MW disk. They adopted an inside-out prescription for the formation of the thin disk, with the timescale of the second infall increasing linearly with radius. They assume the formation timescale of the thick disk is 1 Gyr, and the time of the second infall is 2 Gyr. They also assume a lower threshold on the gas density required for star formation, which produces a star formation hiatus at the end of the thick disk phase. They also noted the ``loop'' that appears in the \aFe--[Fe/H] relation during the thin disk phase. They mostly compare to Solar neighborhood data.
+\todo{Outflows. Their arguments against. Our arguments for.}
 
-\citet{chiappini_abundance_2001} updated their model to fit the observed abundance, stellar, and gas gradients in the Milky Way disk. They find that a density threshold for star formation, making a gap in star formation between the halo and disk phases, is necessary to reproduce observational data. They argue that the details of halo formation also have a strong impact on the outer disk. No radial flows or outflows. I'm confused about their distinction between halo and thick disk, if any.
+\todo{Summary of secular evolution models which claim alpha-bimodality.}
 
-\citet{chiappini_oxygen_2003} compare model predictions of C, N, and O to Milky Way and other spiral galaxy data. They predict a very slow enrichment between the birth of the Sun and present day, which they claim is due to their adopted gas density threshold for star formation (the infall rate is low enough that the SFR oscillates from timestep to timestep).
+\todo{Introduce equilibrium model.}
 
-\citet{matteucci_effect_2009} investigated different SN Ia delay time distributions using the \citep{chiappini_chemical_1997,chiappini_abundance_2001} model. They use a model for the full disk but compare only to Solar neighborhood data. They concluded that some prompt SN Ia enrichment is necessary to match observed abundance patterns.
-
-\citet{spitoni_effects_2009} relaxed the instantaneous recycling approximation in two different ways: galactic fountains (i.e., SN ejecta are launched out of the disk and take some time to return) and metal cooling (i.e., newly-enriched hot gas takes time to cool before it can form stars). They found that fountains do not strongly affect the evolution of the $\alpha$-elements for short (few hundred Myr) timescales. The effect of a metal cooling timescale is similarly negligible if the yields are not dependent on metallicity.
-
-\citet{spitoni_effects_2011} find that a two-infall model of the disk without gas exchange produces a radial metallicity gradient which is too shallow. They implement an inward radial gas flow on the order of $\sim0-4$ km s$^{-1}$ which varies with radius, and find that it improves agreement with the observed gradient. However, they found that a variable star formation efficiency with radius in combination with a gas density threshold for star formation could also reproduce the observed gradient without radial flows.
-
-\citet{spitoni_effect_2015} add a simple radial migration scheme to the model of \citet{spitoni_effects_2011}. They adopt stellar velocities of $\sim 1$ km s$^{-1}$ and assume that some fixed fraction of stars born at a given radius will end up in the Solar vicinity (10\% of those born at 4 kpc and 20\% at 6 kpc). This mimics the results of previous dynamical models such as \citet{minchev_chemodynamical_2013}. They find that by including stellar migration, they are better able to reproduce the high-metallicity tail of the local metallicity distribution, and they also argue that they constrain the migration speed to $0.5 < v < 2$ km s$^{-1}$ based on this tail. Their only point of comparison with data is the local G-dwarf metallicity distribution.
-
-\citet{grisoni_ambre_2017} argue for a ``parallel'' scenario, where the thick and thin disks form simultaneously but with very different infall timescales (0.1 and 7 Gyr, respectively). They compare their models with stellar abundances from the AMBRE sample of solar-neighborhood dwarfs. They argue that the parallel scenario can produce metal-rich high-alpha stars in situ, whereas in the two-infall scenario these stars would have to migrate from the inner disk.
-
-\citet{palla_chemical_2020} explored radial gas flows, variable star formation efficiency of the thin disk, and the onset time of the second infall (but not the infall timescales). They find that inside-out formation (i.e., longer infall timescales in the outer disk) is not sufficient to reproduce observed abundance gradients, and that radial gas flows, possibly in combination with a radially-varying star formation law, are key. Pre-enriched infall in the inner disk ($R<8\,{\rm kpc}$) at the level of -0.5 dex also improves agreement with data.
-
-\citet{palla_mgfe_2022} test prescriptions for radial migration but assume that it does not affect supernova enrichment (i.e., that most supernovae explode near the star's birthplace).
-
-% Radial gas flows
-Some two-infall studies \citep[e.g.,][]{spitoni_effects_2011,palla_chemical_2020,palla_mapping_2024} implement inward radial gas flows with velocity $\sim1$ km s$^{-1}$ in order to reproduce the radial abundance gradient without Galactic outflows.
-
-% Three-infall
-Motivated by constraints on the SFH by {\it Gaia}, \citet{spitoni_beyond_2023} proposed the three-infall model, an extension with a third phase of exponential gas infall in the last few Gyr.
-
-\citet{palla_mapping_2024} compare model predictions to abundances and ages of open clusters from the {\it Gaia}-ESO survey. They find that the two-infall model over-predicts the metallicity of the youngest clusters, a problem which is fixed by the three-infall model. A version of the three-infall model with milder dilution (mild pre-enrichment of the gas with a smaller amount of infall) compared to \citet{spitoni_beyond_2023} can simultaneously match the metalliticy of old, intermediate, and young clusters across the disk.
-
-\citet{spitoni_remind_2024}
+\todo{Goal of paper.}
 
 \section{Observational Sample}
 \label{sec:observational-sample}
@@ -302,7 +280,7 @@ In most of our models, we assume the infalling gas is pristine (i.e., $Z_{\rm in
     \label{eq:pre-enrichment}
     Z_{\rm in}(t) = (1 - \exp(-t/\tau_{\rm rise})) Z_\odot 10^{{\rm [X/H]}_{\rm CGM}}.
 \end{equation}
-In this case, the metallicity rises from 0 with a timescale $\tau_{\rm rise}=2\,{\rm Gyr}$ and plateaus at ${\rm [X/H]}_{\rm CGM}={\rm [O/H]}_{\rm CGM}={\rm [Fe/H]}_{\rm CGM}$. We also investigate cases where the CGM is $\alpha$-enhanced, i.e., ${\rm [O/Fe]}_{\rm CGM}>0$.
+In this case, the metallicity rises from 0 with a timescale $\tau_{\rm rise}=2\,{\rm Gyr}$ and plateaus at ${\rm [X/H]}_{\rm CGM}={\rm [O/H]}_{\rm CGM}={\rm [Fe/H]}_{\rm CGM}$. We also investigate cases where the CGM is $\alpha$-enhanced, i.e., ${\rm [O/Fe]}_{\rm CGM}>0$. \todo{Other GCE models that do this:} \citet{palla_chemical_2020,spitoni_remind_2024,johnson_milky_2024}
 
 \subsection{Infall Rate Parameter Selection}
 \label{sec:parameter-selection}
@@ -459,6 +437,8 @@ On the other hand, the model predictions for the MDF in the $8-10\,{\rm Gyr}$ ag
 \section{Discussion}
 \label{sec:discussion}
 
+\todo{Summary of problem: the two-infall model is boxed in by data.}
+
 % \subsection{The SN Ia Delay-Time Distribution}
 % \label{sec:dtd-discussion}
 
@@ -471,10 +451,23 @@ On the other hand, the model predictions for the MDF in the $8-10\,{\rm Gyr}$ ag
 
 % Figure \ref{fig:dtd} illustrates the effect of the SN Ia DTD on the abundance predictions by the two-infall model. The fiducial plateau DTD produces the strongest high-$\alpha$ peak as well as the greatest separation between the two low-$\alpha$ peaks. The exponential DTD produces the most stars near Solar [O/Fe], but the low-$\alpha$ sequence is still distinctly bimodal. Finally, the power-law DTD shrinks the low-$\alpha$ loop such that there is only one low-$\alpha$ peak; however, this DTD produces high-$\alpha$ stars at metallicities much lower than observed, as discussed in \citet{dubay_galactic_2024}.
 
+\subsection{Radial Migration}
+\label{sec:migration-discussion}
+
+This study is not the first to apply a prescription for radial migration to a two-infall GCE model. \citet{spitoni_effect_2015} explored the effect of migration speeds of order $\sim1\,{\rm km}{\rm s}^{-1}$ on the metallicity distribution of the Solar neighborhood. They prescribed some fraction of stars from the inner and outer Galaxy which contribute to the local present-day population based on a constant migration speed, and they also assumed some fraction of stars born in the Solar neighborhood will have migrated elsewhere. This method can improve agreement with the observed local metallicity distribution, but does not scale to abundance distributions across the disk. \citet{palla_mgfe_2022} compared the \citet{spitoni_effect_2015} prescription to the diffusion treatment of \citet{frankel_measuring_2018} and found similar results.
+
+% \citet{spitoni_effect_2015} add a simple radial migration scheme to the model of \citet{spitoni_effects_2011}. They adopt stellar velocities of $\sim 1$ km s$^{-1}$ and assume that some fixed fraction of stars born at a given radius will end up in the Solar vicinity (10\% of those born at 4 kpc and 20\% at 6 kpc). This mimics the results of previous dynamical models such as \citet{minchev_chemodynamical_2013}. They find that by including stellar migration, they are better able to reproduce the high-metallicity tail of the local metallicity distribution, and they also argue that they constrain the migration speed to $0.5 < v < 2$ km s$^{-1}$ based on this tail. Their only point of comparison with data is the local G-dwarf metallicity distribution.
+
+Our method described in Section \ref{sec:migration} can affect abundance distributions across the Galaxy via migration, not just for the Solar neighborhood. We also note an important distinction between our method and that of \citet{spitoni_effect_2015}: SNe Ia from long-lived progenitors contribute Fe to each zone they migrate through, not just their birth zone. This is important because the median delay time of our SN Ia DTD is $\sim2$ Gyr, for which the width of the migration distribution is $\sigma_{\rm RM}\approx2$ kpc (Equation \ref{eq:radial-migration}). So, a significant fraction of SN Ia progenitors born in a given zone will enrich a disparate region of the Galaxy.
+
 \subsection{Radial Gas Flows}
 \label{sec:radial-flows}
 
-Radial gas flows are hard :'(
+\todo{Radial gas flows are hard :'(}
+
+Some two-infall studies \citep[e.g.,][]{spitoni_effects_2011,palla_chemical_2020,palla_mapping_2024} implement inward radial gas flows with velocity $\sim1$ km s$^{-1}$ in order to reproduce the radial abundance gradient without Galactic outflows.
+
+\citet{spitoni_effects_2011} find that a two-infall model of the disk without gas exchange produces a radial metallicity gradient which is too shallow. They implement an inward radial gas flow on the order of $\sim0-4$ km s$^{-1}$ which varies with radius, and find that it improves agreement with the observed gradient. However, they found that a variable star formation efficiency with radius in combination with a gas density threshold for star formation could also reproduce the observed gradient without radial flows.
 
 \subsection{Star Formation Hiatus}
 \label{sec:sfe-hiatus}
