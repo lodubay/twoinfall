@@ -19,7 +19,7 @@ from _globals import END_TIME, ONEZONE_DEFAULTS, ONE_COLUMN_WIDTH
 from utils import twoinfall_onezone
 
 XLIM = (-2.1, 0.8)
-YLIM = (-0.2, 0.499)
+YLIM = (-0.22, 0.499)
 ONSET = 4.2
 ZONE_WIDTH = 4
 RADII = [4, 8, 12]
@@ -84,6 +84,9 @@ def main(style='paper'):
         print(thick_disk_mass / thin_disk_mass)
     
     # Spitoni's parameters
+    custom_thick_thin_ratio = vice.toolkit.interpolation.interp_scheme_1d(
+        RADII, S21_THICK_THIN_RATIO
+    )
     for i, radius in enumerate(RADII):
         name = str(output_dir / ('spitoni_%skpc' % int(radius)))
         area = np.pi * ((radius + ZONE_WIDTH/2)**2 - (radius - ZONE_WIDTH/2)**2)
@@ -99,22 +102,8 @@ def main(style='paper'):
             dr=ZONE_WIDTH,
             sfe1=tau_star.sfe1,
             sfe2=tau_star.sfe2,
+            disk_ratio=custom_thick_thin_ratio,
         )
-        # print(ifr.ratio)
-        # ifr.ratio = ifr.ampratio(radius, thick_to_thin_ratio, 
-        #     eta = 0., vgas = 0., dt = dt
-        # )
-        # print(ifr.ratio)
-        # # Normalize infall rate
-        # prefactor = normalize_ifrmode(
-        #     ifr, gradient, ifr.tau_star, radius, 
-        #     eta = 0., vgas = 0., dt = dt, dr = ZONE_WIDTH, recycling = 0.4
-        # )
-        # ifr.first.norm *= prefactor
-        # ifr.second.norm *= prefactor
-        # area = np.pi * ((radius + ZONE_WIDTH/2)**2 - (radius - ZONE_WIDTH/2)**2)
-        # ifr.first.norm *= area * gradient(radius)
-        # ifr.second.norm *= area * gradient(radius)
         # Run one-zone model
         sz = vice.singlezone(name=name,
                              func=ifr,
@@ -131,7 +120,7 @@ def main(style='paper'):
                         #   marker_labels=(i == 1),
                           markers=[0.3, 1, 3, 10])
         # Thick-to-thin ratio
-        print(thick_to_thin_ratio(radius))
+        print(custom_thick_thin_ratio(radius))
         hist = vice.history(name)
         onset_idx = int(ifr.onset / dt)
         thick_disk_mass = hist['mstar'][onset_idx-1]
