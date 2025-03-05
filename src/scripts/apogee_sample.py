@@ -829,9 +829,8 @@ def recover_age_quad(cn_arr, feh_arr, params, cn_err=[], feh_err=[]):
     # Propagate errors
     if len(cn_err) > 0 and len(feh_err) > 0:
         age_errors = np.sqrt(
-            ((c2*cn_arr**2)*2*cn_err/cn_arr + c1*cn_err)**2 +
-            ((f2*feh_arr**2)*2*feh_err/feh_arr + f1*feh_err)**2 +
-            ((c1f1*feh_arr*cn_arr) * np.sqrt((cn_err/cn_arr)**2 + (feh_err/feh_arr)**2))**2
+            cn_err**2 * (2*c2*cn_arr + c1 + c1f1*feh_arr)**2 +
+            feh_err**2 * (2*f2*feh_arr + f1 * c1f1*cn_arr)**2
         )
     return ages, age_errors
 
