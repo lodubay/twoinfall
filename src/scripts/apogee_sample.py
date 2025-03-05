@@ -648,7 +648,8 @@ class APOGEESample:
             (apogee_df['FE_H'] >= -0.9) & (apogee_df['FE_H'] < 0.45) & 
             (apogee_df['LOGG'] >= 1.5) & (apogee_df['LOGG'] < 3.26) &
             (apogee_df['C_N'] >= -0.75) & (apogee_df['C_N'] < 1.0) &
-            (apogee_df['TEFF'] >= 4000) & (apogee_df['TEFF'] < 5200)
+            (apogee_df['TEFF'] >= 4000) & (apogee_df['TEFF'] < 5200) &
+            (apogee_df['C_N_ERR'] < 0.08)
         ].copy()
         # Get evolutionary state
         goldregion = evol_state(goldregion)
@@ -823,7 +824,16 @@ def recover_age_quad(cn_arr, feh_arr, params, cn_err=[], feh_err=[]):
     """
     assert len(cn_arr) == len(feh_arr)
     c2,c1,f2,f1,c1f1,b = params
-    ages = (c2*cn_arr**2)+(c1*cn_arr)+(f2*feh_arr**2)+(f1*feh_arr)+(c1f1*feh_arr*cn_arr)+b 
+    #check for stars with [C/N] past the parabola peak
+    maxcn = (c1+c1f1*feh_arr)/(-2*c2)
+    badcn = cn_arr > maxcn
+    # Calculate ages
+    ages = (c2*cn_arr**2) + (c1*cn_arr) + (f2*feh_arr**2) + (f1*feh_arr) + \
+        (c1f1*feh_arr*cn_arr)+b 
+    #for stars with c/n past the parabola peak, use the parabola peak instead
+    ages[badcn] = (c2*maxcn[badcn]**2) + (c1*maxcn[badcn]) + \
+        (f2*feh_arr[badcn]**2) + (f1*feh_arr[badcn]) + \
+        (c1f1*feh_arr[badcn]*maxcn[badcn]) + b 
     # Generic age errors of 1 Gyr
     age_errors = 1e9 / (np.log(10) * 10 ** ages)
     # Propagate errors
