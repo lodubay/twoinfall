@@ -44,12 +44,6 @@ _DELAY_MODELS_ = [
 _YIELD_SETS_ = [
     "F04", "JW20", "J21", "C22", "W24", "W24mod", "yZ1", "yZ2", "yZ3"
 ]
-_OUTFLOW_PRESCRIPTIONS_ = [
-    "J21", # aka vice.milkyway.default_mass_loading
-    "equilibrium",
-    "bespoke", # different prescriptions tuned to each yield set
-    "none"
-]
 
 def parse():
     r"""
@@ -154,11 +148,9 @@ an inward flow (default: 0).",
         type = float,
         default = 0.
     )
-    parser.add_argument("--outflows",
-        help = "The outflow prescription as a function of Galactocentric radius.",
-        type = str,
-        choices = _OUTFLOW_PRESCRIPTIONS_,
-        default = "equilibrium"
+    parser.add_argument("--no-outflows",
+        help = "Disable mass-loaded outflows.",
+        action = "store_true",
     )
     parser.add_argument("--pre-enrichment",
         help = "The [X/H] abundance of the infalling gas at late times. \
@@ -215,7 +207,7 @@ def model(args):
         yields = args.yields,
         seed = args.seed,
         radial_gas_velocity = args.radial_gas_velocity,
-        outflow_spec = args.outflows,
+        has_outflows = not args.no_outflows,
         pre_enrichment = args.pre_enrichment,
         pre_alpha_enhancement = args.pre_alpha_enhancement,
         migration_time_dep = args.migration_time_dependence,
