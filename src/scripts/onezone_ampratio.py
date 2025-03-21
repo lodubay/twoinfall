@@ -14,6 +14,7 @@ from multizone.src.models.gradient import gradient, thick_to_thin_ratio
 from multizone.src.models.diskmodel import two_component_disk
 from multizone.src.models.normalize import normalize_ifrmode
 from multizone.src.models import twoinfall_sf_law, twoinfall
+from multizone.src import outflows
 from track_and_mdf import setup_figure, plot_vice_onezone
 # from utils import twoinfall_onezone
 from _globals import ONEZONE_DEFAULTS, END_TIME
@@ -37,7 +38,7 @@ def main():
     BHG16 = two_component_disk()
 
     # One-zone model settings
-    eta_func = vice.milkyway.default_mass_loading
+    eta_func = outflows.yZ2
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
     params = ONEZONE_DEFAULTS
     dt = params['dt']
