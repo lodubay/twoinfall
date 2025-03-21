@@ -25,11 +25,12 @@ OUTPUT_NAMES = [
     'yZ1/pre_enrichment/mh07_alpha00/diskmodel',
 ]
 LABELS = [
-    '(a)\nFiducial',
+    '(a)\n' + r'$y/Z_\odot=1$',
     '(b)\n' + r'$y/Z_\odot=2$',
-    '(c)\n' + r'$\sigma_{\rm RM8}=5.0$ kpc',
-    '(d)\n' + r'${\rm [X/H]}_{\rm CGM}=-0.7$',
+    '(c)\n' + r'$y/Z_\odot=1$ &' + '\n' + r'$\sigma_{\rm RM8}=5.0$ kpc',
+    '(d)\n' + r'$y/Z_\odot=1$ &' + '\n' + r'${\rm [X/H]}_{\rm CGM}=-0.7$',
 ]
+LABEL_PADS = [18, 18, 6, 6]
 AXES_LIM = {
     '[o/h]': (-1.2, 0.4),
     '[fe/h]': (-1.2, 0.4),
@@ -60,7 +61,7 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
                           width=0.02, pad=0.01, labelpad=2, extend='both')
 
     for j, output_name in enumerate(OUTPUT_NAMES):
-        axs[0,j].set_title(LABELS[j])
+        axs[0,j].set_title(LABELS[j], pad=LABEL_PADS[j])
         # Import VICE multizone outputs
         mzs = MultizoneStars.from_output(output_name, verbose=verbose)
         mzs.region(galr_lim=GALR_LIM, absz_lim=ABSZ_LIM, inplace=True)

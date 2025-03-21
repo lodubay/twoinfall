@@ -20,13 +20,13 @@ OUTPUT_NAMES = [
     'yZ2/pre_enrichment/mh07_alpha00/diskmodel'
 ]
 LABELS = [
-    '(a)\nFiducial',
+    '(a)\n' + r'$y/Z_\odot=1$',
     '(b)\n' + r'$y/Z_\odot=2$',
     '(c)\n' + r'$y/Z_\odot=2$ &' + '\nPower-law DTD',
     '(d)\n' + r'$y/Z_\odot=2$ &' + '\n' + r'${\rm [X/H]}_{\rm CGM}=-0.7$',
     '(e)\nAPOGEE'
 ]
-LABEL_PADS = [6, 4, -6, -8, 6]
+LABEL_PADS = [2, 2, -8, -9, 3]
 NBINS = 100
 OFE_LIM = (-0.15, 0.55)
 SMOOTH_WIDTH = 0.05
