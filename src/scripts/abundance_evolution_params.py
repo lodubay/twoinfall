@@ -15,13 +15,13 @@ import paths
 OUTPUT_NAMES = [
     'yZ1/fiducial/diskmodel',
     'yZ1/migration_strength/strength50/diskmodel',
-    'yZ1/pre_enrichment/mh07_alpha00/diskmodel',
+    'yZ1/pre_enrichment/mh05_alpha00/diskmodel',
     'yZ1/thick_thin_ratio/solar048/diskmodel'
 ]
 LABELS = [
     '(a)\nFiducial',
     '(b)\n' + r'$\sigma_{\rm RM8}=5.0$ kpc',
-    '(c)\n' + r'${\rm [X/H]}_{\rm CGM}=-0.7$',
+    '(c)\n' + r'${\rm [X/H]}_{\rm CGM}=-0.5$',
     '(d)\n' + r'$f_\Sigma(R_\odot)=0.48$'
 ]
 GALR_LIM = (7, 9)
@@ -33,7 +33,7 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
     fig, axs = compare_abundance_evolution(
         OUTPUT_NAMES, 
         LABELS,
-        (TWO_COLUMN_WIDTH, 0.75 * TWO_COLUMN_WIDTH),
+        (TWO_COLUMN_WIDTH, 0.7 * TWO_COLUMN_WIDTH),
         verbose=verbose,
         uncertainties=uncertainties,
         cmap=cmap,

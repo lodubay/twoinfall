@@ -42,7 +42,7 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
     fig, axs = compare_abundance_evolution(
         OUTPUT_NAMES, 
         LABELS,
-        (ONE_COLUMN_WIDTH, 1.4 * ONE_COLUMN_WIDTH),
+        (ONE_COLUMN_WIDTH, 1.3 * ONE_COLUMN_WIDTH),
         verbose=verbose,
         uncertainties=uncertainties,
         cmap=cmap,
@@ -124,7 +124,7 @@ def compare_abundance_evolution(
         [lines[0], (spatch, pcol)],
         ['Gas abundance', 'APOGEE data'],
         loc='lower left', frameon=False, handletextpad=0.5,
-        borderpad=0.2, handlelength=1.5
+        borderpad=0.2, handlelength=1.2
     )
 
     return fig, axs
