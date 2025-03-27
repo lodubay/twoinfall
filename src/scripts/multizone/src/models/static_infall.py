@@ -5,7 +5,6 @@ given radius in the constant SFH model from Johnson et al. (2021).
 
 from .utils import constant
 from .normalize import normalize_ifrmode
-# from .gradient import gradient
 from .diskmodel import BHG16
 from .fiducial_sf_law import fiducial_sf_law
 import math as m

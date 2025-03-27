@@ -20,7 +20,7 @@ from . import models
 from . import dtds
 from . import outflows
 from .models.utils import get_bin_number, interpolate, modified_exponential
-from .models.diskmodel import BHG16
+from .models.diskmodel import two_component_disk, BHG16
 import math as m
 
 _SECONDS_PER_GYR_ = 3.1536e16
@@ -105,6 +105,8 @@ class diskmodel(vice.milkyway):
     pre_alpha_enhancement : ``float`` [default: 0]
         The [alpha/M] enhancement of infalling gas at late times. Increases
         the pre-enrichment abundance of O, Mg, and Si.
+    local_disk_ratio : ``float`` [default: 0.12]
+        The thick-to-thin disk surface density ratio in the Solar annulus.
     kwargs : varying types
         Other keyword arguments to pass ``vice.milkyway``.
 
@@ -117,7 +119,7 @@ class diskmodel(vice.milkyway):
                  radial_gas_velocity = 0., has_outflows=True, 
                  migration_time_dep=0.33, migration_radius_dep=0.61,
                  migration_strength=2.68, pre_enrichment=float("-inf"), 
-                 pre_alpha_enhancement=0., **kwargs):
+                 pre_alpha_enhancement=0., local_disk_ratio=0.12, **kwargs):
         # Set the yields
         if yields == "JW20":
             from vice.yields.presets import JW20
@@ -176,6 +178,10 @@ class diskmodel(vice.milkyway):
                 self.mass_loading = outflows.equilibrium()
         else:
             self.mass_loading = outflows.no_outflows
+        # Prescription for disk surface density as a function of radius
+        disk_density_model = two_component_disk.from_local_ratio(
+            local_ratio = local_disk_ratio
+        )
         # Set the SF mode - infall vs star formation rate
         evol_kwargs = {}
         if spec.lower() in [
@@ -190,7 +196,7 @@ class diskmodel(vice.milkyway):
             self.mode = "ifr"
             for zone in self.zones: zone.Mg0 = 0.
             # disk density model for proper infall rate normalization
-            evol_kwargs["diskmodel"] = BHG16()
+            evol_kwargs["diskmodel"] = disk_density_model
             # specify mass-loading factor for infall mode normalization
             evol_kwargs["mass_loading"] = self.mass_loading
             if radial_gas_velocity:
@@ -201,7 +207,7 @@ class diskmodel(vice.milkyway):
         self.evolution = star_formation_history(
             spec = spec,
             zone_width = zone_width, 
-            gradient = BHG16().gradient,
+            gradient = disk_density_model.gradient,
             **evol_kwargs
         )
         # Set the Type Ia delay time distribution

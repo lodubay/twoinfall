@@ -5,7 +5,7 @@ late times in the Johnson et al. (2021) models.
 
 import math as m
 from ..._globals import THIN_DISK_SCALE_RADIUS, THICK_DISK_SCALE_RADIUS, \
-    THICK_TO_THIN_RATIO
+    CENTRAL_DISK_RATIO
 
 
 def gradient(radius):
@@ -37,7 +37,7 @@ def gradient(radius):
     """
     return (
         m.exp(-radius / THIN_DISK_SCALE_RADIUS) +
-        THICK_TO_THIN_RATIO * m.exp(-radius / THICK_DISK_SCALE_RADIUS)
+        CENTRAL_DISK_RATIO * m.exp(-radius / THICK_DISK_SCALE_RADIUS)
     )
 
 
@@ -57,7 +57,7 @@ def thick_to_thin_ratio(radius):
         The ratio between the thick and thin disk stellar surface density
         at the given radius.
     """
-    return THICK_TO_THIN_RATIO * m.exp(
+    return CENTRAL_DISK_RATIO * m.exp(
         radius * (1 / THIN_DISK_SCALE_RADIUS - 1 / THICK_DISK_SCALE_RADIUS)
     )
 
