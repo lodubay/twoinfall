@@ -20,7 +20,7 @@ from . import models
 from . import dtds
 from . import outflows
 from .models.utils import get_bin_number, interpolate, modified_exponential
-from .models.gradient import gradient
+from .models.diskmodel import BHG16
 import math as m
 
 _SECONDS_PER_GYR_ = 3.1536e16
@@ -197,6 +197,8 @@ class diskmodel(vice.milkyway):
         ]:
             self.mode = "ifr"
             for zone in self.zones: zone.Mg0 = 0.
+            # disk density model for proper infall rate normalization
+            evol_kwargs["diskmodel"] = BHG16()
             # specify mass-loading factor for infall mode normalization
             evol_kwargs["mass_loading"] = self.mass_loading
             if radial_gas_velocity:
@@ -207,6 +209,7 @@ class diskmodel(vice.milkyway):
         self.evolution = star_formation_history(
             spec = spec,
             zone_width = zone_width, 
+            gradient = BHG16().gradient,
             **evol_kwargs
         )
         # Set the Type Ia delay time distribution
@@ -310,6 +313,8 @@ class star_formation_history:
     ----------
     spec : ``str`` [default : "static"]
         A keyword denoting the time-dependence of the SFH.
+    gradient : <function> [default: BHG16().gradient]
+        The radial density gradient as a function of radius in kpc.
     zone_width : ``float`` [default : 0.1]
         The width of each annulus in kpc.
 
@@ -323,7 +328,9 @@ class star_formation_history:
             Simulation time in Gyr.
     """
 
-    def __init__(self, spec = "static", zone_width = 0.1, dt = 0.01, **kwargs):
+    def __init__(self, spec = "static", gradient=BHG16().gradient, 
+                 zone_width = 0.1, dt = 0.01, **kwargs):
+        self.gradient = gradient
         self._radii = []
         self._evol = []
         i = 0
@@ -354,11 +361,11 @@ class star_formation_history:
         else:
             idx = get_bin_number(self._radii, radius)
             if idx != -1:
-                val = gradient(radius) * interpolate(self._radii[idx],
+                val = self.gradient(radius) * interpolate(self._radii[idx],
                     self._evol[idx](time), self._radii[idx + 1],
                     self._evol[idx + 1](time), radius)
             else:
-                val = gradient(radius) * interpolate(self._radii[-2],
+                val = self.gradient(radius) * interpolate(self._radii[-2],
                     self._evol[-2](time), self._radii[-1], self._evol[-1](time),
                     radius)
             return max(val, 0) # Ensure no negative values

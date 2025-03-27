@@ -51,11 +51,14 @@ class two_component_disk(double_exponential):
         The ratio of thick to thin disk surface mass density.
 
     """
-    def __init__(self, ratio=THICK_TO_THIN_RATIO, 
-                 mass=M_STAR_MW, 
-                 rs_thin=THIN_DISK_SCALE_RADIUS,
-                 rs_thick=THICK_DISK_SCALE_RADIUS,
-                 rmax=MAX_SF_RADIUS):
+    def __init__(
+            self, 
+            ratio=THICK_TO_THIN_RATIO, 
+            mass=M_STAR_MW, 
+            rs_thin=THIN_DISK_SCALE_RADIUS,
+            rs_thick=THICK_DISK_SCALE_RADIUS,
+            rmax=MAX_SF_RADIUS
+        ):
         super().__init__(onset=0., ratio=1./ratio)
         self.first.timescale = rs_thick
         self.second.timescale = rs_thin
