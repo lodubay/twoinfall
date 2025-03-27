@@ -164,6 +164,11 @@ If -inf, infalling gas is always pristine. (Default: -inf).",
         default = 0.0,
         type = float
     )
+    parser.add_argument("--local-disk-ratio",
+        help = "Thick-to-thin disk surface density ratio in the Solar annulus",
+        type = float,
+        default = _globals.LOCAL_DISK_RATIO
+    )
 
     return parser
 
@@ -185,7 +190,6 @@ def model(args):
     with open(str(fullpath) + "_args.txt", "w") as f:
         f.write(args.name + "\n")
         f.writelines(["%s: %s\n" % (k, v) for k, v in vars(args).items() if k != "name"])
-        f.write("thick_to_thin_ratio: %s\n" % _globals.THICK_TO_THIN_RATIO)
     # Parse RIa params into dict
     RIa_kwargs = {}
     if '=' in args.RIa_params:
@@ -213,6 +217,7 @@ def model(args):
         migration_time_dep = args.migration_time_dependence,
         migration_radius_dep = args.migration_radial_dependence,
         migration_strength = args.migration_strength,
+        local_disk_ratio = args.local_disk_ratio
     )
     if args.migration == "post-process":
         kwargs["simple"] = True

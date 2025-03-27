@@ -11,7 +11,8 @@ two_component_disk : object
 import math as m
 from .utils import double_exponential
 from ..._globals import MAX_SF_RADIUS, M_STAR_MW, \
-    THIN_DISK_SCALE_RADIUS, THICK_DISK_SCALE_RADIUS, THICK_TO_THIN_RATIO
+    THIN_DISK_SCALE_RADIUS, THICK_DISK_SCALE_RADIUS, CENTRAL_DISK_RATIO, \
+    LOCAL_DISK_RATIO
 
 
 class two_component_disk(double_exponential):
@@ -38,6 +39,11 @@ class two_component_disk(double_exponential):
     Calling
     -------
     Returns the total surface density at the given Galactic radius in kpc.
+
+    Classmethods
+    ------------
+    from_local_ratio(local_ratio=0.12, rsun=8.0, **kwargs)
+        Initialize object with thick-to-thin ratio at R=Rsun rather than R=0.
     
     Methods
     -------
@@ -51,17 +57,38 @@ class two_component_disk(double_exponential):
         The ratio of thick to thin disk surface mass density.
 
     """
-    def __init__(self, ratio=THICK_TO_THIN_RATIO, 
-                 mass=M_STAR_MW, 
-                 rs_thin=THIN_DISK_SCALE_RADIUS,
-                 rs_thick=THICK_DISK_SCALE_RADIUS,
-                 rmax=MAX_SF_RADIUS):
+    def __init__(
+            self, 
+            ratio=CENTRAL_DISK_RATIO, 
+            mass=M_STAR_MW, 
+            rs_thin=THIN_DISK_SCALE_RADIUS,
+            rs_thick=THICK_DISK_SCALE_RADIUS,
+            rmax=MAX_SF_RADIUS
+        ):
         super().__init__(onset=0., ratio=1./ratio)
         self.first.timescale = rs_thick
         self.second.timescale = rs_thin
         norm = self.normalize(rmax)
         self.first.norm *= mass * norm
         self.second.norm *= mass * norm
+    
+    @classmethod
+    def from_local_ratio(
+            cls, 
+            local_ratio=LOCAL_DISK_RATIO, 
+            rsun=8., 
+            rs_thin=THIN_DISK_SCALE_RADIUS,
+            rs_thick=THICK_DISK_SCALE_RADIUS,
+            **kwargs
+        ):
+        # Calculate thick-to-thin disk ratio at R=0
+        central_ratio = local_ratio * m.exp(-rsun * (1/rs_thin - 1/rs_thick))
+        return cls(
+            ratio=central_ratio, 
+            rs_thin=rs_thin, 
+            rs_thick=rs_thick, 
+            **kwargs
+        )
         
     def normalize(self, rmax, dr=0.1):
         """
@@ -183,19 +210,19 @@ class Palla20(two_component_disk):
         Thin disk scale radius in kpc.
     rs_thick : float [default: 2.3]
         Thick disk scale radius in kpc.
-    R0 : float [default: 8.0]
+    rsun : float [default: 8.0]
         Galactocentric radius of the Sun in kpc.
     """
     def __init__(self, sigma_thin=54.0, sigma_thick=12.3, rs_thin=3.5, 
-                 rs_thick=2.3, R0=8.0):
+                 rs_thick=2.3, rsun=8.0):
         # Stellar surface density ratio at the Solar neighborhood
         solar_ratio = sigma_thick / sigma_thin
         # Set the central thick-to-thin ratio
-        central_ratio = solar_ratio * m.exp(-R0 * (1 / rs_thin - 1 / rs_thick))
+        central_ratio = solar_ratio * m.exp(-rsun * (1 / rs_thin - 1 / rs_thick))
         # Initialize with scale radii
         super().__init__(rs_thin=3.5, rs_thick=2.3, ratio=central_ratio)
         # Set the central surface mass density of the thin disk
-        sigma_thin_center = sigma_thin * m.exp(R0 / rs_thin)
+        sigma_thin_center = sigma_thin * m.exp(rsun / rs_thin)
         self.second.norm = central_ratio * sigma_thin_center * 1e6 # Msun kpc^-2
         # Set the density in the Solar neighborhood of the thick disk
         self.first.norm *= sigma_thick * 1e6 / self.thick_disk(8)

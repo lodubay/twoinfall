@@ -13,9 +13,8 @@ calculate_mstar : <function>
 from ..._globals import END_TIME
 from .utils import double_exponential
 from .normalize import normalize_ifrmode, integrate_infall
-from .gradient import gradient, thick_to_thin_ratio
 from .twoinfall_sf_law import twoinfall_sf_law
-from .diskmodel import two_component_disk
+from .diskmodel import BHG16, two_component_disk
 from ..outflows import equilibrium
 import math as m
 
@@ -32,6 +31,9 @@ class twoinfall(double_exponential):
     ----------
     radius : float
         The galactocentric radius in kpc of a given annulus in the model.
+    diskmodel : object [default: ``.diskmodel.BHG16()``]
+        Instance of a disk model object which includes ``gradient`` and 
+        ``thick_to_thin_ratio`` functions that take an argument for radius.
     mass_loading : <function> [defualt: ``vice.milkyway.default_mass_loading``]
         The dimensionless mass-loading factor as a function of radius.
     onset : float [default: 4.2]
@@ -67,9 +69,8 @@ class twoinfall(double_exponential):
     def __init__(
             self, 
             radius, 
-            # diskmodel = two_component_disk(),
-            mass_loading = equilibrium(), 
-            disk_ratio = thick_to_thin_ratio,
+            diskmodel = BHG16(),
+            mass_loading = equilibrium(),
             onset = SECOND_ONSET, 
             first_timescale = FIRST_TIMESCALE, 
             second_timescale = SECOND_TIMESCALE,
@@ -96,12 +97,12 @@ class twoinfall(double_exponential):
         for i in range(niter):
             # Calculate amplitude ratio
             self.ratio *= self.ampratio(
-                radius, disk_ratio, 
+                radius, diskmodel.thick_to_thin_ratio, 
                 eta = eta, vgas = vgas, dt = dt
             )
             # Normalize infall rate
             prefactor = normalize_ifrmode(
-                self, gradient, self.tau_star, radius, 
+                self, diskmodel.gradient, self.tau_star, radius, 
                 eta = eta, vgas = vgas, dt = dt, dr = dr, recycling = 0.4
             )
             self.first.norm *= prefactor

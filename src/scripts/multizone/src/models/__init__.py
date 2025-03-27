@@ -15,6 +15,7 @@ __all__ = [
     "earlyburst_sf_law", 
     "twoinfall_sf_law", 
     "two_component_disk",
+    "BHG16"
 ]
 
 from .insideout import insideout
@@ -31,4 +32,4 @@ from .twoinfall_inner import twoinfall_inner
 from .fiducial_sf_law import fiducial_sf_law
 from .earlyburst_sf_law import earlyburst_sf_law
 from .twoinfall_sf_law import twoinfall_sf_law
-from .diskmodel import two_component_disk
+from .diskmodel import two_component_disk, BHG16
