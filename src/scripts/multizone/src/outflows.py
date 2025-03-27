@@ -5,6 +5,7 @@ Classes and methods for the outflow mass-loading factor.
 import math as m
 from numbers import Number
 import vice
+from .._globals import ETA_SCALE_RADIUS
 
 
 class exponential:
@@ -80,24 +81,6 @@ Got: {type(value)}")
 Got: {type(value)}")
 
 
-class yZ1(exponential):
-    """Subclass of ``exponential_mass_loading`` tuned to the yZ1 yields."""
-    def __init__(self):
-        super().__init__(0.2, 4.2)
-
-
-class yZ2(exponential):
-    """Subclass of ``exponential_mass_loading`` tuned to the yZ2 yields."""
-    def __init__(self):
-        super().__init__(1.4, 5.4)
-
-
-class yZ3(exponential):
-    """Subclass of ``exponential_mass_loading`` tuned to the yZ3 yields."""
-    def __init__(self):
-        super().__init__(2.4, 5.4)
-
-
 class equilibrium(exponential):
     """
     An exponential outflow mass-loading parameter.
@@ -132,6 +115,12 @@ class equilibrium(exponential):
         scale_radius = -1 / (gradient * m.log(10))
         super().__init__(eta_sun, scale_radius)
 
+# Outflow prescriptions tuned to each yield set
+yZ1 = exponential(0.2, ETA_SCALE_RADIUS)
+
+yZ2 = exponential(1.4, ETA_SCALE_RADIUS)
+
+yZ3 = exponential(2.4, ETA_SCALE_RADIUS)
 
 def no_outflows(radius):
     """A dummy function returning 0 for all inputs."""

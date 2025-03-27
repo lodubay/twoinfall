@@ -155,7 +155,7 @@ def vary_param(subfig, first_timescale=1., second_timescale=10., onset=4.,
         else:
             color = None
         # Outflow mass-loading factor
-        eta_func = outflows.yZ1()
+        eta_func = outflows.yZ1
         eta = eta_func(RADIUS)
         # Run one-zone model
         name = output_name(*param_dict.values())

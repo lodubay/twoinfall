@@ -95,16 +95,8 @@ class diskmodel(vice.milkyway):
         Random number generator seed.
     radial_gas_velocity : ``float`` [default: 0]
         Radial gas flow velocity in km/s. Positive denotes an outward gas flow.
-    outflow_spec : ``str`` [default: "default"]
-        Specification for the outflow prescription as a function of 
-        galactocentric radius.
-        Allowed values:
-
-        - "J21"
-        - "equilibrium"
-        - "bespoke"
-        - "none"
-
+    has_outflows : ``bool`` [default: True]
+        If False, sets the outflow mass-loading factor to 0 at all radii.
     pre_enrichment : ``float`` [default: -inf]
         The [X/H] abundance of the infalling gas at late times. The infall
         metallicity starts at 0 and increases exponentially to the specified
@@ -122,7 +114,7 @@ class diskmodel(vice.milkyway):
     def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "twoinfall",
                  verbose = True, migration_mode = "gaussian", yields="yZ1",
                  delay = 0.04, RIa = "plateau", RIa_kwargs={}, seed=42, 
-                 radial_gas_velocity = 0., outflow_spec="equilibrium", 
+                 radial_gas_velocity = 0., has_outflows=True, 
                  migration_time_dep=0.33, migration_radius_dep=0.61,
                  migration_strength=2.68, pre_enrichment=float("-inf"), 
                  pre_alpha_enhancement=0., **kwargs):
@@ -171,19 +163,19 @@ class diskmodel(vice.milkyway):
                     N = Nstars, mode = migration_mode, 
                     filename = analogdata_filename)
         # Outflow mass-loading factor
-        if outflow_spec == "J21":
-            self.mass_loading = vice.milkyway.default_mass_loading
-        elif outflow_spec == "bespoke":
-            if yields == "yZ1":
-                self.mass_loading = outflows.yZ1()
+        if has_outflows:
+            if yields == "J21":
+                self.mass_loading = vice.milkyway.default_mass_loading
+            elif yields == "yZ1":
+                self.mass_loading = outflows.yZ1
             elif yields == "yZ2":
-                self.mass_loading = outflows.yZ2()
+                self.mass_loading = outflows.yZ2
             elif yields == "yZ3":
-                self.mass_loading = outflows.yZ3()
+                self.mass_loading = outflows.yZ3
             else:
                 self.mass_loading = outflows.equilibrium()
         else:
-            self.mass_loading = outflows.equilibrium()
+            self.mass_loading = outflows.no_outflows
         # Set the SF mode - infall vs star formation rate
         evol_kwargs = {}
         if spec.lower() in [

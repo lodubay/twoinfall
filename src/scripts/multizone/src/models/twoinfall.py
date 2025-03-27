@@ -14,13 +14,14 @@ from ..._globals import END_TIME
 from .utils import double_exponential
 from .normalize import normalize_ifrmode, integrate_infall
 from .twoinfall_sf_law import twoinfall_sf_law
-from .diskmodel import BHG16
-import vice
+from .diskmodel import BHG16, two_component_disk
+from ..outflows import equilibrium
 import math as m
 
 FIRST_TIMESCALE = 1. # Gyr
 SECOND_TIMESCALE = 15. # Gyr
 SECOND_ONSET = 4.2 # Gyr
+
 
 class twoinfall(double_exponential):
     r"""
@@ -39,8 +40,10 @@ class twoinfall(double_exponential):
         The onset time of the second exponential infall in Gyr.
     first_timescale : float [default: 1.0]
         The timescale of the first exponential infall in Gyr.
-    second_timescale : float [default: 10.0]
-        The timescale of the second exponential infall in Gyr.
+    second_timescale : float or function [default: 15.0]
+        The timescale of the second exponential infall in Gyr. If a function,
+        must take one argument, which is the radius in kpc, and return a
+        timescale in Gyr.
     vgas : float [default: 0.0]
         Radial gas velocity in kpc/Gyr. Positive for outward flow.
     dt : float [default : 0.01]
@@ -67,7 +70,7 @@ class twoinfall(double_exponential):
             self, 
             radius, 
             diskmodel = BHG16(),
-            mass_loading = vice.milkyway.default_mass_loading,
+            mass_loading = equilibrium(),
             onset = SECOND_ONSET, 
             first_timescale = FIRST_TIMESCALE, 
             second_timescale = SECOND_TIMESCALE,
@@ -80,7 +83,10 @@ class twoinfall(double_exponential):
     ):
         super().__init__(onset=onset, ratio=1.)
         self.first.timescale = first_timescale 
-        self.second.timescale = second_timescale
+        if callable(second_timescale):
+            self.second.timescale = second_timescale(radius)
+        else:
+            self.second.timescale = second_timescale
         # Initialize the star formation law
         area = m.pi * ((radius + dr/2.)**2 - (radius - dr/2.)**2)
         self.tau_star = twoinfall_sf_law(

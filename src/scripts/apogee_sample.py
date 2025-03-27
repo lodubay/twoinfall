@@ -29,6 +29,7 @@ SAMPLE_COLS = ['APOGEE_ID', 'RA', 'DEC', 'GALR', 'GALPHI', 'GALZ', 'SNREV',
                'TEFF', 'TEFF_ERR', 'LOGG', 'LOGG_ERR', 'O_H', 'O_H_ERR', 
                'FE_H', 'FE_H_ERR', 'O_FE', 'O_FE_ERR', 'FE_O', 'FE_O_ERR',
                'C_N', 'C_N_ERR', 'CN_AGE', 'CN_AGE_ERR', 'CN_LOG_AGE',
+               'CN_LOG_AGE_ERR',
                'L23_AGE', 'L23_AGE_ERR', 'L23_LOG_AGE', 'L23_LOG_AGE_ERR']
 
 def main():
@@ -647,7 +648,8 @@ class APOGEESample:
             (apogee_df['FE_H'] >= -0.9) & (apogee_df['FE_H'] < 0.45) & 
             (apogee_df['LOGG'] >= 1.5) & (apogee_df['LOGG'] < 3.26) &
             (apogee_df['C_N'] >= -0.75) & (apogee_df['C_N'] < 1.0) &
-            (apogee_df['TEFF'] >= 4000) & (apogee_df['TEFF'] < 5200)
+            (apogee_df['TEFF'] >= 4000) & (apogee_df['TEFF'] < 5200) &
+            (apogee_df['C_N_ERR'] < 0.08)
         ].copy()
         # Get evolutionary state
         goldregion = evol_state(goldregion)
@@ -662,15 +664,24 @@ class APOGEESample:
         cn_age_region = pd.concat([
             LRGB, URGB[URGB['FE_H'] >= -0.4], RC[RC['FE_H'] >= -0.4]
         ])
-        cn_age_region['CN_LOG_AGE'] = recover_age_quad(
-            cn_age_region['C_N'].values, cn_age_region['FE_H'].values, CN_AGE_COEF
-        ) - 9.
-        cn_age_region['CN_AGE'] = 10 ** cn_age_region['CN_LOG_AGE']
-        # Temporary errors
-        cn_age_region['CN_AGE_ERR'] = 1. * np.ones(cn_age_region.shape[0])
-        cn_age_region['CN_LOG_AGE_ERR'] = np.abs(
-            cn_age_region['CN_AGE_ERR'] / (cn_age_region['CN_AGE'] * np.log(10))
+        # Inflate abundance uncertainties - reported in APOGEE are too small
+        # Cao & Pinsonneault (2025); Pinsonneault et al. (2025)
+        cfe_err = 3.0728 * cn_age_region['C_FE_ERR']
+        nfe_err = 2.7109 * cn_age_region['N_FE_ERR']
+        cn_err = np.sqrt(cfe_err**2 + nfe_err**2 - 0.0946 * cfe_err * nfe_err)
+        feh_err = 0.05 * np.ones(cn_age_region.shape[0])
+        cn_log_age, cn_log_age_err = recover_age_quad(
+            cn_age_region['C_N'].values, 
+            cn_age_region['FE_H'].values, 
+            CN_AGE_COEF,
+            cn_err = cn_err,
+            feh_err = feh_err
         )
+        # Convert years -> Gyr
+        cn_age_region['CN_LOG_AGE'] = cn_log_age - 9.
+        cn_age_region['CN_LOG_AGE_ERR'] = cn_log_age_err
+        cn_age_region['CN_AGE'] = 10 ** cn_age_region['CN_LOG_AGE']
+        cn_age_region['CN_AGE_ERR'] = cn_age_region['CN_AGE'] * np.log(10) * cn_age_region['CN_LOG_AGE_ERR']
         apogee_df = apogee_df.join(cn_age_region[
             ['CN_AGE', 'CN_AGE_ERR', 'CN_LOG_AGE', 'CN_LOG_AGE_ERR']
         ])
@@ -787,7 +798,7 @@ def contour_levels_2D(arr2d, enclosed=[0.8, 0.3]):
     return levels
 
 
-def recover_age_quad(cn_arr, feh_arr, params):
+def recover_age_quad(cn_arr, feh_arr, params, cn_err=[], feh_err=[]):
     """
     Compute stellar ages via polynomial fit to [C/N] and [Fe/H].
     
@@ -802,8 +813,10 @@ def recover_age_quad(cn_arr, feh_arr, params):
     
     Returns
     -------
-    array-like
+    ages: array-like
         Array of log10(stellar ages in years).
+    age_errors: array-like
+        Array of error in log-age.
     
     Notes
     -----
@@ -811,8 +824,25 @@ def recover_age_quad(cn_arr, feh_arr, params):
     """
     assert len(cn_arr) == len(feh_arr)
     c2,c1,f2,f1,c1f1,b = params
-    ages = (c2*cn_arr**2)+(c1*cn_arr)+(f2*feh_arr**2)+(f1*feh_arr)+(c1f1*feh_arr*cn_arr)+b 
-    return ages
+    #check for stars with [C/N] past the parabola peak
+    maxcn = (c1+c1f1*feh_arr)/(-2*c2)
+    badcn = cn_arr > maxcn
+    # Calculate ages
+    ages = (c2*cn_arr**2) + (c1*cn_arr) + (f2*feh_arr**2) + (f1*feh_arr) + \
+        (c1f1*feh_arr*cn_arr)+b 
+    #for stars with c/n past the parabola peak, use the parabola peak instead
+    ages[badcn] = (c2*maxcn[badcn]**2) + (c1*maxcn[badcn]) + \
+        (f2*feh_arr[badcn]**2) + (f1*feh_arr[badcn]) + \
+        (c1f1*feh_arr[badcn]*maxcn[badcn]) + b 
+    # Generic age errors of 1 Gyr
+    age_errors = 1e9 / (np.log(10) * 10 ** ages)
+    # Propagate errors
+    if len(cn_err) > 0 and len(feh_err) > 0:
+        age_errors = np.sqrt(
+            cn_err**2 * (2*c2*cn_arr + c1 + c1f1*feh_arr)**2 +
+            feh_err**2 * (2*f2*feh_arr + f1 * c1f1*cn_arr)**2
+        )
+    return ages, age_errors
 
 
 def evol_state(dataplot, verbose=False):
