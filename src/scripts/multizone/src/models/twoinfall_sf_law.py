@@ -79,7 +79,8 @@ class twoinfall_sf_law(fiducial_sf_law):
             prefactor = 1. / self.sfe1
         else:
             prefactor = 1. / self.sfe2
-        return prefactor * super().__call__(time, mgas)
+        return prefactor * super().__call__(time, mgas)# / self.molecular(time)
+        # return super().__call__(time, mgas)
         
     @property
     def onset(self):
