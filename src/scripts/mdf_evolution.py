@@ -41,7 +41,7 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
 
     # Plot multizone outputs
     output_names = [
-        'yZ1/best/cgm07_ratio025/diskmodel',
+        'yZ1/best/cgm07_ratio025_migr36/diskmodel',
         'yZ2/best/cgm07_ratio025_migr36/diskmodel'
     ]
     # model_labels = [
