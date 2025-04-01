@@ -41,13 +41,14 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
 
     # Plot multizone outputs
     output_names = [
-        'yZ1/pre_enrichment/mh07_alpha00/diskmodel',
-        'yZ2/pre_enrichment/mh07_alpha00/diskmodel'
+        'yZ1/best/cgm07_ratio025/diskmodel',
+        'yZ2/best/cgm07_ratio025_migr36/diskmodel'
     ]
-    model_labels = [
-        r'(a) $y/Z_\odot=1$, ${\rm %s}_{\rm CGM}=-0.7$' % capitalize_abundance(col),
-        r'(b) $y/Z_\odot=2$, ${\rm %s}_{\rm CGM}=-0.7$' % capitalize_abundance(col)
-    ]
+    # model_labels = [
+    #     r'(a) $y/Z_\odot=1$, ${\rm %s}_{\rm CGM}=-0.7$, $f_\Sigma(R_\odot)=0.25$, $\sigma_{\rm RM8}=3.6$ kpc' % capitalize_abundance(col),
+    #     r'(b) $y/Z_\odot=2$, ${\rm %s}_{\rm CGM}=-0.7$, $f_\Sigma(R_\odot)=0.25$, $\sigma_{\rm RM8}=3.6$ kpc' % capitalize_abundance(col)
+    # ]
+    model_labels = [r'(a) $y/Z_\odot=1$', r'(a) $y/Z_\odot=2$']
     apogee_data = APOGEESample.load()
     for i, output_name in enumerate(output_names):
         mzs = MultizoneStars.from_output(output_name)
