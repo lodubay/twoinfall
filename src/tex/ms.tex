@@ -28,7 +28,7 @@
 \newcommand{\mathOH}{{\rm [O/H]}}
 \newcommand{\mathFeH}{{\rm [Fe/H]}}
 \newcommand{\mathOFe}{{\rm [O/Fe]}}
-\newcommand{\mathaFe}{{\rm [$\alpha$/Fe]}}
+\newcommand{\mathaFe}{[\alpha/{\rm Fe}]}
 \newcommand{\yZ}[1]{$y/Z_\odot=#1$}
 \newcommand{\vice}{{\tt VICE}\xspace}
 % \newcommand{\hydro}{{\tt h277}\xspace}
@@ -113,7 +113,7 @@ We run multi-zone GCE models with a two-infall accretion history, radially-depen
 
 \begin{table*}
     \centering
-    \caption{Sample selection parameters and median uncertainties from APOGEE DR17 (see Section \ref{sec:observational-sample}).}
+    \caption{Sample selection parameters from APOGEE DR17 (see Section \ref{sec:observational-sample}).}
     \label{tab:sample}
     \begin{tabular}{lll}
         \hline\hline
@@ -124,7 +124,7 @@ We run multi-zone GCE models with a two-infall accretion history, radially-depen
         $S/N$               & $S/N > 80$                    & Required for accurate stellar parameters \\
         ASPCAPFLAG Bits     & $\notin$ 23                   & Remove stars flagged as bad \\
         EXTRATARG Bits      & $\notin$ 0, 1, 2, 3, or 4     & Select main red star sample only \\
-        Latent age          & $\sigma_\tau/\tau < 40\%$     & Age uncertainty from \citet{leung_variational_2023} \\
+        NN age error        & $\sigma_\tau/\tau < 40\%$     & Age uncertainty from \citet{leung_variational_2023} \\
         $R_{\rm gal}$     & $3 < R_{\rm gal} < 15\,{\rm kpc}$    & Eliminate bulge \& extreme outer-disk stars \\
         $|z|$               & $|z| < 2\,{\rm kpc}$                 & Eliminate halo stars \\
         \hline
@@ -148,7 +148,7 @@ We run multi-zone GCE models with a two-infall accretion history, radially-depen
         \hline
         [Fe/H]          & $0.0089$   & $0.0060$ \\
         $\mathOFe$  & $0.019$    & $0.031$ \\
-        $\log_{10}(\tau_{\rm latent}/{\rm Gyr})$    & 0.10   & $0.16$ \\
+        $\log_{10}(\tau_{\rm NN}/{\rm Gyr})$    & 0.10   & $0.16$ \\
         $\tau_{\rm [C/N]}/{\rm Gyr}$     & 1.0   & \todo{N/A} \\
         \hline
     \end{tabular}
@@ -158,7 +158,7 @@ We compare our models against stellar abundances from the Apache Point Observato
 
 We obtain a sample of \num{171635} red giant branch and red clump stars with high-quality spectra using the selection criteria listed in Table \ref{tab:sample}, which are adapted from \citet{hayden_chemical_2015}. Table \ref{tab:uncertainties} presents the median statistical uncertainty and uncertainty dispersion ($95^{\rm th} - 5^{\rm th}$ percentile difference) of the calibrated [Fe/H] and [O/Fe] abundances for our sample. When calculating the galactocentric radius $R_{\rm gal}$ and midplane distance $z$ of each star, we use the \citet{bailer-jones_estimating_2021} photo-geometric distance estimates from {\it Gaia} Early Data Release 3 \citep{gaia_collaboration_gaia_2016,gaia_collaboration_gaia_2021} included in the APOGEE DR17 catalog and we adopt the Galactic coordinates of the Sun $(R,z)_\odot=(8.122, 0.0208)\,{\rm kpc}$ \citep{gravity_collaboration_detection_2018,bennett_vertical_2019}. Table \ref{tab:apogee-regions} presents the number of APOGEE stars in bins of $R_{\rm gal}$ and $|z|$; typical distance uncertainties are much smaller than the bin width.
 
-We supplement the APOGEE DR17 abundance data with two different age catalogs. The first is the ``latent'' age estimates from \citet{leung_variational_2023}, who train a variational encoder-decoder network on asteroseismic data for APOGEE red giants. This catalog has two main advantages for our purposes: their method is designed to reduce contamination from abundance information (in particular [$\alpha$/Fe]), and the recovered ages do not plateau at $\sim10\,{\rm Gyr}$ as they do in some other neural network-derived age catalogs \citep[e.g.,][]{mackereth_dynamical_2019}. Following the recommendations of \citet{leung_variational_2023}, we use an upper limit on the relative age uncertainty of 40\%. This produces a sample of \num{57607} stars with latent age estimates, of which \num{14871} are in the Solar neighborhood ($7\leq R_{\rm gal}<9\,{\rm kpc}$, $0\leq|z|<0.5\,{\rm kpc}$). The median uncertainty in $\log({\rm age}/{\rm Gyr})$ is 0.10 (see Table \ref{tab:uncertainties}).
+We supplement the APOGEE DR17 abundance data with two different age catalogs. The first is from \citet{leung_variational_2023}, who train a variational encoder-decoder network on asteroseismic data for APOGEE red giants. This catalog has two main advantages over other neural network (NN) age estimates: their method is designed to reduce contamination from abundance information (in particular [$\alpha$/Fe]), and the recovered ages do not plateau at $\sim10\,{\rm Gyr}$ as they do in some other neural network-derived age catalogs \citep[e.g.,][]{mackereth_dynamical_2019}. Following the recommendations of \citet{leung_variational_2023}, we use an upper limit on the relative age uncertainty of 40\%. This produces a sample of \num{57607} stars with NN age estimates, of which \num{14871} are in the Solar neighborhood ($7\leq R_{\rm gal}<9\,{\rm kpc}$, $0\leq|z|<0.5\,{\rm kpc}$). The median uncertainty in $\log({\rm age}/{\rm Gyr})$ is 0.10 (see Table \ref{tab:uncertainties}). We hereafter refer to the \citet{leung_variational_2023} ages as ``NN ages.''
 
 Our second age catalog uses the [C/N]--age relation for red giant branch and red clump stars. 
 \todo{Paragraph describing [C/N]-derived ages (get help from Jack).}
@@ -174,28 +174,21 @@ Within each ring, chemical evolution proceeds according to a conventional one-zo
 
 We discuss our assumptions about the nucleosynthetic yields in Section \ref{sec:yields}, and we detail our outflow prescription in Section \ref{sec:outflows}. We describe the gas supply in Section \ref{sec:sfh}, we detail the infall parameter selection in Section \ref{sec:parameter-selection}, and we present our star formation law in Section \ref{sec:sf-law}. We briefly summarize the stellar migration prescription in Section \ref{sec:migration}. Table \ref{tab:multizone-parameters} summarizes the most relevant variables and their fiducial values in this work.
 
-\begin{deluxetable*}{Cccl}
+\begin{deluxetable*}{Ccccl}
     \tablecaption{A summary of variables and their fiducial values for our chemical evolution models (see discussion in Section \ref{sec:methods}).\label{tab:multizone-parameters}}
     \tablehead{
-        \colhead{Quantity} & \colhead{Fiducial Value(s)} & \colhead{Section} & \colhead{Description}
+        \colhead{Quantity} & \colhead{Fiducial Value(s)} & \colhead{Alternatives} & \colhead{Section} & \colhead{Description}
     }
     \startdata
-        % Yields
-        % y/Z_\odot       & 1         & \ref{sec:yields}  & Nucleosynthetic yield scaling (see Table \ref{tab:yields}) \\
-        % N_{\rm Ia}/M_\star  & $1.55\times10^{-3}$       & \ref{sec:yields}  & Integrated Type Ia supernova rate (see Table \ref{tab:yields}) \\
-        f_{\rm Ia}(t)   & Equation \ref{eq:plateau-dtd}   & \ref{sec:yields}  & Delay-time distribution of Type Ia supernovae \\
-        % t_D             & 40 Myr    & \ref{sec:yields}  & Minimum SN Ia delay time \\
-        % Star formation histories
-        % Outflows
-        % \eta_\odot      & 0.2       & \ref{sec:outflows}    & Outflow mass-loading factor in the Solar annulus ($\eta\equiv \dot\Sigma_{\rm out}/\dot\Sigma_\star$) \\
-        R_\eta          & 5.0 kpc   & \ref{sec:outflows}    & Exponential outflow scale radius \\
-        f_{\Sigma,0}    & 0.27      & \ref{sec:sfh}     & Central thick/thin disk surface density ratio \\
-        \mathXH_{\rm CGM}   & Pristine  & \ref{sec:sfh}     & Metallicity of infalling gas \\
-        \tau_1          & 1 Gyr     & \ref{sec:parameter-selection}     & Timescale of the first infall epoch \\
-        \tau_2(R_\odot)  & 15 Gyr    & \ref{sec:parameter-selection}     & Timescale of the second infall epoch at the Solar annulus \\
-        R_{\tau_2}   & 7 kpc     & \ref{sec:parameter-selection}      & Exponential scale radius of the second infall timescale \\
-        t_{\rm max}      & 4.2 Gyr  & \ref{sec:parameter-selection}     & Time of maximum gas infall (onset of second infall) \\
-        \sigma_{\rm RM8}    & 2.68 kpc  & \ref{sec:migration}   & Radial migration strength
+        f_{\rm Ia}(t)       & Equation \ref{eq:plateau-dtd} & Equation \ref{eq:powerlaw-dtd}    & \ref{sec:yields}  & Delay-time distribution of Type Ia supernovae \\
+        R_\eta              & 5.0 kpc   & ---               & \ref{sec:outflows}            & Exponential outflow scale radius \\
+        f_\Sigma(R_\odot)   & 0.12      & 0.25, 0.5         & \ref{sec:sfh}                 & Local thick/thin disk surface density ratio \\
+        \mathXH_{\rm CGM}   & Pristine  & $-0.7$, $-0.5$    & \ref{sec:sfh}                 & Metallicity of infalling gas \\
+        \tau_1              & 1 Gyr     & $0.1-3$ Gyr       & \ref{sec:parameter-selection} & Timescale of the first infall epoch \\
+        \tau_2(R_\odot)     & 15 Gyr    & $3-30$ Gyr        & \ref{sec:parameter-selection} & Timescale of the second infall epoch at the Solar annulus \\
+        R_{\tau_2}          & 7 kpc     & ---               & \ref{sec:parameter-selection}      & Exponential scale radius of the second infall timescale \\
+        t_{\rm max}         & 4.2 Gyr   & $1-5$ Gyr         & \ref{sec:parameter-selection}     & Time of maximum gas infall (onset of second infall) \\
+        \sigma_{\rm RM8}    & 2.68 kpc  & 3.6, 5.0 kpc      & \ref{sec:migration}   & Radial migration strength
     \enddata
 \end{deluxetable*}
 \vspace{-24pt}
@@ -210,9 +203,11 @@ We discuss our assumptions about the nucleosynthetic yields in Section \ref{sec:
     \label{tab:yields}
 \end{table}
 
-The population-averaged nucleosynthetic yields of CCSNe are still fairly uncertain. This problem is exacerbated by the complexity of the CCSN explosion landscape \citep{sukhbold_core-collapse_2016}. Recently, \citet{weinberg_scale_2024} used a measurement of the mean Fe yield of CC SNe by \citet{rodriguez_iron_2023} and the plateau in stellar \aFe abundances at low metallicity to infer population-averaged yields of $y/Z_\odot\approx1$ --- in other words, the scale of SN yields is similar to the Solar abundance. However, \citet{johnson_milky_2024} found that GCE models with yields at this scale approach present-day abundances too slowly. We therefore investigate yield sets at multiple scales, which are presented in Table \ref{tab:yields}.
+The population-averaged nucleosynthetic yields of CCSNe are still fairly uncertain. This problem is exacerbated by the complexity of the CCSN explosion landscape \citep{sukhbold_core-collapse_2016}. Recently, \citet{weinberg_scale_2024} used a measurement of the mean Fe yield of CC SNe by \citet{rodriguez_iron_2023} and the plateau in stellar \aFe abundances at low metallicity to infer population-averaged yields of $y/Z_\odot\approx1$\textemdash in other words, the scale of SN yields is similar to the Solar abundance. However, \citet{johnson_milky_2024} found that GCE models with yields at this scale approach present-day abundances too slowly to match the observed age--metallicity relation. Previous multi-zone models using {\tt VICE} \citep[e.g.,][]{johnson_stellar_2021,dubay_galactic_2024} adopted higher yields based on \citet{chieffi_explosive_2004} and \citet{limongi_nucleosynthesis_2006} ($y/Z_\odot\approx2.6$).
 
-The SN Ia yield of Fe, $y_{\rm Fe}^{\rm Ia}$, is calculated so that the combined Fe yield $y_{\rm Fe}^{\rm Ia+CC}=y/Z_\odot$. We further increase $y_{\rm Fe}^{\rm Ia}$ by a factor of 30\% and 10\% for the \yZ{1} and \yZ{2} yield sets, respectively, to ensure that our models reach $\mathOFe\approx0.0$ by the end time. The fifth row of Table \ref{tab:yields} reports the integrated SN Ia rate $N_{\rm Ia}/M_\star$ from each yield set, assuming a mean Fe yield per SN Ia of $\overline m_{\rm Fe}^{\rm Ia}=0.7$ M$_\odot$ \citep{mazzali_common_2007,howell_effect_2009}. The rate for the \yZ{1} yield set is slightly higher than the volumetric rate of $N_{\rm Ia}/M_\star=(1.3\pm0.1)\times10^{-3}\,{\rm M}_\odot^{-1}$ reported by \citet{maoz_star_2017}, but is consistent with their measurement of $N_{\rm Ia}/M_\star=(1.6\pm0.3)\times10^{-3}\,{\rm M}_\odot^{-1}$ for field galaxies. The rate for the \yZ{2} yield set is consistent with the measurement of $N_{\rm Ia}/M_\star=(2.2\pm1.0)\times10^{-3}\,{\rm M}_\odot^{-1}$ by \citet{maoz_type-ia_2012}, while the rate for the \yZ{3} yield set is generally higher than literature values.
+We investigate yield sets at multiple scales of the Solar abundance. The CCSN yield of O is directly set by the Solar scale: $y_{\rm O}^{\rm CC}=(y/Z_\odot)Z_{\rm O,\odot}$. For Fe, the CCSN yield is set by the \aFe ``plateau'' at low metallicity, $\mathaFe_{\rm CC}$, such that $y_{\rm Fe}^{\rm CC}=(y/Z_\odot) Z_{\rm Fe,\odot} 10^{-\mathaFe}$ \citep[for further discussion on the empirical yield scale and the CCSN plateau, see][]{weinberg_scale_2024}. We adopt the \citet{asplund_chemical_2009} Solar abundances: $Z_{\rm O,\odot}=5.72\times10^{-3}$ and $Z_{\rm Fe,\odot}=1.29\times10^{-3}$. Our yield sets are presented in Table \ref{tab:yields}.
+
+The SN Ia yield of Fe, $y_{\rm Fe}^{\rm Ia}$, is calculated so that the combined Fe yield $y_{\rm Fe}^{\rm Ia+CC}=y/Z_\odot$. We further increase $y_{\rm Fe}^{\rm Ia}$ by a factor of 30\% and 10\% for the \yZ{1} and \yZ{2} yield sets, respectively, to ensure that our models reach $\mathOFe\approx0.0$ by $t=13.2\,{\rm Gyr}$. The fifth row of Table \ref{tab:yields} reports the integrated SN Ia rate $N_{\rm Ia}/M_\star$ from each yield set, assuming a mean Fe yield per SN Ia of $\overline m_{\rm Fe}^{\rm Ia}=0.7$ M$_\odot$ \citep{mazzali_common_2007,howell_effect_2009}. The rate for the \yZ{1} yield set is slightly higher than the volumetric rate of $N_{\rm Ia}/M_\star=(1.3\pm0.1)\times10^{-3}\,{\rm M}_\odot^{-1}$ reported by \citet{maoz_star_2017}, but is consistent with their measurement of $N_{\rm Ia}/M_\star=(1.6\pm0.3)\times10^{-3}\,{\rm M}_\odot^{-1}$ for field galaxies. The rate for the \yZ{2} yield set is consistent with the measurement of $N_{\rm Ia}/M_\star=(2.2\pm1.0)\times10^{-3}\,{\rm M}_\odot^{-1}$ by \citet{maoz_type-ia_2012}, while the rate for the \yZ{3} yield set is generally higher than literature values.
 
 Unlike CCSNe, SNe Ia populate a broad distribution of delay times between progenitor formation and explosion. The time-dependent SN Ia rate in units of ${\rm M}_\odot^{-1}\,{\rm yr}^{-1}$ is defined as
 \begin{equation}
@@ -501,7 +496,9 @@ Overall, no modification to the \yZ{1} model is able to completely overcome both
     \label{fig:mdf-evolution}
 \end{figure*}
 
-The discrepancies between the predicted and observed abundance evolution discussed in Section \ref{sec:age-abundance} are also seen across the disk. Figure \ref{fig:mdf-evolution} shows the evolution of the MDF with age across five radial bins. We select the $y/Z_\odot=1$ and $y/Z_\odot=2$ models with pre-enriched infall due to the relative success of these models in the previous sections. We use the [C/N]-derived age estimates for the APOGEE sample due to the larger sample size in the most distant regions of the disk; we limit the comparison to ages $\leq10$ Gyr because of large systematic uncertainties for the oldest stars, as discussed in Section \ref{sec:observational-sample}. The two-infall model predicts a very broad MDF for ages $>10$ Gyr because of the rapid enrichment of the ISM during the first infall epoch.
+The discrepancies between the predicted and observed abundance evolution discussed in Section \ref{sec:age-abundance} are also seen across the disk. Figure \ref{fig:mdf-evolution} shows the evolution of the MDF with age across five radial bins for the \yZ{1} and \yZ{2} models. We adopt pre-enriched infall ($\mathFeH_{\rm CGM}=-0.7$), stronger radial migration ($\sigma_{\rm RM8}=3.6$ kpc), and a higher disk mass ratio ($f_\Sigma(R_\odot)=0.25$) because these parameters were able to improve agreement with observations in previous sections. For the APOGEE sample, we use the [C/N]-derived age estimates due to the larger sample size in the most distant regions of the disk; we limit the comparison to ages $\leq10$ Gyr because of large systematic uncertainties for the oldest stars, as discussed in Section \ref{sec:observational-sample}. 
+
+The two-infall model predicts a very broad MDF for ages $>10$ Gyr because of the rapid enrichment of the ISM during the first infall epoch.
 
 Figure \ref{fig:mdf-evolution} shows that even with pre-enriched infall, both of our models predict that the MDF shifts to the left going from younger to older populations. On the other hand, the data show that the MDF broadens with age, which we attribute to radial migration, but its peak does not shift substantially over the past $\sim6-8$ Gyr. While the mode of the MDF shifts depending on the radial bin, its evolution is remarkably consistent over the entire disk, in line with the equilibrium scenario of \citet{johnson_milky_2024}.
 \todo{Note about metallicity cutoff for luminous giants.}
