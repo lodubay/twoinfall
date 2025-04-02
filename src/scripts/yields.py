@@ -16,17 +16,19 @@ def main():
     from multizone.src.yields import yZ3
     yZ3_yields, yZ3_labels = make_column(eta=outflows.yZ3)
     df = pd.DataFrame({
-        '$y/Z_\\odot=1$': yZ1_yields,
-        '$y/Z_\\odot=2$': yZ2_yields,
-        '$y/Z_\\odot=3$': yZ3_yields,
-    }, index=yZ1_labels)
+        '$y/Z_\\odot=1$': ['(empirical)'] + yZ1_yields,
+        '$y/Z_\\odot=2$': ['(theoretical)'] + yZ2_yields,
+        '$y/Z_\\odot=3$': ['(extreme)'] + yZ3_yields,
+    }, index=[''] + yZ1_labels)
     latex_table = df.to_latex(column_format='c|ccc', index=True)
     # Replace float 0s with int
     latex_table = latex_table.replace('0.00e+00', '0')
     # Replace \toprule, \midrule, \bottomrule with \hline
     latex_table = latex_table.replace('\\toprule', '\\hline\\hline')
-    latex_table = latex_table.replace('\\midrule', '\\hline')
+    latex_table = latex_table.replace('\n\\midrule', '')
     latex_table = latex_table.replace('\\bottomrule', '\\hline')
+    # Add horizontal rule between column labels and yields
+    latex_table = latex_table.replace('$y_{\\rm O}^{\\rm CC}$', '\\hline\n$y_{\\rm %s}^{\\rm CC}$')
     # Add horizontal rule between yields and SN Ia rates
     latex_table = latex_table.replace('$N_', '\\hline\n$N_')
     # Write to output
