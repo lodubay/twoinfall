@@ -76,22 +76,23 @@ def main():
     #              zorder=0, label='[C/N] modes')
     
     # Plot L23 ages
+    data_label = 'APOGEE modes (NN ages)'
     data_color = '0.6'
     oh_bins = local_sample.binned_modes('O_H', 'L23_AGE', age_bins)
     ax1.errorbar(age_bin_centers, oh_bins['mode'], 
                  xerr=age_bin_width/2, yerr=oh_bins['error'],
                  linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0, label='L23 modes')
+                 zorder=0, label=data_label)
     feh_bins = local_sample.binned_modes('FE_H', 'L23_AGE', age_bins)
     ax3.errorbar(age_bin_centers, feh_bins['mode'], 
                  xerr=age_bin_width/2, yerr=feh_bins['error'],
                  linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0, label='L23 modes')
+                 zorder=0, label=data_label)
     ofe_bins = local_sample.binned_modes('O_FE', 'L23_AGE', age_bins)
     ax5.errorbar(age_bin_centers, ofe_bins['mode'], 
                  xerr=age_bin_width/2, yerr=ofe_bins['error'],
                  linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0, label='L23 modes')
+                 zorder=0, label=data_label)
     
     # Plot APOGEE abundance distributions in marginal panels
     oh_df, bin_edges = local_sample.mdf(col='O_H', range=OH_LIM, 
