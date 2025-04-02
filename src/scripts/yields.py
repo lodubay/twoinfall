@@ -28,7 +28,7 @@ def main():
     latex_table = latex_table.replace('\n\\midrule', '')
     latex_table = latex_table.replace('\\bottomrule', '\\hline')
     # Add horizontal rule between column labels and yields
-    latex_table = latex_table.replace('$y_{\\rm O}^{\\rm CC}$', '\\hline\n$y_{\\rm %s}^{\\rm CC}$')
+    latex_table = latex_table.replace('$y_{\\rm O}^{\\rm CC}$', '\\hline\n$y_{\\rm O}^{\\rm CC}$')
     # Add horizontal rule between yields and SN Ia rates
     latex_table = latex_table.replace('$N_', '\\hline\n$N_')
     # Write to output
