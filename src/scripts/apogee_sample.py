@@ -373,18 +373,18 @@ class APOGEESample:
             for key in filterdict.keys():
                 # Error handling
                 if key not in self.data.columns:
-                    raise ValueError('Keys in "filterdict" must be data',
-                                     'column names.')
+                    raise ValueError('Keys in "filterdict" must be data \
+column names.')
                 elif not isinstance(filterdict[key], tuple):
-                    raise TypeError('Each value in "filterdict" must be a',
-                                    'tuple of length 2.')
+                    raise TypeError('Each value in "filterdict" must be a \
+tuple of length 2.')
                 elif len(filterdict[key]) != 2:
-                    raise ValueError('Each value in "filterdict" must be a',
-                                     'tuple of length 2.')
+                    raise ValueError('Each value in "filterdict" must be a \
+tuple of length 2.')
                 elif not all([isinstance(val, Number) or val is None \
                               for val in filterdict[key]]):
-                    raise TypeError('Each element of the tuple must be numeric',
-                                    'or NoneType.')
+                    raise TypeError('Each element of the tuple must be \
+numeric or NoneType.')
                 else:
                     colmin, colmax = filterdict[key]
                     if colmin is not None:
