@@ -14,7 +14,7 @@ if vice.version[:2] < (1, 2):
     raise RuntimeError("""VICE version >= 1.2.0 is required to produce \
 Johnson et al. (2021) figures. Current: %s""" % (vice.__version__))
 else: pass
-from .._globals import END_TIME, MAX_SF_RADIUS
+from .._globals import END_TIME, MAX_SF_RADIUS, ETA_SCALE_RADIUS
 from .migration import diskmigration, gaussian_migration, no_migration
 from . import models
 from . import dtds
@@ -116,7 +116,7 @@ class diskmodel(vice.milkyway):
     def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "twoinfall",
                  verbose = True, migration_mode = "gaussian", yields="yZ1",
                  delay = 0.04, RIa = "plateau", RIa_kwargs={}, seed=42, 
-                 radial_gas_velocity = 0., has_outflows=True, 
+                 radial_gas_velocity = 0., has_outflows=True, eta_solar=None,
                  migration_time_dep=0.33, migration_radius_dep=0.61,
                  migration_strength=2.68, pre_enrichment=float("-inf"), 
                  pre_alpha_enhancement=0., local_disk_ratio=0.12, **kwargs):
@@ -166,7 +166,11 @@ class diskmodel(vice.milkyway):
                     filename = analogdata_filename)
         # Outflow mass-loading factor
         if has_outflows:
-            if yields == "J21":
+            if eta_solar is not None:
+                self.mass_loading = outflows.exponential(
+                    solar_value=eta_solar, scale_radius=ETA_SCALE_RADIUS
+                )
+            elif yields == "J21":
                 self.mass_loading = vice.milkyway.default_mass_loading
             elif yields == "yZ1":
                 self.mass_loading = outflows.yZ1

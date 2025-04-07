@@ -85,7 +85,7 @@ def parse():
         help = "The evolutionary history to assume (Default: twoinfall)",
         type = str,
         choices = _EVOLUTION_MODELS_,
-        default = "twoinfall"
+        default = "twoinfall_expvar"
     )
     parser.add_argument("--RIa",
         help = "The SN Ia delay-time distribution to assume (Default: plateau)",
@@ -169,6 +169,13 @@ If -inf, infalling gas is always pristine. (Default: -inf).",
         type = float,
         default = _globals.LOCAL_DISK_RATIO
     )
+    parser.add_argument("--eta-solar",
+        help = "The outflow mass-loading factor (eta) in the Solar zone. If \
+None, the default outflow settings for the given yields are used. \
+(Default: None)",
+        default = None,
+        type = float
+    )
 
     return parser
 
@@ -212,12 +219,13 @@ def model(args):
         seed = args.seed,
         radial_gas_velocity = args.radial_gas_velocity,
         has_outflows = not args.no_outflows,
+        eta_solar = args.eta_solar,
         pre_enrichment = args.pre_enrichment,
         pre_alpha_enhancement = args.pre_alpha_enhancement,
         migration_time_dep = args.migration_time_dependence,
         migration_radius_dep = args.migration_radial_dependence,
         migration_strength = args.migration_strength,
-        local_disk_ratio = args.local_disk_ratio
+        local_disk_ratio = args.local_disk_ratio,
     )
     if args.migration == "post-process":
         kwargs["simple"] = True
