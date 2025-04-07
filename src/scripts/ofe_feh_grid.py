@@ -14,7 +14,7 @@ import vice
 from multizone_stars import MultizoneStars
 from apogee_sample import APOGEESample
 from scatter_plot_grid import setup_axes, setup_colorbar, plot_gas_abundance
-from _globals import GALR_BINS, ABSZ_BINS, ZONE_WIDTH, MAX_SF_RADIUS
+from _globals import GALR_BINS, ABSZ_BINS, MAX_SF_RADIUS, TWO_COLUMN_WIDTH
 import paths
 
 FEH_LIM = (-1.3, 0.7)
@@ -34,7 +34,8 @@ def main(output_name, uncertainties=True, **kwargs):
 
 def plot_ofe_feh_grid(mzs, apogee_sample, tracks=True, apogee_contours=True,
                       style='paper', cmap='winter_r', color_by='galr_origin',
-                      fname='ofe_feh_grid.png'):
+                      fname='ofe_feh_grid.png', extra=True, 
+                      galr_bins=GALR_BINS, absz_bins=ABSZ_BINS):
     color_by = color_by.lower()
     if color_by == 'galr_origin':
         cbar_label = r'Birth $R_{\rm{Gal}}$ [kpc]'
@@ -49,7 +50,8 @@ def plot_ofe_feh_grid(mzs, apogee_sample, tracks=True, apogee_contours=True,
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = setup_axes(xlim=FEH_LIM, ylim=OFE_LIM, xlabel='[Fe/H]', 
                           ylabel='[O/Fe]', row_label_pos=(0.07, 0.85),
-                          title=mzs.name, width=8, galr_bins=GALR_BINS)
+                          title=mzs.name, width=TWO_COLUMN_WIDTH, 
+                          galr_bins=galr_bins, absz_bins=absz_bins)
     cbar = setup_colorbar(fig, cmap=cmap, vmin=cbar_lim[0], vmax=cbar_lim[1], 
                           label=cbar_label)
     cbar.ax.yaxis.set_major_locator(MultipleLocator(2))
@@ -59,9 +61,9 @@ def plot_ofe_feh_grid(mzs, apogee_sample, tracks=True, apogee_contours=True,
     ism_track_width = 0.5
         
     for i, row in enumerate(axs):
-        absz_lim = (ABSZ_BINS[-(i+2)], ABSZ_BINS[-(i+1)])
+        absz_lim = (absz_bins[-(i+2)], absz_bins[-(i+1)])
         for j, ax in enumerate(row):
-            galr_lim = (GALR_BINS[j], GALR_BINS[j+1])
+            galr_lim = (galr_bins[j], galr_bins[j+1])
             subset = mzs.region(galr_lim, absz_lim)
             if subset.nstars:
                 subset.scatter_plot(ax, '[fe/h]', '[o/fe]', color=color_by,
@@ -91,9 +93,13 @@ def plot_ofe_feh_grid(mzs, apogee_sample, tracks=True, apogee_contours=True,
                      loc='upper right', handlelength=0.6, handletextpad=0.4)
     
     # Save
-    fullpath = paths.extra / 'multizone' / mzs.name.replace('diskmodel', fname)
-    if not fullpath.parents[0].exists():
-        fullpath.parents[0].mkdir(parents=True)
+    if extra:
+        fullpath = paths.extra / 'multizone' / mzs.name.replace('diskmodel', fname)
+        if not fullpath.parents[0].exists():
+            fullpath.parents[0].mkdir(parents=True)
+    else: # save as tex figure
+        fullpath = paths.figures / fname
+        fig.suptitle(None)
     plt.savefig(fullpath, dpi=300)
     plt.close()
 
