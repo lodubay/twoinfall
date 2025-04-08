@@ -16,11 +16,17 @@
 \let\tablenum\relax
 \usepackage{siunitx}
 \usepackage{xspace}
+% Dropped capital
+\usepackage{lettrine}
+
+% ***Fancy*** dropped capital
+\input Zallman.fd
+\renewcommand{\LettrineFontHook}{\usefont{U}{Zallman}{xl}{n}}
+\setcounter{DefaultLines}{3}%
 
 % user-defined commands
-% \newcommand{\yes}{\textcolor{green}{\checkmark}\xspace}
-% \newcommand{\meh}{\textcolor{black}{$\sim$}\xspace}
-% \newcommand{\no}{\textcolor{red}{$\times$}\xspace}
+\newcommand{\vice}{{\tt VICE}\xspace}
+\newcommand{\todo}[1]{{\color{red}#1}}
 \newcommand{\osuaffil}{Department of Astronomy, The Ohio State University, 140 W. 18th Ave, Columbus OH 43210, USA}
 \newcommand{\ccappaffil}{Center for Cosmology and AstroParticle Physics, The Ohio State University, 191 W. Woodruff Ave., Columbus OH 43210, USA}
 \newcommand{\aFe}{[$\alpha$/Fe]\xspace}
@@ -30,9 +36,6 @@
 \newcommand{\mathOFe}{{\rm [O/Fe]}}
 \newcommand{\mathaFe}{[\alpha/{\rm Fe}]}
 \newcommand{\yZ}[1]{$y/Z_\odot=#1$}
-\newcommand{\vice}{{\tt VICE}\xspace}
-% \newcommand{\hydro}{{\tt h277}\xspace}
-\newcommand{\todo}[1]{{\color{red}#1}}
 
 % Citation aliases
 \defcitealias{johnson_stellar_2021}{J21}
@@ -81,7 +84,7 @@
 \section{Introduction}
 
 % \todo{Hook, summary of alpha-bimodality.}
-Studies of galactic chemical evolution (GCE) aim to explain observed stellar abundance patterns by modeling the star formation history of the Milky Way. A long-standing paradigm of GCE has been that the metallicity of the interstellar medium (ISM) increases over time due to supernova enrichment from successive generations of stars. In this view, one feature of the Milky Way disk that is difficult to explain is the so-called ``$\alpha$-bimodality'': the presence of two populations of stars at similar metallicity but separated by their \aFe ratio \citep[e.g.,][]{bensby_exploring_2014}. The high-$\alpha$ sequence consists of old stars \citep[$\gtrsim9$ Gyr;][]{pinsonneault_apokasc-3_2025} with super-Solar \aFe and is associated with the kinematic thick disk \citep[e.g.,][]{fuhrmann_nearby_1998}, while the low-$\alpha$ sequence is younger, with approximately Solar \aFe, and is associated with the thin disk. The $\alpha$-bimodality is present across the Galactic disk, but the relative strength of the high- and low-$\alpha$ sequences varies by location \citep{hayden_chemical_2015}. 
+\lettrine{G}{alactic chemical evolution} (GCE) studies aim to explain the observed stellar abundance patterns in the Milky Way by modeling the star formation history and evolution of the Galaxy. A long-standing paradigm of GCE is that the metallicity of the interstellar medium (ISM) increases over time due to supernova enrichment from successive generations of stars. In this view, one feature of the Milky Way disk that is difficult to explain is the so-called ``$\alpha$-bimodality'': the presence of two populations of stars at similar metallicity but separated by their \aFe ratio \citep[e.g.,][]{bensby_exploring_2014}. The high-$\alpha$ sequence consists of old stars \citep[$\gtrsim9$ Gyr;][]{pinsonneault_apokasc-3_2025} with super-Solar \aFe and is associated with the kinematic thick disk \citep[e.g.,][]{fuhrmann_nearby_1998}, while the low-$\alpha$ sequence is younger, with approximately Solar \aFe, and is associated with the thin disk. The $\alpha$-bimodality is present across the Galactic disk, but the relative strength of the high- and low-$\alpha$ sequences varies by location \citep{hayden_chemical_2015}. 
 
 An explanation for the $\alpha$-bimodality has yet to be broadly accepted in the GCE community \todo{(reword)}. An $\alpha$-bimodality is not a universal feature in simulated Milky Way-mass galaxies \todo{(citations; also mention external galaxies?)}, so its presence and characteristics in our own galaxy may provide clues to its unique evolutionary history. GCE models that attempt to solve this problem generally fall into two camps: some explain the $\alpha$-bimodality as a result of secular processes, such as the radial migration of stars and the inside-out growth of the disk \todo{(citations)}; others argue that the two sequences point to a bursty star formation history, perhaps driven by multiple discrete accretion events \todo{(citations)} or a change in the star formation efficiency \citep[e.g.][]{conroy_birth_2022}.
 
@@ -132,13 +135,6 @@ We run multi-zone GCE models with a two-infall accretion history, radially-depen
 \end{table*}
 
 \begin{table*}
-\centering
-\caption{Number of APOGEE stars in each Galactic region.}
-\label{tab:apogee-regions}
-\input{output/apogee_regions_table.tex}
-\end{table*}
-
-\begin{table*}
     \centering
     \caption{Median and dispersion in APOGEE parameter uncertainties.}
     \label{tab:uncertainties}
@@ -154,16 +150,23 @@ We run multi-zone GCE models with a two-infall accretion history, radially-depen
     \end{tabular}
 \end{table*}
 
+\begin{table*}
+\centering
+\caption{Number of APOGEE stars in each Galactic region.}
+\label{tab:apogee-regions}
+\input{output/apogee_regions_table.tex}
+\end{table*}
+
 We compare our models against stellar abundances from the Apache Point Observatory Galactic Evolution Experiment \citep[APOGEE;][]{majewski_apache_2017} data release 17 \citep[DR17;][]{abdurrouf_seventeenth_2022}. APOGEE data were obtained from infrared spectrographs \citep{wilson_apache_2019} mounted on the 2.5-meter Sloan Foundation Telescope \citep{gunn_25_2006} at Apache Point Observatory and the Ir{\'e}n{\'e}e DuPont Telescope \citep{bowen_optical_1973} at Las Campanas Observatory. The data reduction pipeline is described by \citet{nidever_data_2015}, and APOGEE Stellar Parameter and Chemical Abundance Pipeline (ASPCAP) is detailed by \citet{holtzman_abundances_2015}, \citet{garcia_perez_aspcap_2016}, and \citet{jonsson_apogee_2020}.
 
-We obtain a sample of \num{171635} red giant branch and red clump stars with high-quality spectra using the selection criteria listed in Table \ref{tab:sample}, which are adapted from \citet{hayden_chemical_2015}. Table \ref{tab:uncertainties} presents the median statistical uncertainty and uncertainty dispersion ($95^{\rm th} - 5^{\rm th}$ percentile difference) of the calibrated [Fe/H] and [O/Fe] abundances for our sample. When calculating the galactocentric radius $R_{\rm gal}$ and midplane distance $z$ of each star, we use the \citet{bailer-jones_estimating_2021} photo-geometric distance estimates from {\it Gaia} Early Data Release 3 \citep{gaia_collaboration_gaia_2016,gaia_collaboration_gaia_2021} included in the APOGEE DR17 catalog and we adopt the Galactic coordinates of the Sun $(R,z)_\odot=(8.122, 0.0208)\,{\rm kpc}$ \citep{gravity_collaboration_detection_2018,bennett_vertical_2019}. Table \ref{tab:apogee-regions} presents the number of APOGEE stars in bins of $R_{\rm gal}$ and $|z|$; typical distance uncertainties are much smaller than the bin width.
+We obtain a sample of \num{171635} red giant branch and red clump stars with high-quality spectra using the selection criteria listed in Table \ref{tab:sample}, which are adapted from \citet{hayden_chemical_2015}. Table \ref{tab:uncertainties} presents the median statistical uncertainty and uncertainty dispersion ($95^{\rm th} - 5^{\rm th}$ percentile difference) of the calibrated [Fe/H] and [O/Fe] abundances for our sample. When calculating the galactocentric radius $R_{\rm gal}$ and midplane distance $z$ of each star, we use the \citet{bailer-jones_estimating_2021} photo-geometric distance estimates from {\it Gaia} Early Data Release 3 \citep{gaia_collaboration_gaia_2016,gaia_collaboration_gaia_2021} included in the APOGEE DR17 catalog and we adopt the Galactic coordinates of the Sun $(R,z)_\odot=(8.122, 0.0208)\,{\rm kpc}$ \citep{gravity_collaboration_detection_2018,bennett_vertical_2019}. Table \ref{tab:apogee-regions} presents the number of APOGEE stars in bins of $R_{\rm gal}$ and $|z|$; typical distance uncertainties are much smaller than the bin width \todo{(do I need this table?)}.
 
 We supplement the APOGEE DR17 abundance data with two different age catalogs. The first is from \citet{leung_variational_2023}, who train a variational encoder-decoder network on asteroseismic data for APOGEE red giants. This catalog has two main advantages over other neural network (NN) age estimates: their method is designed to reduce contamination from abundance information (in particular [$\alpha$/Fe]), and the recovered ages do not plateau at $\sim10\,{\rm Gyr}$ as they do in some other neural network-derived age catalogs \citep[e.g.,][]{mackereth_dynamical_2019}. Following the recommendations of \citet{leung_variational_2023}, we use an upper limit on the relative age uncertainty of 40\%. This produces a sample of \num{57607} stars with NN age estimates, of which \num{14871} are in the Solar neighborhood ($7\leq R_{\rm gal}<9\,{\rm kpc}$, $0\leq|z|<0.5\,{\rm kpc}$). The median uncertainty in $\log({\rm age}/{\rm Gyr})$ is 0.10 (see Table \ref{tab:uncertainties}). We hereafter refer to the \citet{leung_variational_2023} ages as ``NN ages.''
 
 Our second age catalog uses the [C/N]--age relation for red giant branch and red clump stars. 
 \todo{Paragraph describing [C/N]-derived ages (get help from Jack).}
 This method has the benefit of providing age estimates for luminous giants, which increases the sample size at larger distances from the Sun. However, systematic effects of the [C/N]--age relation mean that these ages are most trustworthy in the range $1\sim10$ Gyr. We estimate ages for \num{113464} stars across the disk, including \num{20995} in the Solar neighborhood.
-\todo{Note about metallicity cutoff for luminous giants.}
+\todo{Note about metallicity cutoff for luminous giants. Cite: \citet{cao_modeling_2025}}
 
 \section{Chemical Evolution Models \& Parameter Selection}
 \label{sec:methods}
@@ -177,10 +180,12 @@ We discuss our assumptions about the nucleosynthetic yields in Section \ref{sec:
 \begin{deluxetable*}{Ccccl}
     \tablecaption{A summary of variables and their fiducial values for our chemical evolution models (see discussion in Section \ref{sec:methods}).\label{tab:multizone-parameters}}
     \tablehead{
-        \colhead{Quantity} & \colhead{Fiducial Value(s)} & \colhead{Alternatives} & \colhead{Section} & \colhead{Description}
+        \colhead{Quantity} & \colhead{Fiducial Value} & \colhead{Alternatives} & \colhead{Section} & \colhead{Description}
     }
     \startdata
+        y/Z_\odot           & 1         & 2, 3              & \ref{sec:yields}              & Scale of nucleosynthetic yields (see Table \ref{tab:yields}) \\
         f_{\rm Ia}(t)       & Equation \ref{eq:plateau-dtd} & Equation \ref{eq:powerlaw-dtd}    & \ref{sec:yields}  & Delay-time distribution of Type Ia supernovae \\
+        \eta_\odot          & 0.2       & 1.4, 2.4          & \ref{sec:outflows}            & Outflow mass-loading factor at $R_\odot$ (see Table \ref{tab:yields}) \\
         R_\eta              & 5.0 kpc   & ---               & \ref{sec:outflows}            & Exponential outflow scale radius \\
         f_\Sigma(R_\odot)   & 0.12      & 0.25, 0.5         & \ref{sec:sfh}                 & Local thick/thin disk surface density ratio \\
         \mathXH_{\rm CGM}   & Pristine  & $-0.7$, $-0.5$    & \ref{sec:sfh}                 & Metallicity of infalling gas \\
@@ -248,7 +253,7 @@ Figure \ref{fig:yield-outflow} illustrates the effect of the yield scaling on th
 
 Figure \ref{fig:yield-outflow} also indicates the mode of the APOGEE abundance distributions in 1 Gyr-wide age bins. As explained by \citet{johnson_milky_2024}, the mode is expected to be less sensitive to the effects of radial migration than other statistical measures. The data show that the evolution in [O/H] is close to flat over the past 5 Gyr. The behavior of the $y/Z_\odot=2$ and $y/Z_\odot=3$ models closely matches this trend in the data, whereas the $y/Z_\odot=1$ model increases significantly by $\sim0.2$ dex during the same time period. The [Fe/H] abundance in the data does increase slightly at late times, likely due to the delayed contribution of Fe from SNe Ia. Between lookback times of $\sim5-9\,{\rm Gyr}$, the modes of [O/H] and [Fe/H] are higher than the present-day, likely due to a larger population of migrated stars relative to stars born in-situ at those times. 
 
-The three models in Figure \ref{fig:yield-outflow} predict nearly identical evolution in [O/Fe] over the past 5 Gyr, and the trend in the data is similar apart from a $\sim0.05$ dex offset. \todo{Is this offset a problem? I could raise the SN Ia yields, but the global distributions would not match quite as well.} The offset between the data and models grows between $\sim5-8\,{\rm Gyr}$, especially for the higher yields. Of the three, the \yZ{2} and \yZ{3} models most closely match the observed late-time age--metallicity relations, whereas the \yZ{1} model shows the best agreement with the observed [O/Fe] evolution. As the $y/Z_\odot=2$ and $y/Z_\odot=3$ models show generally similar behavior, we focus on the $y/Z_\odot=1$ and $y/Z_\odot=2$ yield sets for the remainder of this work.
+The three models in Figure \ref{fig:yield-outflow} predict nearly identical evolution in [O/Fe] over the past 5 Gyr, and the trend in the data is similar apart from a $\sim0.05$ dex offset (which could be corrected by raising the SN Ia yield). The offset between the data and models grows between $\sim5-8\,{\rm Gyr}$, especially for the higher yields. Of the three, the \yZ{2} and \yZ{3} models most closely match the observed late-time age--metallicity relations, whereas the \yZ{1} model shows the best agreement with the observed [O/Fe] evolution. As the \yZ{2} and \yZ{3} models show generally similar behavior, we focus on the \yZ{1} and \yZ{2} yield sets for the remainder of this study.
 
 \subsection{Outflows}
 \label{sec:outflows}
@@ -262,6 +267,7 @@ Most studies of the two-infall model assume the Milky Way has no significant mas
 \end{equation}
 where $r=0.4$ is the instantaneous recycling parameter, $\tau_\star$ is the star formation efficiency timescale, and $\tau_{\rm SFH}$ is the star formation timescale. Equation \ref{eq:equilibrium-eta} informs our choice of $\eta$, but it is inaccurate in the two-infall case because of the bursty star formation history. Therefore, we tune the value of $\eta_\odot$ so that the model reaches $\mathOH=0.0$ by the end for each yield set, shown in Table \ref{tab:yields}.
 % we find that if we adopt this prescription, models with $y/Z_\odot=1$ predict sub-Solar abundances at the present day because they have not yet reached their equilibrium value. 
+\todo{This is not a constraint that most two-infall studies seem to care about.}
 
 We adopt a prescription for the outflow mass-loading factor which increases exponentially with radius:
 \begin{equation}
@@ -274,6 +280,10 @@ where $R_\eta$ is the exponential outflow scale radius and $R_\odot=8\,{\rm kpc}
 % \end{equation}
 % We adopt $R_\eta=7.2\,{\rm kpc}$ as our fiducial value, which corresponds to $\nabla\mathOH_{\rm eq}=-0.06$ dex kpc$^{-1}$.
 % \todo{Motivate exponential scale radius.}
+
+We use an outflow mass-loading factor because it allows us to test a range of yield scales while maintaining our desired endpoint of $Z_{\rm final}\approx Z_\odot$ \todo{(rewrite)}.
+
+The presence of outflows is not a necessary ingredient for the results of this study. We run a one-zone model with the fiducial parameters, $\eta=0$, and \yZ{0.8}, and find that it predicts similar abundance evolution and nearly identical stellar abundance distributions to the model with $\eta=0.2$ and \yZ{1}. If a model without mass-loaded outflows is desired, our multizone results for \yZ{1} should provide an adequate approximation.
 
 \subsection{The Gas Supply}
 \label{sec:sfh}
@@ -301,7 +311,7 @@ We adopt a thick disk scale radius of $R_1=2.0\,{\rm kpc}$, a thin disk scale ra
 In most of our models, we assume the infalling gas is pristine (i.e., $Z_{\rm in}=0$). However, the circumgalactic medium (CGM) from which the infalling gas is drawn could be previously enriched, either from gas stripped from dwarf galaxies or from SNe in the halo \todo{(citations; any measurements of CGM metallicity?)}. For this reason, we also test cases where the infalling gas is pre-enriched and its metallicity is described by
 \begin{equation}
     \label{eq:pre-enrichment}
-    Z_{\rm in}(t) = (1 - \exp(-t/\tau_{\rm rise})) Z_\odot 10^{\mathXH_{\rm CGM}}.
+    Z_{\rm in}(t) = (1 - e^{-t/\tau_{\rm rise}}) Z_\odot 10^{\mathXH_{\rm CGM}}.
 \end{equation}
 In this case, the metallicity rises from 0 with a timescale $\tau_{\rm rise}=2\,{\rm Gyr}$ and plateaus at $\mathXH_{\rm CGM}=\mathOH_{\rm CGM}=\mathFeH_{\rm CGM}$. Previous GCE studies suggest that some level of enrichment of the infalling gas can improve agreement with observations \citep[e.g.,][]{palla_chemical_2020,johnson_milky_2024,spitoni_remind_2024}.
 % We also investigate cases where the CGM is $\alpha$-enhanced, i.e., $\mathOFe_{\rm CGM}>0$.
@@ -460,7 +470,7 @@ which reduces the median SN Ia delay time from $\sim2\,{\rm Gyr}$ to $\sim0.5\,{
 Next, in model (c) the metallicity of the infalling gas increases to $\mathXH_{\rm CGM}=-0.5$ at late times. We choose this value because it is the maximum which can plausibly still reproduce the disk abundances; any higher and the infalling gas would be more metal-rich than the most metal-poor thin disk stars. This model results in very similar [O/Fe] distributions to the $y/Z_\odot=1$ case. We assume that the infalling gas has $\mathOFe=0$ at all times; an alternate run with $\mathOFe=+0.3$ shifted the distribution towards higher [O/Fe], worsening agreement with observations. 
 % In summary, pre-enriched gas infall may be necessary for the two-infall model to match the observed [O/Fe] distribution across the disk.
 
-Finally, in model (d) we increase the local thick-to-thin disk surface density ratio by a factor of 4 to $f_\Sigma(R_\odot)=0.5$. This value means that 1 in 3 stars in the Solar annulus belong to the thick disk and is on the high end of estimates \todo{(citations)}. The result as shown in Figure \ref{fig:ofe-distribution-parameters} is a true bimodal abundance distribution, with a more prominent high-$\alpha$ peak than in the previous models. \todo{Note that APOGEE high-$\alpha$ sequence is over-emphasized by survey selection function.} In summary, either pre-enriched infall or an enhanced disk mass ratio can improve agreement with the observed thin disk abundances for the \Z{2} case. These parameters also help the model better fit the age--metallicity relation, as shown in Section \ref{sec:age-abundance} for the \yZ{1} case.
+Finally, in model (d) we increase the local thick-to-thin disk surface density ratio by a factor of 4 to $f_\Sigma(R_\odot)=0.5$. This value means that 1 in 3 stars in the Solar annulus belong to the thick disk and is on the high end of estimates \todo{(citations)}. The result as shown in Figure \ref{fig:ofe-distribution-parameters} is a true bimodal abundance distribution, with a more prominent high-$\alpha$ peak than in the previous models. \todo{Note that APOGEE high-$\alpha$ sequence is over-emphasized by survey selection function.} In summary, either pre-enriched infall or an enhanced disk mass ratio can improve agreement with the observed thin disk abundances for the \yZ{2} case. These parameters also help the model better fit the age--metallicity relation, as shown in Section \ref{sec:age-abundance} for the \yZ{1} case.
 
 \subsection{Local Abundance Evolution}
 \label{sec:age-abundance}
@@ -468,7 +478,7 @@ Finally, in model (d) we increase the local thick-to-thin disk surface density r
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/abundance_evolution_yields.pdf}
-    \caption{Stellar age--abundance relations produced by multi-zone models which assume different yield sets and outflow mass-loading factors. Each point represents a stellar population drawn from the Solar neighborhood near the midplane ($7\leq R_{\rm gal}\leq 9\,{\rm kpc}$, $0\leq |z| \leq 0.5\,{\rm kpc}$) and is color-coded by its birth radius. A Gaussian scatter has been applied to each point according to the median age and abundance uncertainties in Table \ref{tab:uncertainties}. For visual clarity, we plot only a random mass-weighted sample of \num{10000} points in each panel. The black curve plots the ISM abundance at $R_{\rm gal}=8\,{\rm kpc}$ over time. The red line segments plot the median abundance for APOGEE stars in {2 Gyr}-wide age bins, and the shaded regions represent the 16th--84th percentiles in each bin. Age estimates for APOGEE stars come from \citet{leung_variational_2023}. {\bf Key takeaway:} Both models feature a major dilution event at a lookback time of 9 Gyr, and for model (a) the dilution persists throughout much of the thin disk epoch.}
+    \caption{Stellar age--abundance relations produced by multi-zone models which assume different yield sets and outflow mass-loading factors. Each point represents a stellar population drawn from the Solar neighborhood near the midplane ($7\leq R_{\rm gal}\leq 9\,{\rm kpc}$, $0\leq |z| \leq 0.5\,{\rm kpc}$) and is color-coded by its birth radius. A Gaussian scatter is applied to each point according to the median age and abundance uncertainties in Table \ref{tab:uncertainties}. For visual clarity, we plot only a random mass-weighted sample of \num{10000} points in each panel. The black curve plots the ISM abundance at $R_{\rm gal}=8\,{\rm kpc}$ over time. The red line segments plot the median abundance for APOGEE stars in {2 Gyr}-wide age bins, and the shaded regions represent the 16th--84th percentiles in each bin. Age estimates for APOGEE stars come from \citet{leung_variational_2023}. {\bf Key takeaway:} Both models feature a major dilution event at a lookback time of 9 Gyr, and for model (a) the dilution persists throughout much of the thin disk epoch.}
     \label{fig:abundance-evolution-yields}
 \end{figure}
 
@@ -509,6 +519,20 @@ Figure \ref{fig:mdf-evolution} shows that even with pre-enriched infall, both of
 \todo{Note about metallicity cutoff for luminous giants.}
 
 On the other hand, the model predictions for the MDF in the $8-10\,{\rm Gyr}$ age bin are strikingly similar to the APOGEE MDF. The two-infall model predicts a bimodal distribution: the metal-rich component comprises stars formed during the last Gyr of the first infall epoch, and the metal-poor component is stars formed during the first Gyr of the second infall epoch (post-dilution). The data show this same bimodal structure in all but the outermost radial bin, with peaks at $\mathFeH\approx-0.3$ and $+0.3$. While the location of the model peaks depends on $R_{\rm gal}$, in the data they are quite consistent from the innermost to the outermost bin. \todo{I actually think the two-infall model gets this right for the wrong reasons. In the data, the left peak is the high-$\alpha$ sequence and the right is the high-metallicity end of the low-$\alpha$ sequence. In the model, the {\it right} peak is produced during the first infall (i.e., thick disk) and the {\it left} is immediately after the second infall (i.e., low-metallicity end of thin disk).}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{figures/ofe_feh_best.pdf}
+    \caption{Stellar abundance distributions across the disk predicted by our best multi-zone model, with \yZ{2}, ${\rm [X/H]}_{\rm CGM}=-0.7$, $f_\Sigma(R_\odot)=0.25$, and $\eta_\odot=1.8$. Each panel presents a random mass-weighted sample of \num{10000} stellar populations that are drawn from the given ($R_{\rm gal}$, $|z|$) bin and color-coded by age. A Gaussian scatter is applied to each point according to the median age ($\tau_{\rm NN}$) and abundance uncertainties in Table \ref{tab:uncertainties}. The solid and dashed contours enclose 30\% and 80\%, respectively, of the APOGEE data in each region. {\bf Key takeaway:} }
+    \label{fig:ofe-feh-best}
+\end{figure*}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{figures/lmr_ages.pdf}
+    \caption{Caption.}
+    \label{fig:lmr-ages}
+\end{figure*}
 
 \section{Discussion}
 \label{sec:discussion}
