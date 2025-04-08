@@ -49,7 +49,8 @@ def plot_gas_abundance(ax, mzs, xcol, ycol, c='k', ls='-', lw=0.5, label=''):
 
 def setup_colorbar(fig, cmap=None, vmin=None, vmax=None, label='', 
                    width=0.02, pad=0.01, labelpad=0, lognorm=False, 
-                   bounds=[], extend='neither', orientation='vertical'):
+                   bounds=[], extend='neither', orientation='vertical', 
+                   bottom=None):
     """
     Configure a vertical colorbar with a specified colormap and normalization.
 
@@ -77,6 +78,9 @@ def setup_colorbar(fig, cmap=None, vmin=None, vmax=None, label='',
     bounds : list, optional
         If provided, a discrete colorbar will be created using BoundaryNorm.
         The default is [].
+    bottom : float or NoneType, optional
+        If not None, set the position of the bottom of the colorbar. If None,
+        the bottom of the subplot parameters is taken. The default is None.
 
     Returns
     -------
@@ -85,19 +89,24 @@ def setup_colorbar(fig, cmap=None, vmin=None, vmax=None, label='',
     """
     if type(cmap) == str:
         cmap = plt.get_cmap(cmap)
+    # Define the bottom coordinate of the colorbar
+    if bottom is None:
+        cax_bottom = fig.subplotpars.bottom
+    else:
+        cax_bottom = bottom
     if orientation == 'horizontal':
         # Define colorbar axis
         height = fig.subplotpars.right - fig.subplotpars.left
-        cax = plt.axes([fig.subplotpars.left, fig.subplotpars.bottom, 
+        cax = plt.axes([fig.subplotpars.left, cax_bottom, 
                         height, width])
         # Adjust subplots
-        plt.subplots_adjust(bottom=fig.subplotpars.bottom + (width + pad + 0.03))
+        plt.subplots_adjust(bottom=cax_bottom + (width + pad + 0.03))
     else:
         # Adjust subplots
         plt.subplots_adjust(right=fig.subplotpars.right - (width + pad + 0.03))
         # Define colorbar axis
-        height = fig.subplotpars.top - fig.subplotpars.bottom
-        cax = plt.axes([fig.subplotpars.right + pad, fig.subplotpars.bottom, 
+        height = fig.subplotpars.top - cax_bottom
+        cax = plt.axes([fig.subplotpars.right + pad, cax_bottom, 
                         width, height])
     # Set normalization
     if len(bounds) > 0:
