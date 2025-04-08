@@ -818,6 +818,30 @@ def kde2D(x, y, bandwidth, xbins=100j, ybins=100j, **kwargs):
     return xx, yy, np.reshape(logz, xx.shape)
 
 
+def contour_levels_2D(arr2d, enclosed=[0.8, 0.3]):
+    """
+    Calculate the contour levels which contain the given enclosed probabilities.
+    
+    Parameters
+    ----------
+    arr2d : np.ndarray
+        2-dimensional array of densities.
+    enclosed : list, optional
+        List of enclosed probabilities of the contour levels. The default is
+        [0.8, 0.3].
+    """
+    levels = []
+    l = 0.
+    i = 0
+    while l < 1 and i < len(enclosed):
+        frac_enclosed = np.sum(arr2d[arr2d > l]) / np.sum(arr2d)
+        if frac_enclosed <= enclosed[i] + 0.01:
+            levels.append(l)
+            i += 1
+        l += 0.01
+    return levels
+
+
 def box_smooth(hist, bins, width):
     """
     Box-car smoothing function for a pre-generated histogram.

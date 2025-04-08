@@ -11,7 +11,7 @@ import pandas as pd
 from astropy.table import Table
 import paths
 from utils import fits_to_pandas, box_smooth, kde2D, galactic_to_galactocentric, quad_add, \
-    decode, split_multicol
+    decode, split_multicol, contour_levels_2D
 from stats import skewnormal_mode_sample, jackknife_summary_statistic
 from _globals import RANDOM_SEED
 
@@ -235,7 +235,7 @@ class APOGEESample:
 ``python apogee_sample.py`` to generate it first.')
         return cls(data, data_dir=data_dir, galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
 
-    def kde2D(self, xcol, ycol, bandwidth=0.03, overwrite=False):
+    def kde2D(self, xcol, ycol, bandwidth=0.03, overwrite=False, **kwargs):
         """
         Generate 2-dimensional kernel density estimate (KDE) of APOGEE data, 
         or import previously saved KDE if it already exists.
@@ -251,6 +251,7 @@ class APOGEESample:
             smoother contour lines. The default is 0.03.
         overwrite : bool
             If True, force re-generate the 2D KDE and save the output.
+        **kwargs passed to utils.kde2D()
         
         Returns
         -------
@@ -262,7 +263,7 @@ class APOGEESample:
         if path.exists() and not overwrite:
             xx, yy, logz = read_kde(path)
         else:
-            xx, yy, logz = kde2D(self.data[xcol], self.data[ycol], bandwidth)
+            xx, yy, logz = kde2D(self.data[xcol], self.data[ycol], bandwidth, **kwargs)
             save_kde(xx, yy, logz, path)
         return xx, yy, logz
 
@@ -772,30 +773,6 @@ numeric or NoneType.')
         fparams = split_multicol(table['FPARAM'], names=param_symbols)
         apogee_catalog = apogee_catalog.join(fparams)
         return apogee_catalog
-
-
-def contour_levels_2D(arr2d, enclosed=[0.8, 0.3]):
-    """
-    Calculate the contour levels which contain the given enclosed probabilities.
-    
-    Parameters
-    ----------
-    arr2d : np.ndarray
-        2-dimensional array of densities.
-    enclosed : list, optional
-        List of enclosed probabilities of the contour levels. The default is
-        [0.8, 0.3].
-    """
-    levels = []
-    l = 0.
-    i = 0
-    while l < 1 and i < len(enclosed):
-        frac_enclosed = np.sum(arr2d[arr2d > l]) / np.sum(arr2d)
-        if frac_enclosed <= enclosed[i] + 0.01:
-            levels.append(l)
-            i += 1
-        l += 0.01
-    return levels
 
 
 def recover_age_quad(cn_arr, feh_arr, params, cn_err=[], feh_err=[]):
