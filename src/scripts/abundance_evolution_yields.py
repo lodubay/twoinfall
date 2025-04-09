@@ -42,10 +42,11 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
     fig, axs = compare_abundance_evolution(
         OUTPUT_NAMES, 
         LABELS,
-        (ONE_COLUMN_WIDTH, 1.3 * ONE_COLUMN_WIDTH),
+        (ONE_COLUMN_WIDTH, 1.67 * ONE_COLUMN_WIDTH),
         verbose=verbose,
         uncertainties=uncertainties,
         cmap=cmap,
+        cbar_orientation='horizontal',
         galr_lim=GALR_LIM,
         absz_lim=ABSZ_LIM
     )
@@ -60,6 +61,7 @@ def compare_abundance_evolution(
         cmap='winter_r', 
         label_pads=[], 
         verbose=False,
+        cbar_orientation='vertical',
         galr_lim=(7, 9),
         absz_lim=(0, 0.5)
     ):
@@ -78,11 +80,18 @@ def compare_abundance_evolution(
         label_pads = [None] * len(output_names)
     # Add colorbar
     birth_galr_bounds = [3, 5, 7, 9, 11, 13]
+    if cbar_orientation == 'horizontal':
+        cbar_width = 0.02
+        cbar_pad = 0.04
+    else:
+        cbar_width = 0.04
+        cbar_pad = 0.02
     cbar = setup_colorbar(fig, cmap=cmap, bounds=birth_galr_bounds,
                           label=r'Birth $R_{\rm{gal}}$ [kpc]',
+                          orientation=cbar_orientation,
                           # scale colorbar width with figure width
-                          width=0.04 * ONE_COLUMN_WIDTH / figsize[0], 
-                          pad=0.02 * ONE_COLUMN_WIDTH / figsize[0], 
+                          width=cbar_width * ONE_COLUMN_WIDTH / figsize[0], 
+                          pad=cbar_pad * ONE_COLUMN_WIDTH / figsize[0], 
                           labelpad=2, extend='both')
 
     for j, output_name in enumerate(output_names):
