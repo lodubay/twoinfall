@@ -27,6 +27,8 @@ def main(style='paper', cmap='Spectral_r'):
     mzs = MultizoneStars.from_output(OUTPUT_NAME)
     mzs.model_uncertainty(full_sample.data, inplace=True, age_col=AGE_COL)
     mzs_local = mzs.region(galr_lim=(7, 9), absz_lim=(0, 2))
+    # Resample model stars to match APOGEE |z| distribution
+    mzs_local.resample_zheight(20000, apogee_data=local_sample.data, inplace=True)
 
     # Set up plot
     plt.style.use(paths.styles / f'{style}.mplstyle')
@@ -34,7 +36,7 @@ def main(style='paper', cmap='Spectral_r'):
                             figsize=(TWO_COLUMN_WIDTH, TWO_COLUMN_WIDTH), 
                             sharex='row', sharey='row', 
                             gridspec_kw={'wspace': 0.05, 'hspace': 0.15})
-    age_bins = np.arange(0, 13.1, 2)
+    age_bins = np.arange(0, 12.1, 1)
     cbar = setup_colorbar(fig, cmap=cmap, bounds=age_bins, extend='max',
                         label='Median stellar age [Gyr]', bottom=0.52)
     # VICE
@@ -85,7 +87,7 @@ def main(style='paper', cmap='Spectral_r'):
     axs[0,0].set_ylim(PLOT_EXTENT[2:])
 
     # Age distributions
-    age_bins = np.arange(0, 14.1, 1)
+    age_bins = np.arange(0, 15.1, 1)
     # VICE
     axs[1,0].hist(mzs_local('age'), bins=age_bins, weights=mzs_local('mstar'), 
                 density=True, label='All stars',
