@@ -8,7 +8,7 @@ from matplotlib.ticker import MultipleLocator
 
 from apogee_sample import APOGEESample
 from multizone_stars import MultizoneStars
-from utils import kde2D, contour_levels_2D
+from utils import kde2D, contour_levels_2D, get_bin_centers
 from scatter_plot_grid import setup_colorbar
 from _globals import TWO_COLUMN_WIDTH
 import paths
@@ -97,6 +97,17 @@ def main(style='paper', cmap='Spectral_r'):
                 density=True, 
                 label=r'${\rm [Fe/H]} > %s$' % LMR_CUT,
                 histtype='bar', color='gray', rwidth=0.8,)
+    # total_adf, age_bins = mzs_local.adf(bin_width=1, tmax=15)
+    # bin_centers = get_bin_centers(age_bins)
+    # axs[1,0].hist(bin_centers, bins=age_bins, weights=total_adf, 
+    #             density=True, label='All stars',
+    #             histtype='step', color='k', ls='-',)
+    # mzs_lmr = mzs_local.filter({'[fe/h]': (LMR_CUT, None)})
+    # lmr_adf, age_bins = mzs_lmr.adf(bin_width=1, tmax=15)
+    # axs[1,0].hist(bin_centers, bins=age_bins, weights=lmr_adf, 
+    #             density=True, 
+    #             label=r'${\rm [Fe/H]} > %s$' % LMR_CUT,
+    #             histtype='bar', color='gray', rwidth=0.8,)
     # APOGEE
     axs[1,1].hist(local_sample(AGE_COL), bins=age_bins, 
                 density=True, label='All stars', 
