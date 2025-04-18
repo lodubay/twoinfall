@@ -12,8 +12,8 @@ import pandas as pd
 import vice
 
 import paths
-from _globals import RANDOM_SEED, ZONE_WIDTH
-from utils import box_smooth, sample_rows, weighted_quantile
+from _globals import RANDOM_SEED, ZONE_WIDTH, END_TIME
+from utils import box_smooth, sample_rows, weighted_quantile, get_bin_centers
 
 
 def main():
@@ -306,6 +306,10 @@ class MultizoneStars:
             log_age_noise = rng.normal(scale=log_age_err, 
                                     size=noisy_stars.shape[0])
             noisy_stars['age'] *= 10 ** log_age_noise
+        # [O/H] uncertainty
+        oh_med_err = apogee_data['O_H_ERR'].median()
+        oh_noise = rng.normal(scale=oh_med_err, size=noisy_stars.shape[0])
+        noisy_stars['[o/h]'] += oh_noise
         # [Fe/H] uncertainty
         feh_med_err = apogee_data['FE_H_ERR'].median()
         feh_noise = rng.normal(scale=feh_med_err, size=noisy_stars.shape[0])
@@ -523,16 +527,16 @@ class MultizoneStars:
             mdf = box_smooth(mdf, bin_edges, smoothing)
         return mdf, bin_edges
     
-    def adf(self, bins=20, **kwargs):
+    def adf(self, bin_width=1., tmax=END_TIME, **kwargs):
         """
         Generate an age distribution function (ADF).
         
         Parameters
         ----------
-        bins : int or sequence of scalars, optional
-            If an int, defines the number of equal-width bins in the given
-            range. If a sequence, defines the array of bin edges including
-            the right-most edge. The default is 100.
+        bin_width : float, optional
+            Width of each age bin in Gyr. The default is 1.
+        tmax : float, optional
+            Maximum age to count in Gyr. The default is 13.2.
         kwargs : dict, optional
             Keyword arguments passed to mean_stellar_mass
         
@@ -543,9 +547,8 @@ class MultizoneStars:
         bin_edges : 1-D array
             Bin edges of the ADF (length(adf) + 1).
         """
-        bin_edges = np.linspace(0, self.end_time, bins)
-        bin_centers = 0.5 * (bins[:-1] + bins[1:])
-        bin_width = bin_edges[1] - bin_edges[0]
+        bin_edges = np.arange(0, tmax+bin_width, bin_width)
+        bin_centers = get_bin_centers(bin_edges)
         # Create dummy entries to count at least 0 mass at every age
         temp_df = pd.DataFrame({
             'age': bin_centers, 
@@ -553,18 +556,15 @@ class MultizoneStars:
         })
         stars = pd.concat([self.stars, temp_df])
         # stars['age'] = np.round(stars['age'], decimals=2)
-        # Sum stellar mass in each bin
+        # Sum present-day stellar mass in each bin
         mass_total, _ = np.histogram(stars['age'], bins=bin_edges, 
                                      weights=stars['mstar'])
-        # Calculate remaining stellar mass today
-        mass_remaining = mass_total * (1 - np.array(
-            [vice.cumulative_return_fraction(age) for age in bin_centers]))
         # Average mass of a star of that particular age
         mass_average = np.array(
             [self.mean_stellar_mass(age, **kwargs) for age in bin_centers]
         )
         # Number of stars in each age bin
-        nstars = np.around(mass_remaining / mass_average)
+        nstars = np.around(mass_total / mass_average)
         # Fraction of stars in each age bin
         adf = nstars / (bin_width * nstars.sum())
         return adf, bin_edges
