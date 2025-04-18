@@ -25,9 +25,9 @@ FIRST_INFALL = 1
 SECOND_INFALL = 15.
 ONSET = 4.2
 
-OH_LIM = (-0.6, 0.8)
-FEH_LIM = (-0.8, 0.6)
-OFE_LIM = (-0.15, 0.5)
+OH_LIM = (-0.8, 0.6)
+FEH_LIM = (-0.9, 0.6)
+OFE_LIM = (-0.2, 0.5)
 
 
 def main():
@@ -48,7 +48,7 @@ def main():
     ax4 = fig.add_subplot(gs[2,0], sharex=ax2)
     ax5 = fig.add_subplot(gs[2,1], sharex=ax3, sharey=ax4)
     ax5.tick_params(axis='y', labelleft=False)
-    axs = [[ax0, ax1], [ax2, ax3], [ax4, ax5]]
+    axs = np.array([[ax0, ax1], [ax2, ax3], [ax4, ax5]])
 
     # Plot APOGEE abundances + Leung et al. (2023) ages
     apogee_sample = APOGEESample.load()
@@ -56,57 +56,44 @@ def main():
     age_bin_width = 1. # Gyr
     age_bins = np.arange(0, 13 + age_bin_width, age_bin_width)
     age_bin_centers = get_bin_centers(age_bins)
-    
-    # Plot [C/N] ages
-    # data_color = 'purple'
-    # oh_bins = local_sample.binned_modes('O_H', 'CN_AGE', age_bins)
-    # ax1.errorbar(age_bin_centers, oh_bins['mode'], 
-    #              xerr=age_bin_width/2, yerr=oh_bins['error'],
-    #              linestyle='none', c=data_color, capsize=1, marker='.',
-    #              zorder=0, label='[C/N] modes')
-    # feh_bins = local_sample.binned_modes('FE_H', 'CN_AGE', age_bins)
-    # ax3.errorbar(age_bin_centers, feh_bins['mode'], 
-    #              xerr=age_bin_width/2, yerr=feh_bins['error'],
-    #              linestyle='none', c=data_color, capsize=1, marker='.',
-    #              zorder=0, label='[C/N] modes')
-    # ofe_bins = local_sample.binned_modes('O_FE', 'CN_AGE', age_bins)
-    # ax5.errorbar(age_bin_centers, ofe_bins['mode'], 
-    #              xerr=age_bin_width/2, yerr=ofe_bins['error'],
-    #              linestyle='none', c=data_color, capsize=1, marker='.',
-    #              zorder=0, label='[C/N] modes')
-    
-    # Plot L23 ages
-    data_label = 'APOGEE modes (NN ages)'
+    data_label = 'APOGEE modes'
+    age_col = 'L23_AGE'
     data_color = '0.6'
-    oh_bins = local_sample.binned_modes('O_H', 'L23_AGE', age_bins)
-    ax1.errorbar(age_bin_centers, oh_bins['mode'], 
-                 xerr=age_bin_width/2, yerr=oh_bins['error'],
-                 linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0, label=data_label)
-    feh_bins = local_sample.binned_modes('FE_H', 'L23_AGE', age_bins)
-    ax3.errorbar(age_bin_centers, feh_bins['mode'], 
-                 xerr=age_bin_width/2, yerr=feh_bins['error'],
-                 linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0, label=data_label)
-    ofe_bins = local_sample.binned_modes('O_FE', 'L23_AGE', age_bins)
-    ax5.errorbar(age_bin_centers, ofe_bins['mode'], 
-                 xerr=age_bin_width/2, yerr=ofe_bins['error'],
-                 linestyle='none', c=data_color, capsize=1, marker='.',
-                 zorder=0, label=data_label)
-    
-    # Plot APOGEE abundance distributions in marginal panels
-    oh_df, bin_edges = local_sample.mdf(col='O_H', range=OH_LIM, 
-                                        smoothing=0.1)
-    ax0.plot(oh_df / max(oh_df), get_bin_centers(bin_edges),
-             color=data_color, linestyle='-', linewidth=2, marker=None)
-    feh_df, bin_edges = local_sample.mdf(col='FE_H', range=FEH_LIM, 
-                                         smoothing=0.1)
-    ax2.plot(feh_df / max(feh_df), get_bin_centers(bin_edges),
-             color=data_color, linestyle='-', linewidth=2, marker=None)
-    ofe_df, bin_edges = local_sample.mdf(col='O_FE', range=OFE_LIM, 
-                                         smoothing=0.05)
-    ax4.plot(ofe_df / max(ofe_df), get_bin_centers(bin_edges), 
-             color=data_color, linestyle='-', linewidth=2, marker=None)
+    mode_color = 'k'
+    # Median age errors as a function of time
+    big_age_bins = np.arange(0, 15, 4)
+    median_age_errors = local_sample.binned_intervals(
+        '%s_ERR' % age_col, age_col, big_age_bins, quantiles=[0.5]
+    )
+    xval_err = get_bin_centers(big_age_bins)
+    yval_err = [-0.7, -0.8, -0.15]
+    abund_range = [OH_LIM, FEH_LIM, OFE_LIM]
+    for i, abund in enumerate(['O_H', 'FE_H', 'O_FE']):
+        # Scatter plot of all stars
+        axs[i,1].scatter(local_sample(age_col), local_sample(abund), 
+                    marker='.', c=data_color, s=1, edgecolor='none', 
+                    zorder=0, alpha=0.6, rasterized=True)
+        # Median errors at different age bins
+        median_abund_errors = local_sample.binned_intervals(
+            '%s_ERR' % abund, age_col, big_age_bins, quantiles=[0.5]
+        )
+        axs[i,1].errorbar(xval_err, yval_err[i] * np.ones(xval_err.shape), 
+                    xerr=median_age_errors[0.5], yerr=median_abund_errors[0.5],
+                    c=data_color, marker='.', ms=0, zorder=0, linestyle='none',
+                    elinewidth=0.5, capsize=0)
+        # ax1.hist2d(local_sample(age_col), local_sample('O_H'), cmap='binary', 
+        #            bins=[28, 28], range=[[0, 14], OH_LIM], zorder=0)
+        # Plot abundance modes in bins of stellar age
+        abund_bins = local_sample.binned_modes(abund, age_col, age_bins)
+        axs[i,1].errorbar(age_bin_centers, abund_bins['mode'], 
+                    xerr=age_bin_width/2, yerr=abund_bins['error'],
+                    linestyle='none', c=mode_color, capsize=1, marker='.',
+                    zorder=10, label=data_label)
+        # Plot APOGEE abundance distributions in marginal panels
+        abund_df, bin_edges = local_sample.mdf(col=abund, range=abund_range[i], 
+                                            smoothing=0.1)
+        axs[i,0].plot(abund_df / max(abund_df), get_bin_centers(bin_edges),
+                color=data_color, linestyle='-', linewidth=2, marker=None)
 
     params = ONEZONE_DEFAULTS
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
@@ -137,7 +124,8 @@ def main():
     #          transform=ax1.transAxes, va='top')
     # ax1.text(0.05, 0.89, r'$\tau_2=%s$ Gyr' % SECOND_INFALL, 
     #          transform=ax1.transAxes, va='top')
-    ax1.legend(frameon=False, loc='upper left')
+    # ax1.legend(frameon=False, loc='upper left')
+    ax1.legend(loc='lower right', bbox_to_anchor=[1, 1])
     
     ax2.set_ylabel('[Fe/H]')
     ax2.set_ylim(FEH_LIM)
@@ -202,7 +190,8 @@ def run_plot_model(axs, scale, params, yia_scale=1.,
 
 def plot_abundance_history(axs, fullname, col, label='', c=None, ls='-'):
     hist = vice.history(fullname)
-    axs[1].plot(hist['lookback'], hist[col], label=label, color=c, ls=ls)
+    axs[1].plot(hist['lookback'], hist[col], color='w', ls=ls, linewidth=2)
+    axs[1].plot(hist['lookback'], hist[col], label=label, color=c, ls=ls, linewidth=1)
     mdf = vice.mdf(fullname)
     mdf_bins = mdf['bin_edge_left'] + mdf['bin_edge_right'][-1:]
     plot_mdf_curve(axs[0], mdf['dn/d%s' % col], mdf_bins, smoothing=0.02,
