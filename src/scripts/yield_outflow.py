@@ -56,9 +56,8 @@ def main():
     age_bin_width = 1. # Gyr
     age_bins = np.arange(0, 13 + age_bin_width, age_bin_width)
     age_bin_centers = get_bin_centers(age_bins)
-    data_label = 'APOGEE modes'
     age_col = 'L23_AGE'
-    data_color = '0.6'
+    data_color = '0.5'
     mode_color = 'k'
     # Median age errors as a function of time
     big_age_bins = np.arange(0, 15, 4)
@@ -72,7 +71,7 @@ def main():
         # Scatter plot of all stars
         axs[i,1].scatter(local_sample(age_col), local_sample(abund), 
                     marker='.', c=data_color, s=1, edgecolor='none', 
-                    zorder=0, alpha=0.6, rasterized=True)
+                    zorder=0, alpha=0.6, rasterized=True, label='Individual stars')
         # Median errors at different age bins
         median_abund_errors = local_sample.binned_intervals(
             '%s_ERR' % abund, age_col, big_age_bins, quantiles=[0.5]
@@ -88,12 +87,12 @@ def main():
         axs[i,1].errorbar(age_bin_centers, abund_bins['mode'], 
                     xerr=age_bin_width/2, yerr=abund_bins['error'],
                     linestyle='none', c=mode_color, capsize=1, marker='.',
-                    zorder=10, label=data_label)
+                    zorder=10, label='Binned modes')
         # Plot APOGEE abundance distributions in marginal panels
         abund_df, bin_edges = local_sample.mdf(col=abund, range=abund_range[i], 
                                             smoothing=0.1)
         axs[i,0].plot(abund_df / max(abund_df), get_bin_centers(bin_edges),
-                color=data_color, linestyle='-', linewidth=2, marker=None)
+                color=data_color, linestyle='-', linewidth=2, marker=None, alpha=0.6)
 
     params = ONEZONE_DEFAULTS
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
@@ -120,21 +119,11 @@ def main():
     ax1.set_xlim((-1, 14))
     ax1.xaxis.set_major_locator(MultipleLocator(5))
     ax1.xaxis.set_minor_locator(MultipleLocator(1))
-    # ax1.text(0.05, 0.95, r'$\tau_1=%s$ Gyr' % FIRST_INFALL, 
-    #          transform=ax1.transAxes, va='top')
-    # ax1.text(0.05, 0.89, r'$\tau_2=%s$ Gyr' % SECOND_INFALL, 
-    #          transform=ax1.transAxes, va='top')
-    # ax1.legend(frameon=False, loc='upper left')
-    ax1.legend(loc='lower right', bbox_to_anchor=[1, 1])
     
     ax2.set_ylabel('[Fe/H]')
     ax2.set_ylim(FEH_LIM)
     ax2.yaxis.set_major_locator(MultipleLocator(0.5))
     ax2.yaxis.set_minor_locator(MultipleLocator(0.1))
-
-    # ax3.text(0.05, 0.95, r'$y^{\rm CC}_{\rm Fe} / y^{\rm CC}_{\rm O}=%s$' % FE_CC_FRAC, 
-    #          transform=ax3.transAxes, va='top')
-    # ax3.legend(frameon=False)
 
     ax4.set_ylabel('[O/Fe]')
     ax4.set_xlabel('P([X/H])', size='small')
@@ -142,9 +131,14 @@ def main():
     ax4.yaxis.set_major_locator(MultipleLocator(0.2))
     ax4.yaxis.set_minor_locator(MultipleLocator(0.05))
 
-    # ax5.text(0.05, 0.95, r'Plateau DTD', transform=ax5.transAxes, va='top')
     ax5.set_xlabel('Lookback Time [Gyr]')
-    # ax5.legend(frameon=False)
+
+    # Legend for data
+    handles, labels = ax1.get_legend_handles_labels()
+    ax0.legend([handles[0], handles[-1]], [labels[0], labels[-1]],
+               loc='lower left', bbox_to_anchor=[0, 1], title='APOGEE (NN ages)')
+    # Legend for models
+    ax1.legend(handles[1:4], labels[1:4], loc='lower right', bbox_to_anchor=[1, 1])
 
     fig.savefig(paths.figures / 'yield_outflow')
     plt.close()
