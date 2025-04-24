@@ -10,7 +10,8 @@ from matplotlib.lines import Line2D
 import vice
 
 from multizone_stars import MultizoneStars
-from utils import radial_gradient, weighted_quantile, get_bin_centers
+from utils import radial_gradient, get_bin_centers
+from stats import weighted_quantile
 from colormaps import paultol
 from _globals import ONE_COLUMN_WIDTH, GALR_BINS, MAX_SF_RADIUS, ZONE_WIDTH
 import paths
@@ -29,7 +30,7 @@ def main(style='paper'):
         # 'gradient_tests/twoinfall/diskmodel',
         'gradient_tests/twoinfall_expvar/diskmodel',
         'gradient_tests/twoinfall_expvar_scale5kpc/diskmodel',
-        'thin_disk_timescale/linear_7Gyr/diskmodel'
+        'yZ1/thin_disk_timescale/linear_7Gyr/diskmodel'
     ]
     labels = [
         r'One-infall, $R_\eta=7$ kpc, yZ1', 

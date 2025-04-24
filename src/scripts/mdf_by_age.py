@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
 from multizone_stars import MultizoneStars
-from utils import get_color_list, get_bin_centers, capitalize_abundance, weighted_quantile
+from utils import get_color_list, get_bin_centers, capitalize_abundance
+from stats import weighted_quantile
 from _globals import GALR_BINS, TWO_COLUMN_WIDTH
 import paths
 

@@ -20,7 +20,8 @@ from mdf_widths import plot_mdf_widths
 # from ofe_bimodality import plot_bimodality_comparison
 from ofe_feh_grid import plot_ofe_feh_grid
 from density_gradient import plot_density_gradient
-from utils import get_bin_centers, get_color_list, radial_gradient, weighted_quantile
+from utils import get_bin_centers, get_color_list, radial_gradient
+from stats import weighted_quantile
 import paths
 from _globals import TWO_COLUMN_WIDTH, ZONE_WIDTH, GALR_BINS, ONE_COLUMN_WIDTH, MAX_SF_RADIUS
 

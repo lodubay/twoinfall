@@ -10,7 +10,8 @@ from matplotlib.ticker import MultipleLocator
 from matplotlib.lines import Line2D
 
 from multizone_stars import MultizoneStars
-from utils import get_color_list, get_bin_centers, capitalize_abundance, weighted_quantile
+from utils import get_color_list, get_bin_centers, capitalize_abundance
+from stats import weighted_quantile
 from _globals import GALR_BINS, ONE_COLUMN_WIDTH
 import paths
 

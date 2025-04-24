@@ -8,7 +8,8 @@ from matplotlib.ticker import MultipleLocator
 
 from apogee_sample import APOGEESample
 from multizone_stars import MultizoneStars
-from utils import kde2D, contour_levels_2D, get_bin_centers
+from utils import contour_levels_2D, get_bin_centers
+from stats import kde2D
 from scatter_plot_grid import setup_colorbar
 from _globals import TWO_COLUMN_WIDTH
 import paths

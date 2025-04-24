@@ -13,7 +13,8 @@ import vice
 
 import paths
 from _globals import RANDOM_SEED, ZONE_WIDTH, END_TIME
-from utils import box_smooth, sample_rows, weighted_quantile, get_bin_centers
+from utils import box_smooth, sample_rows, get_bin_centers
+from stats import weighted_quantile
 
 
 def main():
@@ -315,6 +316,7 @@ class MultizoneStars:
         feh_noise = rng.normal(scale=feh_med_err, size=noisy_stars.shape[0])
         noisy_stars['[fe/h]'] += feh_noise
         # [O/Fe] uncertainty 
+        # TODO derive [O/Fe] adjustments from [O/H] and [Fe/H] errors above
         ofe_med_err = apogee_data['O_FE_ERR'].median()
         ofe_noise = rng.normal(scale=ofe_med_err, size=noisy_stars.shape[0])
         noisy_stars['[o/fe]'] += ofe_noise

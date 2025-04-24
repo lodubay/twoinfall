@@ -10,9 +10,9 @@ import numpy as np
 import pandas as pd
 from astropy.table import Table
 import paths
-from utils import fits_to_pandas, box_smooth, kde2D, galactic_to_galactocentric, quad_add, \
+from utils import fits_to_pandas, box_smooth, galactic_to_galactocentric, quad_add, \
     decode, split_multicol, contour_levels_2D
-from stats import skewnormal_mode_sample, jackknife_summary_statistic
+from stats import skewnormal_mode_sample, jackknife_summary_statistic, kde2D
 from _globals import RANDOM_SEED
 
 # Sample galactocentric coordinate bounds
