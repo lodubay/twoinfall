@@ -126,7 +126,7 @@ def main(style='paper', cmap='Spectral_r'):
     axs[0,0].yaxis.set_minor_locator(MultipleLocator(0.05))
     axs[0,0].set_xlim(PLOT_EXTENT[:2])
     axs[0,0].set_ylim(PLOT_EXTENT[2:])
-    axs[1,2].legend()
+    axs[1,2].legend(handlelength=0.7, handletextpad=0.5)
     axs[1,0].set_xlabel('Age [Gyr]')
     axs[1,1].set_xlabel('Age [Gyr]')
     axs[1,2].set_xlabel('Age [Gyr]')
