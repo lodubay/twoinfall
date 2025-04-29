@@ -41,11 +41,9 @@ def main(style='paper'):
                           ylabel='[O/Fe]', row_label_pos=(0.07, 0.87),
                           width=TWO_COLUMN_WIDTH, 
                           galr_bins=GALR_BINS, absz_bins=ABSZ_BINS)
-    age_bins = np.arange(0, 16, 2)
-    cbar = setup_colorbar(fig, cmap=COLORMAP, vmin=0, vmax=14, 
+    age_bins = np.arange(0, 14.1, 2)
+    cbar = setup_colorbar(fig, cmap=COLORMAP, vmin=0, vmax=14, extend='max',
                           bounds=age_bins, label='Stellar age [Gyr]')
-    # cbar.ax.yaxis.set_major_locator(MultipleLocator(2))
-    # cbar.ax.yaxis.set_minor_locator(MultipleLocator(0.5))
     
     ism_track_color = 'k'
     ism_track_width = 1
@@ -76,19 +74,14 @@ def main(style='paper'):
     # Set y-axis ticks
     axs[0,0].yaxis.set_major_locator(MultipleLocator(0.2))
     axs[0,0].yaxis.set_minor_locator(MultipleLocator(0.05))
-    # Custom legend
-    # custom_lines = [Line2D([0], [0], color=ism_track_color, linestyle=ism_track_style, 
-    #                        linewidth=ism_track_width)]
-    # legend_labels = ['Gas abundance']
     # Custom legend for APOGEE contours
     custom_lines = [
-        (Line2D([0], [0], color=apogee_contour_color, linestyle='-', linewidth=apogee_contour_width),
-        Line2D([0], [0], color=apogee_contour_color, linestyle='--', linewidth=apogee_contour_width))
+        Line2D([0], [0], color=apogee_contour_color, linestyle='-', linewidth=apogee_contour_width),
+        Line2D([0], [0], color=apogee_contour_color, linestyle='--', linewidth=apogee_contour_width)
     ]
-    legend_labels = ['APOGEE 30/80%']
-    axs[2,-1].legend(custom_lines, legend_labels, frameon=False, 
-                     loc='upper center', handlelength=2, handletextpad=0.4,
-                     handler_map={tuple: HandlerTuple(ndivide=None)})
+    legend_labels = ['30%', '80%']
+    axs[0,-1].legend(custom_lines, legend_labels, title='Data contours',
+                     loc='upper right', alignment='right')
     
     # Save
     plt.savefig(paths.figures / 'ofe_feh_best', dpi=300)
