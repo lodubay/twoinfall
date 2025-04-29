@@ -549,8 +549,8 @@ Finally, in model (d) we increase the local thick-to-thin disk surface density r
 
 \begin{figure*}
     \centering
-    \includegraphics[width=0.8\textwidth]{figures/lmr_ages.pdf}
-    \caption{{\it Top:} The median stellar age as a function of [O/Fe] and [Fe/H] in the Solar annulus ($7\leq R_{\rm gal}<9\kpc$, $0\leq|z|<2\kpc$). The left panel plots the output of our best two-infall model, with \yZ{2}, ${\rm [X/H]}_{\rm CGM}=-0.7$, $f_\Sigma(R_\odot)=0.25$, and $\eta_\odot=1.8$. The model output has been re-sampled to match the APOGEE stellar $|z|$ distribution, and a Gaussian scatter has been applied to the abundances and ages according to Table \ref{tab:uncertainties}. The right panel plots the results from APOGEE using the \citet{leung_variational_2023} age catalog. The contours indicate the density of stars in the [Fe/H]--[O/Fe] plane, and the vertical dashed line denotes the boundary for locally metal-rich (LMR) stars.
+    \includegraphics[width=\linewidth]{figures/lmr_ages.pdf}
+    \caption{{\it Top:} The median stellar age as a function of [O/Fe] and [Fe/H] in the Solar annulus ($7\leq R_{\rm gal}<9\kpc$, $0\leq|z|<2\kpc$). The left and center panels plot the output of our best two-infall models, with \yZ{2}, ${\rm [X/H]}_{\rm CGM}=-0.7$, $f_\Sigma(R_\odot)=0.25$, and $\eta_\odot=1.8$. The model output has been re-sampled to match the APOGEE stellar $|z|$ distribution, and a Gaussian scatter has been applied to the abundances and ages according to Table \ref{tab:uncertainties}. The right panel plots the results from APOGEE using the \citet{leung_variational_2023} age catalog. The contours indicate the density of stars in the [Fe/H]--[O/Fe] plane, and the vertical dashed line denotes the boundary for locally metal-rich (LMR) stars.
     {\it Bottom}: Stellar age distributions in the Solar annulus for all stars (black) and LMR stars (gray). The left panel plots the results from the two-infall model after forward-modeling age uncertainties, and the right panel plots the \citet{leung_variational_2023} ages for APOGEE stars.
     {\bf Key takeaway:} The two-infall model predicts a fundamentally different age pattern than what is observed, especially for LMR stars.}
     \label{fig:lmr-ages}
@@ -563,17 +563,9 @@ The two-infall model makes a prediction about the local stellar age distribution
 
 \todo{Summary of problem: the two-infall model is boxed in by data.}
 
-% \subsection{The SN Ia Delay-Time Distribution}
-% \label{sec:dtd-discussion}
+\subsection{The Empirical Yield Scale}
 
-% \begin{figure*}
-%     \centering
-%     \includegraphics{figures/delay_time_distribution.pdf}
-%     \caption{The effect of the SN Ia delay-time distribution (DTD) on chemical abundance tracks and stellar distributions. {\it Left:} The relative SN Ia rate as a function of time after star formation for each DTD model. The points illustrate the median delay times for each DTD. {\it Right:} Output of one-zone models which assume different SN Ia DTDs with the {\tt yZ2} yield set. The infall parameters are fixed at $\tau_1=1\,{\rm Gyr}$, $\tau_2=10\,{\rm Gyr}$, and $\tau_{\rm on}=3\,{\rm Gyr}$. {\bf Key takeaway:} the extent of the low-$\alpha$ sequence can be reduced by a more prompt SN Ia DTD, but the high-$\alpha$ sequence is also shifted to a more metal-poor regime.}
-%     \label{fig:dtd}
-% \end{figure*}
-
-% Figure \ref{fig:dtd} illustrates the effect of the SN Ia DTD on the abundance predictions by the two-infall model. The fiducial plateau DTD produces the strongest high-$\alpha$ peak as well as the greatest separation between the two low-$\alpha$ peaks. The exponential DTD produces the most stars near Solar [O/Fe], but the low-$\alpha$ sequence is still distinctly bimodal. Finally, the power-law DTD shrinks the low-$\alpha$ loop such that there is only one low-$\alpha$ peak; however, this DTD produces high-$\alpha$ stars at metallicities much lower than observed, as discussed in \citet{dubay_galactic_2024}.
+The \yZ{1} empirical yield scale already has difficulties matching the local age--metallicity relation \citep{johnson_milky_2024}, but the problem is exacerbated in the two-infall case because of the delayed dilution event --- in effect, approach to equilibrium is ``reset'' by the second infall.
 
 \subsection{Third Accretion Episode}
 
