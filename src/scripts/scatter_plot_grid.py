@@ -190,5 +190,5 @@ def setup_axes(galr_bins=GALR_BINS[:-1], absz_bins=ABSZ_BINS,
     # Label bins in Rgal
     for i, ax in enumerate(axs[0]):
         galr_lim = (galr_bins[i], galr_bins[i+1])
-        ax.set_title(r'$%s\leq R_{\rm{Gal}} < %s$ kpc' % galr_lim)
+        ax.set_title(r'$%s\leq R_{\rm{gal}} < %s$ kpc' % galr_lim)
     return fig, axs
