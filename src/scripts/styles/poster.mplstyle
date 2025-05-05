@@ -1,0 +1,42 @@
+# Default figure size and resolution
+figure.figsize: 8, 8
+figure.dpi: 600
+# Default figure file extension
+savefig.format: png
+# Ticks on all axes pointing in
+xtick.direction: in
+ytick.direction: in
+xtick.top: True
+ytick.right: True
+xtick.major.width: 0.5
+xtick.minor.width: 0.3
+ytick.major.width: 0.5
+ytick.minor.width: 0.3
+# Font style
+# Note: for non-matplotlib fonts in WSL, copy the ttf file into 
+# ~/.local/share/fonts and delete the matplotlib font cache
+font.family: sans-serif
+font.sans-serif: Trebuchet MS, DejaVu Sans
+mathtext.fontset: dejavusans
+axes.unicode_minus: True
+# Font size
+font.size: 8
+figure.titlesize: 11
+axes.labelsize: 10
+axes.titlesize: 10
+xtick.labelsize: 8
+ytick.labelsize: 8
+# Legends
+legend.fontsize: 8
+legend.handlelength: 1.2
+legend.frameon: False
+# Axes
+axes.labelpad: 2.0
+axes.linewidth: 0.5
+# Saving figures
+savefig.bbox: tight
+savefig.pad_inches: 0.125
+# Lines
+lines.linewidth: 1
+# Errorbar plots
+errorbar.capsize: 1.

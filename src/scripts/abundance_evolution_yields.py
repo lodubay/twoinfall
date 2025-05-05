@@ -26,6 +26,10 @@ LABELS = [
     '(a)\n' + r'$y/Z_\odot=1$',
     '(b)\n' + r'$y/Z_\odot=2$'
 ]
+POSTER_LABELS = [
+    'Low yields\n& outflows\n' + r'$(y/Z_\odot=1)$',
+    'High yields\n& outflows\n' + r'$(y/Z_\odot=2)$',
+]
 # LABEL_PADS = [18, 18, 6, 6, 6]
 AXES_LIM = {
     '[o/h]': (-1.2, 0.4),
@@ -41,7 +45,7 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = compare_abundance_evolution(
         OUTPUT_NAMES, 
-        LABELS,
+        {'paper': LABELS, 'poster': POSTER_LABELS}[style],
         (ONE_COLUMN_WIDTH, 1.67 * ONE_COLUMN_WIDTH),
         verbose=verbose,
         uncertainties=uncertainties,
@@ -50,7 +54,13 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
         galr_lim=GALR_LIM,
         absz_lim=ABSZ_LIM
     )
-    fig.savefig(paths.figures / 'abundance_evolution_yields')
+    if style == 'poster':
+        figpath = paths.extra / 'poster'
+        if not figpath.is_dir():
+            figpath.mkdir()
+    else:
+        figpath = paths.figures
+    fig.savefig(figpath / 'abundance_evolution_yields')
     plt.close()
 
 def compare_abundance_evolution(
@@ -155,6 +165,7 @@ outputs with different yield sets and APOGEE data.'
         metavar='STYLE', 
         type=str,
         default='paper',
+        choices=('paper', 'poster'),
         help='Plot style to use (default: paper).'
     )
     parser.add_argument(
