@@ -26,6 +26,7 @@ AGE_COL = 'L23_AGE'
 LMR_CUT = 0.1 # lower bound of locally metal-rich (LMR) stars
 CONTOUR_LEVELS = [0.9, 0.7, 0.5, 0.3, 0.1]
 PLOT_EXTENT = [-1.1, 0.6, -0.25, 0.55]
+GRIDSIZE = 30
 
 
 def main(style='paper', cmap='Spectral_r'):
@@ -59,7 +60,7 @@ def main(style='paper', cmap='Spectral_r'):
             mzs_local('[fe/h]'), mzs_local('[o/fe]'),
             C=mzs_local('age'),
             reduce_C_function=np.median,
-            gridsize=50, cmap=cmap, norm=cbar.norm, linewidths=0.2,
+            gridsize=GRIDSIZE, cmap=cmap, norm=cbar.norm, linewidths=0.2,
             extent=PLOT_EXTENT,
         )
         # Plot contour lines
@@ -98,7 +99,7 @@ def main(style='paper', cmap='Spectral_r'):
         local_sample('FE_H'), local_sample('O_FE'),
         C=local_sample(AGE_COL),
         reduce_C_function=np.median,
-        gridsize=50, cmap=cmap, norm=cbar.norm, linewidths=0.2,
+        gridsize=GRIDSIZE, cmap=cmap, norm=cbar.norm, linewidths=0.2,
         extent=PLOT_EXTENT,
     )
     local_sample.plot_kde2D_contours(axs[0,2], 'FE_H', 'O_FE',
@@ -137,7 +138,6 @@ def main(style='paper', cmap='Spectral_r'):
     axs[1,0].yaxis.set_minor_locator(MultipleLocator(0.01))
     axs[1,0].set_xlim((-1, 15))
     axs[1,0].set_ylabel('Density')
-    # fig.subplots_adjust(bottom=0.02)
 
     fig.savefig(paths.figures / 'lmr_ages')
     plt.close()

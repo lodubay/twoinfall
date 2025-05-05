@@ -65,6 +65,7 @@ def main(style='paper'):
             # APOGEE contours
             apogee_subset = apogee_sample.region(galr_lim, absz_lim)
             apogee_subset.plot_kde2D_contours(ax, 'FE_H', 'O_FE', 
+                                              enclosed=[0.8, 0.3],
                                               c=apogee_contour_color, 
                                               lw=apogee_contour_width)
     
