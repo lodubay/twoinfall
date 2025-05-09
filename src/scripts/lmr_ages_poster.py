@@ -23,7 +23,7 @@ LABELS = [
 AGE_COL = 'CN_AGE'
 LMR_CUT = 0.1 # lower bound of locally metal-rich (LMR) stars
 CONTOUR_LEVELS = [0.9, 0.7, 0.5, 0.3, 0.1]
-PLOT_EXTENT = [-1.1, 0.6, -0.25, 0.55]
+PLOT_EXTENT = [-0.9, 0.5, -0.25, 0.55]
 GRIDSIZE = 30
 GALR_LIM = (7, 9)
 ABSZ_LIM = (0, 2)
@@ -35,11 +35,11 @@ def main(style='poster', cmap='Spectral_r'):
     fig, axs = plt.subplots(2, 2, 
                             figsize=(6, 6), 
                             sharex='row', sharey='row', 
-                            gridspec_kw={'wspace': 0.05, 'hspace': 0.22})
+                            gridspec_kw={'wspace': 0.05, 'hspace': 0.28})
     cbar_age_bins = np.arange(0, 12.1, 1)
     hist_age_bins = np.arange(0, 15.1, 1)
     cbar = setup_colorbar(fig, cmap=cmap, bounds=cbar_age_bins, extend='max',
-                          label='Median stellar age [Gyr]', bottom=0.533, labelpad=2)
+                          label='Median stellar age [Gyr]', bottom=0.54, labelpad=2)
     
     # Load data and model outputs
     full_sample = APOGEESample.load()
@@ -52,7 +52,6 @@ def main(style='poster', cmap='Spectral_r'):
     mzs_local.resample_zheight(20000, apogee_data=local_sample.data, inplace=True)
     # Problem: right now the median age isn't weighted by mass, so a number of
     # low-mass populations could skew the result in a bin
-    axs[0,0].set_title(LABELS[0])
     weighted_median = lambda x: np.quantile(x, 0.5, weights=mzs_local('mstar'))
     mzs_local.filter({'mstar': (0.1, None)}, inplace=True)
     pcm0 = axs[0,0].hexbin(
@@ -95,7 +94,6 @@ def main(style='poster', cmap='Spectral_r'):
                 histtype='bar', color='gray', rwidth=0.8,)
     
     # APOGEE
-    axs[0,1].set_title(LABELS[-1])
     pcm1 = axs[0,1].hexbin(
         local_sample('FE_H'), local_sample('O_FE'),
         C=local_sample(AGE_COL),
@@ -119,6 +117,9 @@ def main(style='poster', cmap='Spectral_r'):
                 histtype='bar', color='gray', rwidth=0.8,)
     
     # Axes settings
+    for i, label in enumerate(LABELS):
+        axs[0,i].set_title(label)
+        axs[1,i].set_title(label)
     axs[0,0].set_xlabel('[Fe/H]')
     axs[0,1].set_xlabel('[Fe/H]')
     axs[0,0].set_ylabel('[O/Fe]')
