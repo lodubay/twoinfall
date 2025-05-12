@@ -25,14 +25,14 @@ LABELS = [
     r'(b) $y/Z_\odot=2$',
     '(c) APOGEE'
 ]
-FEH_LIM = (-1.8, 0.6)
+FEH_LIM = (-1.7, 0.7)
 OFE_LIM = (-0.15, 0.55)
 GALR_LIM = (7, 9)
 ABSZ_LIM = (0, 2)
 GRIDSIZE = 30
 
 
-def main(style='poster'):
+def main(style='paper'):
     # Setup figure
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 2.5*ONE_COLUMN_WIDTH))
@@ -40,7 +40,7 @@ def main(style='poster'):
     subfigs = [
         fig.add_subfigure(gs[i:i+w,:]) for i, w in zip((0, 7, 14), (7, 7, 8))
     ]
-    inset_axes_bounds = [0.05, 0.05, 0.05, 0.7]
+    inset_axes_bounds = [0.05, 0.05, 0.05, 0.65]
     
     apogee_sample = APOGEESample.load()
     local_sample = apogee_sample.region(galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
@@ -61,13 +61,14 @@ def main(style='poster'):
         pcm = axs[0].hexbin(
             subset('[fe/h]'), subset('[o/fe]'),
             C=subset('mstar') / subset('mstar').sum(),
-            reduce_C_function=np.sum, vmax=0.05,
+            reduce_C_function=np.sum, #vmax=0.05,
             gridsize=GRIDSIZE, cmap=cmap_name, linewidths=0.1,
             extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]],
         )
         cax = axs[0].inset_axes(inset_axes_bounds)
         cbar = subfig.colorbar(pcm, cax=cax, orientation='vertical')
-        cbar.ax.set_ylabel('Fraction of stellar mass', labelpad=4)
+        cbar.ax.set_ylabel('Stellar mass fraction', labelpad=4)
+        cbar.ax.yaxis.set_major_locator(MultipleLocator(0.01))
         # Gas abundance track
         galr_mean = (GALR_LIM[1] + GALR_LIM[0]) / 2.
         zone = int(galr_mean / ZONE_WIDTH)
@@ -109,7 +110,7 @@ def main(style='poster'):
         gridsize=GRIDSIZE, cmap=cmap_name, linewidths=0.2,
         extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]],
     )
-    cax = axs[0].inset_axes(inset_axes_bounds)
+    cax = axs[0].inset_axes([0.05, 0.05, 0.05, 0.9])
     cbar = subfig.colorbar(pcm, cax=cax, orientation='vertical')
     cbar.ax.set_ylabel('Number of stars')
     # Marginal distributions
