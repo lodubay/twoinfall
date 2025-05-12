@@ -300,7 +300,9 @@ class MultizoneStars:
         if age_col == 'CN_AGE':
             age_med_err = apogee_data['CN_AGE_ERR'].median()
             age_noise = rng.normal(scale=age_med_err, size=noisy_stars.shape[0])
-            noisy_stars['age'] += age_noise
+            # prevent noise from producing negative ages
+            min_noise = -1 * noisy_stars['age']
+            noisy_stars['age'] += np.maximum(age_noise, min_noise)
         else:
             # Age uncertainty (Leung et al. 2023)
             log_age_err = apogee_data['L23_LOG_AGE_ERR'].median()
