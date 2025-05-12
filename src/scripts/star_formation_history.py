@@ -25,7 +25,6 @@ def main(output_name=OUTPUT_NAME, style='paper', cmap='plasma_r', verbose=False)
         figsize=(ONE_COLUMN_WIDTH, ONE_COLUMN_WIDTH),
         gridspec_kw={'hspace': 0.25, 'wspace': 0.3}
     )
-    # fig.subplots_adjust(left=0.05, right=0.95, bottom=0.05, top=0.95)
     multioutput = vice.output(str(paths.multizone / output_name))
     axs[0,0].set_title(r'$\dot \Sigma_{\rm in}$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
     axs[0,0].text(0.1, 0.95, '(a)', va='top', transform=axs[0,0].transAxes)
@@ -75,8 +74,15 @@ def main(output_name=OUTPUT_NAME, style='paper', cmap='plasma_r', verbose=False)
         borderpad=0.2, labelspacing=0.2, columnspacing=0.5, 
         handlelength=1.0, handletextpad=0.5, 
     )
+    plt.subplots_adjust(left=0.1, right=0.95, bottom=0.12, top=0.9)
     # Save
-    plt.savefig(paths.figures / 'star_formation_history')
+    savedir = {
+        'paper': paths.figures,
+        'poster': paths.extra / 'poster'
+    }[style]
+    if not savedir.is_dir():
+        savedir.mkdir()
+    plt.savefig(savedir / 'star_formation_history')
     plt.close()
 
 
