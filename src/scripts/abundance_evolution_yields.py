@@ -54,13 +54,13 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
         galr_lim=GALR_LIM,
         absz_lim=ABSZ_LIM
     )
-    if style == 'poster':
-        figpath = paths.extra / 'poster'
-        if not figpath.is_dir():
-            figpath.mkdir()
-    else:
-        figpath = paths.figures
-    fig.savefig(figpath / 'abundance_evolution_yields')
+    savedir = {
+        'paper': paths.figures,
+        'poster': paths.extra / 'poster'
+    }[style]
+    if not savedir.is_dir():
+        savedir.mkdir()
+    fig.savefig(savedir / 'abundance_evolution_yields')
     plt.close()
 
 def compare_abundance_evolution(
@@ -73,7 +73,8 @@ def compare_abundance_evolution(
         verbose=False,
         cbar_orientation='vertical',
         galr_lim=(7, 9),
-        absz_lim=(0, 0.5)
+        absz_lim=(0, 0.5),
+        age_col='L23_AGE'
     ):
     # Import APOGEE and astroNN data
     apogee_sample = APOGEESample.load()
@@ -94,14 +95,13 @@ def compare_abundance_evolution(
         cbar_width = 0.02
         cbar_pad = 0.04
     else:
-        cbar_width = 0.04
-        cbar_pad = 0.02
+        cbar_width = 0.04 * ONE_COLUMN_WIDTH / figsize[0]
+        cbar_pad = 0.02 * ONE_COLUMN_WIDTH / figsize[0]
     cbar = setup_colorbar(fig, cmap=cmap, bounds=birth_galr_bounds,
                           label=r'Birth $R_{\rm{gal}}$ [kpc]',
                           orientation=cbar_orientation,
                           # scale colorbar width with figure width
-                          width=cbar_width * ONE_COLUMN_WIDTH / figsize[0], 
-                          pad=cbar_pad * ONE_COLUMN_WIDTH / figsize[0], 
+                          width=cbar_width, pad=cbar_pad, 
                           labelpad=2, extend='both')
 
     for j, output_name in enumerate(output_names):
@@ -111,7 +111,9 @@ def compare_abundance_evolution(
         mzs.region(galr_lim=galr_lim, absz_lim=absz_lim, inplace=True)
         # Model uncertainties
         if uncertainties:
-            mzs.model_uncertainty(solar_sample.data, inplace=True)
+            mzs.model_uncertainty(
+                solar_sample.data, inplace=True, age_col=age_col
+            )
         for i, ycol in enumerate(['[o/h]', '[fe/h]', '[o/fe]']):
             mzs.scatter_plot(axs[i,j], 'age', ycol, color='galr_origin',
                              cmap=cmap, norm=cbar.norm, markersize=0.5)
@@ -121,7 +123,7 @@ def compare_abundance_evolution(
             )
             spatch, pcol = plot_apogee_median_abundances(
                 axs[i,j], solar_sample, vice_to_apogee_col(ycol), age_bins, 
-                age_col='L23_AGE', label='APOGEE data', color='r',
+                age_col=age_col, label='APOGEE data', color='r',
             )
             if j == 0:
                 axs[i,j].set_ylabel(capitalize_abundance(ycol))
