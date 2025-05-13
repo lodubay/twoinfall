@@ -116,7 +116,7 @@ def setup_colorbar(fig, cmap=None, vmin=None, vmax=None, label='',
     else:
         norm = Normalize(vmin=vmin, vmax=vmax)
     cbar = fig.colorbar(ScalarMappable(norm, cmap), cax, 
-                        orientation=orientation)
+                        orientation=orientation, extend=extend)
     cbar.set_label(label, labelpad=labelpad)
     return cbar
 
