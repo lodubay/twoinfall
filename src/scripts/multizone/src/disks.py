@@ -21,6 +21,7 @@ from . import dtds
 from . import outflows
 from .models.utils import get_bin_number, interpolate, modified_exponential
 from .models.diskmodel import two_component_disk, BHG16
+from .models.twoinfall import SECOND_ONSET
 import math as m
 
 _SECONDS_PER_GYR_ = 3.1536e16
@@ -227,7 +228,9 @@ class diskmodel(vice.milkyway):
                 if spec.lower() == "earlyburst":
                     self.zones[i].tau_star = models.earlyburst_sf_law(area)
                 elif "twoinfall" in spec.lower():
-                    self.zones[i].tau_star = models.twoinfall_sf_law(area)
+                    self.zones[i].tau_star = models.twoinfall_sf_law(
+                        area, onset=SECOND_ONSET
+                    )
                 else:
                     # Simplified SF law, single power-law with cutoff
                     self.zones[i].tau_star = models.fiducial_sf_law(
