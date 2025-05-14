@@ -33,13 +33,13 @@ def main(style='poster', cmap='Spectral_r'):
     # Set up plot
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = plt.subplots(2, 2, 
-                            figsize=(6, 6), 
+                            figsize=(5, 5), 
                             sharex='row', sharey='row', 
-                            gridspec_kw={'wspace': 0.05, 'hspace': 0.2})
+                            gridspec_kw={'wspace': 0.05, 'hspace': 0.25})
     cbar_age_bins = np.arange(0, 12.1, 1)
     hist_age_bins = np.arange(0, 15.1, 1)
     cbar = setup_colorbar(fig, cmap=cmap, bounds=cbar_age_bins, extend='max',
-                          label='Median stellar age [Gyr]', bottom=0.53, labelpad=2)
+                          label='Median stellar age [Gyr]', bottom=0.54, labelpad=2)
     
     # Load data and model outputs
     full_sample = APOGEESample.load()
