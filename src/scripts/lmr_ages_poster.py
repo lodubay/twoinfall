@@ -32,14 +32,16 @@ ABSZ_LIM = (0, 2)
 def main(style='poster', cmap='Spectral_r'):
     # Set up plot
     plt.style.use(paths.styles / f'{style}.mplstyle')
-    fig, axs = plt.subplots(2, 2, 
-                            figsize=(5, 5), 
-                            sharex='row', sharey='row', 
-                            gridspec_kw={'wspace': 0.05, 'hspace': 0.25})
+    fig, axs = plt.subplots(
+        2, 2, 
+        figsize=(5, 4.2), 
+        sharex='row', sharey='row', 
+        gridspec_kw={'wspace': 0.05, 'hspace': 0.3, 'height_ratios': [3, 2]}
+    )
     cbar_age_bins = np.arange(0, 12.1, 1)
     hist_age_bins = np.arange(0, 15.1, 1)
     cbar = setup_colorbar(fig, cmap=cmap, bounds=cbar_age_bins, extend='max',
-                          label='Median stellar age [Gyr]', bottom=0.54, labelpad=2)
+                          label='Median stellar age [Gyr]', bottom=0.48, labelpad=2)
     
     # Load data and model outputs
     full_sample = APOGEESample.load()
@@ -82,7 +84,7 @@ def main(style='poster', cmap='Spectral_r'):
             hist['[fe/h]'][istart:iend], hist['[o/fe]'][istart:iend], 
             color='w', marker='none', linewidth=1
         )
-    axs[0,1].axvline(LMR_CUT, ls='--', c='k')
+    axs[0,1].axvline(LMR_CUT, ls='--', c='gray')
     # Age distributions
     axs[1,1].hist(mzs_local('age'), bins=hist_age_bins, weights=mzs_local('mstar'), 
                 density=True, label='All stars',
@@ -106,7 +108,7 @@ def main(style='poster', cmap='Spectral_r'):
                                     enclosed=CONTOUR_LEVELS,
                                     bandwidth=bandwidth
                                     )
-    axs[0,0].axvline(LMR_CUT, ls='--', c='k')
+    axs[0,0].axvline(LMR_CUT, ls='--', c='gray')
     # Age distributions
     axs[1,0].hist(local_sample(AGE_COL), bins=hist_age_bins, 
                 density=True, label='All stars', 
@@ -115,6 +117,12 @@ def main(style='poster', cmap='Spectral_r'):
     axs[1,0].hist(apogee_lmr(AGE_COL), bins=hist_age_bins, 
                 density=True, label=r'${\rm [Fe/H]} > %s$' % LMR_CUT,
                 histtype='bar', color='gray', rwidth=0.8,)
+    
+    # Histogram legend
+    axs[1,1].text(0.95, 0.95, 'All stars', c='k', ha='right', va='top', 
+                  transform=axs[1,1].transAxes, weight='bold')
+    axs[1,1].text(0.95, 0.85, '[Fe/H] > 0.1', c='gray', ha='right', va='top', 
+                  transform=axs[1,1].transAxes, weight='bold')
     
     # Axes settings
     for i, label in enumerate(LABELS):
@@ -129,7 +137,7 @@ def main(style='poster', cmap='Spectral_r'):
     axs[0,0].yaxis.set_minor_locator(MultipleLocator(0.05))
     axs[0,0].set_xlim(PLOT_EXTENT[:2])
     axs[0,0].set_ylim(PLOT_EXTENT[2:])
-    axs[1,1].legend()
+    # axs[1,1].legend(loc='upper left', bbox_to_anchor=[1, 1], handlelength=0.8)
     axs[1,0].set_xlabel('Age [Gyr]')
     axs[1,1].set_xlabel('Age [Gyr]')
     axs[1,0].xaxis.set_major_locator(MultipleLocator(5))

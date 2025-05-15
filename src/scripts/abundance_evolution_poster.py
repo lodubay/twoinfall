@@ -31,7 +31,7 @@ def main(verbose=False, uncertainties=True, style='poster', cmap='winter_r'):
     fig, axs = compare_abundance_evolution(
         OUTPUT_NAMES, 
         LABELS,
-        (1.5 * ONE_COLUMN_WIDTH, 1.67 * ONE_COLUMN_WIDTH),
+        (1.5 * ONE_COLUMN_WIDTH, 1.6 * ONE_COLUMN_WIDTH),
         verbose=verbose,
         uncertainties=uncertainties,
         cmap=cmap,
