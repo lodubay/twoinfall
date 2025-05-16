@@ -24,7 +24,7 @@ OFE_LIM = (-0.199, 0.599)
 GALR_BINS = [3, 5, 7, 9, 11, 13]
 COLORMAP = 'Spectral_r'
 OUTPUT_NAME = 'yZ2/best/cgm07_ratio025_eta18_migr36/diskmodel'
-AGE_COL = 'L23_AGE' # for error forward-modeling
+AGE_COL = 'CN_AGE' # for error forward-modeling
 
 
 def main(style='paper'):
@@ -41,7 +41,7 @@ def main(style='paper'):
                           ylabel='[O/Fe]', row_label_pos=(0.07, 0.87),
                           width=TWO_COLUMN_WIDTH, 
                           galr_bins=GALR_BINS, absz_bins=ABSZ_BINS)
-    age_bins = np.arange(0, 14.1, 2)
+    age_bins = np.arange(0, 12.1, 2)
     cbar = setup_colorbar(fig, cmap=COLORMAP, vmin=0, vmax=14, extend='max',
                           bounds=age_bins, label='Stellar age [Gyr]')
     
