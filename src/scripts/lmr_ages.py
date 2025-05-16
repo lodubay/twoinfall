@@ -32,14 +32,24 @@ GRIDSIZE = 30
 def main(style='paper', cmap='Spectral_r'):
     # Set up plot
     plt.style.use(paths.styles / f'{style}.mplstyle')
-    fig, axs = plt.subplots(2, 3, 
-                            figsize=(TWO_COLUMN_WIDTH, 0.67 * TWO_COLUMN_WIDTH), 
-                            sharex='row', sharey='row', 
-                            gridspec_kw={'wspace': 0.05, 'hspace': 0.22})
+    fig, axs = plt.subplots(
+        2, 3, 
+        figsize=(TWO_COLUMN_WIDTH, 0.6 * TWO_COLUMN_WIDTH), 
+        sharex='row', sharey='row', 
+        gridspec_kw={
+            'wspace': 0.05, 
+            'hspace': 0.25, 
+            'height_ratios': [3, 2],
+            'left': 0.,
+            'bottom': 0.
+        }
+    )
     cbar_age_bins = np.arange(0, 12.1, 1)
     hist_age_bins = np.arange(0, 15.1, 1)
-    cbar = setup_colorbar(fig, cmap=cmap, bounds=cbar_age_bins, extend='max',
-                          label='Median stellar age [Gyr]', bottom=0.53, labelpad=2)
+    cbar = setup_colorbar(
+        fig, cmap=cmap, bounds=cbar_age_bins, extend='max',
+        label='Median stellar age [Gyr]', bottom=0.41, labelpad=2
+    )
     
     # Load data and model outputs
     full_sample = APOGEESample.load()
@@ -128,14 +138,14 @@ def main(style='paper', cmap='Spectral_r'):
     axs[0,0].yaxis.set_minor_locator(MultipleLocator(0.05))
     axs[0,0].set_xlim(PLOT_EXTENT[:2])
     axs[0,0].set_ylim(PLOT_EXTENT[2:])
-    axs[1,2].legend(handlelength=0.7, handletextpad=0.5)
+    axs[1,2].legend(handlelength=0.8, handletextpad=0.5)
     axs[1,0].set_xlabel('Age [Gyr]')
     axs[1,1].set_xlabel('Age [Gyr]')
     axs[1,2].set_xlabel('Age [Gyr]')
     axs[1,0].xaxis.set_major_locator(MultipleLocator(5))
     axs[1,0].xaxis.set_minor_locator(MultipleLocator(1))
-    axs[1,0].yaxis.set_major_locator(MultipleLocator(0.05))
-    axs[1,0].yaxis.set_minor_locator(MultipleLocator(0.01))
+    axs[1,0].yaxis.set_major_locator(MultipleLocator(0.1))
+    axs[1,0].yaxis.set_minor_locator(MultipleLocator(0.02))
     axs[1,0].set_xlim((-1, 15))
     axs[1,0].set_ylabel('Density')
 
