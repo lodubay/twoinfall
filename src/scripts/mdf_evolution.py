@@ -30,7 +30,7 @@ def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
         3, len(GALR_BINS)-1,
         figsize=(TWO_COLUMN_WIDTH, 0.5 * TWO_COLUMN_WIDTH), 
         sharex=True, sharey='row', 
-        gridspec_kw={'hspace': 0.25, 'wspace': 0.1}
+        gridspec_kw={'hspace': 0.25, 'wspace': 0.1, 'left': 0.}
     )
     # Get list of line colors
     colors = get_color_list(plt.get_cmap(cmap), AGE_BINS)
