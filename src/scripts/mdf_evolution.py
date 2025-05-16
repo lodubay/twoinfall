@@ -23,8 +23,9 @@ SMOOTH_WIDTH = 0.1
 XLIM = (-0.8, 0.6)
 YSCALE = 1e7
 AGE_COL = 'CN_AGE'
+CMAP = 'jet'
 
-def main(style='paper', col='[fe/h]', cmap='coolwarm', smoothing=SMOOTH_WIDTH):
+def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = plt.subplots(
         3, len(GALR_BINS)-1,
@@ -166,9 +167,9 @@ if __name__ == '__main__':
                         default=SMOOTH_WIDTH,
                         help='Width of boxcar smoothing (default: 0.1)')
     parser.add_argument('--cmap', metavar='COLORMAP', type=str,
-                        default='jet',
+                        default=CMAP,
                         help='Name of colormap for color-coding VICE ' + \
-                             'output (default: jet)')
+                             'output (default: %s)' % CMAP)
     parser.add_argument('--style', metavar='STYLE', type=str, default='paper',
                         choices=['paper', 'poster', 'presentation'],
                         help='Plot style to use (default: paper)')
