@@ -79,7 +79,10 @@ def compare_abundance_evolution(
     # Import APOGEE and astroNN data
     apogee_sample = APOGEESample.load()
     solar_sample = apogee_sample.region(galr_lim=galr_lim, absz_lim=absz_lim)
-    age_bins = np.arange(0, END_TIME + 2, 2)
+    age_bins = {
+        'L23_AGE': np.arange(0, 14.1, 2),
+        'CN_AGE': np.arange(0, 10.1, 2)
+    }[age_col]
 
     # Set up figure
     fig, axs = plt.subplots(
@@ -103,6 +106,11 @@ def compare_abundance_evolution(
                           # scale colorbar width with figure width
                           width=cbar_width, pad=cbar_pad, 
                           labelpad=2, extend='both')
+    data_label = 'APOGEE data'
+    # data_label = {
+    #     'L23_AGE': 'APOGEE (NN ages)',
+    #     'CN_AGE': 'APOGEE ([C/N] ages)'
+    # }[age_col]
 
     for j, output_name in enumerate(output_names):
         axs[0,j].set_title(labels[j], pad=label_pads[j])
@@ -123,8 +131,16 @@ def compare_abundance_evolution(
             )
             spatch, pcol = plot_apogee_median_abundances(
                 axs[i,j], solar_sample, vice_to_apogee_col(ycol), age_bins, 
-                age_col=age_col, label='APOGEE data', color='r',
+                age_col=age_col, label=data_label, color='r',
             )
+            if age_col == 'CN_AGE':
+                # Plot >10 Gyr ages with hatched region (worse fit)
+                plot_apogee_median_abundances(
+                    axs[i,j], solar_sample, vice_to_apogee_col(ycol), 
+                    np.arange(10, 14.1, 2.), 
+                    age_col=age_col, label=data_label, color='r', 
+                    hatch='//', facecolor='none', linestyle='--'
+                )
             if j == 0:
                 axs[i,j].set_ylabel(capitalize_abundance(ycol))
                 axs[i,j].yaxis.set_major_locator(
@@ -143,7 +159,7 @@ def compare_abundance_evolution(
     axs[0,0].xaxis.set_minor_locator(MultipleLocator(1))
     axs[0,-1].legend(
         [lines[0], (spatch, pcol)],
-        ['Gas abundance', 'APOGEE data'],
+        ['Gas abundance', data_label],
         loc='lower left', frameon=False, handletextpad=0.5,
         borderpad=0.2, handlelength=1.2
     )

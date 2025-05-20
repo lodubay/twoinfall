@@ -282,7 +282,7 @@ def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None,
 
 def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None, 
                                   color='r', age_col='L23_AGE', min_stars=10,
-                                  alpha=0.2):
+                                  alpha=0.2, linestyle='-', **kwargs):
     """
     Plot APOGEE stellar abundance medians and 1-sigma range binned by age.
     
@@ -305,6 +305,7 @@ def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None,
         The default is 10.
     alpha : float, optional
         Transparency of the 1-sigma range. The default is 0.3.
+    **kwargs passed to matplotlib.pyplot.fill_between
     
     Returns
     -------
@@ -326,11 +327,12 @@ def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None,
         np.append(abundance_intervals[0.16].values, abundance_intervals[0.16].values[-1:]),
         np.append(abundance_intervals[0.84].values, abundance_intervals[0.84].values[-1:]),
         step='post', 
-        color=color, alpha=alpha, label=label, edgecolor=color, linestyle='--'
+        color=color, alpha=alpha, label=label, edgecolor=color, linestyle=linestyle,
+        **kwargs
     )
     # plot median line
     spatch = ax.stairs(abundance_intervals[0.5].values, edges=bin_edges,
-                       baseline=None, color=color)
+                       baseline=None, color=color, linestyle=linestyle)
     return spatch, pcol
 
 
