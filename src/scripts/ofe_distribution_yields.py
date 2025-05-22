@@ -38,7 +38,7 @@ def main(style='paper', cmap='plasma_r'):
         xlim=OFE_LIM,
         major_tick_spacing=0.2, 
         major_minor_tick_ratio=4.,
-        cbar_width=0.6
+        cbar_width=0.8
     )
     colors = get_color_list(plt.get_cmap(cmap), GALR_BINS)
     apogee_sample = APOGEESample.load()
