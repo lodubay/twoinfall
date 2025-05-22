@@ -25,7 +25,7 @@ LABELS = [
     r'(b) $y/Z_\odot=2$',
     '(c) APOGEE'
 ]
-FEH_LIM = (-1.7, 0.7)
+FEH_LIM = (-1.1, 0.6)
 OFE_LIM = (-0.15, 0.55)
 GALR_LIM = (7, 9)
 ABSZ_LIM = (0, 2)
@@ -35,12 +35,12 @@ GRIDSIZE = 30
 def main(style='paper'):
     # Setup figure
     plt.style.use(paths.styles / f'{style}.mplstyle')
-    fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 2.5*ONE_COLUMN_WIDTH))
+    fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 2.*ONE_COLUMN_WIDTH))
     gs = fig.add_gridspec(22, 7, wspace=0., hspace=0.)
     subfigs = [
         fig.add_subfigure(gs[i:i+w,:]) for i, w in zip((0, 7, 14), (7, 7, 8))
     ]
-    inset_axes_bounds = [0.05, 0.05, 0.05, 0.65]
+    inset_axes_bounds = [1.28, 0., 0.07, 1.]
     
     apogee_sample = APOGEESample.load()
     local_sample = apogee_sample.region(galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
@@ -50,7 +50,12 @@ def main(style='paper'):
     for i, subfig in enumerate(subfigs[:-1]):
         axs = setup_axes(
             subfig, xlabel='[Fe/H]', xlim=FEH_LIM, ylim=OFE_LIM, 
-            title=LABELS[i], show_xlabel=False
+            show_xlabel=False,
+        )
+        axs[0].text(
+            0.5, 0.95, LABELS[i], 
+            ha='center', va='top', 
+            size=plt.rcParams['axes.titlesize'], transform=axs[0].transAxes
         )
         axs[0].yaxis.set_major_locator(MultipleLocator(0.2))
         axs[0].yaxis.set_minor_locator(MultipleLocator(0.05))
@@ -61,7 +66,7 @@ def main(style='paper'):
         pcm = axs[0].hexbin(
             subset('[fe/h]'), subset('[o/fe]'),
             C=subset('mstar') / subset('mstar').sum(),
-            reduce_C_function=np.sum, #vmax=0.05,
+            reduce_C_function=np.sum,
             gridsize=GRIDSIZE, cmap=cmap_name, linewidths=0.1,
             extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]],
         )
@@ -98,7 +103,11 @@ def main(style='paper'):
     cmap_name = 'Reds'
     axs = setup_axes(
         subfigs[-1], xlabel='[Fe/H]', xlim=FEH_LIM, ylim=OFE_LIM, 
-        title=LABELS[-1]
+    )
+    axs[0].text(
+        0.5, 0.95, LABELS[-1], 
+        ha='center', va='top', 
+        size=plt.rcParams['axes.titlesize'], transform=axs[0].transAxes
     )
     axs[0].yaxis.set_major_locator(MultipleLocator(0.2))
     axs[0].yaxis.set_minor_locator(MultipleLocator(0.05))
@@ -110,7 +119,7 @@ def main(style='paper'):
         gridsize=GRIDSIZE, cmap=cmap_name, linewidths=0.2,
         extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]],
     )
-    cax = axs[0].inset_axes([0.05, 0.05, 0.05, 0.9])
+    cax = axs[0].inset_axes(inset_axes_bounds)
     cbar = subfig.colorbar(pcm, cax=cax, orientation='vertical')
     cbar.ax.set_ylabel('Number of stars')
     # Marginal distributions
@@ -124,7 +133,7 @@ def main(style='paper'):
         get_bin_centers(bin_edges), ofe_df / max(ofe_df), x2=0, color=color
     )
     
-    fig.subplots_adjust(top=0.98, right=0.95, wspace=0., hspace=0.)
+    fig.subplots_adjust(top=0.98, right=0.75)
 
     fname = 'ofe_feh_density_v2'
     if style == 'poster':
