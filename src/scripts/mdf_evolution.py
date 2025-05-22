@@ -20,7 +20,7 @@ AGE_BINS = [1, 2, 4, 6, 8, 10]
 ABSZ_LIM = (0, 0.5)
 NBINS = 100
 SMOOTH_WIDTH = 0.1
-XLIM = (-0.7, 0.7)
+XLIM = (-0.9, 0.6)
 YSCALE = 1e7
 AGE_COL = 'CN_AGE'
 CMAP = 'jet'
@@ -41,14 +41,18 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
                           width=0.015, pad=0.015, labelpad=2)
 
     # Plot multizone outputs
-    output_names = [
-        'yZ1/best/cgm07_ratio025_migr36/diskmodel',
-        'yZ2/best/cgm07_ratio025_migr36/diskmodel'
-    ]
+    # output_names = [
+    #     'yZ1/best/cgm07_ratio025_migr36/diskmodel',
+    #     'yZ2/best/cgm07_ratio025_migr36/diskmodel'
+    # ]
     # model_labels = [
     #     r'(a) $y/Z_\odot=1$, ${\rm %s}_{\rm CGM}=-0.7$, $f_\Sigma(R_\odot)=0.25$, $\sigma_{\rm RM8}=3.6$ kpc' % capitalize_abundance(col),
     #     r'(b) $y/Z_\odot=2$, ${\rm %s}_{\rm CGM}=-0.7$, $f_\Sigma(R_\odot)=0.25$, $\sigma_{\rm RM8}=3.6$ kpc' % capitalize_abundance(col)
     # ]
+    output_names = [
+        'yZ1/fiducial/diskmodel',
+        'yZ2/fiducial/diskmodel'
+    ]
     model_labels = [r'(a) $y/Z_\odot=1$', r'(a) $y/Z_\odot=2$']
     apogee_data = APOGEESample.load()
     for i, output_name in enumerate(output_names):
@@ -58,7 +62,15 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
         for j in range(len(GALR_BINS)-1):
             galr_lim = GALR_BINS[j:j+2]
             region_subset = mzs.region(galr_lim=galr_lim, absz_lim=ABSZ_LIM)
-            # for k in reversed(list(range(len(AGE_BINS)-1))):
+            # plot total MDF
+            mdf, bin_edges = region_subset.mdf(
+                col, range=XLIM, bins=NBINS, smoothing=smoothing
+            )
+            axs[i,j].plot(
+                get_bin_centers(bin_edges), mdf, 
+                color='0.7', linewidth=2, #alpha=0.6,
+                label='All stars'
+            )
             for k in range(len(AGE_BINS)-1):
                 age_lim = AGE_BINS[k:k+2]
                 age_subset = region_subset.filter({'age': tuple(age_lim)})
@@ -80,13 +92,23 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
     for j in range(len(GALR_BINS)-1):
         galr_lim = GALR_BINS[j:j+2]
         region_subset = apogee_data.region(galr_lim=galr_lim, absz_lim=ABSZ_LIM)
-        # for k in reversed(list(range(len(AGE_BINS)-1))):
+        # plot overall MDF for region
+        mdf, bin_edges = region_subset.mdf(
+            vice_to_apogee_col(col), 
+            range=XLIM, bins=NBINS, smoothing=smoothing
+        )
+        axs[-1,j].plot(
+            get_bin_centers(bin_edges), mdf, 
+            color='0.7', linewidth=2, #alpha=0.6,
+            label='All stars'
+        )
         if AGE_COL == 'CN_AGE':
             # Indicate cut below [Fe/H] < -0.4 for URGB and RC stars
-            axs[-1,j].axvline(-0.4, color='gray', ls='--')
+            axs[-1,j].axvline(-0.4, color='0.7', ls='--')
             # Indicate hard cuts in [Fe/H] for all [C/N]-based ages
-            axs[-1,j].axvline(-0.9, color='gray', ls='-')
-            axs[-1,j].axvline(0.45, color='gray', ls='-')
+            if XLIM[0] < -0.9:
+                axs[-1,j].axvline(-0.9, color='0.7', ls='-')
+            axs[-1,j].axvline(0.45, color='0.7', ls='-')
         youngest_mode = False
         for k in range(len(AGE_BINS)-1):
             age_lim = AGE_BINS[k:k+2]
