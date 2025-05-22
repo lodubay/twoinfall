@@ -66,9 +66,10 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
             mdf, bin_edges = region_subset.mdf(
                 col, range=XLIM, bins=NBINS, smoothing=smoothing
             )
-            axs[i,j].fill_between(
-                get_bin_centers(bin_edges), mdf, y2=0,
-                color='0.7', label='All stars'
+            axs[i,j].plot(
+                get_bin_centers(bin_edges), mdf, 
+                color='0.7', linewidth=2, #alpha=0.6,
+                label='All stars'
             )
             for k in range(len(AGE_BINS)-1):
                 age_lim = AGE_BINS[k:k+2]
@@ -96,9 +97,10 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
             vice_to_apogee_col(col), 
             range=XLIM, bins=NBINS, smoothing=smoothing
         )
-        axs[-1,j].fill_between(
-            get_bin_centers(bin_edges), mdf, y2=0,
-            color='0.7', label='All stars'
+        axs[-1,j].plot(
+            get_bin_centers(bin_edges), mdf, 
+            color='0.7', linewidth=2, #alpha=0.6,
+            label='All stars'
         )
         if AGE_COL == 'CN_AGE':
             # Indicate cut below [Fe/H] < -0.4 for URGB and RC stars
