@@ -479,7 +479,9 @@ Overall, no modification to the \yZ{1} model is able to completely overcome both
 \begin{figure*}
     \centering
     \includegraphics[width=\linewidth]{figures/mdf_evolution.pdf}
-    \caption{Evolution of the MDF across the Galactic disk. Each panel presents normalized stellar [Fe/H] distributions as a function of stellar age within a {2 kpc}-wide annulus. Rows (a) and (b) present the distributions from multi-zone GCE models with different yield scales. For both models we adopt the following non-fiducial parameters: $\mathFeH_{\rm CGM}=-0.7$, $\sigma_{\rm RM8}=3.6$ kpc, and $f_\Sigma(R_\odot)=0.25$. A Gaussian scatter has been applied to each model stellar population in rows (a) and (b) according to the median age and abundance uncertainties in Table \ref{tab:uncertainties}. Row (c) presents the distributions from APOGEE DR17 with ages derived from [C/N] abundances (see Section \ref{sec:observational-sample}). The vertical blue dotted lines in row (c) mark the mode of the distribution in the $1-2\kpc$ age bin for reference. Also in row (c), the gray dashed line marks the cut at $\mathFeH>-0.4$ for upper red giant branch and red clump stars, and the gray solid line marks the cut at $\mathFeH<+0.45$ for all stars with [C/N]-based ages. Distributions in all panels are restricted to $0\leq|z|<0.5\kpc$ and boxcar-smoothed with a width of {0.1 dex} for visual clarity. {\bf Key takeaway:} The APOGEE data show remarkably little variation in the mode at all radii over the past $\sim6-8$ Gyr, while both GCE models produce a steady evolution toward higher [Fe/H] with time.}
+    \caption{Evolution of the MDF over time across the Galactic disk. In each panel, normalized stellar [Fe/H] distributions within a {2 kpc}-wide annulus are color-coded by the stellar age range. The gray curve represents the total MDF in each region. Rows (a) and (b) present the distributions from multi-zone GCE models with the fiducial parameters at different yield and outflow scales. 
+    % For both models we adopt the following non-fiducial parameters: $\mathFeH_{\rm CGM}=-0.7$, $\sigma_{\rm RM8}=3.6$ kpc, and $f_\Sigma(R_\odot)=0.25$. 
+    A Gaussian scatter has been applied to each model stellar population in rows (a) and (b) according to the median [C/N]-derived age and abundance uncertainties in Table \ref{tab:uncertainties}. Row (c) presents the distributions from APOGEE DR17 with ages derived from [C/N] abundances (see Section \ref{sec:observational-sample}). The vertical blue dotted lines in row (c) mark the mode of the distribution in the $1-2\kpc$ age bin for reference. Also in row (c), the gray dashed line marks the cut at $\mathFeH>-0.4$ for upper red giant branch and red clump stars, and the gray solid line marks the cut at $\mathFeH<+0.45$ for all stars with [C/N]-based ages. The distributions in all panels are restricted to $0\leq|z|<0.5\kpc$ and boxcar-smoothed with a width of {0.1 dex} for visual clarity. {\bf Key takeaway:} The APOGEE distributions show remarkably little variation in position over the past $\sim6-8$ Gyr at all radii, whereas both GCE models predict a steady evolution toward higher [Fe/H] with time.}
     \label{fig:mdf-evolution}
 \end{figure*}
 
@@ -497,8 +499,8 @@ On the other hand, the model predictions for the MDF in the $8-10\,{\rm Gyr}$ ag
 
 \begin{figure}
     \centering
-    \includegraphics{figures/ofe_feh_density.pdf}
-    \caption{The density of stars in the [O/Fe]--[Fe/H] plane from multi-zone models with (a) $y/Z_\odot=1$ and (b) $y/Z_\odot=2$, and (c) from the APOGEE DR17 catalog. The curves in panels (a) and (b) plot the ISM abundance of the Solar annulus over time, and the alternating black and white segments mark time intervals of {1 Gyr}. Stars are restricted to the region defined by $7\leq R_{\rm gal}< 9\kpc$ and $0.5\leq|z|<1\kpc$ to highlight the $\alpha$-bimodality in the Solar neighborhood. {\bf Key takeaway:} the two-infall model generically predicts a stellar overdensity at intermediate [O/Fe] and low metallicity, which is not observed in APOGEE.}
+    \includegraphics[width=\linewidth]{figures/ofe_feh_density.pdf}
+    \caption{The density of stars in the [O/Fe]--[Fe/H] plane predicted by multi-zone models with (a) $y/Z_\odot=1$ and (b) $y/Z_\odot=2$, and (c) from the APOGEE DR17 catalog. The curves in panels (a) and (b) plot the ISM abundance at the Solar annulus over time, and the alternating black and white segments mark time intervals of {1 Gyr}. The model output has been re-sampled to match the APOGEE stellar $|z|$ distribution, and a Gaussian scatter has been applied to the predicted abundances according to Table \ref{tab:uncertainties}. Stars in all panels are restricted to the region defined by $7\leq R_{\rm gal}< 9\kpc$ and $0\leq|z|<2\kpc$. {\bf Key takeaway:} the two-infall model generically predicts a stellar over-density at intermediate [O/Fe] and low metallicity, which is not observed in APOGEE.}
     \label{fig:ofe-feh-density}
 \end{figure}
 
@@ -624,8 +626,10 @@ Our simple hiatus model offers a few parameters which control the chemical evolu
 
 The parameters of the SFE hiatus in Figure \ref{fig:onezone-sfe-hiatus} were chosen to match the APOGEE stellar [O/Fe] distribution as closely as possible. However, there are some differences in detail, such as the dearth of stars at $\mathOFe\approx+0.35$ due to the star formation hiatus. We intend this model to illustrate another path to reproducing the $\alpha$-bimodality. Most of the high-$\alpha$ stars present in the Solar annulus have likely migrated from the inner Galaxy, where perhaps this SFE-driven hiatus was concentrated.
 
-\section{Conclusions}
+\section{Summary \& Conclusions}
 \label{sec:conclusions}
+
+We have 
 
 \begin{itemize}
     \item The large quantity of pristine gas accreted in the Solar neighborhood during the second infall phase rapidly dilutes the ISM metallicity by $\sim0.5$ dex. Models with low nucleosynthetic yields (\yZ{1}) remain at sub-Solar metallicity until the present day, in stark contrast to the observed local age--metallicity relation. Models with higher yields and outflows approach the present-day metallicity more rapidly, while pre-enriched infall can reduce the magnitude of the dilution (but not eliminate it entirely). %This issue can be mitigated with higher yields and outflows, but not by pre-enriched infall or radial migration.
