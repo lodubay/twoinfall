@@ -70,20 +70,21 @@
 \affiliation{\osuaffil}
 \affiliation{\ccappaffil}
 % \author[0000-0001-7775-7261]{David H. Weinberg}
-\author{coauthors}
+% \author{coauthors}
 
 \correspondingauthor{Liam O.\ Dubay}
 \email{dubay.11@osu.edu}
 
 \begin{abstract}
-    Stars in the Milky Way disk exhibit a clear separation into two chemically distinct populations based on [$\alpha$/Fe] ratios. This $\alpha$-bimodality is not a universal feature of simulated disk galaxies and may point to the Milky Way's unique evolutionary history. A popular explanation is the two-infall scenario, which postulates that two periods of substantial accretion rates dominate the assembly history of the Galaxy. 
+    Stars in the Milky Way disk exhibit a clear separation into two chemically distinct populations by their [$\alpha$/Fe] ratios. This $\alpha$-bimodality is not a universal feature of simulated disk galaxies and may point to the Milky Way's unique evolutionary history. A popular explanation is the two-infall scenario, which postulates that two periods of substantial accretion rates dominate the assembly history of the Galaxy. 
     However, most previous studies using the two-infall scenario have explored a limited portion of the parameter space, typically neglecting radial migration and assuming that the Galactic disk never ejected a substantial outflow. 
     Thanks to advances in stellar age measurements in recent years, we can now also compare this popular model to more direct measurements of the Galaxy's evolutionary timescales across the disk from large stellar catalogs. 
     We run multi-zone galactic chemical evolution (GCE) models with a two-infall-driven star formation history, radially dependent mass-loaded outflows, and a prescription for radial migration tuned to a hydrodynamical simulation. 
     We compare our model results to abundance patterns across the disk from APOGEE DR17,
     % and early data from the SDSS-V Milky Way Mapper program,
     supplemented with stellar age estimates through multiple methods. 
-    Although the two-infall scenario offers a natural explanation for the [$\alpha$/Fe] bimodality, it struggles to explain several features of the age--abundance structure in the disk. The two-infall scenario generically predicts a massive and long-lasting dilution event, but the data show that stellar metallicity is remarkably constant with age across much of the Galactic disk. This apparent age-independence places considerable restrictions upon the two-infall parameter space. These issues can be mitigated, but not completely resolved, by allowing the accreted gas to be pre-enriched to low metallicity. Additionally, the two-infall scenario predicts that local metal-rich stars should have a bimodal distribution of ages, whereas APOGEE data show most of these stars have intermediate ages. Restrictions upon the two-infall parameter space also limit the application of other merger-dominated star formation histories to the Milky Way.
+    Although the two-infall scenario offers a natural explanation for the [$\alpha$/Fe] bimodality, it struggles to explain several features of the age--abundance structure in the disk. The two-infall scenario generically predicts a massive and long-lasting dilution event, but the data show that stellar metallicity is remarkably constant with age across much of the Galactic disk. This apparent age-independence places considerable restrictions upon the two-infall parameter space. These issues can be mitigated, but not completely resolved, by allowing the accreted gas to be pre-enriched to low metallicity. 
+    Additionally, the two-infall scenario predicts that local metal-rich stars should have a bimodal distribution of ages, whereas APOGEE data show most of these stars have intermediate ages. Restrictions upon the two-infall parameter space also limit the application of other merger-dominated star formation histories to the Milky Way.
 \end{abstract}
 
 \section{Introduction}
@@ -101,7 +102,9 @@ The initial model of \citet{chiappini_chemical_1997} successfully reproduced the
 Subsequent studies refined the two-infall model to reproduce abundance data across the disk \citep[e.g.,][]{chiappini_abundance_2001,chiappini_oxygen_2003}. Others have explored the SN Ia delay-time distribution \citep{matteucci_effect_2009,palicio_analytic_2023}, galactic fountains \citep{spitoni_effects_2009}, radial gas flows \citep{spitoni_effects_2011,palla_chemical_2020}, a variable star formation efficiency \citep{spitoni_effects_2011,palla_chemical_2020}, radial stellar migration \citep{spitoni_effect_2015,palla_mgfe_2022}, azimuthal abundance variations due to spiral modes \citep{spitoni_2d_2019}, and pre-enriched gas infall \citep{palla_chemical_2020,spitoni_remind_2024} in a two-infall context. Recently, \citet{spitoni_beyond_2023} and \citet{palla_mapping_2024} proposed a third gas accretion event in the last $\sim3$ Gyr to match the inferred star formation history from {\it Gaia} \citep{ruiz-lara_recurrent_2020} and explain the recent abundance evolution of the Solar neighborhood.
 
 % \todo{Outflows.} 
-Most previous studies of the two-infall model have not included mass-loaded outflows. Some hydrodynamic simulations of Galactic fountains ejected by CC SNe have shown that ejected material falls back onto the disk on relatively short timescales \citep{spitoni_galactic_2008,spitoni_effects_2009} and close to their point of origin \citep{melioli_hydrodynamical_2008,melioli_hydrodynamical_2009}, suggesting the effect on GCE could be minimal. However, other simulations of MW-like galaxies with different feedback prescriptions do produce mass-loaded outflows \todo{(citations)}. Empirically, mass-loaded outflows have been observed in nearby starburst galaxies \todo{(citations)} and dwarf galaxies \todo{(citations)} but not MW-like systems, although the predicted column densities are below current detection limits \todo{(citations)}. In the absence of outflows, some two-infall studies have implemented radial gas flows or a variable star formation efficiency in order to regulate the radial metallicity gradient \citep{spitoni_effects_2011,palla_chemical_2020}.
+Most previous studies of the two-infall model have not included mass-loaded outflows. Some hydrodynamic simulations of Galactic fountains ejected by CC SNe have shown that ejected material falls back onto the disk on relatively short timescales \citep{spitoni_galactic_2008,spitoni_effects_2009} and close to their point of origin \citep{melioli_hydrodynamical_2008,melioli_hydrodynamical_2009}, suggesting the effect on GCE could be minimal. However, the effects of feedback in simulations are sensitive to its implementation \citep[e.g.,][]{li_effects_2020,hu_code_2023}, and other simulations of MW-like galaxies with different feedback prescriptions do produce mass-loaded outflows \citep[e.g.,][]{brook_hierarchical_2011,gutcke_nihao_2017,nelson_first_2019,peschken_angular_2021,kopenhafer_seeking_2023}. Empirically, mass-loaded outflows have been observed in nearby starburst galaxies \citep[e.g.,][]{lopez_temperature_2020,cameron_duvet_2021,lopez_x-ray_2023} and dwarf galaxies \todo{(citations)} but not MW-like systems, although the predicted column densities are below current detection limits \citep[see reviews by][]{veilleux_cool_2020,thompson_theory_2024}. Even if the MW is not currently ejecting a substantial outflow, it is not unreasonable to suppose that it may have during a more active phase in its evolutionary history.
+
+In the absence of outflows, some two-infall studies have implemented radial gas flows or a variable star formation efficiency in order to regulate the radial metallicity gradient \citep{spitoni_effects_2011,palla_chemical_2020}.
 % We adopt an {\it ad hoc} prescription for outflows as a function of radius in order to balance different yield sets and reproduce the radial metallicity gradient. \todo{Trim down, move some to methods.}
 
 \todo{Discuss yields, degeneracy with outflows and Rodriguez measurements. Emphasize that degeneracy with outflows prohibits direct estimates of yields from GCE. We aim to study the effect of the yield assumptions, which necessitates adjusting the outflows as well.}
@@ -167,7 +170,7 @@ We run multi-zone GCE models with a two-infall accretion history, radially-depen
         [Fe/H]          & $0.0089$   & $0.0060$ \\
         $\mathOFe$  & $0.019$    & $0.031$ \\
         $\log_{10}(\tau_{\rm NN}/{\rm Gyr})$    & 0.10   & $0.16$ \\
-        $\tau_{\rm [C/N]}/{\rm Gyr}$     & 1.0   & \todo{N/A} \\
+        $\tau_{\rm [C/N]}/{\rm Gyr}$     & 1.0   & 1.3 \\
         \hline
     \end{tabular}
 \end{table*}
@@ -183,12 +186,17 @@ We compare our models against stellar abundances from the Apache Point Observato
 
 We obtain a sample of \num{171635} red giant branch and red clump stars with high-quality spectra using the selection criteria listed in Table \ref{tab:sample}, which are adapted from \citet{hayden_chemical_2015}. Table \ref{tab:uncertainties} presents the median statistical uncertainty and uncertainty dispersion ($95^{\rm th} - 5^{\rm th}$ percentile difference) of the calibrated [Fe/H] and [O/Fe] abundances for our sample. When calculating the galactocentric radius $R_{\rm gal}$ and midplane distance $z$ of each star, we use the \citet{bailer-jones_estimating_2021} photo-geometric distance estimates from {\it Gaia} Early Data Release 3 \citep{gaia_collaboration_gaia_2016,gaia_collaboration_gaia_2021} included in the APOGEE DR17 catalog and we adopt the Galactic coordinates of the Sun $(R,z)_\odot=(8.122, 0.0208)\kpc$ \citep{gravity_collaboration_detection_2018,bennett_vertical_2019}. Table \ref{tab:apogee-regions} presents the number of APOGEE stars in bins of $R_{\rm gal}$ and $|z|$; typical distance uncertainties are much smaller than the bin width \todo{(do I need this table?)}.
 
+\subsection{Stellar Age Estimates}
+
 We supplement the APOGEE DR17 abundance data with two different age catalogs. The first is from \citet{leung_variational_2023}, who train a variational encoder-decoder network on asteroseismic data for APOGEE red giants. This catalog has two main advantages over other neural network (NN) age estimates: their method is designed to reduce contamination from abundance information (in particular [$\alpha$/Fe]), and the recovered ages do not plateau at $\sim10\,{\rm Gyr}$ as they do in some other neural network-derived age catalogs \citep[e.g.,][]{mackereth_dynamical_2019}. Following the recommendations of \citet{leung_variational_2023}, we cut all stars which have a relative age uncertainty greater than 40\%. This produces a sample of \num{57607} stars with NN age estimates, of which \num{14871} are in the Solar neighborhood ($7\leq R_{\rm gal}<9\kpc$, $0\leq|z|<0.5\kpc$). The median uncertainty in $\log({\rm age}/{\rm Gyr})$ is 0.10 (see Table \ref{tab:uncertainties}). We hereafter refer to the \citet{leung_variational_2023} ages as ``NN ages.''
 
-Our second age catalog uses the [C/N]--age relation for red giant branch and red clump stars. 
-\todo{Paragraph describing [C/N]-derived ages (get help from Jack).}
-This method has the benefit of providing age estimates for luminous giants, which increases the sample size at larger distances from the Sun. However, systematic effects of the [C/N]--age relation mean that these ages are most trustworthy in the range $1\sim10$ Gyr. We estimate ages for \num{113464} stars across the disk, including \num{20995} in the Solar neighborhood.
-\todo{Note about metallicity cutoff for luminous giants. Cite: \citet{cao_modeling_2025}}
+% Our second age catalog uses the [C/N]--age relation for red giant branch and red clump stars. 
+% \todo{Paragraph describing [C/N]-derived ages (get help from Jack).}
+% This method has the benefit of providing age estimates for luminous giants, which increases the sample size at larger distances from the Sun. However, systematic effects of the [C/N]--age relation mean that these ages are most trustworthy in the range $1\sim10$ Gyr. We estimate ages for \num{113464} stars across the disk, including \num{20995} in the Solar neighborhood.
+% \todo{Note about metallicity cutoff for luminous giants. Cite: \citet{cao_modeling_2025}}
+
+Our second age catalog utilizes the [C/N]--age relation calibrated by \todo{Roberts et al.\ (hopefully submitted)} for red giant branch (RGB) and red clump stars. The relationship relies on the mass-dependent level of mixing during the first dredge-up \citep[FDU;][]{iben_stellar_1967} to map the correlation of stellar mass, and hence age, with surface chemistry. This method has the benefit of providing age estimates for luminous giants, which increases the sample size at larger distances from the Sun. However, limitations from the efficiency of FDU mixing and the RGB age--mass relationship mean the ages are not trustworthy outside the range $1\sim10\Gyr$. Additional mixing effects in low-metallicity stars %later in their RGB evolution 
+also prevent the relation from being applied to luminous giant ($\log(g)<2.5$) and red clump stars with $\mathFeH<-0.4$. The median propagated uncertainty for the [C/N]-derived ages is $\sim1\Gyr$; however, as noted by \todo{Roberts et al.\ (hopefully submitted)}, the propagated errors underestimate the true age dispersion and so we enhance these uncertainties by 40\% to account for this \todo{(rewrite)}. With this relationship, we estimate ages for \num{113464} stars across the disk, including \num{20995} in the Solar neighborhood.
 
 \section{Chemical Evolution Models \& Parameter Selection}
 \label{sec:methods}
@@ -587,6 +595,8 @@ We further highlight the discrepant age patterns in the bottom panels of Figure 
 
 \todo{Summary of problem: the two-infall model is boxed in by data.}
 
+\subsection{Comparison with Previous Literature}
+
 \subsection{The Empirical Yield Scale}
 
 The \yZ{1} empirical yield scale already has difficulties matching the local age--metallicity relation \citep{johnson_milky_2024}, but the problem is exacerbated in the two-infall case because of the delayed dilution event --- in effect, approach to equilibrium is ``reset'' by the second infall.
@@ -629,7 +639,7 @@ The parameters of the SFE hiatus in Figure \ref{fig:onezone-sfe-hiatus} were cho
 \section{Summary \& Conclusions}
 \label{sec:conclusions}
 
-We have 
+We have compared the predictions of the two-infall scenario against abundance data from APOGEE DR17 supplemented with age estimates using two different methods. We ran multi-zone GCE models at two different yield scales with prescriptions for radially-dependent outflows and stellar migration. While the two-infall scenario can explain the local stellar abundance distribution, in particular the $\alpha$-bimodality, it faces challenges in matching the age--abundance structure of the full disk. We explored multiple parameter modifications to bring the model predictions closer to the data, including the yield scale, radial migration strength, metallicity of the accreted gas, thick-to-thin disk mass ratio, and the SN Ia DTD. Our conclusions are as follows:
 
 \begin{itemize}
     \item The large quantity of pristine gas accreted in the Solar neighborhood during the second infall phase rapidly dilutes the ISM metallicity by $\sim0.5$ dex. Models with low nucleosynthetic yields (\yZ{1}) remain at sub-Solar metallicity until the present day, in stark contrast to the observed local age--metallicity relation. Models with higher yields and outflows approach the present-day metallicity more rapidly, while pre-enriched infall can reduce the magnitude of the dilution (but not eliminate it entirely). %This issue can be mitigated with higher yields and outflows, but not by pre-enriched infall or radial migration.
@@ -638,6 +648,10 @@ We have
     \item Our models predict that the MDF evolves to higher metallicity over time throughout the disk. This contrasts with the APOGEE data, which show very little change in the mode over the past $\sim6-8$ Gyr.
     \item The equilibrium scenario of chemical evolution, if correct, places stricter limits on the two-infall model than other evolutionary models.
 \end{itemize}
+
+The apparent age-independence of stellar abundances in the disk places considerable restrictions upon the two-infall parameter space because it predicts a substantial dilution event at the start of the thin disk epoch. If the equilibrium scenario of \citet{johnson_milky_2024} is correct, then it restricts the two-infall scenario more than other GCE models.
+
+\todo{Implications for merger-driven SFHs.}
 
 \section*{Acknowledgements}
 
