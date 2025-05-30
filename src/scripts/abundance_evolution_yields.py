@@ -139,7 +139,7 @@ def compare_abundance_evolution(
                     axs[i,j], solar_sample, vice_to_apogee_col(ycol), 
                     np.arange(10, 14.1, 2.), 
                     age_col=age_col, label=data_label, color='r', 
-                    hatch='//', facecolor='none', linestyle='--'
+                    hatch='///', facecolor='none', linestyle='--', alpha=0.3
                 )
             if j == 0:
                 axs[i,j].set_ylabel(capitalize_abundance(ycol))
