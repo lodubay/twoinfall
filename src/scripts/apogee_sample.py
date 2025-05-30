@@ -680,7 +680,7 @@ numeric or NoneType.')
         )
         # Convert years -> Gyr
         cn_age_region['CN_LOG_AGE'] = cn_log_age - 9.
-        cn_age_region['CN_LOG_AGE_ERR'] = cn_log_age_err
+        cn_age_region['CN_LOG_AGE_ERR'] = 1.4 * cn_log_age_err # inflate by 40% per Jack
         cn_age_region['CN_AGE'] = 10 ** cn_age_region['CN_LOG_AGE']
         cn_age_region['CN_AGE_ERR'] = cn_age_region['CN_AGE'] * np.log(10) * cn_age_region['CN_LOG_AGE_ERR']
         apogee_df = apogee_df.join(cn_age_region[
