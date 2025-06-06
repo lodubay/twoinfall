@@ -42,8 +42,12 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
 
     # Plot multizone outputs
     # output_names = [
-    #     'yZ1/best/cgm07_ratio025_migr36/diskmodel',
-    #     'yZ2/best/cgm07_ratio025_migr36/diskmodel'
+    #     'yZ1/best/cgm07_ratio025_eta04_migr36/diskmodel',
+    #     'yZ2/best/cgm07_ratio025_eta18_migr36/diskmodel'
+    # ]
+    # output_names = [
+    #     'yZ1/thick_thin_ratio/solar024/diskmodel',
+    #     'yZ2/thick_thin_ratio/solar024/diskmodel'
     # ]
     # model_labels = [
     #     r'(a) $y/Z_\odot=1$, ${\rm %s}_{\rm CGM}=-0.7$, $f_\Sigma(R_\odot)=0.25$, $\sigma_{\rm RM8}=3.6$ kpc' % capitalize_abundance(col),

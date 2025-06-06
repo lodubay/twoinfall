@@ -24,7 +24,7 @@ HIATUS_ONSET = 1.4
 HIATUS_DURATION = 0.2
 TAU_STAR_BASE = 2.0
 TAU_STAR_ENHANCEMENT = 10
-FEH_LIM = (-1.6, 0.6)
+FEH_LIM = (-1.5, 0.6)
 OFE_LIM = (-0.08, 0.48)
 
 def main(verbose=True):
