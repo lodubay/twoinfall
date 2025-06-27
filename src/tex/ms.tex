@@ -396,12 +396,12 @@ We note that all our models are normalized to produce the same thick-to-thin-dis
 
 The star formation law follows a single power-law prescription: $\dot\Sigma_\star\propto\Sigma_g^N$, with $N=1.5$ following \citet{kennicutt_global_1998}. Previous work with this GCE model \citep[e.g.,][]{johnson_stellar_2021,dubay_galactic_2024} assumed a three-component power-law, but we adopt a single power-law prescription in this work to allow for a more direct comparison with previous two-infall studies \citep[e.g.,][]{spitoni_remind_2024}. 
 
-\begin{figure}
-    \centering
-    \includegraphics[width=\onecolumn]{src/tex/figures/sfe_prefactor.pdf}
-    \caption{Effect of the SFE timescale pre-factor $\varepsilon$ on abundance tracks and distributions in a one-zone model (see Section \ref{sec:sf-law}). All models are normalized to produce roughly the same ratio of thick to thin disk stars regardless of the value of $\varepsilon$ during the first infall epoch.}
-    \label{fig:sfe-prefactor}
-\end{figure}
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=\onecolumn]{src/tex/figures/sfe_prefactor.pdf}
+%     \caption{Effect of the SFE timescale pre-factor $\varepsilon$ on abundance tracks and distributions in a one-zone model (see Section \ref{sec:sf-law}). All models are normalized to produce roughly the same ratio of thick to thin disk stars regardless of the value of $\varepsilon$ during the first infall epoch.}
+%     \label{fig:sfe-prefactor}
+% \end{figure}
 
 In detail, we calculate the star formation efficiency (SFE) timescale $\tau_\star\equiv\Sigma_g/\dot\Sigma_\star$ according to the following:
 \begin{equation}
@@ -412,7 +412,7 @@ In detail, we calculate the star formation efficiency (SFE) timescale $\tau_\sta
         \varepsilon(t) \tau_{\rm mol}(t) \Big(\frac{\Sigma_g}{\Sigma_{g,0}}\Big)^{-1/2}, & \Sigma_g < \Sigma_{g,0}
     \end{cases}
 \end{equation}
-where $\Sigma_{g,0} = 10^8\,{\rm M}_\odot\kpc^{-2}$ and $\tau_{\rm mol}(t)=\tau_{\rm mol,0}(t/t_0)^\gamma$, with $\gamma=1/2$, $t_0=13.8\,{\rm Gyr}$ and $\tau_{\rm mol,0}=2\,{\rm Gyr}$ \citet{leroy_star_2008}. Previous two-infall studies \citep[e.g.,][]{nissen_high-precision_2020} have adopted a higher SFE during the first infall epoch than during the second, which we emulate through the pre-factor $\varepsilon$:
+where $\Sigma_{g,0} = 10^8\,{\rm M}_\odot\kpc^{-2}$ and $\tau_{\rm mol}(t)=\tau_{\rm mol,0}(t/t_0)^\gamma$, with $\gamma=1/2$, $t_0=13.8\,{\rm Gyr}$ and $\tau_{\rm mol,0}=2\,{\rm Gyr}$ \citep{leroy_star_2008}. Previous two-infall studies \citep[e.g.,][]{spitoni_galactic_2019,spitoni_galactic_2020,palla_chemical_2020} have adopted a higher SFE during the first infall epoch than the second, which we emulate through the pre-factor $\varepsilon$:
 \begin{equation}
     \label{eq:sfe-prefactor}
     \varepsilon(t) = 
@@ -421,7 +421,7 @@ where $\Sigma_{g,0} = 10^8\,{\rm M}_\odot\kpc^{-2}$ and $\tau_{\rm mol}(t)=\tau_
         1.0, & t \ge t_{\rm max}.
     \end{cases}
 \end{equation}
-A lower value of $\varepsilon(t<t_{\rm max})$ leads to more efficient star formation during the first infall epoch. Figure \ref{fig:sfe-prefactor} illustrates that this pre-factor largely affects the metallicity of the high-$\alpha$ sequence, with a smaller $\varepsilon$ producing faster enrichment during the first infall and stronger dilution after $t_{\rm max}$. The pre-factor has virtually no effect on the overall [O/Fe] distribution because the model is normalized to produce the same thick-to-thin-disk mass ratio regardless of the details of the star formation law, but a lower value of $\varepsilon$ does narrow the MDF by $\sim0.1$ dex in [Fe/H]. We adopt $\varepsilon(t<t_{\rm max})=0.5$ for consistency with the two-infall literature. To guard against over-correcting the SFE in the early Galaxy, we have tested eliminating either $\varepsilon(t)$ or $\tau_{\rm mol}(t)$ from our SFE prescription in multi-zone models and found no substantial difference to our results.
+A lower value of $\varepsilon(t<t_{\rm max})$ leads to more efficient star formation, and therefore more rapid enrichment, during the first infall epoch. However, the pre-factor has virtually no effect on the overall [O/Fe] distribution because the model is normalized to produce the same thick-to-thin-disk mass ratio regardless of the details of the star formation law. We adopt $\varepsilon(t<t_{\rm max})=0.5$ for consistency with the two-infall literature, though we find $\epsilon(t<t_{\rm max})=0.2$ or $1.0$ produce similar results in one-zone models. To guard against over-correcting the SFE in the early Galaxy, we have tested eliminating either $\varepsilon(t)$ or $\tau_{\rm mol}(t)$ from our SFE prescription in multi-zone models and found no substantial difference to our results.
 
 \begin{figure}
     \centering
