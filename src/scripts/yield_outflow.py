@@ -57,7 +57,7 @@ def main():
     age_bins = np.arange(0, 13 + age_bin_width, age_bin_width)
     age_bin_centers = get_bin_centers(age_bins)
     age_col = 'L23_AGE'
-    data_color = '0.5'
+    data_color = '0.6'
     mode_color = 'k'
     # Median age errors as a function of time
     big_age_bins = np.arange(0, 15, 4)
@@ -71,7 +71,7 @@ def main():
         # Scatter plot of all stars
         axs[i,1].scatter(local_sample(age_col), local_sample(abund), 
                     marker='.', c=data_color, s=1, edgecolor='none', 
-                    zorder=0, alpha=0.6, rasterized=True, label='Individual stars')
+                    zorder=0, rasterized=True, label='Individual stars')
         # Median errors at different age bins
         median_abund_errors = local_sample.binned_intervals(
             '%s_ERR' % abund, age_col, big_age_bins, quantiles=[0.5]
@@ -92,7 +92,7 @@ def main():
         abund_df, bin_edges = local_sample.mdf(col=abund, range=abund_range[i], 
                                             smoothing=0.1)
         axs[i,0].plot(abund_df / max(abund_df), get_bin_centers(bin_edges),
-                color=data_color, linestyle='-', linewidth=2, marker=None, alpha=0.6)
+                color=data_color, linestyle='-', linewidth=2, marker=None)
 
     params = ONEZONE_DEFAULTS
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
@@ -189,7 +189,9 @@ def plot_abundance_history(axs, fullname, col, label='', c=None, ls='-'):
     mdf = vice.mdf(fullname)
     mdf_bins = mdf['bin_edge_left'] + mdf['bin_edge_right'][-1:]
     plot_mdf_curve(axs[0], mdf['dn/d%s' % col], mdf_bins, smoothing=0.02,
-                   orientation='horizontal', color=c, ls=ls)
+                   orientation='horizontal', color='w', ls=ls, linewidth=2)
+    plot_mdf_curve(axs[0], mdf['dn/d%s' % col], mdf_bins, smoothing=0.02,
+                   orientation='horizontal', color=c, ls=ls, linewidth=1)
     
 
 def scale_yields(scale, afe_cc=0.45, yia_scale=1.):
