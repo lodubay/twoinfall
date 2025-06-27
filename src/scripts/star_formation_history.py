@@ -19,34 +19,53 @@ def main(output_name=OUTPUT_NAME, style='paper', cmap='plasma_r', verbose=False)
     # Set up figure
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = plt.subplots(
-        2, 2, 
+        4, 1, 
         sharex=True, 
         # tight_layout=True,
-        figsize=(ONE_COLUMN_WIDTH, ONE_COLUMN_WIDTH),
-        gridspec_kw={'hspace': 0.25, 'wspace': 0.3}
+        figsize=(ONE_COLUMN_WIDTH, 2.5 * ONE_COLUMN_WIDTH),
+        gridspec_kw={'hspace': 0.}
     )
     multioutput = vice.output(str(paths.multizone / output_name))
-    axs[0,0].set_title(r'$\dot \Sigma_{\rm in}$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
-    axs[0,0].text(0.1, 0.95, '(a)', va='top', transform=axs[0,0].transAxes)
-    axs[0,0].set_yscale('log')
-    axs[0,0].set_ylim((5e-6, 0.1))
-    axs[0,1].set_title(r'$\dot \Sigma_\star$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
-    axs[0,1].text(0.1, 0.95, '(b)', va='top', transform=axs[0,1].transAxes)
-    axs[0,1].set_yscale('log')
-    axs[0,1].set_ylim((1e-5, 1e-1))
-    axs[1,0].set_title(r'$\Sigma_g$ [M$_{\odot}\,\rm{kpc}^{-2}$]')
-    axs[1,0].text(0.1, 0.95, '(c)', va='top', transform=axs[1,0].transAxes)
-    axs[1,0].set_yscale('log')
-    axs[1,0].set_ylim((1e5, 2e8))
-    axs[1,1].set_title(r'$\tau_\star\equiv\Sigma_g/\dot\Sigma_\star$ [Gyr]')
-    axs[1,1].text(0.1, 0.95, '(d)', va='top', transform=axs[1,1].transAxes)
-    axs[1,1].set_ylim((0, 12))
-    axs[1,1].yaxis.set_major_locator(MultipleLocator(5))
-    axs[1,1].yaxis.set_minor_locator(MultipleLocator(1))
-    for ax in axs[1,:]:
-        ax.set_xlabel('Time [Gyr]')
-        ax.set_xlim((-1, 14))
-        ax.xaxis.set_minor_locator(MultipleLocator(1))
+    axs[0].set_ylabel(r'$\dot \Sigma_{\rm in}$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
+    # axs[0].text(0.2, 0.9, '(a)', va='top', transform=axs[0].transAxes, 
+    #             size=plt.rcParams['axes.labelsize'])
+    axs[0].set_yscale('log')
+    axs[0].set_ylim((5e-6, 0.5))
+    axs[1].set_ylabel(r'$\dot \Sigma_\star$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
+    # axs[1].text(0.1, 0.95, '(b)', va='top', transform=axs[1].transAxes)
+    axs[1].set_yscale('log')
+    axs[1].set_ylim((1e-5, 1e-1))
+    axs[2].set_ylabel(r'$\Sigma_g$ [M$_{\odot}\,\rm{kpc}^{-2}$]')
+    # axs[2].text(0.1, 0.95, '(c)', va='top', transform=axs[2].transAxes)
+    axs[2].set_yscale('log')
+    axs[2].set_ylim((1e5, 2e8))
+    axs[3].set_ylabel(r'$\tau_\star\equiv\Sigma_g/\dot\Sigma_\star$ [Gyr]')
+    # axs[3].text(0.1, 0.95, '(d)', va='top', transform=axs[3].transAxes)
+    axs[3].set_ylim((0, 13))
+    axs[3].yaxis.set_major_locator(MultipleLocator(5))
+    axs[3].yaxis.set_minor_locator(MultipleLocator(1))
+    axs[3].set_xlabel('Time [Gyr]')
+    axs[3].set_xlim((-1, 14))
+    axs[3].xaxis.set_minor_locator(MultipleLocator(1))
+    axs[3].xaxis.set_major_locator(MultipleLocator(5))
+
+    # Annotations in top panel
+    axs[0].annotate(
+        r'$\tau_1$', (1, 5e-2), xytext=(3, 5e-3), 
+        arrowprops={'arrowstyle': '<-'}, size=plt.rcParams['axes.labelsize']
+    )
+    axs[0].text(
+        2.1, 0.1, r'$t_{\rm max}$', ha='center', va='bottom',
+        size=plt.rcParams['axes.labelsize']
+    )
+    axs[0].annotate(
+        '', (0, 0.1), xytext=(4.2, 0.1), arrowprops={'arrowstyle': '<->'}
+    )
+    axs[0].annotate(
+        r'$\tau_2$', (6, 0.1), xytext=(11, 4e-2),
+        arrowprops={'arrowstyle': '<-'}, size=plt.rcParams['axes.labelsize']
+    )
+
     zones = [int(galr / ZONE_WIDTH) for galr in get_bin_centers(GALR_BINS)]
     colors = get_color_list(plt.get_cmap(cmap), GALR_BINS)
     linestyle = '-'
@@ -57,24 +76,24 @@ def main(output_name=OUTPUT_NAME, style='paper', cmap='plasma_r', verbose=False)
         history = multioutput.zones[f'zone{zone}'].history
         time = np.array(history['time'])
         infall_surface = np.array(history['ifr']) / area
-        axs[0,0].plot(time, infall_surface, color=color, label=label, ls=linestyle)
+        axs[0].plot(time, infall_surface, color=color, label=label, ls=linestyle)
         sf_surface = np.array(history['sfr']) / area
-        axs[0,1].plot(time[1:], sf_surface[1:], color=color, ls=linestyle, label=label)
+        axs[1].plot(time[1:], sf_surface[1:], color=color, ls=linestyle, label=label)
         gas_surface = np.array(history['mgas']) / area
-        axs[1,0].plot(time, gas_surface, color=color, ls=linestyle, label=label)
+        axs[2].plot(time, gas_surface, color=color, ls=linestyle, label=label)
         tau_star = [history['mgas'][i+1] / history['sfr'][i+1] * 1e-9 for i in range(
                     len(history['time']) - 1)]
-        axs[1,1].plot(history['time'][1:], tau_star, color=color, ls=linestyle,
+        axs[3].plot(history['time'][1:], tau_star, color=color, ls=linestyle,
                     label=label)
-    axs[0,0].legend(
-        frameon=False,
+    axs[0].legend(
+        # frameon=False,
         title=r'$R_{\rm gal}$ [kpc]', 
-        ncols=2, 
+        ncols=3, 
         loc='lower right', 
-        borderpad=0.2, labelspacing=0.2, columnspacing=0.5, 
-        handlelength=1.0, handletextpad=0.5, 
+        # borderpad=0.2, labelspacing=0.2, columnspacing=0.5, 
+        # handlelength=1.0, handletextpad=0.5, 
     )
-    plt.subplots_adjust(left=0.1, right=0.95, bottom=0.12, top=0.9)
+    # plt.subplots_adjust(left=0.1, right=0.95, bottom=0.12, top=0.9)
     # Save
     savedir = {
         'paper': paths.figures,
