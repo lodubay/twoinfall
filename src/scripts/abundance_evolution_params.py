@@ -40,6 +40,7 @@ def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
         galr_lim=GALR_LIM,
         absz_lim=ABSZ_LIM
     )
+    fig.suptitle(r'$y/Z_\odot=1$')
     fig.savefig(paths.figures / 'abundance_evolution_params')
     plt.close()
 

@@ -60,6 +60,9 @@ def main(style='paper', cmap='plasma_r'):
     highlight_panels(
         fig, axs, [(0,apogee_index), (1, apogee_index), (2, apogee_index)]
     )
+    # Add figure title
+    fig.suptitle(r'$y/Z_\odot=2$', x=0.42, y=1.)
+    fig.subplots_adjust(top=0.85)
     # Save
     plt.savefig(paths.figures / 'ofe_distribution_params')
     plt.close()
