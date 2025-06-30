@@ -27,20 +27,15 @@ def main(output_name=OUTPUT_NAME, style='paper', cmap='plasma_r', verbose=False)
     )
     multioutput = vice.output(str(paths.multizone / output_name))
     axs[0].set_ylabel(r'$\dot \Sigma_{\rm in}$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
-    # axs[0].text(0.2, 0.9, '(a)', va='top', transform=axs[0].transAxes, 
-    #             size=plt.rcParams['axes.labelsize'])
     axs[0].set_yscale('log')
-    axs[0].set_ylim((5e-6, 0.5))
+    axs[0].set_ylim((5e-6, 0.8))
     axs[1].set_ylabel(r'$\dot \Sigma_\star$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
-    # axs[1].text(0.1, 0.95, '(b)', va='top', transform=axs[1].transAxes)
     axs[1].set_yscale('log')
-    axs[1].set_ylim((1e-5, 1e-1))
+    axs[1].set_ylim((1e-5, 0.3))
     axs[2].set_ylabel(r'$\Sigma_g$ [M$_{\odot}\,\rm{kpc}^{-2}$]')
-    # axs[2].text(0.1, 0.95, '(c)', va='top', transform=axs[2].transAxes)
     axs[2].set_yscale('log')
-    axs[2].set_ylim((1e5, 2e8))
+    axs[2].set_ylim((1e5, 3e8))
     axs[3].set_ylabel(r'$\tau_\star\equiv\Sigma_g/\dot\Sigma_\star$ [Gyr]')
-    # axs[3].text(0.1, 0.95, '(d)', va='top', transform=axs[3].transAxes)
     axs[3].set_ylim((0, 13))
     axs[3].yaxis.set_major_locator(MultipleLocator(5))
     axs[3].yaxis.set_minor_locator(MultipleLocator(1))
@@ -48,6 +43,12 @@ def main(output_name=OUTPUT_NAME, style='paper', cmap='plasma_r', verbose=False)
     axs[3].set_xlim((-1, 14))
     axs[3].xaxis.set_minor_locator(MultipleLocator(1))
     axs[3].xaxis.set_major_locator(MultipleLocator(5))
+    # Axes labels
+    labels = ['(a)', '(b)', '(c)', '(d)']
+    for ax, label in zip(axs, labels):
+        ax.text(0.5, 0.95, label, va='top', ha='center', 
+                transform=ax.transAxes, 
+                size=plt.rcParams['axes.labelsize'])
 
     # Annotations in top panel
     axs[0].annotate(
@@ -55,7 +56,7 @@ def main(output_name=OUTPUT_NAME, style='paper', cmap='plasma_r', verbose=False)
         arrowprops={'arrowstyle': '<-'}, size=plt.rcParams['axes.labelsize']
     )
     axs[0].text(
-        2.1, 0.1, r'$t_{\rm max}$', ha='center', va='bottom',
+        2.1, 0.13, r'$t_{\rm max}$', ha='center', va='bottom',
         size=plt.rcParams['axes.labelsize']
     )
     axs[0].annotate(
