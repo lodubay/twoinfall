@@ -41,18 +41,6 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
                           width=0.015, pad=0.015, labelpad=2)
 
     # Plot multizone outputs
-    # output_names = [
-    #     'yZ1/best/cgm07_ratio025_eta04_migr36/diskmodel',
-    #     'yZ2/best/cgm07_ratio025_eta18_migr36/diskmodel'
-    # ]
-    # output_names = [
-    #     'yZ1/thick_thin_ratio/solar024/diskmodel',
-    #     'yZ2/thick_thin_ratio/solar024/diskmodel'
-    # ]
-    # model_labels = [
-    #     r'(a) $y/Z_\odot=1$, ${\rm %s}_{\rm CGM}=-0.7$, $f_\Sigma(R_\odot)=0.25$, $\sigma_{\rm RM8}=3.6$ kpc' % capitalize_abundance(col),
-    #     r'(b) $y/Z_\odot=2$, ${\rm %s}_{\rm CGM}=-0.7$, $f_\Sigma(R_\odot)=0.25$, $\sigma_{\rm RM8}=3.6$ kpc' % capitalize_abundance(col)
-    # ]
     output_names = [
         'yZ1/fiducial/diskmodel',
         'yZ2/fiducial/diskmodel'
@@ -72,7 +60,7 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
             )
             axs[i,j].plot(
                 get_bin_centers(bin_edges), mdf, 
-                color='0.7', linewidth=2, #alpha=0.6,
+                color='0.7', linewidth=2,
                 label='All stars'
             )
             for k in range(len(AGE_BINS)-1):
@@ -84,7 +72,7 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
                 )
                 axs[i,j].plot(
                     get_bin_centers(bin_edges), mdf, 
-                    color=colors[k], linewidth=1, #alpha=alpha,
+                    color=colors[k], linewidth=1,
                     label='%s - %s' % tuple(age_lim)
                 )
     
@@ -103,7 +91,7 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
         )
         axs[-1,j].plot(
             get_bin_centers(bin_edges), mdf, 
-            color='0.7', linewidth=2, #alpha=0.6,
+            color='0.7', linewidth=2,
             label='All stars'
         )
         if AGE_COL == 'CN_AGE':
@@ -138,8 +126,10 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
     for i in range(len(axs[0,:])):
         galr_lim = GALR_BINS[i:i+2]
         # Column labels
-        axs[0,i].set_title(r'$%s \leq R_{\rm gal} < %s$ kpc' % tuple(galr_lim),
-                           size=plt.rcParams['font.size'], pad=10)
+        axs[0,i].set_title(
+            r'$%s \leq R_{\rm gal} < %s$ kpc' % tuple(galr_lim) + '\n' + r'$|z|<0.5$ kpc',
+            size=plt.rcParams['font.size'], pad=10
+        )
         axs[-1,i].set_xlabel(capitalize_abundance(col))
     
     # Remove spines and y-axis labels
