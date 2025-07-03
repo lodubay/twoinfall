@@ -32,8 +32,8 @@ POSTER_LABELS = [
 ]
 # LABEL_PADS = [18, 18, 6, 6, 6]
 AXES_LIM = {
-    '[o/h]': (-1.2, 0.4),
-    '[fe/h]': (-1.2, 0.4),
+    '[o/h]': (-1.1, 0.4),
+    '[fe/h]': (-1.1, 0.4),
     '[o/fe]': (-0.15, 0.5),
     'age': (-1, 14.99)
 }
@@ -90,6 +90,7 @@ def compare_abundance_evolution(
         figsize=figsize,
         gridspec_kw={'hspace': 0, 'wspace': 0}
     )
+    fig.subplots_adjust(left=0.1, right=0.98)
     if label_pads == []:
         label_pads = [None] * len(output_names)
     # Add colorbar
@@ -106,11 +107,11 @@ def compare_abundance_evolution(
                           # scale colorbar width with figure width
                           width=cbar_width, pad=cbar_pad, 
                           labelpad=2, extend='both')
-    data_label = 'APOGEE data'
-    # data_label = {
-    #     'L23_AGE': 'APOGEE (NN ages)',
-    #     'CN_AGE': 'APOGEE ([C/N] ages)'
-    # }[age_col]
+    # data_label = 'APOGEE data'
+    data_label = {
+        'L23_AGE': 'APOGEE (NN ages)',
+        'CN_AGE': 'APOGEE ([C/N] ages)'
+    }[age_col]
 
     for j, output_name in enumerate(output_names):
         axs[0,j].set_title(labels[j], pad=label_pads[j])
