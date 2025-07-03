@@ -16,7 +16,7 @@ from multizone.src.yields import yZ1
 from multizone.src import models, outflows
 from _globals import ONEZONE_DEFAULTS
 
-FEH_LIM = (-1.1, 1.1)
+FEH_LIM = (-1.1, 0.9)
 OFE_LIM = (-0.15, 0.55)
 GALR_LIM = (7, 9)
 ABSZ_LIM = (0, 2)
@@ -50,7 +50,8 @@ def main(style='paper'):
     )
     # fig.subplots_adjust(right=0.75)
     # cax = fig.add_axes([0.75, 0.11, 0.05, 0.77])
-    fig.colorbar(pcm, ax=ax, orientation='vertical', label='# APOGEE Stars')
+    fig.colorbar(pcm, ax=ax, orientation='vertical', label='# APOGEE Stars', 
+                 pad=0.02, aspect=15)
 
     # Set up onezone model params
     output_dir = paths.data / 'onezone' / 'smooth_vs_twoinfall'
@@ -114,10 +115,15 @@ def main(style='paper'):
     legend1 = plt.legend(handles[:-1], labels[:-1], title='Smooth SFH',
                          handletextpad=0.5)
     legend2 = plt.legend(handles[-1:], labels[-1:], title='Two-Infall', 
-                         loc='upper right', bbox_to_anchor=(0.97, 0.53),
+                         loc='upper right', bbox_to_anchor=(0.68, 1.),
                          handletextpad=0.5)
     ax.add_artist(legend1)
     ax.add_artist(legend2)
+
+    ax.xaxis.set_major_locator(MultipleLocator(0.5))
+    ax.xaxis.set_minor_locator(MultipleLocator(0.1))
+    ax.yaxis.set_major_locator(MultipleLocator(0.2))
+    ax.yaxis.set_minor_locator(MultipleLocator(0.05))
     ax.set_xlabel('[Fe/H]')
     ax.set_ylabel('[O/Fe]')
 
