@@ -197,7 +197,8 @@ def plot_age_abundance_grid(mzs, col, apogee_sample=None, fname='',
 
 
 def plot_vice_median_abundances(ax, mzs, col, bin_edges, label=None,
-                                color='k', min_mass_frac=0.01, offset=0.):
+                                color='k', min_mass_frac=0.01, offset=0.,
+                                marker='s'):
     """
     Plot median stellar abundances binned by age from VICE multi-zone output.
     
@@ -230,14 +231,17 @@ def plot_vice_median_abundances(ax, mzs, col, bin_edges, label=None,
     bin_edges_left = abundance_intervals.index.categories[include].left.values
     bin_edges_right = abundance_intervals.index.categories[include].right.values
     bin_centers = (bin_edges_left + bin_edges_right) / 2
-    ax.errorbar(bin_centers + offset, abundance_intervals[0.5], 
-                xerr=((bin_centers - bin_edges_left) + offset,
-                      (bin_edges_right - bin_centers) - offset),
-                yerr=(abundance_intervals[0.5] - abundance_intervals[0.16], 
-                      abundance_intervals[0.84] - abundance_intervals[0.5]),
-                color=color, linestyle='none', capsize=1, elinewidth=0.5,
-                capthick=0.5, marker='^', markersize=2, label=label,
-    )
+    # ax.errorbar(bin_centers + offset, abundance_intervals[0.5], 
+    #             xerr=((bin_centers - bin_edges_left) + offset,
+    #                   (bin_edges_right - bin_centers) - offset),
+    #             yerr=(abundance_intervals[0.5] - abundance_intervals[0.16], 
+    #                   abundance_intervals[0.84] - abundance_intervals[0.5]),
+    #             color=color, linestyle='none', capsize=1, elinewidth=0.5,
+    #             capthick=0.5, marker='^', markersize=2, label=label,
+    # )
+    line2d = ax.plot(bin_centers, abundance_intervals[0.5], color=color, 
+            linestyle='none', marker=marker, ms=4)
+    return line2d
 
 
 def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None, 
@@ -282,7 +286,7 @@ def plot_vice_median_ages(ax, mzs, col, bin_edges, label=None,
 
 def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None, 
                                   color='r', age_col='L23_AGE', min_stars=10,
-                                  alpha=0.2, linestyle='-', **kwargs):
+                                  alpha=0.2, linestyle='-', marker='o', **kwargs):
     """
     Plot APOGEE stellar abundance medians and 1-sigma range binned by age.
     
@@ -321,19 +325,24 @@ def plot_apogee_median_abundances(ax, apogee_sample, col, bin_edges, label=None,
     bin_edges_right = abundance_intervals.index.categories[include].right.values
     bin_centers = (bin_edges_left + bin_edges_right) / 2
     bin_edges = np.append(bin_edges_left, bin_edges_right[-1:])
-    # need to duplicate the last item to include the last bin
+    low = abundance_intervals[0.16].values
+    high = abundance_intervals[0.84].values
+    # duplicate first and last points to extend 1-sigma bounds from 0-14 Gyr
     pcol = ax.fill_between(
-        bin_edges, 
-        np.append(abundance_intervals[0.16].values, abundance_intervals[0.16].values[-1:]),
-        np.append(abundance_intervals[0.84].values, abundance_intervals[0.84].values[-1:]),
-        step='post', 
+        np.concatenate((bin_edges[0:1], bin_centers, bin_edges[-1:])),
+        np.concatenate((low[0:1], low, low[-1:])),
+        np.concatenate((high[0:1], high, high[-1:])),
+        # step='post', 
         color=color, alpha=alpha, label=label, edgecolor=color, linestyle=linestyle,
         **kwargs
     )
     # plot median line
-    spatch = ax.stairs(abundance_intervals[0.5].values, edges=bin_edges,
-                       baseline=None, color=color, linestyle=linestyle)
-    return spatch, pcol
+    # spatch = ax.stairs(abundance_intervals[0.5].values, edges=bin_edges,
+    #                    baseline=None, color=color, linestyle=linestyle)
+    line2d = ax.plot(bin_centers, abundance_intervals[0.5].values, 
+                     color=color, linestyle=linestyle, marker=marker, ms=4)
+    # print(line2d)
+    return line2d[0], pcol
 
 
 def plot_apogee_median_ages(ax, apogee_sample, col, bin_edges, label=None, 

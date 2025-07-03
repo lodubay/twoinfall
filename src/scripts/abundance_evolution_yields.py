@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
 from age_abundance_grid import plot_apogee_median_abundances, \
-    AXES_MAJOR_LOCATOR, AXES_MINOR_LOCATOR
+    plot_vice_median_abundances, AXES_MAJOR_LOCATOR, AXES_MINOR_LOCATOR
 from scatter_plot_grid import plot_gas_abundance, setup_colorbar
 from _globals import END_TIME, ONE_COLUMN_WIDTH
 from utils import vice_to_apogee_col, capitalize_abundance
@@ -126,8 +126,12 @@ def compare_abundance_evolution(
             mzs.scatter_plot(axs[i,j], 'age', ycol, color='galr_origin',
                              cmap=cmap, norm=cbar.norm, markersize=0.5)
             lines = plot_gas_abundance(
-                axs[i,j], mzs, 'lookback', ycol, ls='-', lw=1, 
+                axs[i,j], mzs, 'lookback', ycol, ls='--', lw=1,
                 label='Gas abundance'
+            )
+            stars = plot_vice_median_abundances(
+                axs[i,j], mzs, ycol, age_bins, 
+                label='Median stellar abundance'
             )
             spatch, pcol = plot_apogee_median_abundances(
                 axs[i,j], solar_sample, vice_to_apogee_col(ycol), age_bins, 
@@ -158,8 +162,8 @@ def compare_abundance_evolution(
     axs[0,0].xaxis.set_major_locator(MultipleLocator(5))
     axs[0,0].xaxis.set_minor_locator(MultipleLocator(1))
     axs[0,-1].legend(
-        [lines[0], (spatch, pcol)],
-        ['Gas abundance', data_label],
+        [lines[0], stars[0], (spatch, pcol)],
+        ['Gas abundance', 'Stellar median', data_label],
         loc='lower left', frameon=False, handletextpad=0.5,
         borderpad=0.2, handlelength=1.2
     )

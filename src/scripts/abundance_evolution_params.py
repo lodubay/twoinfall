@@ -15,14 +15,14 @@ import paths
 OUTPUT_NAMES = [
     'yZ1/fiducial/diskmodel',
     'yZ1/migration_strength/strength50/diskmodel',
+    'yZ1/thick_thin_ratio/solar050/diskmodel',
     'yZ1/pre_enrichment/mh05_alpha00/diskmodel',
-    'yZ1/thick_thin_ratio/solar050/diskmodel'
 ]
 LABELS = [
     '(a)\nFiducial',
     '(b)\n' + r'$\sigma_{\rm RM8}=5.0$ kpc',
-    '(c)\n' + r'${\rm [X/H]}_{\rm CGM}=-0.5$',
-    '(d)\n' + r'$f_\Sigma(R_\odot)=0.5$'
+    '(c)\n' + r'$f_\Sigma(R_\odot)=0.5$',
+    '(d)\n' + r'${\rm [X/H]}_{\rm CGM}=-0.5$',
 ]
 GALR_LIM = (7, 9)
 ABSZ_LIM = (0, 0.5)
