@@ -28,7 +28,7 @@ def main(style='paper'):
     # Setup figure
     plt.style.use(paths.styles / f'{style}.mplstyle')
     plt.rcParams['axes.prop_cycle'] = plt.cycler(
-        'color', paultol.highcontrast.colors)
+        'color', paultol.highcontrast.colors[::-1])
     fig, ax = plt.subplots(
         sharex=True, sharey=True, 
         figsize=(ONE_COLUMN_WIDTH, 0.6 * ONE_COLUMN_WIDTH),
@@ -129,7 +129,7 @@ def main(style='paper'):
     ax.set_xlabel('[Fe/H]')
     ax.set_ylabel('[O/Fe]')
 
-    plt.savefig(paths.figures / 'smooth_vs_twoinfall_yZ1')
+    plt.savefig(paths.figures / 'smooth_vs_twoinfall')
     plt.close()
 
 
