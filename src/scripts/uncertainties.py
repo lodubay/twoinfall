@@ -11,8 +11,8 @@ def main():
     sample = APOGEESample.load()
     params = ['O_H_ERR', 'FE_H_ERR', 'L23_LOG_AGE_ERR', 'CN_AGE_ERR']
     labels = pd.Series([
-        '[O/H]', 
-        '[Fe/H]', 
+        '${\\rm [O/H]}$', 
+        '${\\rm [Fe/H]}$', 
         '$\\log_{10}(\\tau_{\\rm NN}/{\\rm Gyr})$', 
         '$\\tau_{\\rm [C/N]}/{\\rm Gyr}$'
     ], name='Parameter')
