@@ -8,7 +8,7 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 
-from abundance_evolution_yields import compare_abundance_evolution
+from stellar_abundance_evolution import compare_abundance_evolution
 from _globals import ONE_COLUMN_WIDTH
 import paths
 

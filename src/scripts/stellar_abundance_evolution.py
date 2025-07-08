@@ -1,6 +1,6 @@
 """
-This script compares the abundance evolution of multi-zone models with 
-different yield sets and outflow settings.
+This script compares the stellar age-abundance relations predicted by several
+multi-zone models against APOGEE DR17 data.
 """
 
 import argparse
@@ -12,7 +12,7 @@ from matplotlib.ticker import MultipleLocator
 from age_abundance_grid import plot_apogee_median_abundances, \
     plot_vice_median_abundances, AXES_MAJOR_LOCATOR, AXES_MINOR_LOCATOR
 from scatter_plot_grid import plot_gas_abundance, setup_colorbar
-from _globals import END_TIME, ONE_COLUMN_WIDTH
+from _globals import ONE_COLUMN_WIDTH, TWO_COLUMN_WIDTH
 from utils import vice_to_apogee_col, capitalize_abundance
 from apogee_sample import APOGEESample
 from multizone_stars import MultizoneStars
@@ -20,17 +20,16 @@ import paths
 
 OUTPUT_NAMES = [
     'yZ1/fiducial/diskmodel',
-    'yZ2/fiducial/diskmodel'
+    'yZ1/migration_strength/strength50/diskmodel',
+    'yZ1/thick_thin_ratio/solar050/diskmodel',
+    'yZ1/pre_enrichment/mh05_alpha00_eta06/diskmodel',
 ]
 LABELS = [
-    '(a)\n' + r'$y/Z_\odot=1$',
-    '(b)\n' + r'$y/Z_\odot=2$'
+    '(a)\nFiducial',
+    '(b)\n' + r'$\sigma_{\rm RM8}=5.0$ kpc',
+    '(c)\n' + r'$f_\Sigma(R_\odot)=0.5$',
+    '(d)\n' + r'${\rm [X/H]}_{\rm CGM}=-0.5$',
 ]
-POSTER_LABELS = [
-    'Low yields\n& outflows\n' + r'$(y/Z_\odot=1)$',
-    'High yields\n& outflows\n' + r'$(y/Z_\odot=2)$',
-]
-# LABEL_PADS = [18, 18, 6, 6, 6]
 AXES_LIM = {
     '[o/h]': (-1.1, 0.4),
     '[fe/h]': (-1.1, 0.4),
@@ -41,27 +40,24 @@ GALR_LIM = (7, 9)
 ABSZ_LIM = (0, 0.5)
 
 
-def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r'):
+def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r',
+         ages='L23'):
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = compare_abundance_evolution(
         OUTPUT_NAMES, 
-        {'paper': LABELS, 'poster': POSTER_LABELS}[style],
-        (ONE_COLUMN_WIDTH, 1.67 * ONE_COLUMN_WIDTH),
+        LABELS,
+        (TWO_COLUMN_WIDTH, 0.8 * TWO_COLUMN_WIDTH),
         verbose=verbose,
         uncertainties=uncertainties,
         cmap=cmap,
-        cbar_orientation='horizontal',
         galr_lim=GALR_LIM,
-        absz_lim=ABSZ_LIM
+        absz_lim=ABSZ_LIM,
+        age_col='%s_AGE' % ages
     )
-    savedir = {
-        'paper': paths.figures,
-        'poster': paths.extra / 'poster'
-    }[style]
-    if not savedir.is_dir():
-        savedir.mkdir()
-    fig.savefig(savedir / 'abundance_evolution_yields')
+    fig.suptitle(r'$y/Z_\odot=1$')
+    fig.savefig(paths.figures / 'stellar_abundance_evolution')
     plt.close()
+
 
 def compare_abundance_evolution(
         output_names, 
@@ -174,9 +170,9 @@ def compare_abundance_evolution(
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        prog='abundance_evolution_yields.py',
-        description='Compare age-abundance relations between multi-zone \
-outputs with different yield sets and APOGEE data.'
+        prog='stellar_abundance_evolution.py',
+        description='Compare stellar age-abundance relations between multi-zone \
+outputs with different parameters and APOGEE data.'
     )
     parser.add_argument(
         '-v', '--verbose', 
@@ -188,7 +184,6 @@ outputs with different yield sets and APOGEE data.'
         metavar='STYLE', 
         type=str,
         default='paper',
-        choices=('paper', 'poster'),
         help='Plot style to use (default: paper).'
     )
     parser.add_argument(
@@ -197,6 +192,14 @@ outputs with different yield sets and APOGEE data.'
         type=str,
         default='winter_r',
         help='Name of colormap for color-coding model output (default: winter_r).'
+    )
+    parser.add_argument(
+        '--ages', 
+        metavar='AGE-SOURCE', 
+        type=str,
+        default='L23',
+        choices=['L23', 'CN'],
+        help='Type of age estimate to use (default: L23).'
     )
     args = parser.parse_args()
     main(**vars(args))
