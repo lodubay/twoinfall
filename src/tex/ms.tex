@@ -228,6 +228,29 @@ We discuss our assumptions about the nucleosynthetic yields in Section \ref{sec:
 \end{deluxetable*}
 \vspace{-24pt}
 
+\begin{deluxetable*}{lCCcCCC}
+    \tablecaption{A summary of all of our multi-zone models.\label{tab:models}}
+    \tablehead{
+        \colhead{Name} & \colhead{$y/Z_\odot$} & \colhead{$\eta_\odot$} & \colhead{SN Ia DTD} & \colhead{$\sigma_{\rm RM8}$} & \colhead{$f_\Sigma(R_\odot)$} & \colhead{${\rm [X/H]}_{\rm CGM}$}
+    }
+    \startdata
+        {\tt yZ1-fiducial}  & 1 & 0.2   & Equation \ref{eq:plateau-dtd}  & 2.68\kpc  & 0.12  & -\infty   \\
+        {\tt yZ1-migration} & 1 & 0.2   & Equation \ref{eq:plateau-dtd}  & 5.0\kpc   & 0.12  & -\infty   \\
+        {\tt yZ1-diskratio} & 1 & 0.2   & Equation \ref{eq:plateau-dtd}  & 2.68\kpc  & 0.5   & -\infty   \\
+        {\tt yZ1-preenrich} & 1 & 0.6   & Equation \ref{eq:plateau-dtd}  & 2.68\kpc  & 0.12  & -0.5      \\
+        {\tt yZ1-best}      & 1 & 0.4   & Equation \ref{eq:plateau-dtd}  & 3.6\kpc   & 0.25  & -0.7      \\
+        \hline
+        {\tt yZ2-fiducial}  & 2 & 1.4   & Equation \ref{eq:plateau-dtd}  & 2.68\kpc  & 0.12  & -\infty   \\
+        {\tt yZ2-powerlaw}  & 2 & 1.4   & Equation \ref{eq:powerlaw-dtd} & 2.68\kpc  & 0.12  & -\infty   \\
+        {\tt yZ2-diskratio} & 2 & 1.4   & Equation \ref{eq:plateau-dtd}  & 2.68\kpc  & 0.5   & -\infty   \\
+        {\tt yZ2-preenrich} & 2 & 2.4   & Equation \ref{eq:plateau-dtd}  & 2.68\kpc  & 0.12  & -0.5      \\
+        {\tt yZ2-best}      & 2 & 1.8   & Equation \ref{eq:plateau-dtd}  & 3.6\kpc   & 0.25  & -0.7      \\
+        \hline
+        {\tt yZ3-fiducial}  & 3 & 2.4   & Equation \ref{eq:plateau-dtd}  & 2.68\kpc  & 0.12  & -\infty   \\
+    \enddata
+\end{deluxetable*}
+\vspace{-24pt}
+
 \subsection{Nucleosynthetic Yields}
 \label{sec:yields}
 
@@ -384,7 +407,7 @@ In this case, the metallicity rises from 0 with a timescale $\tau_{\rm rise}=2\,
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\textwidth]{figures/onezone_params.pdf}
+    \includegraphics[width=\textwidth]{figures/infall_parameters.pdf}
     \caption{Gas abundance tracks in the [O/Fe]--[Fe/H] plane for one-zone chemical evolution models which assume different values for the infall history parameters. In each panel, one parameter is varied according to the legend while the other two are held fixed. The open symbols along each curve mark logarithmic steps in time, as denoted in panel (b). The marginal panels show the corresponding stellar abundance distributions, which are convolved with a Gaussian kernel with a width of 0.02 dex for visual clarity. All models use the same fiducial parameters as the $R_{\rm gal}=8\kpc$ ring in the multi-zone models, with \yZ{1} and $\eta=0.2$. The black lines represent the same set of parameters in each panel.}
     \label{fig:twoinfall-parameters}
 \end{figure*}
@@ -464,7 +487,7 @@ We over-plot the ISM abundance evolution in our $y/Z_\odot=1,2,$ and $3$ models 
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\linewidth]{figures/abundance_evolution_params.pdf}
+    \includegraphics[width=\linewidth]{figures/stellar_abundance_evolution.pdf}
     \caption{Stellar age--abundance relations predicted by multi-zone models at the \yZ{1} yield scale (see Table \ref{tab:yields}). Each point represents a stellar population drawn from the Solar neighborhood near the midplane ($7\leq R_{\rm gal}\leq 9\kpc$, $0\leq |z| \leq 0.5\kpc$) and is color-coded by its birth radius. A Gaussian scatter is applied to each point according to the median age and abundance uncertainties in Table \ref{tab:uncertainties}. For visual clarity, we plot only a random mass-weighted sample of \num{10000} points in each panel. The dashed curve plots the predicted ISM abundance at $R_{\rm gal}=8\kpc$ over time, and the black squares plot the median stellar abundance in in {2 Gyr}-wide age bins. The red line and points plot the median abundance for APOGEE stars in each age bin, and the shaded regions represent the 16th--84th abundance percentiles. Age estimates for APOGEE stars come from \citet{leung_variational_2023}.
     Each column shows results from a different multi-zone model: {\bf (a)} our fiducial model with $y/Z_\odot=1$, $\sigma_{\rm RM8}=2.7\kpc$, pristine gas infall, and $f_\Sigma(R_\odot)=0.12$; {\bf (b)} a model with greater radial migration strength $\sigma_{\rm RM8}=5\kpc$; {\bf (c)} a model with a higher local thick-to-thin disk ratio, $f_\Sigma(R_\odot)=0.5$; and {\bf (d)} a model that assumes the infalling gas has metallicity $\mathOH_{\rm CGM}=\mathFeH_{\rm CGM}=-0.5$ and a higher mass-loading factor $\eta_\odot=0.6$. {\bf Key takeaway:} Models with a higher thick-to-thin disk ratio (c) or pre-enriched infall (d) reduce the magnitude of the ISM dilution, but neither completely match the observed age--metallicity relation.}
     \label{fig:abundance-evolution-params}
@@ -482,7 +505,7 @@ The observed rise in the median metallicity of stars in the $6-10\Gyr$ age range
 
 Next, we explore a model where the local thick-to-thin disk surface density ratio is $\sim4$ times larger that the fiducial value, $f_\Sigma(R_\odot)=0.5$. This choice places the ratio higher than most of the constraints from population counts or GCE models (see Section \ref{sec:sfh}). Column (c) of Figure \ref{fig:abundance-evolution-params} shows that requiring a more massive thick disk can reduce the dilution and recent evolution of the ISM, similar to the pre-enriched infall, because more of the gas disk is built up during the first infall phase. The model produces the best agreement with the observed age--[Fe/H] relation (second row). However, agreement with the observed age--[O/Fe] relation is poor, with the model predicting a trend much flatter than observed, underpredicting [O/Fe] by $\sim0.1$ dex in the $\sim6-10\Gyr$ age range.
 
-Finally, we investigate a model where the infalling gas is enriched to a metallicity $\mathOH=\mathFeH={\rm [X/H]}_{\rm CGM}$ before accreting onto the disk. Column (d) of Figure \ref{fig:abundance-evolution-params} shows results for the case where ${\rm [X/H]}_{\rm CGM}=-0.5$, the highest metallicity allowed by the local low-$\alpha$ population. Pre-enriched infall at this level mitigates but does not completely solve the two discrepancies. The dilution effect of the second infall is reduced to the $\sim0.3$-dex level as the gas which replenishes the Galaxy's reservoir is no longer pristine; however, the width of the stellar abundance distribution at any given age is also reduced since the accreting gas is less chemically different from the ISM, diminishing the effects of dilution. The late-time gas abundance evolution is similar to the fiducial model, but it ends at slightly super-Solar metallicity---an effect which can be compensated by a slightly increased value of $\eta$. This model also narrows the [O/Fe] distribution of mono-age populations (almost all the model stars fall within the $1\sigma$ band of the data), which could be compensated for by stronger radial migration.
+Finally, we investigate a model where the infalling gas is enriched to a metallicity $\mathOH=\mathFeH={\rm [X/H]}_{\rm CGM}$ before accreting onto the disk. Column (d) of Figure \ref{fig:abundance-evolution-params} shows results for the case where ${\rm [X/H]}_{\rm CGM}=-0.5$, the highest metallicity allowed by the local low-$\alpha$ population. Pre-enriched infall raises the equilibrium metallicity, so we increase the mass-loading factor to $\eta=0.6$ to maintain the end-point at roughly Solar metallicity. Pre-enriched infall at this level mitigates but does not completely solve the two discrepancies. The dilution effect of the second infall is reduced to the $\sim0.3$-dex level as the gas which replenishes the Galaxy's reservoir is no longer pristine; however, the width of the stellar abundance distribution at any given age is also reduced since the accreting gas is less chemically different from the ISM, diminishing the effects of dilution. The late-time gas abundance evolution is similar to the fiducial model, but it ends at slightly super-Solar metallicity---an effect which can be compensated by a slightly increased value of $\eta$. This model also narrows the [O/Fe] distribution of mono-age populations (almost all the model stars fall within the $1\sigma$ band of the data), which could be compensated for by stronger radial migration.
 
 Overall, no modification to the \yZ{1} model is able to completely overcome the issues that dilution and re-enrichment naturally face when confronted with a flat age--metallicity relation. Pre-enrichment of the accreted gas and a higher disk mass ratio can reduce the discrepancy with the data, but these options introduce new issues in the age--[O/Fe] plane. 
 
@@ -538,7 +561,7 @@ Additionally, the shape of the low-$\alpha$ sequence predicted the model results
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\textwidth]{src/tex/figures/ofe_distribution_params.pdf}
+    \includegraphics[width=\textwidth]{src/tex/figures/ofe_distributions.pdf}
     \caption{Normalized stellar [O/Fe] distributions predicted by multi-zone models with \yZ{2} (a--d) and as observed by APOGEE (e). 
     % The layout is similar to Figure \ref{fig:ofe-distribution-yields}. 
     Each row presents stellar distributions within a range of absolute midplane distance $|z|$ reported on the far right, and the vertical scale is consistent across each row. Within each panel, the distributions are color-coded according to the bin in galactocentric radius $R_{\rm gal}$ from which they are drawn. The median APOGEE abundance uncertainties are forward-modeled onto the model outputs (see Table \ref{tab:uncertainties}). For visual clarity, each distribution is smoothed with a box-car of width 0.05 dex.
@@ -626,7 +649,7 @@ In our models, the outflows regulate the overall metallicity in a radially depen
 
 \begin{figure}
     \centering
-    \includegraphics[width=\onecolumn]{figures/onezone_sfe_hiatus.pdf}
+    \includegraphics[width=\onecolumn]{figures/sfe_hiatus.pdf}
     \caption{Abundance tracks and distributions from one-zone models which experience an efficiency-driven starburst. The blue dashed curve represents the fiducial model that has an exponentially declining infall rate with timescale $\tau_{\rm in}=15\Gyr$, and constant star formation efficiency timescale $\tau_\star=2\,{\rm Gyr}$. The red solid curve plots the output of a model which experiences an enhancement of $\tau_\star$ by a factor of 10, for a duration of 200 Myr, starting at $t=1.4\,{\rm Gyr}$. Both models assume the \yZ{2} yield set, with $y_{\rm Fe}^{\rm Ia}$ reduced by 20\% to better match the model endpoint with the data, and $\eta=1.4$. The grayscale histogram presents the number density of APOGEE stars in the Solar annulus ($7\leq R_{\rm gal}\leq 9\kpc$, $0\leq|z|\leq2\kpc$) in [O/Fe]--[Fe/H] space, and the gray histograms in the marginal panels show the APOGEE stellar abundance distributions.}
     \label{fig:onezone-sfe-hiatus}
 \end{figure}
