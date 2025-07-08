@@ -14,7 +14,7 @@ from multizone_stars import MultizoneStars
 from apogee_sample import APOGEESample
 from age_abundance_grid import plot_age_abundance_grid
 from feh_distribution import plot_feh_distribution
-from ofe_distribution import plot_ofe_distribution
+import distribution_functions as dfs
 from mdf_by_age import plot_mdf_by_age
 from mdf_widths import plot_mdf_widths
 # from ofe_bimodality import plot_bimodality_comparison
@@ -241,6 +241,34 @@ def plot_abundance_gradients(mzs, uncertainties=False, style='paper'):
     axs[0].legend()
     # Save
     fullpath = paths.extra / 'multizone' / mzs.name.replace('diskmodel', 'abundance_gradients.png')
+    if not fullpath.parents[0].exists():
+        fullpath.parents[0].mkdir(parents=True)
+    plt.savefig(fullpath, dpi=300)
+    plt.close()
+
+
+def plot_ofe_distribution(mzs, apogee_sample, nbins=100, xlim=(-0.15, 0.55),
+                          smoothing=0.05, cmap='plasma_r', style='paper'):
+    """
+    Plot [O/Fe] distribution functions binned by radius.
+    """
+    plt.style.use(paths.styles / f'{style}.mplstyle')
+    # Set up plot
+    fig, axs = dfs.setup_axes(ncols=2, figure_width=ONE_COLUMN_WIDTH, 
+                              cmap=cmap, xlabel='[O/Fe]', xlim=xlim, 
+                              major_tick_spacing=0.2, major_minor_tick_ratio=4.)
+    colors = get_color_list(plt.get_cmap(cmap), GALR_BINS)
+    # plot
+    mdf_kwargs = {'bins': nbins, 'range': xlim, 'smoothing': smoothing}
+    dfs.plot_multizone_mdfs(mzs, axs[:,0], '[o/fe]', colors, **mdf_kwargs)
+    dfs.plot_multizone_mdfs(apogee_sample, axs[:,1], 'O_FE', colors, label='APOGEE', **mdf_kwargs)
+    for ax in axs[:,0]:
+        ax.set_ylim((0, None))
+    fig.suptitle(mzs.name)
+    plt.subplots_adjust(top=0.88)
+    # Save
+    fname = mzs.name.replace('diskmodel', 'ofe_df.png')
+    fullpath = paths.extra / 'multizone' / fname
     if not fullpath.parents[0].exists():
         fullpath.parents[0].mkdir(parents=True)
     plt.savefig(fullpath, dpi=300)
