@@ -26,8 +26,9 @@ TAU_STAR_BASE = 2.0
 TAU_STAR_ENHANCEMENT = 10
 FEH_LIM = (-1.5, 0.6)
 OFE_LIM = (-0.08, 0.48)
+GRIDSIZE = 30
 
-def main(verbose=True):
+def main(verbose=False):
     plt.style.use(paths.styles / 'paper.mplstyle')
     plt.rcParams['axes.prop_cycle'] = plt.cycler('color', paultol.bright.colors)
     fig, axs = setup_figure(xlim=FEH_LIM, ylim=OFE_LIM)
@@ -38,7 +39,7 @@ def main(verbose=True):
     # apogee_solar.plot_kde2D_contours(axs[0], 'FE_H', 'O_FE', c='k', lw=1,
     #                                  plot_kwargs={'zorder': 1})
     pcm = axs[0].hexbin(apogee_solar('FE_H'), apogee_solar('O_FE'),
-                  gridsize=50, #bins='log',
+                  gridsize=GRIDSIZE, #bins='log',
                   extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]],
                   cmap='binary', linewidths=0.2)
     cax = axs[0].inset_axes([0.05, 0.05, 0.05, 0.8])
@@ -95,7 +96,7 @@ def main(verbose=True):
     plot_vice_onezone(name, fig=fig, axs=axs, label='SFE Hiatus')
     axs[0].legend(loc='upper right')
     
-    plt.savefig(paths.figures / 'onezone_sfe_hiatus')
+    plt.savefig(paths.figures / 'sfe_hiatus')
     plt.close()
 
 

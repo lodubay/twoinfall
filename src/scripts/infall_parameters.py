@@ -32,8 +32,7 @@ LABELS = {
 XLIM = (-1.9, 0.7)
 YLIM = (-0.14, 0.499)
 
-def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, fname='onezone_params', 
-         verbose=False, style='paper'):
+def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, verbose=False, style='paper'):
     # Set up figure and subfigures
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig = plt.figure(figsize=(TWO_COLUMN_WIDTH, 0.36*TWO_COLUMN_WIDTH))
@@ -88,7 +87,7 @@ def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, fname='onezone_params',
     plt.subplots_adjust(
         bottom=0.13, top=0.98, left=0.16, right=0.98, wspace=0.5
     )
-    fig.savefig(paths.figures / fname, dpi=300)
+    fig.savefig(paths.figures / 'infall_parameters', dpi=300)
     plt.close()
 
 
@@ -208,7 +207,7 @@ def output_name(tau1, tau2, onset, parent_dir=paths.data/'onezone'/'params'):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        prog='onezone_params.py',
+        prog='infall_parameters.py',
         description='Plot the effect of different infall timescales and onset \
 time in one-zone models.'
     )
