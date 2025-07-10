@@ -103,7 +103,7 @@ def main():
         mzs_local = mzs.region(galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
         plot_abundance_history(
             axs[0], mzs_local, '[o/h]', range=OH_LIM, smoothing=SMOOTH_WIDTH,
-            label=r'$y/Z_\odot = %s$, $\eta=%s$' % (yZ[i], eta[i])
+            label=r'$y/Z_\odot = %s$, $\eta_\odot=%s$' % (yZ[i], eta[i])
         )
         plot_abundance_history(
             axs[1], mzs_local, '[fe/h]', range=FEH_LIM, smoothing=SMOOTH_WIDTH,
