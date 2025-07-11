@@ -14,8 +14,9 @@ from _globals import ONE_COLUMN_WIDTH, ZONE_WIDTH, GALR_BINS
 import paths
 
 OUTPUT_NAME = 'yZ1/fiducial/diskmodel'
+CMAP = 'viridis_r'
 
-def main(output_name=OUTPUT_NAME, style='paper', cmap='plasma_r', verbose=False):
+def main(output_name=OUTPUT_NAME, style='paper', cmap=CMAP, verbose=False):
     # Set up figure
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = plt.subplots(
@@ -86,14 +87,12 @@ def main(output_name=OUTPUT_NAME, style='paper', cmap='plasma_r', verbose=False)
                     len(history['time']) - 1)]
         axs[3].plot(history['time'][1:], tau_star, color=color, ls=linestyle,
                     label=label)
-    axs[0].legend(
-        # frameon=False,
-        title=r'$R_{\rm gal}$ [kpc]', 
-        ncols=3, 
-        loc='lower right', 
-        # borderpad=0.2, labelspacing=0.2, columnspacing=0.5, 
-        # handlelength=1.0, handletextpad=0.5, 
-    )
+    axs[0].legend(title=r'$R_{\rm gal}$ [kpc]', ncols=3, loc='lower right')
+    # leg = axs[0].legend(
+        # loc='center left', bbox_to_anchor=(0., 0.6), frameon=True, ncols=1, 
+        #                   handlelength=0, columnspacing=1.5, handletextpad=0,
+        #                   facecolor='#ffffff', fancybox=False, framealpha=0.,
+        #                   edgecolor='none', labelspacing=0.1)
     # plt.subplots_adjust(left=0.1, right=0.95, bottom=0.12, top=0.9)
     # Save
     savedir = {
@@ -130,6 +129,13 @@ if __name__ == '__main__':
         default='paper',
         choices=['paper', 'poster', 'presentation'],
         help='Plot style to use (default: paper).'
+    )
+    parser.add_argument(
+        '--cmap', 
+        metavar='COLORMAP', 
+        type=str,
+        default=CMAP,
+        help='Name of colormap for color-coding model output (default: %s).' % CMAP
     )
     args = parser.parse_args()
     main(**vars(args))

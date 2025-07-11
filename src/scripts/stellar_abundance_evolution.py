@@ -38,10 +38,10 @@ AXES_LIM = {
 }
 GALR_LIM = (7, 9)
 ABSZ_LIM = (0, 0.5)
+CMAP = 'viridis_r'
 
 
-def main(verbose=False, uncertainties=True, style='paper', cmap='winter_r',
-         ages='L23'):
+def main(verbose=False, uncertainties=True, style='paper', cmap=CMAP, ages='L23'):
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = compare_abundance_evolution(
         OUTPUT_NAMES, 
@@ -190,8 +190,8 @@ outputs with different parameters and APOGEE data.'
         '--cmap', 
         metavar='COLORMAP', 
         type=str,
-        default='winter_r',
-        help='Name of colormap for color-coding model output (default: winter_r).'
+        default=CMAP,
+        help='Name of colormap for color-coding model output (default: %s).' % CMAP
     )
     parser.add_argument(
         '--ages', 

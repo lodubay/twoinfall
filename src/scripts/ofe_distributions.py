@@ -29,9 +29,10 @@ LABELS = [
 NBINS = 100
 OFE_LIM = (-0.15, 0.55)
 SMOOTH_WIDTH = 0.05
+CMAP = 'viridis_r'
 
 
-def main(style='paper', cmap='plasma_r'):
+def main(style='paper', cmap=CMAP, verbose=False):
     # Set up figure
     plt.style.use(paths.styles / f'{style}.mplstyle')
     fig, axs = dfs.setup_axes(
@@ -69,4 +70,29 @@ def main(style='paper', cmap='plasma_r'):
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        prog='ofe_distributions.py',
+        description='Compare stellar [O/Fe] distributions across the disk \
+between multi-zone models with different parameters and APOGEE data.'
+    )
+    parser.add_argument(
+        '-v', '--verbose', 
+        action='store_true',
+        help='Print verbose output to terminal.'
+    )
+    parser.add_argument(
+        '--style', 
+        metavar='STYLE', 
+        type=str,
+        default='paper',
+        help='Plot style to use (default: paper).'
+    )
+    parser.add_argument(
+        '--cmap', 
+        metavar='COLORMAP', 
+        type=str,
+        default=CMAP,
+        help='Name of colormap for color-coding model output (default: %s).' % CMAP
+    )
+    args = parser.parse_args()
+    main(**vars(args))
