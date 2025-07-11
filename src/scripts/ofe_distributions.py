@@ -24,7 +24,7 @@ LABELS = [
     '(b)\nPower-law DTD',
     '(c)\n' + r'$f_\Sigma(R_\odot)=0.5$',
     '(d)\n' + r'${\rm [X/H]}_{\rm CGM}=-0.5$',
-    '(e)\nAPOGEE'
+    'APOGEE\n(e)'
 ]
 NBINS = 100
 OFE_LIM = (-0.15, 0.55)
@@ -55,15 +55,15 @@ def main(style='paper', cmap=CMAP, verbose=False):
         dfs.plot_multizone_mdfs(mzs, axs[:,i], '[o/fe]', colors, label=LABELS[i],
                                 **mdf_kwargs)
     dfs.plot_multizone_mdfs(apogee_sample, axs[:,apogee_index], 'O_FE', colors, 
-                            label=LABELS[apogee_index], **mdf_kwargs)
+                            label=LABELS[apogee_index], titlepad=18, **mdf_kwargs)
     for ax in axs[:,0]:
         ax.set_ylim((0, None))
     highlight_panels(
         fig, axs, [(0,apogee_index), (1, apogee_index), (2, apogee_index)]
     )
     # Add figure title
-    fig.suptitle(r'$y/Z_\odot=2$', x=0.42, y=1.)
-    fig.subplots_adjust(top=0.85)
+    fig.suptitle(r'$y/Z_\odot=2$', x=0.44, y=1.06)
+    fig.subplots_adjust(top=0.92)
     # Save
     plt.savefig(paths.figures / 'ofe_distributions')
     plt.close()

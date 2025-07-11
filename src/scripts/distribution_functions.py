@@ -31,7 +31,7 @@ def plot_multizone_mdfs(mzs, axs, col='[fe/h]', colors=[], label='VICE',
     galr_bins: list of floats, optional
     absz_bins: list of floats, optional
     titlepad: int, optional
-        Vertical padding for axes title. The default is 18.
+        Vertical padding for axes title. The default is None.
     **kwargs passed to MultizoneStars.mdf()
     """
     if len(colors) != len(galr_bins) - 1:
@@ -103,7 +103,7 @@ def setup_axes(ncols=2, figure_width=3.25, xlabel='', xlim=None,
     figure_height = ax_height * nrows + 1
     fig, axs = plt.subplots(nrows, ncols, sharex=True, sharey='row',
                             figsize=(figure_width, figure_height))
-    fig.subplots_adjust(left=0.09, top=0.93, right=0.92, bottom=0.22,
+    fig.subplots_adjust(left=0.09, top=0.93, right=0.98, bottom=0.22,
                         wspace=0.07, hspace=0.07)
     # Format x-axis
     axs[0,0].set_xlim(xlim)
@@ -129,8 +129,12 @@ def setup_axes(ncols=2, figure_width=3.25, xlabel='', xlim=None,
     # Label rows
     for i in range(len(absz_bins)-1):
         absz_lim = tuple(absz_bins[-(i+2):len(absz_bins)-i])
-        axs[i,-1].yaxis.set_label_position('right')
-        axs[i,-1].set_ylabel(r'$|z| = %s - %s$' % absz_lim)
+        # axs[i,-1].yaxis.set_label_position('right')
+        # axs[i,-1].set_ylabel(r'$|z| = %s - %s$' % absz_lim)
+        axs[i,0].text(
+            0.5, 0.9, r'$|z| = %s - %s$' % absz_lim,
+            ha='center', va='top', transform=axs[i,0].transAxes
+        )
     # Add colorbar on bottom
     if type(cmap) == str:
         cmap = plt.get_cmap(cmap)
