@@ -49,11 +49,11 @@ def make_column(elements = ['O', 'Fe'], mfeia=0.7, eta=outflows.yZ1):
     snia_labels.append('$N_{\\rm Ia}/M_\\star\\,[{\\rm M}_\\odot^{-1}]$')
     snia_yields.append('\\num{%.2e}' % (vice.yields.sneia.settings['fe'] / mfeia))
     # Yield-specific outflow parameters
-    outflow_params = [f'{eta.solar_value:.1f}']
-    outflow_labels = ['$\\eta_\\odot$']
+    # outflow_params = [f'{eta.solar_value:.1f}']
+    # outflow_labels = ['$\\eta_\\odot$']
     # All parameters and labels
-    params = ccsn_yields + snia_yields + outflow_params
-    labels = ccsn_labels + snia_labels + outflow_labels
+    params = ccsn_yields + snia_yields #+ outflow_params
+    labels = ccsn_labels + snia_labels #+ outflow_labels
     return params, labels
 
 if __name__ == '__main__':
