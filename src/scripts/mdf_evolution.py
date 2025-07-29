@@ -23,7 +23,7 @@ SMOOTH_WIDTH = 0.1
 XLIM = (-0.9, 0.6)
 YSCALE = 1e7
 AGE_COL = 'CN_AGE'
-CMAP = 'jet'
+CMAP = 'turbo'
 
 def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
     plt.style.use(paths.styles / f'{style}.mplstyle')
