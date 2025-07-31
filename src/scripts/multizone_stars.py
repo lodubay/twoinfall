@@ -68,7 +68,8 @@ class MultizoneStars:
         self.noisy = noisy
         
     @classmethod
-    def from_output(cls, name, zone_width=ZONE_WIDTH, verbose=False):
+    def from_output(cls, name, zone_width=ZONE_WIDTH, verbose=False, 
+                    parentdir=paths.multizone):
         """
         Generate an instance of MultizoneStars from a VICE multizone output.
         
@@ -80,12 +81,15 @@ class MultizoneStars:
             Width of simulation zones in kpc. The default is 0.1.
         verbose : bool, optional
             If True, print some updates to the terminal. The default is False.
+        parentdir : str or pathlib.Path, optional
+            Parent directory containing multizone outputs. The default is
+            src/data/multizone/.
         
         Returns
         -------
         MultizoneStars instance
         """
-        fullpath = paths.multizone / (name + '.vice')
+        fullpath = Path(parentdir / (name + '.vice'))
         # Import star tracer data
         if verbose: 
             print('Importing VICE multizone data from', str(fullpath))

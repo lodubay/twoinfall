@@ -23,9 +23,9 @@ ABSZ_LIM = (0, 0.5)
 SMOOTH_WIDTH = 0.05
 
 OUTPUT_NAMES = [
-    'yZ3/fiducial/diskmodel',
-    'yZ2/fiducial/diskmodel',
-    'yZ1/fiducial/diskmodel'
+    'yZ3-fiducial/diskmodel',
+    'yZ2-fiducial/diskmodel',
+    'yZ1-fiducial/diskmodel'
 ]
 
 

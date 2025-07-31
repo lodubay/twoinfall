@@ -26,14 +26,19 @@ import paths
 from _globals import TWO_COLUMN_WIDTH, ZONE_WIDTH, GALR_BINS, ONE_COLUMN_WIDTH, MAX_SF_RADIUS
 
 def main(output_names, verbose=False, tracks=False, log_age=False, 
-         uncertainties=False, apogee_data=False, style='paper'):
+         uncertainties=False, apogee_data=False, style='paper', extra=False):
     # Import APOGEE data
     apogee_sample = APOGEESample.load()
     for output_name in output_names:
         print(output_name)
         # Import multizone stars data
         try:
-            mzs = MultizoneStars.from_output(output_name)
+            if extra:
+                mzs = MultizoneStars.from_output(
+                    output_name, parentdir=paths.data/'multizone_extra'
+                )
+            else:
+                mzs = MultizoneStars.from_output(output_name)
         except: 
             print('No multizone output found.')
             continue
@@ -291,6 +296,11 @@ if __name__ == '__main__':
         '-v', '--verbose', 
         action='store_true',
         help='Print verbose output to terminal.'
+    )
+    parser.add_argument(
+        '-e', '--extra', 
+        action='store_true',
+        help='Multizone output is stored in "src/data/multizone_extra".'
     )
     parser.add_argument(
         '-t', '--tracks', 

@@ -19,10 +19,10 @@ from multizone_stars import MultizoneStars
 import paths
 
 OUTPUT_NAMES = [
-    'yZ1/fiducial/diskmodel',
-    'yZ1/migration_strength/strength50/diskmodel',
-    'yZ1/thick_thin_ratio/solar050/diskmodel',
-    'yZ1/pre_enrichment/mh05_alpha00_eta06/diskmodel',
+    'yZ1-fiducial/diskmodel',
+    'yZ1-migration/diskmodel',
+    'yZ1-diskratio/diskmodel',
+    'yZ1-preenrich/diskmodel',
 ]
 LABELS = [
     '(a)\nFiducial',

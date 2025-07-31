@@ -13,7 +13,7 @@ from utils import get_color_list, get_bin_centers
 from _globals import ONE_COLUMN_WIDTH, ZONE_WIDTH, GALR_BINS
 import paths
 
-OUTPUT_NAME = 'yZ1/fiducial/diskmodel'
+OUTPUT_NAME = 'yZ1-fiducial/diskmodel'
 CMAP = 'viridis_r'
 
 def main(output_name=OUTPUT_NAME, style='paper', cmap=CMAP, verbose=False):

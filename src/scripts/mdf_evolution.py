@@ -42,8 +42,8 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
 
     # Plot multizone outputs
     output_names = [
-        'yZ1/fiducial/diskmodel',
-        'yZ2/fiducial/diskmodel'
+        'yZ1-fiducial/diskmodel',
+        'yZ2-fiducial/diskmodel'
     ]
     model_labels = [r'(a) $y/Z_\odot=1$', r'(a) $y/Z_\odot=2$']
     apogee_data = APOGEESample.load()

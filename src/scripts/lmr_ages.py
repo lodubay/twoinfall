@@ -15,8 +15,8 @@ from _globals import TWO_COLUMN_WIDTH
 import paths
 
 OUTPUT_NAMES = [
-    'yZ1/best/cgm07_ratio025_eta04_migr36/diskmodel',
-    'yZ2/best/cgm07_ratio025_eta18_migr36/diskmodel'
+    'yZ1-best/diskmodel',
+    'yZ2-best/diskmodel'
 ]
 LABELS = [
     r'(a) Two-Infall ($y/Z_\odot=1$)',

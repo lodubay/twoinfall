@@ -17,8 +17,8 @@ from colormaps import paultol
 from utils import get_bin_centers
 
 OUTPUT_NAMES = [
-    'yZ1/fiducial/diskmodel',
-    'yZ2/fiducial/diskmodel'
+    'yZ1-fiducial/diskmodel',
+    'yZ2-fiducial/diskmodel'
 ]
 LABELS = [
     r'(a) $y/Z_\odot=1$',

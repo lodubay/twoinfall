@@ -23,7 +23,7 @@ FEH_LIM = (-1.3, 0.7)
 OFE_LIM = (-0.199, 0.599)
 GALR_BINS = [3, 5, 7, 9, 11, 13]
 COLORMAP = 'Spectral_r'
-OUTPUT_NAME = 'yZ2/best/cgm07_ratio025_eta18_migr36/diskmodel'
+OUTPUT_NAME = 'yZ2-best/diskmodel'
 AGE_COL = 'CN_AGE' # for error forward-modeling
 
 
