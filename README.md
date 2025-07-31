@@ -13,7 +13,7 @@ Alternatively, all 11 multi-zone models can be run by first navigating to the
 $ bash run_all_models.sh
 ```
 Please allow approximately 6 hours for all the models to run.
-**Note: ** This will replace everything in the `src/data/multizone` directory, including
+**Note:** This will replace everything in the `src/data/multizone` directory, including
 the output files from Zenodo.
 
 To re-create all the plots and tables in the paper, run the following
