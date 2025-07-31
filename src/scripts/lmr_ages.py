@@ -19,8 +19,8 @@ OUTPUT_NAMES = [
     'yZ2/best/cgm07_ratio025_eta18_migr36/diskmodel'
 ]
 LABELS = [
-    r'Two-Infall ($y/Z_\odot=1$)',
-    r'Two-Infall ($y/Z_\odot=2$)'
+    r'(a) Two-Infall ($y/Z_\odot=1$)',
+    r'(b) Two-Infall ($y/Z_\odot=2$)'
 ]
 AGE_COL = 'L23_AGE'
 LMR_CUT = 0.1 # lower bound of locally metal-rich (LMR) stars
@@ -104,7 +104,7 @@ def main(style='paper', cmap='Spectral_r'):
         #             histtype='bar', color='gray', rwidth=0.8,)
     
     # APOGEE
-    axs[0,2].set_title('APOGEE (NN ages)')
+    axs[0,2].set_title('(c) APOGEE (NN ages)')
     pcm1 = axs[0,2].hexbin(
         local_sample('FE_H'), local_sample('O_FE'),
         C=local_sample(AGE_COL),
