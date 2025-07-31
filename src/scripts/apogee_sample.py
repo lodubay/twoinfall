@@ -33,7 +33,7 @@ SAMPLE_COLS = ['APOGEE_ID', 'RA', 'DEC', 'GALR', 'GALPHI', 'GALZ', 'SNREV',
                'L23_AGE', 'L23_AGE_ERR', 'L23_LOG_AGE', 'L23_LOG_AGE_ERR']
 
 def main():
-    sample_df = APOGEESample.generate(verbose=True)
+    sample = APOGEESample.generate(verbose=True)
 
 class APOGEESample:
     """
@@ -675,12 +675,12 @@ numeric or NoneType.')
             cn_age_region['C_N'].values, 
             cn_age_region['FE_H'].values, 
             CN_AGE_COEF,
-            cn_err = cn_err,
-            feh_err = feh_err
+            # cn_err = cn_err,
+            # feh_err = feh_err
         )
         # Convert years -> Gyr
         cn_age_region['CN_LOG_AGE'] = cn_log_age - 9.
-        cn_age_region['CN_LOG_AGE_ERR'] = 1.4 * cn_log_age_err # inflate by 40% per Jack
+        cn_age_region['CN_LOG_AGE_ERR'] = cn_log_age_err
         cn_age_region['CN_AGE'] = 10 ** cn_age_region['CN_LOG_AGE']
         cn_age_region['CN_AGE_ERR'] = cn_age_region['CN_AGE'] * np.log(10) * cn_age_region['CN_LOG_AGE_ERR']
         apogee_df = apogee_df.join(cn_age_region[
@@ -811,14 +811,16 @@ def recover_age_quad(cn_arr, feh_arr, params, cn_err=[], feh_err=[]):
     ages[badcn] = (c2*maxcn[badcn]**2) + (c1*maxcn[badcn]) + \
         (f2*feh_arr[badcn]**2) + (f1*feh_arr[badcn]) + \
         (c1f1*feh_arr[badcn]*maxcn[badcn]) + b 
-    # Generic age errors of 1 Gyr
-    age_errors = 1e9 / (np.log(10) * 10 ** ages)
+    # Generic age errors of 1.64 Gyr
+    age_errors = 1.64e9 / (np.log(10) * 10 ** ages)
     # Propagate errors
     if len(cn_err) > 0 and len(feh_err) > 0:
         age_errors = np.sqrt(
             cn_err**2 * (2*c2*cn_arr + c1 + c1f1*feh_arr)**2 +
             feh_err**2 * (2*f2*feh_arr + f1 * c1f1*cn_arr)**2
         )
+        # inflate by 40% per Jack
+        age_errors *= 1.4
     return ages, age_errors
 
 

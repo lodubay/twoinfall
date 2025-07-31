@@ -3,6 +3,7 @@ This script generates a LaTeX table of the median measurement uncertainties
 for the APOGEE DR17 sample.
 """
 
+import numpy as np
 import pandas as pd
 import paths
 from apogee_sample import APOGEESample
@@ -19,6 +20,8 @@ def main():
     medians = sample.data[params].median()
     medians.name = 'Median Uncertainty'
     dispersions = sample.data[params].quantile(0.95) - sample.data[params].quantile(0.05)
+    # Replace small floats with NaN
+    dispersions[dispersions < 1e-10] = np.nan
     dispersions.name = 'Uncertainty Dispersion ($95\\% - 5\\%$)'
     df = pd.concat([medians, dispersions], axis=1)
     df.set_index(labels, drop=True, inplace=True)
@@ -28,6 +31,8 @@ def main():
         index=True, 
         float_format='%.2g'
     )
+    # Replace NaN string with N/A
+    latex_table = latex_table.replace('NaN', 'N/A')
     # Replace \toprule, \midrule, \bottomrule with \hline
     latex_table = latex_table.replace('\\toprule', '\\hline\\hline')
     latex_table = latex_table.replace('\\midrule', '\\hline')
