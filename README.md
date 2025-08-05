@@ -2,6 +2,7 @@
 
 Welcome to the repository for **Dubay et al. (2025, submitted), "Challenges
 to the Two-Infall Scenario by Large Stellar Age Catalogues"**.
+Read the paper at [arXiv:2508.00988](https://arxiv.org/abs/2508.00988).
 
 To re-build the article yourself, first download and extract the model outputs
 from the Zenodo archive at [10.5281/zenodo.16649938](https://doi.org/10.5281/zenodo.16649938).
