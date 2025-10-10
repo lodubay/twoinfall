@@ -35,6 +35,7 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
     )
     # Get list of line colors
     colors = get_color_list(plt.get_cmap(cmap), AGE_BINS)
+    gray = '0.5'
     # Add colorbar at left
     cbar = setup_colorbar(fig, cmap=cmap, bounds=AGE_BINS,
                           label=r'Stellar age [Gyr]',
@@ -45,7 +46,7 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
         'yZ1-fiducial/diskmodel',
         'yZ2-fiducial/diskmodel'
     ]
-    model_labels = [r'(a) $y/Z_\odot=1$', r'(a) $y/Z_\odot=2$']
+    model_labels = [r'(a) $y/Z_\odot=1$ model', r'(a) $y/Z_\odot=2$ model']
     apogee_data = APOGEESample.load()
     for i, output_name in enumerate(output_names):
         mzs = MultizoneStars.from_output(output_name)
@@ -60,7 +61,7 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
             )
             axs[i,j].plot(
                 get_bin_centers(bin_edges), mdf, 
-                color='0.7', linewidth=2,
+                color=gray, linewidth=2,
                 label='All stars'
             )
             for k in range(len(AGE_BINS)-1):
@@ -91,16 +92,16 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
         )
         axs[-1,j].plot(
             get_bin_centers(bin_edges), mdf, 
-            color='0.7', linewidth=2,
+            color=gray, linewidth=2,
             label='All stars'
         )
         if AGE_COL == 'CN_AGE':
             # Indicate cut below [Fe/H] < -0.4 for URGB and RC stars
-            axs[-1,j].axvline(-0.4, color='0.7', ls='--')
+            axs[-1,j].axvline(-0.4, color=gray, ls='--')
             # Indicate hard cuts in [Fe/H] for all [C/N]-based ages
             if XLIM[0] < -0.9:
-                axs[-1,j].axvline(-0.9, color='0.7', ls='-')
-            axs[-1,j].axvline(0.45, color='0.7', ls='-')
+                axs[-1,j].axvline(-0.9, color=gray, ls='-')
+            axs[-1,j].axvline(0.45, color=gray, ls='-')
         youngest_mode = False
         for k in range(len(AGE_BINS)-1):
             age_lim = AGE_BINS[k:k+2]
