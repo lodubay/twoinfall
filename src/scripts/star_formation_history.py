@@ -57,11 +57,11 @@ def main(output_name=OUTPUT_NAME, style='paper', cmap=CMAP, verbose=False):
         arrowprops={'arrowstyle': '<-'}, size=plt.rcParams['axes.labelsize']
     )
     axs[0].text(
-        2.1, 0.13, r'$t_{\rm max}$', ha='center', va='bottom',
+        4.0, 0.13, r'$t_{\rm max}$', ha='right', va='bottom',
         size=plt.rcParams['axes.labelsize']
     )
     axs[0].annotate(
-        '', (0, 0.1), xytext=(4.2, 0.1), arrowprops={'arrowstyle': '<->'}
+        '', (4.2, 0.07), xytext=(4.2, 0.5), arrowprops={'arrowstyle': '->'}
     )
     axs[0].annotate(
         r'$\tau_2$', (6, 0.1), xytext=(11, 4e-2),
