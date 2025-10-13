@@ -136,9 +136,12 @@ The availability of large stellar catalogs with [Fe/H], \aFe, {\it and} age cove
         $S/N$               & $S/N > 80$                    & Required for accurate stellar parameters \\
         ASPCAPFLAG Bits     & $\notin$ 23                   & Remove stars flagged as bad \\
         EXTRATARG Bits      & $\notin$ 0, 1, 2, 3, or 4     & Select main red star sample only \\
-        NN age error        & $\sigma_\tau/\tau < 40\%$     & Age uncertainty from \citet{leung_variational_2023} \\
         $R_{\rm gal}$     & $3 < R_{\rm gal} < 15\kpc$    & Eliminate bulge \& extreme outer-disk stars \\
         $|z|$               & $|z| < 2\kpc$                 & Eliminate halo stars \\
+        \hline
+        NN age error        & $\sigma_\tau/\tau < 40\%$     & Age uncertainty from \citet{leung_variational_2023} \\
+        Uncertainty on [C/N]    & $\sigma_{\rm [C/N]}\leq0.1$     & Precise [C/N] ages from \citet{roberts_cn_2025} \\
+        ${\rm [Fe/H]}$      & $\mathFeH\geq-0.4$            & Accurate [C/N] ages for upper RGB \& red clump stars \\
         \hline
     \end{tabular}
 \end{table*}
@@ -163,10 +166,10 @@ We supplement the APOGEE DR17 abundance data with two different age catalogs. Th
 % This catalog has two main advantages over other neural network (NN) age estimates: their method is designed to reduce contamination from abundance information (in particular [$\alpha$/Fe]), and they recover accurate ages up to $\sim13\Gyr$, while other neural network-derived age catalogs exhibit an age plateau \citep[e.g.,][]{mackereth_dynamical_2019}. 
 Following the recommendations of \citet{leung_variational_2023}, we cut all stars which have an age uncertainty greater than 40\%. This produces a sample of \num{57607} stars with NN age estimates, of which \num{14871} are in the Solar neighborhood ($7\leq R_{\rm gal}<9\kpc$, $0\leq|z|<0.5\kpc$). The median uncertainty in $\log({\rm age})$ is 0.10 (see Table \ref{tab:uncertainties}), although the oldest stars typically have smaller uncertainties.
 
-Our second age catalog utilizes the [C/N]--age relation calibrated by \citet[][submitted]{roberts_cn_2025} for red giant branch (RGB) and red clump stars. The relationship relies on the mass-dependent level of mixing during first dredge-up \citep[FDU;][]{iben_stellar_1967} to map the correlation of stellar mass, and hence age, with surface chemistry. This method has the benefit of providing age estimates for luminous giants ($\log g<2.5$), which increases the sample size at larger distances from the Sun. Uncertainties in the efficiency of FDU mixing and the RGB age--mass relationship mean that the ages are not trustworthy outside the range $1\sim10\Gyr$, but this is the age range most useful for our purposes anyway. Additional mixing effects in low-metallicity stars also prevent the relation from being applied to luminous giant and red clump stars with $\mathFeH<-0.4$; stars on the lower RGB do not suffer from this problem. 
+Our second age catalog utilizes the [C/N]--age relation calibrated by \citet{roberts_cn_2025} for red giant branch (RGB) and red clump (RC) stars. The relationship relies on the mass-dependent level of mixing during first dredge-up \citep[FDU;][]{iben_stellar_1967} to map the correlation of stellar mass, and hence age, with surface chemistry. This method has the benefit of providing age estimates for luminous giants ($\log g<2.5$), which increases the sample size at larger distances from the Sun. Uncertainties in the efficiency of FDU mixing and the RGB age--mass relationship mean that the ages are not trustworthy outside the range $1\sim10\Gyr$, but this is the age range most useful for our purposes anyway. Additional mixing effects in low-metallicity stars also prevent the relation from being applied to luminous RGB and RC stars with $\mathFeH<-0.4$; stars on the lower RGB do not suffer from this problem. 
 % The median propagated uncertainty for the [C/N]-derived ages is $\sim1\Gyr$; however, as noted by \citet[][submitted]{roberts_cn_2025}, the propagated errors underestimate the true age uncertainty, so we enhance the uncertainties by 40\% (see Table \ref{tab:uncertainties}).
-Following the recommendation of \citet[][submitted]{roberts_cn_2025}, we adopt a flat $1.64\Gyr$ age uncertainty for all stars.
-With this relationship, we estimate ages for \num{113449} stars across the disk, including \num{20992} in the Solar neighborhood.
+We use the sample selection criteria from \citet{roberts_cn_2025}, and following their recommendation, we adopt a flat $1.64\Gyr$ age uncertainty for all stars.
+With this relationship, we estimate ages for \num{124778} stars across the disk, including \num{21956} in the Solar neighborhood.
 
 \section{Chemical Evolution Models \& Parameter Selection}
 \label{sec:methods}
@@ -457,7 +460,7 @@ We run 11 multi-zone models at three different yield scales. For our \yZ{1} and 
 \begin{figure}
     \centering
     \includegraphics[width=\onecolumn]{figures/gas_abundance_evolution.pdf}
-    \caption{The ISM abundance evolution at $R_{\rm gal}=8\kpc$ of three multi-zone models at different yield scales (see Table \ref{tab:yields}), each of which feature a major dilution event 9 Gyr ago. The gray points plot the abundances of APOGEE stars in the Solar neighborhood ($7\leq R_{\rm gal}<9\kpc$, $|z|<0.5\kpc$) with NN ages from \citet{leung_variational_2023}. The black points indicate the mode of the abundance data in 1 Gyr-wide age bins, and the gray error bars along the bottom of each panel indicate the median age and abundance errors as a function of age. The left-hand marginal panels show the predicted (blue, pink, and green) and observed (gray) stellar abundance distributions, which are boxcar-smoothed with a width of 0.05 dex for visual clarity.
+    \caption{The ISM abundance evolution at $R_{\rm gal}=8\kpc$ of three multi-zone models at different yield scales (see Table \ref{tab:yields}), each of which feature a major dilution event 9 Gyr ago. The dark gray (light gray) shaded region plots the 68\textsuperscript{th} (95\textsuperscript{th}) percentile of APOGEE abundances in the Solar neighborhood ($7\leq R_{\rm gal}<9\kpc$, $|z|<0.5\kpc$) with NN ages from \citet{leung_variational_2023}. The black line (black points) plots the median (mode) of the abundance data in 1 Gyr-wide age bins, and the gray error bars along the bottom of each panel indicate the median age and abundance errors as a function of age. The left-hand marginal panels show the predicted (blue, pink, and green) and observed (gray) stellar abundance distributions, which are boxcar-smoothed with a width of 0.05 dex for visual clarity.
     % {\bf Key takeaway:} All models feature a major dilution event 9 Gyr ago, and the \yZ{1} model re-enriches the most slowly.
     }
     \label{fig:yield-outflow}
