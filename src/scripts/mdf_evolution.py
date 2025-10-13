@@ -79,9 +79,9 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
     
     # Plot APOGEE data
     if AGE_COL == 'L23_AGE':
-        axes_title_background(axs[-1,2], '(c) APOGEE (L23 ages)')
+        axes_title_background(axs[-1,2], '(c) APOGEE (NN ages)')
     else:
-        axes_title_background(axs[-1,2], '(c) APOGEE ([C/N]-based ages)')
+        axes_title_background(axs[-1,2], '(c) APOGEE ([C/N] ages)')
     for j in range(len(GALR_BINS)-1):
         galr_lim = GALR_BINS[j:j+2]
         region_subset = apogee_data.region(galr_lim=galr_lim, absz_lim=ABSZ_LIM)
@@ -99,9 +99,9 @@ def main(style='paper', col='[fe/h]', cmap=CMAP, smoothing=SMOOTH_WIDTH):
             # Indicate cut below [Fe/H] < -0.4 for URGB and RC stars
             axs[-1,j].axvline(-0.4, color=gray, ls='--')
             # Indicate hard cuts in [Fe/H] for all [C/N]-based ages
-            if XLIM[0] < -0.9:
-                axs[-1,j].axvline(-0.9, color=gray, ls='-')
-            axs[-1,j].axvline(0.45, color=gray, ls='-')
+            # if XLIM[0] < -0.9:
+            #     axs[-1,j].axvline(-0.9, color=gray, ls='-')
+            # axs[-1,j].axvline(0.45, color=gray, ls='-')
         youngest_mode = False
         for k in range(len(AGE_BINS)-1):
             age_lim = AGE_BINS[k:k+2]

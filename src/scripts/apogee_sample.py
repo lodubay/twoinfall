@@ -22,8 +22,8 @@ ABSZ_LIM = (0., 2.)
 ALLSTAR_FNAME = 'allStarLite-dr17-synspec_rev1.fits'
 LEUNG23_FNAME = 'nn_latent_age_dr17.csv'
 # Coefficients for [C/N] age fit polynomial
-CN_AGE_COEF = np.array([-1.90931538,  0.75218328,  0.25786775,  0.22440967, 
-                        -0.32223068, 9.99041179])
+CN_AGE_COEF = np.array([-1.721,  0.806,  -0.077,  0.276, 
+                        -0.643, 10.048])
 # List of columns to include in the final sample
 SAMPLE_COLS = ['APOGEE_ID', 'RA', 'DEC', 'GALR', 'GALPHI', 'GALZ', 'SNREV',
                'TEFF', 'TEFF_ERR', 'LOGG', 'LOGG_ERR', 'O_H', 'O_H_ERR', 
@@ -646,14 +646,17 @@ numeric or NoneType.')
         """
         # Hard edge cuts
         goldregion = apogee_df[
-            (apogee_df['FE_H'] >= -0.9) & (apogee_df['FE_H'] < 0.45) & 
-            (apogee_df['LOGG'] >= 1.5) & (apogee_df['LOGG'] < 3.26) &
+            # (apogee_df['FE_H'] >= -0.9) & (apogee_df['FE_H'] < 0.45) & 
+            (apogee_df['LOGG'] >= 0.5) & (apogee_df['LOGG'] < 3.26) &
             (apogee_df['C_N'] >= -0.75) & (apogee_df['C_N'] < 1.0) &
-            (apogee_df['TEFF'] >= 4000) & (apogee_df['TEFF'] < 5200) &
-            (apogee_df['C_N_ERR'] < 0.08)
+            # (apogee_df['TEFF'] >= 4000) & (apogee_df['TEFF'] < 5200) &
+            (apogee_df['C_N_ERR'] < 0.1)
         ].copy()
         # Get evolutionary state
         goldregion = evol_state(goldregion)
+        goldregion['DeltaT'] = reference_temperature(
+            goldregion['FE_H_SPEC'], goldregion['LOGG_SPEC']
+        ) - goldregion['TEFF']
         LRGB = goldregion[
             (goldregion['EVOL_STATE'] == 1) & (goldregion['LOGG'] >= 2.5)
         ]
@@ -663,14 +666,22 @@ numeric or NoneType.')
         RC = goldregion[goldregion['EVOL_STATE'] == 2]
         # Remove [Fe/H] < -0.4 for URGB and RC stars, then re-merge
         cn_age_region = pd.concat([
-            LRGB, URGB[URGB['FE_H'] >= -0.4], RC[RC['FE_H'] >= -0.4]
+            LRGB[(LRGB['DeltaT'] >= -515) & (LRGB['DeltaT'] <= 340)], 
+            URGB[
+                (URGB['DeltaT'] >= -515) & (URGB['DeltaT'] <= 340) & 
+                (URGB['FE_H'] >= -0.4)
+            ], 
+            RC[
+                (RC['DeltaT'] >= -620) & (RC['DeltaT'] <= 100) & 
+                (RC['FE_H'] >= -0.4)
+            ]
         ])
         # Inflate abundance uncertainties - reported in APOGEE are too small
         # Cao & Pinsonneault (2025); Pinsonneault et al. (2025)
-        cfe_err = 3.0728 * cn_age_region['C_FE_ERR']
-        nfe_err = 2.7109 * cn_age_region['N_FE_ERR']
-        cn_err = np.sqrt(cfe_err**2 + nfe_err**2 - 0.0946 * cfe_err * nfe_err)
-        feh_err = 0.05 * np.ones(cn_age_region.shape[0])
+        # cfe_err = 3.0728 * cn_age_region['C_FE_ERR']
+        # nfe_err = 2.7109 * cn_age_region['N_FE_ERR']
+        # cn_err = np.sqrt(cfe_err**2 + nfe_err**2 - 0.0946 * cfe_err * nfe_err)
+        # feh_err = 0.05 * np.ones(cn_age_region.shape[0])
         cn_log_age, cn_log_age_err = recover_age_quad(
             cn_age_region['C_N'].values, 
             cn_age_region['FE_H'].values, 
@@ -834,10 +845,7 @@ def evol_state(dataplot, verbose=False):
     Warfield et al. (2024), ApJ 167:208
     """
     #Calculate Reference Temperature
-    alp = 4427.1779
-    bet = -399.5105
-    gam = 553.1705
-    Tref = alp + (bet*dataplot['FE_H_SPEC']) + (gam*(dataplot['LOGG_SPEC']-2.5))
+    Tref = reference_temperature(dataplot['FE_H_SPEC'], dataplot['LOGG_SPEC'])
    
     #Calculate Equation A4 value
     a = 0.05915
@@ -860,6 +868,30 @@ def evol_state(dataplot, verbose=False):
     flagger[rc] = flagger[rc] + 2
     dataplot['EVOL_STATE'] = flagger
     return dataplot
+
+
+def reference_temperature(feh, logg):
+    """
+    Calculate "reference" temperature as defined by
+    Schonhut-Stasik et al. (2024).
+
+    Parameters
+    ----------
+    feh : float or array-like
+        Uncalibrated (spectroscopic) metallicity.
+    logg : float or array-like
+        Uncalibrated (spectroscopic) surface gravity.
+    
+    Returns
+    -------
+    Tref : float or array-like
+        Reference temperature.
+    """
+    alp = 4427.18
+    bet = -399.5
+    gam = 553.17
+    Tref = alp + (bet * feh) + (gam*(logg-2.5))
+    return Tref
 
 
 def read_kde(path):
