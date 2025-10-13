@@ -15,21 +15,19 @@ python smooth_vs_twoinfall.py
 echo "Plotting Figure 2..."
 python star_formation_history.py
 echo "Plotting Figure 3..."
-python infall_parameters.py
-echo "Plotting Figure 4..."
 python gas_abundance_evolution.py
-echo "Plotting Figure 5..."
+echo "Plotting Figure 4..."
 python stellar_abundance_evolution.py
-echo "Plotting Figure 6..."
+echo "Plotting Figure 5..."
 python mdf_evolution.py
-echo "Plotting Figure 7..."
+echo "Plotting Figure 6..."
 python ofe_feh_density.py
-echo "Plotting Figure 8..."
+echo "Plotting Figure 7..."
 python ofe_distributions.py
-echo "Plotting Figure 9..."
+echo "Plotting Figure 8..."
 python ofe_feh_best.py
-echo "Plotting Figure 10..."
+echo "Plotting Figure 9..."
 python lmr_ages.py
-echo "Plotting Figure 11..."
+echo "Plotting Figure 10..."
 python sfe_hiatus.py
 echo "Done!"
