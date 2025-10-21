@@ -43,6 +43,8 @@
 \newcommand{\Msun}{\,{\rm M}_\odot}
 \newcommand{\kms}{\,{\rm km}\,{\rm s}^{-1}}
 \newcommand{\onecolumn}{0.47\textwidth}
+\newcommand{\figpath}[1]{./figures/#1}
+\newcommand{\tabpath}[1]{./output/#1}
 
 % Citation aliases
 \defcitealias{johnson_stellar_2021}{J21}
@@ -101,7 +103,7 @@ By neglecting Galactic outflows, previous studies of the two-infall scenario hav
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figures/smooth_vs_twoinfall.pdf}
+    \includegraphics[width=\onecolumn]{\figpath{smooth_vs_twoinfall.pdf}}
     \caption{Chemical abundance tracks predicted by a two-infall model at $R_{\rm gal}=8\kpc$ (solid curve) versus a model with a smooth SFH at three different radii (dashed curves). The two-infall model adopts the fiducial parameters according to Table \ref{tab:parameters}, while the smooth SFH adopts the parameters of the ``inside-out'' model of \citet{johnson_stellar_2021}. Both models assume the \yZ{2} yield scale (see Table \ref{tab:yields}). The 2-D histogram shows the number of stars from APOGEE DR17 in the Solar neighborhood ($7\leq R_{\rm gal}<9\kpc$, $0\leq|z|<2\kpc$) in each bin of ([Fe/H], [O/Fe]).}
     \label{fig:smooth-vs-twoinfall}
 \end{figure}
@@ -150,7 +152,7 @@ If the effect of radial migration is significant, then the \added{local $\alpha$
     \centering
     \caption{Median and dispersion in APOGEE parameter uncertainties.}
     \label{tab:uncertainties}
-    \input{output/uncertainties.tex}
+    \input{\tabpath{uncertainties.tex}}
 \end{table}
 
 We compare our models against stellar abundances from the Apache Point Observatory Galactic Evolution Experiment \citep[APOGEE;][]{majewski_apache_2017} data release 17 \citep[DR17;][]{abdurrouf_seventeenth_2022}. APOGEE data were obtained from infrared spectrographs \citep{wilson_apache_2019} mounted on the 2.5-meter Sloan Foundation Telescope \citep{gunn_25_2006} at Apache Point Observatory and the Ir{\'e}n{\'e}e DuPont Telescope \citep{bowen_optical_1973} at Las Campanas Observatory. The data reduction pipeline is described by \citet{nidever_data_2015}, and \added{the} APOGEE Stellar Parameter and Chemical Abundance Pipeline (ASPCAP) is detailed by \citet{holtzman_abundances_2015}, \citet{garcia_perez_aspcap_2016}, and \citet{jonsson_apogee_2020}.
@@ -225,7 +227,7 @@ We discuss our assumptions about the nucleosynthetic yields in Section \ref{sec:
 \begin{table}
     \centering
     \caption{Nucleosynthetic yields at each of the yield scales (see Section \ref{sec:yields}).}
-    \include{output/yields.tex}
+    \include{\tabpath{yields.tex}}
     \label{tab:yields}
 \end{table}
 
@@ -361,7 +363,7 @@ We adopt a thick disk scale radius of $R_1=2.0\kpc$, a thin disk scale radius of
 
 \begin{figure}
     \centering
-    \includegraphics[width=\onecolumn]{figures/star_formation_history.pdf}
+    \includegraphics[width=\onecolumn]{\figpath{star_formation_history.pdf}}
     \caption{The evolution of (a) the infall surface density, (b) the star formation surface density, (c) the gas surface density, and (d) the star formation efficiency timescale as a function of time for our fiducial multi-zone model with $y/Z_\odot=1$. Each panel plots the evolution in six different zones of width $\delta R_{\rm gal}=0.1\kpc$, color-coded by Galactocentric radius.}
     \label{fig:sfh}
 \end{figure}
@@ -461,7 +463,7 @@ We run 11 multi-zone models at three different yield scales. For our \yZ{1} and 
 
 \begin{figure}
     \centering
-    \includegraphics[width=\onecolumn]{figures/gas_abundance_evolution.pdf}
+    \includegraphics[width=\onecolumn]{\figpath{gas_abundance_evolution.pdf}}
     \caption{The ISM abundance evolution at $R_{\rm gal}=8\kpc$ of three multi-zone models at different yield scales (see Table \ref{tab:yields}), \added{each of which feature a major dilution event 9 Gyr ago. The dark gray (light gray) shaded region plots the 68\textsuperscript{th} (95\textsuperscript{th}) percentile of APOGEE abundances} in the Solar neighborhood ($7\leq R_{\rm gal}<9\kpc$, $|z|<0.5\kpc$) with NN ages from \citet{leung_variational_2023}. \added{The black line (black points) plots the median (mode)} of the abundance data in 1 Gyr-wide age bins, and the gray error bars along the bottom of each panel indicate the median age and abundance errors as a function of age. The left-hand marginal panels show the predicted (blue, pink, and green) and observed (gray) stellar abundance distributions, which are boxcar-smoothed with a width of 0.05 dex for visual clarity.
     % {\bf Key takeaway:} All models feature a major dilution event 9 Gyr ago, and the \yZ{1} model re-enriches the most slowly.
     }
@@ -475,7 +477,7 @@ We run 11 multi-zone models at three different yield scales. For our \yZ{1} and 
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\linewidth]{figures/stellar_abundance_evolution.pdf}
+    \includegraphics[width=\linewidth]{\figpath{stellar_abundance_evolution.pdf}}
     \caption{Stellar age--abundance relations predicted by multi-zone models at the \yZ{1} yield scale (see Table \ref{tab:yields}). Each point represents a stellar population drawn from the Solar neighborhood near the midplane ($7\leq R_{\rm gal}< 9\kpc$, $|z| < 0.5\kpc$) color-coded by its birth radius. \added{In this and subsequent figures, a} Gaussian scatter is applied to each point according to the median age and abundance uncertainties in Table \ref{tab:uncertainties}. For visual clarity, we plot only a random mass-weighted sample of \num{10000} points in each panel. The dashed curve plots the predicted ISM abundance at $R_{\rm gal}=8\kpc$, and the black squares plot the median stellar abundance in {2 Gyr}-wide age bins. \added{The red line and points are the median abundance for APOGEE stars, and the shaded regions are the 16th--84th percentile ranges. }
     % We adopt the NN age estimates for APOGEE stars from \citet{leung_variational_2023}.
     \added{Each column} shows results from a different multi-zone model: {\bf (a)} our fiducial model, {\tt yZ1-fiducial}; {\bf (b)} a model with stronger radial migration, {\yZ1-migration}; {\bf (c)} a model with a higher local thick-to-thin disk ratio, {\yZ1-diskratio}; and {\bf (d)} a model with pre-enriched gas infall, {\tt yZ1-preenrich} (see Table \ref{tab:models} for details). 
@@ -502,7 +504,7 @@ Overall, no modification to the \yZ{1} model is able to completely overcome the 
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\textwidth]{figures/mdf_evolution.pdf}
+    \includegraphics[width=\textwidth]{\figpath{mdf_evolution.pdf}}
     \caption{\added{Decomposition of the present-day MDF by stellar age across the Galactic disk. 
     % In each panel, normalized MDFs within a {2 kpc}-wide annulus are color-coded by the stellar age range. 
     The gray curve plots the total present-day MDF in each region. The distributions in all panels are restricted to $|z|<0.5\kpc$ and boxcar-smoothed with a width of {0.1 dex} for visual clarity. Rows (a) and (b) present the distributions from the {\tt yZ1-fiducial} and {\tt yZ2-fiducial} models, respectively} (see Table \ref{tab:models}). 
@@ -526,7 +528,7 @@ The oldest age bin in Figure \ref{fig:mdf-evolution} shows distinct behavior in 
 
 \begin{figure}
     \centering
-    \includegraphics[width=\onecolumn]{figures/ofe_feh_density.pdf}
+    \includegraphics[width=\onecolumn]{\figpath{ofe_feh_density.pdf}}
     \caption{The density of stars in the [O/Fe]--[Fe/H] plane predicted by multi-zone models with (a) $y/Z_\odot=1$ and (b) $y/Z_\odot=2$, and (c) from the APOGEE DR17 catalog. The curves in panels (a) and (b) plot the ISM abundance at the Solar annulus over time, and the alternating black and white segments mark time intervals of {1 Gyr}. The model output has been re-sampled to match the APOGEE stellar $|z|$ distribution.
     % and a Gaussian scatter has been applied to the predicted abundances according to Table \ref{tab:uncertainties}. 
     \added{Stars} in all panels are restricted to the region defined by $7\leq R_{\rm gal}< 9\kpc$ and $|z|<2\kpc$. 
@@ -543,7 +545,7 @@ Additionally, the shape of the low-$\alpha$ sequence predicted by the models (a 
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\textwidth]{figures/ofe_distributions.pdf}
+    \includegraphics[width=\textwidth]{\figpath{ofe_distributions.pdf}}
     \caption{Normalized stellar [O/Fe] distributions predicted by multi-zone models with \yZ{2} (a--d) and as observed by APOGEE (e). Each row presents stellar distributions within a range of absolute midplane distance $|z|$ reported on the far right, and the vertical scale is consistent across each row. Within each panel, the distributions are color-coded according to the bin in galactocentric radius $R_{\rm gal}$ from which they are drawn. 
     % The median APOGEE abundance uncertainties are forward-modeled onto the model outputs (see Table \ref{tab:uncertainties}). 
     \added{For visual clarity}, each distribution is smoothed with a box-car of width 0.05 dex.
@@ -567,7 +569,7 @@ Finally, in model {\tt yZ2-preenrich} (column (d)) the metallicity of the infall
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\linewidth]{figures/ofe_feh_best.pdf}
+    \includegraphics[width=\linewidth]{\figpath{ofe_feh_best.pdf}}
     \caption{Stellar abundance distributions across the disk predicted by our best multi-zone model, with \yZ{2}, ${\rm [X/H]}_{\rm CGM}=-0.7$, $f_\Sigma(R_\odot)=0.25$, $\sigma_{\rm RM8}=3.6\kpc$, and $\eta_\odot=1.8$. Each panel presents a random mass-weighted sample of \num{10000} stellar populations color-coded by age. 
     % A Gaussian scatter is applied to each point according to the median [C/N]-derived age and abundance uncertainties in Table \ref{tab:uncertainties}. 
     \added{The solid (dashed) contours enclose 30\% (80\%) of the APOGEE stars in each region.} 
@@ -588,7 +590,7 @@ The {\tt yZ2-best} model makes two notable predictions about the age--abundance 
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\textwidth]{figures/lmr_ages.pdf}
+    \includegraphics[width=\textwidth]{\figpath{lmr_ages.pdf}}
     \caption{{\it Top:} The median stellar age as a function of [O/Fe] and [Fe/H] in the Solar annulus ($7\leq R_{\rm gal}<9\kpc$, $0\leq|z|<2\kpc$). The left and center panels \added{show} the {\tt yZ1-best} and {\tt yZ2-best} models, with ${\rm [X/H]}_{\rm CGM}=-0.7$, $f_\Sigma(R_\odot)=0.25$, and $\sigma_{\rm RM8}=3.6\kpc$ (see Table \ref{tab:models}). The model output has been re-sampled to match the APOGEE stellar $|z|$ distribution, and a Gaussian scatter has been applied to the abundances and ages according to Table \ref{tab:uncertainties}. The right panel plots the results from APOGEE using the \citet{leung_variational_2023} NN age catalog. The contours \added{show} the density of stars in the [Fe/H]--[O/Fe] plane, and the vertical dashed line denotes the boundary for locally metal-rich (LMR) stars.
     {\it Bottom}: Stellar age distributions in the Solar annulus for all stars (black) and LMR stars (gray). The left and center panels plot the mass-weighted age distributions predicted by the models,
     % after forward-modeling age uncertainties, 
@@ -631,7 +633,7 @@ In our models, the outflows regulate the overall metallicity in a radially depen
 
 \begin{figure}
     \centering
-    \includegraphics[width=\onecolumn]{figures/sfe_hiatus.pdf}
+    \includegraphics[width=\onecolumn]{\figpath{sfe_hiatus.pdf}}
     \caption{Abundance tracks and distributions from one-zone models which experience an efficiency-driven starburst. The blue dashed curve represents the fiducial model that has an exponentially declining infall rate with timescale $\tau_{\rm in}=15\Gyr$, and constant star formation efficiency timescale $\tau_\star=2\,{\rm Gyr}$. The red solid curve plots the output of a model which \added{has an enhancement of $\tau_\star$ by a factor of 10 for 200 Myr} starting at $t=1.4\,{\rm Gyr}$. Both models assume the \yZ{2} yield set, with $y_{\rm Fe}^{\rm Ia}$ reduced by 20\% to better match the model endpoint with the data, and $\eta=1.4$. The grayscale histogram \added{is} the number density of APOGEE stars in the Solar annulus ($7\leq R_{\rm gal}< 9\kpc$, $|z|<2\kpc$) in [O/Fe]--[Fe/H] space, and the gray histograms in the marginal panels show the APOGEE stellar abundance distributions.}
     \label{fig:onezone-sfe-hiatus}
 \end{figure}
