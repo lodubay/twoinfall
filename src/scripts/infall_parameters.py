@@ -10,7 +10,8 @@ import matplotlib.pyplot as plt
 import vice
 
 from multizone.src.yields import yZ1
-from utils import twoinfall_onezone
+from apogee_sample import APOGEESample
+from utils import twoinfall_onezone, get_bin_centers
 from multizone.src import models, outflows
 from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH
 from track_and_mdf import setup_axes, plot_vice_onezone
@@ -18,6 +19,7 @@ import paths
 
 RADIUS = 8.
 ZONE_WIDTH = 2.
+LOCAL_DISK_RATIO = 0.12 # local thick-to-thin disk mass ratio
 FIDUCIAL = {
     'first_timescale': 1.,
     'second_timescale': 10.,
@@ -29,8 +31,10 @@ LABELS = {
     'second_timescale': '\\tau_2',
     'onset': 't_{\\rm max}'
 }
-XLIM = (-1.9, 0.7)
+XLIM = (-1.4, 0.7)
 YLIM = (-0.14, 0.499)
+GRIDSIZE = 30
+SMOOTH_WIDTH = 0.05
 
 def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, verbose=False, style='paper'):
     # Set up figure and subfigures
@@ -84,15 +88,43 @@ def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, verbose=False, style='paper'):
         title='(c)',
         verbose=verbose
     )
+    # Plot APOGEE data in each panel
+    apogee_sample = APOGEESample.load()
+    apogee_solar = apogee_sample.region(galr_lim=(7, 9), absz_lim=(0, 2))
+    cmap_name = 'binary'
+    data_color = '0.6'
+    for axs in [axs0, axs1, axs2]:
+        pcm = axs[0].hexbin(
+            apogee_solar('FE_H'), apogee_solar('O_FE'),
+            gridsize=GRIDSIZE,
+            extent=[XLIM[0], XLIM[1], YLIM[0], YLIM[1]],
+            cmap=cmap_name, linewidths=0.2, zorder=0
+        )
+        # Plot APOGEE abundance distributions in marginal panels
+        feh_df, feh_bin_edges = apogee_solar.mdf(
+            col='FE_H', range=XLIM, smoothing=SMOOTH_WIDTH
+        )
+        axs[1].plot(
+            get_bin_centers(feh_bin_edges), feh_df / max(feh_df), 
+            color=data_color, linestyle='-', linewidth=2, marker=None, zorder=0
+        )
+        ofe_df, ofe_bin_edges = apogee_solar.mdf(
+            col='O_FE', range=YLIM, smoothing=SMOOTH_WIDTH
+        )
+        axs[2].plot(
+            ofe_df / max(ofe_df), get_bin_centers(ofe_bin_edges),
+            color=data_color, linestyle='-', linewidth=2, marker=None, zorder=0
+        )
     plt.subplots_adjust(
         bottom=0.13, top=0.98, left=0.16, right=0.98, wspace=0.5
     )
-    fig.savefig(paths.figures / 'infall_parameters', dpi=300)
+    fig.savefig(paths.figures / 'infall_parameters_yZ1')
     plt.close()
 
 
 def vary_param(subfig, first_timescale=1., second_timescale=10., onset=4.,
-               label_index=None, cmap_name=None, verbose=False, **kwargs):
+               local_disk_ratio=LOCAL_DISK_RATIO, label_index=None, 
+               cmap_name=None, verbose=False, **kwargs):
     """
     Plot a series of onezone model outputs, varying one parameter of the 
     two-infall model while holding the others fixed.
@@ -142,6 +174,13 @@ def vary_param(subfig, first_timescale=1., second_timescale=10., onset=4.,
     dt = ONEZONE_DEFAULTS['dt']
     simtime = np.arange(0, END_TIME + dt, dt)
     area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
+    # Prescription for disk surface density as a function of radius
+    diskmodel = models.diskmodel.two_component_disk.from_local_ratio(
+        local_ratio = local_disk_ratio
+    )
+    # Outflow mass-loading factor
+    eta_func = outflows.yZ1
+    eta = eta_func(RADIUS)
 
     for i, val in enumerate(values):
         param_dict[var] = val
@@ -153,13 +192,16 @@ def vary_param(subfig, first_timescale=1., second_timescale=10., onset=4.,
             color = cmap((i+0.5) / len(values))
         else:
             color = None
-        # Outflow mass-loading factor
-        eta_func = outflows.yZ1
-        eta = eta_func(RADIUS)
         # Run one-zone model
         name = output_name(*param_dict.values())
-        ifr = twoinfall_onezone(RADIUS, mass_loading=eta_func, dt=dt, 
-                                 dr=ZONE_WIDTH, **param_dict)
+        ifr = twoinfall_onezone(
+            RADIUS, 
+            diskmodel=diskmodel,
+            mass_loading=eta_func, 
+            dt=dt, 
+            dr=ZONE_WIDTH, 
+            **param_dict
+        )
         sz = vice.singlezone(name=name,
                              func=ifr, 
                              mode='ifr',
