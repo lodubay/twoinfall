@@ -6,11 +6,13 @@ multi-zone models with different yields and mass-loading factors.
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
+from matplotlib.colors import Normalize
+from matplotlib.cm import ScalarMappable
 import vice
 
 from apogee_sample import APOGEESample
 from multizone_stars import MultizoneStars
-from utils import get_bin_centers
+from utils import get_bin_centers, truncate_colormap
 from _globals import ONE_COLUMN_WIDTH
 import paths
 from colormaps import paultol
@@ -18,9 +20,11 @@ from colormaps import paultol
 OH_LIM = (-0.8, 0.6)
 FEH_LIM = (-0.9, 0.6)
 OFE_LIM = (-0.2, 0.5)
+AGE_LIM = (-1, 14)
 GALR_LIM = (7, 9)
 ABSZ_LIM = (0, 0.5)
 SMOOTH_WIDTH = 0.05
+GRIDSIZE = 30
 
 OUTPUT_NAMES = [
     'yZ3-fiducial/diskmodel',
@@ -67,6 +71,9 @@ def main():
     xval_err = get_bin_centers(big_age_bins)
     yval_err = [-0.7, -0.8, -0.15]
     abund_range = [OH_LIM, FEH_LIM, OFE_LIM]
+    # Normalize colormap
+    norm = Normalize(vmin=0, vmax=250)
+    cmap = truncate_colormap(plt.get_cmap('binary'), minval=0., maxval=0.8)
     for i, abund in enumerate(['O_H', 'FE_H', 'O_FE']):
         # Scatter plot of all stars
         # axs[i,1].scatter(local_sample(age_col), local_sample(abund), 
@@ -75,28 +82,34 @@ def main():
         # 2-D histogram of APOGEE stars
         # axs[i,1].hist2d(local_sample(age_col), local_sample(abund), cmap='binary', 
         #            bins=[28, 28], range=[[0, 14], abund_range[i]], zorder=1, cmin=5)
+        # Hexbin of APOGEE stars
+        pcm = axs[i,1].hexbin(
+            local_sample(age_col), local_sample(abund),
+            gridsize=GRIDSIZE, cmap=cmap, norm=norm, linewidths=0.2, mincnt=1,
+            extent=[AGE_LIM[0], AGE_LIM[1], abund_range[i][0], abund_range[i][1]]
+        )
         # 16th-84th percentile band
         intervals = local_sample.binned_intervals(
             abund, age_col, age_bins, quantiles=[0.025, 0.16, 0.5, 0.84, 0.975]
         )
         # duplicate first and last points to extend 1-sigma bounds from 0-14 Gyr
-        low = intervals[0.025]
-        high = intervals[0.975]
-        axs[i,1].fill_between(
-            np.concatenate((age_bins[0:1], age_bin_centers, age_bins[-1:])), 
-            np.concatenate((low[0:1], low, low[-1:])),
-            np.concatenate((high[0:1], high, high[-1:])),
-            color='0.8', zorder=0,
-            # label='Percentile interval'
-        )
-        low = intervals[0.16]
-        high = intervals[0.84]
-        axs[i,1].fill_between(
-            np.concatenate((age_bins[0:1], age_bin_centers, age_bins[-1:])), 
-            np.concatenate((low[0:1], low, low[-1:])),
-            np.concatenate((high[0:1], high, high[-1:])),
-            color=data_color, zorder=1, #label='Percentile interval'
-        )
+        # low = intervals[0.025]
+        # high = intervals[0.975]
+        # axs[i,1].fill_between(
+        #     np.concatenate((age_bins[0:1], age_bin_centers, age_bins[-1:])), 
+        #     np.concatenate((low[0:1], low, low[-1:])),
+        #     np.concatenate((high[0:1], high, high[-1:])),
+        #     color='0.8', zorder=0,
+        #     # label='Percentile interval'
+        # )
+        # low = intervals[0.16]
+        # high = intervals[0.84]
+        # axs[i,1].fill_between(
+        #     np.concatenate((age_bins[0:1], age_bin_centers, age_bins[-1:])), 
+        #     np.concatenate((low[0:1], low, low[-1:])),
+        #     np.concatenate((high[0:1], high, high[-1:])),
+        #     color=data_color, zorder=1, #label='Percentile interval'
+        # )
         axs[i,1].plot(
             age_bin_centers, intervals[0.5], 'k-', zorder=2, label='Median'
         )
@@ -120,6 +133,14 @@ def main():
         )
         axs[i,0].plot(abund_df / max(abund_df), get_bin_centers(bin_edges),
                 color=data_color, linestyle='-', linewidth=2, marker=None)
+    # Colorbar for APOGEE hexbin
+    cax = axs[2,1].inset_axes([0.06, 0.88, 0.68, 0.06])
+    fig.colorbar(
+        ScalarMappable(norm=norm, cmap=cmap), 
+        cax=cax, 
+        orientation='horizontal',
+        label='# APOGEE Stars'
+    )
 
     # Plot multizone gas abundance
     yZ = [3, 2, 1]
@@ -146,7 +167,7 @@ def main():
     ax0.yaxis.set_major_locator(MultipleLocator(0.5))
     ax0.yaxis.set_minor_locator(MultipleLocator(0.1))
 
-    ax1.set_xlim((-1, 14))
+    ax1.set_xlim(AGE_LIM)
     ax1.xaxis.set_major_locator(MultipleLocator(5))
     ax1.xaxis.set_minor_locator(MultipleLocator(1))
     
@@ -166,7 +187,7 @@ def main():
     # Legend for data
     handles, labels = ax1.get_legend_handles_labels()
     ax0.legend([handles[0], handles[-1]], [labels[0], labels[-1]],
-               loc='lower left', bbox_to_anchor=[0, 1], title='APOGEE (NN ages)')
+               loc='lower left', bbox_to_anchor=[0, 1], title='APOGEE ([C/N] ages)')
     # Legend for models
     ax1.legend(handles[1:4], labels[1:4], loc='lower right', bbox_to_anchor=[1, 1])
 

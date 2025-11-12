@@ -9,7 +9,7 @@ import numpy as np
 from numpy.random import default_rng
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.colors import Normalize, BoundaryNorm, LogNorm
+from matplotlib.colors import Normalize, BoundaryNorm, LogNorm, LinearSegmentedColormap
 from matplotlib.cm import ScalarMappable
 from astropy.table import Table
 import astropy.units as u
@@ -537,6 +537,31 @@ def discrete_colormap(cmap_name, bounds):
     cmap = plt.get_cmap(cmap_name)
     norm = BoundaryNorm(bounds, cmap.N)
     return cmap, norm
+
+
+def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
+    """
+    Truncate an existing colormap.
+
+    Parameters
+    ----------
+    cmap : matplotlib colormap instance
+    minval : float, optional
+        Lower truncation bound, between 0 and 1. Default is 0.
+    maxval : float, optional
+        Upper truncation bound, between 0 and 1. Default is 1.
+    n : int, optional
+        Number of segments in the new colormap. Default is 100.
+    
+    Returns
+    -------
+    new_cmap : matplotlib.colors.LinearSegmentedColormap
+        New, truncated colormap.
+    """
+    new_cmap = LinearSegmentedColormap.from_list(
+        'trunc({n},{a:.2f},{b:.2f})'.format(n=cmap.name, a=minval, b=maxval),
+        cmap(np.linspace(minval, maxval, n)))
+    return new_cmap
 
 
 def setup_discrete_colorbar(fig, cmap, norm, label='', width=0.6):
