@@ -53,6 +53,11 @@ echo $NAME
 python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --pre-enrichment=-0.7 --local-disk-ratio=0.25 --eta-solar=1.8 --migration-strength=3.6
 echo ""
 
+NAME="yZ2-insideout/diskmodel"
+echo $NAME
+python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=insideout
+echo ""
+
 NAME="yZ3-fiducial/diskmodel"
 echo $NAME
 python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ3 --evolution=$EVOLUTION

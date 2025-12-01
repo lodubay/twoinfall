@@ -11,17 +11,13 @@ from apogee_sample import APOGEESample
 from _globals import ONE_COLUMN_WIDTH, ZONE_WIDTH
 import paths
 from colormaps import paultol
-from utils import twoinfall_onezone, insideout_onezone
 from multizone.src.yields import yZ2
-from multizone.src import models, outflows
-from _globals import ONEZONE_DEFAULTS
 
 FEH_LIM = (-1.1, 0.9)
 OFE_LIM = (-0.15, 0.55)
 GALR_LIM = (7, 9)
 ABSZ_LIM = (0, 2)
-GRIDSIZE = 30
-ZONE_WIDTH = 2
+GRIDSIZE = (30, 12)
 
 
 def main(style='paper'):
@@ -51,64 +47,22 @@ def main(style='paper'):
     fig.colorbar(pcm, ax=ax, orientation='vertical', label='# APOGEE Stars', 
                  pad=0.02, aspect=15)
 
-    # Set up onezone model params
-    output_dir = paths.data / 'onezone' / 'smooth_vs_twoinfall'
-    if not output_dir.exists():
-        output_dir.mkdir(parents=True)
-    simtime = np.arange(0, 13.21, 0.01)
-    eta_func = outflows.yZ2
-
     # Plot smooth SFH predictions
-    # vice.yields.sneia.settings['fe'] *= 10**-0.1
+    output_name = 'yZ2-insideout/diskmodel'
+    multioutput = vice.output(str(paths.multizone / output_name))
     for radius in [4, 8, 12]:
-        name = str(output_dir / f'smooth_radius{radius:02d}')
-        area = np.pi * ((radius + ZONE_WIDTH/2)**2 - (radius - ZONE_WIDTH/2)**2)
-        sfr = insideout_onezone(
-            radius,
-            dr=ZONE_WIDTH
-        )
-        sz = vice.singlezone(
-            name = name,
-            func = sfr,
-            mode = 'sfr',
-            **ONEZONE_DEFAULTS
-        )
-        sz.eta = eta_func(radius)
-        sz.tau_star = models.fiducial_sf_law(area)
-        sz.run(simtime, overwrite=True)
-        hist = vice.history(name)
+        zone = int(radius / ZONE_WIDTH)
+        hist = multioutput.zones[f'zone{zone}'].history
         ax.plot(hist['[fe/h]'], hist['[o/fe]'], color='w', linewidth=2)
         ax.plot(hist['[fe/h]'], hist['[o/fe]'], linewidth=1, linestyle='--',
                     label=r'%s kpc' % radius)
 
     # Plot twoinfall predictions
-    # vice.yields.sneia.settings['fe'] *= 10**0.1
+    output_name = 'yZ2-fiducial/diskmodel'
     radius = 8
-    name = str(output_dir / f'twoinfall_radius{radius:02d}')
-    area = np.pi * ((radius + ZONE_WIDTH/2)**2 - (radius - ZONE_WIDTH/2)**2)
-    ifr = twoinfall_onezone(
-        radius, 
-        # first_timescale=.1,
-        second_timescale=models.twoinfall_expvar.timescale(radius), 
-        # onset=3.,
-        mass_loading=eta_func,
-        dr=ZONE_WIDTH
-    )
-    sz = vice.singlezone(
-        name = name,
-        func = ifr,
-        mode = 'ifr',
-        **ONEZONE_DEFAULTS
-    )
-    sz.eta = eta_func(radius)
-    sz.tau_star = models.twoinfall_sf_law(area, onset=ifr.onset)
-    sz.run(simtime, overwrite=True)
-    hist = vice.history(name)
-    # output_name = 'yZ2/fiducial/diskmodel'
-    # radius = 8
-    # zone = int(radius / 0.1)
-    # multioutput = vice.output(str(paths.multizone / output_name))
-    # hist = multioutput.zones[f'zone{zone}'].history
+    zone = int(radius / ZONE_WIDTH)
+    multioutput = vice.output(str(paths.multizone / output_name))
+    hist = multioutput.zones[f'zone{zone}'].history
     ax.plot(hist['[fe/h]'], hist['[o/fe]'], color='w', linewidth=2)
     ax.plot(hist['[fe/h]'], hist['[o/fe]'], linewidth=1, color='k',
             label=r'%s kpc' % radius)
