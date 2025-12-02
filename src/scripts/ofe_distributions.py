@@ -14,7 +14,7 @@ import paths
 from _globals import TWO_COLUMN_WIDTH, GALR_BINS, ABSZ_BINS
 
 OUTPUT_NAMES = [
-    'yZ2-fiducial/diskmodel',
+    'yZ2-earlyonset/diskmodel',
     'yZ2-powerlaw/diskmodel',
     'yZ2-diskratio/diskmodel',
     'yZ2-preenrich/diskmodel',

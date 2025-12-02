@@ -58,7 +58,7 @@ def main(style='paper'):
                     label=r'%s kpc' % radius)
 
     # Plot twoinfall predictions
-    output_name = 'yZ2-fiducial/diskmodel'
+    output_name = 'yZ2-earlyonset/diskmodel'
     radius = 8
     zone = int(radius / ZONE_WIDTH)
     multioutput = vice.output(str(paths.multizone / output_name))
