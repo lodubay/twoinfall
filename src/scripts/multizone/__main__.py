@@ -87,6 +87,12 @@ def parse():
         choices = _EVOLUTION_MODELS_,
         default = "twoinfall_expvar"
     )
+    parser.add_argument("--evol-params",
+        help = "Keyword arguments for SFH evolution model, separated by commas\
+ (Default: '')",
+        type = str,
+        default = ""
+    )
     parser.add_argument("--RIa",
         help = "The SN Ia delay-time distribution to assume (Default: plateau)",
         type = str,
@@ -95,7 +101,7 @@ def parse():
     )
     parser.add_argument("--RIa-params",
         help = "Parameters for the SN Ia delay-time distribution separated by \
-underscores. (Default: '')",
+commas. (Default: '')",
         type = str,
         default = ""
     )
@@ -197,12 +203,9 @@ def model(args):
     with open(str(fullpath) + "_args.txt", "w") as f:
         f.write(args.name + "\n")
         f.writelines(["%s: %s\n" % (k, v) for k, v in vars(args).items() if k != "name"])
-    # Parse RIa params into dict
-    RIa_kwargs = {}
-    if '=' in args.RIa_params:
-        for p in args.RIa_params.split("_"):
-            key, value = p.split("=")
-            RIa_kwargs[key] = float(value)
+    # Parse kwarg strings into dicts
+    RIa_kwargs = parse_kwargs(args.RIa_params)
+    evol_kwargs = parse_kwargs(args.evol_params)
     config = src.config(
         timestep_size = args.dt,
         star_particle_density = args.nstars,
@@ -212,6 +215,7 @@ def model(args):
     kwargs = dict(
         name = str(fullpath),
         spec = args.evolution,
+        evol_kwargs = evol_kwargs,
         RIa = args.RIa,
         RIa_kwargs = RIa_kwargs,
         delay = args.minimum_delay,
@@ -244,6 +248,34 @@ def main():
     model_.run([_ * model_.dt for _ in range(round(
         _globals.END_TIME / model_.dt) + 1)],
         overwrite = args.force, pickle = args.pickle)
+    
+
+def parse_kwargs(kwarg_string):
+    """
+    Convert a string of keyword arguments separated by commas into a dict.
+
+    Parameters
+    ----------
+    kwarg_string : str
+        String of keyword arguments in the format:
+        'key1=value1,key2=value2,...,keyN=valueN'
+    
+    Returns
+    -------
+    dict
+
+    Raises
+    ------
+    Warning if string not properly formatted.
+    """
+    kwarg_dict = {}
+    if '=' in kwarg_string:
+        for p in kwarg_string.split(","):
+            key, value = p.split("=")
+            kwarg_dict[key] = float(value)
+    elif len(kwarg_string) > 0:
+        print('WARNING: non-empty kwarg string could not be parsed.')
+    return kwarg_dict
 
 
 if __name__ == "__main__": 

@@ -21,7 +21,6 @@ from . import dtds
 from . import outflows
 from .models.utils import get_bin_number, interpolate, modified_exponential
 from .models.diskmodel import two_component_disk, BHG16
-from .models.twoinfall import SECOND_ONSET
 import math as m
 
 _SECONDS_PER_GYR_ = 3.1536e16
@@ -56,6 +55,8 @@ class diskmodel(vice.milkyway):
         - "static_infall"
         - "oneinfall"
     
+    evol_kwargs : ``dict'' [default: {}]
+        Keyword arguments to pass to the star formation history initialization.
     verbose : ``bool`` [default : True]
         Whether or not the run the models with verbose output.
     migration_mode : ``str`` [default : "diffusion"]
@@ -114,13 +115,30 @@ class diskmodel(vice.milkyway):
     Attributes and functionality are inherited from ``vice.milkyway``.
     """
 
-    def __init__(self, zone_width = 0.1, name = "diskmodel", spec = "twoinfall",
-                 verbose = True, migration_mode = "gaussian", yields="yZ1",
-                 delay = 0.04, RIa = "plateau", RIa_kwargs={}, seed=42, 
-                 radial_gas_velocity = 0., has_outflows=True, eta_solar=None,
-                 migration_time_dep=0.33, migration_radius_dep=0.61,
-                 migration_strength=2.68, pre_enrichment=float("-inf"), 
-                 pre_alpha_enhancement=0., local_disk_ratio=0.12, **kwargs):
+    def __init__(
+            self, 
+            zone_width = 0.1, 
+            name = "diskmodel", 
+            spec = "twoinfall",
+            evol_kwargs = {},
+            verbose = True, 
+            migration_mode = "gaussian", 
+            yields="yZ1",
+            delay = 0.04, 
+            RIa = "plateau", 
+            RIa_kwargs={}, 
+            seed=42, 
+            radial_gas_velocity = 0., 
+            has_outflows=True, 
+            eta_solar=None,
+            migration_time_dep=0.33, 
+            migration_radius_dep=0.61,
+            migration_strength=2.68, 
+            pre_enrichment=float("-inf"), 
+            pre_alpha_enhancement=0., 
+            local_disk_ratio=0.12, 
+            **kwargs
+        ):
         # Set the yields
         if yields == "JW20":
             from vice.yields.presets import JW20
@@ -188,7 +206,6 @@ class diskmodel(vice.milkyway):
             local_ratio = local_disk_ratio
         )
         # Set the SF mode - infall vs star formation rate
-        evol_kwargs = {}
         if spec.lower() in [
             "twoinfall", 
             "twoinfall_inner",
@@ -229,7 +246,7 @@ class diskmodel(vice.milkyway):
                     self.zones[i].tau_star = models.earlyburst_sf_law(area)
                 elif "twoinfall" in spec.lower():
                     self.zones[i].tau_star = models.twoinfall_sf_law(
-                        area, onset=SECOND_ONSET
+                        area, onset=self.evolution._evol[i].onset
                     )
                 else:
                     # Simplified SF law, single power-law with cutoff
