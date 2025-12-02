@@ -35,27 +35,27 @@ echo ""
 
 NAME="yZ2-earlyonset/diskmodel"
 echo $NAME
-python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --evol-params="onset=3"
+python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --evol-params="onset=3.2"
 echo ""
 
 NAME="yZ2-powerlaw/diskmodel"
 echo $NAME
-python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --RIa=powerlaw --evol-params="onset=3"
+python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --RIa=powerlaw
 echo ""
 
 NAME="yZ2-diskratio/diskmodel"
 echo $NAME
-python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --local-disk-ratio=0.5 --evol-params="onset=3"
+python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --local-disk-ratio=0.5
 echo ""
 
 NAME="yZ2-preenrich/diskmodel"
 echo $NAME
-python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --pre-enrichment=-0.5 --eta=2.4 --evol-params="onset=3"
+python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --pre-enrichment=-0.5 --eta=2.4
 echo ""
 
 NAME="yZ2-best/diskmodel"
 echo $NAME
-python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --pre-enrichment=-0.7 --local-disk-ratio=0.25 --eta-solar=1.8 --migration-strength=3.6 --evol-params="onset=3"
+python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --pre-enrichment=-0.7 --local-disk-ratio=0.25 --eta-solar=1.8 --migration-strength=3.6 --evol-params="onset=3.2"
 echo ""
 
 NAME="yZ2-insideout/diskmodel"
