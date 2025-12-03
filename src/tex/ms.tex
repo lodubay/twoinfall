@@ -340,7 +340,7 @@ where $\tau_1$ and $\tau_2(R_{\rm gal})$ are the first and second infall timesca
 We adopt a thick disk scale radius of $R_1=2.0\kpc$, a thin disk scale radius of $R_2=2.5\kpc$, and a fiducial value for the local surface density ratio of $f_\Sigma(R_\odot)=0.12$ \citep{bland-hawthorn_galaxy_2016}. 
 
 % Infall rate parameter selection
-Previous studies have adopted a wide range of parameter values for Equation \ref{eq:twoinfall-ifr}. After exploring the effect of the infall timescales in one-zone models, we adopt $\tau_1=1\Gyr$ and $\tau_2(R_\odot)=15\Gyr$, in line with the parameters adopted by \citet{spitoni_galactic_2020}, but longer than in \citet{nissen_high-precision_2020}, \citet{spitoni_apogee_2021}, and \citet{hegedus_reconstructing_2025}. We also adopt $t_{\rm max}=4.2\Gyr$ (i.e., a lookback time of $9\Gyr$) so that our models are compatible with the median stellar age of the thick disk of $9.14\pm0.05\Gyr$ \citep{pinsonneault_apokasc-3_2025}. \citet{spitoni_galactic_2019} discuss the effect of these parameters on the GCE model predictions in detail.
+Previous studies have adopted a wide range of parameter values for Equation \ref{eq:twoinfall-ifr}. After exploring the effect of the infall timescales in one-zone models, we adopt $\tau_1=1\Gyr$ and $\tau_2(R_\odot)=15\Gyr$, in line with the parameters adopted by \citet{spitoni_galactic_2020}, but longer than in \citet{nissen_high-precision_2020}, \citet{spitoni_apogee_2021}, and \citet{hegedus_reconstructing_2025}. We also adopt $t_{\rm max}=4.2\Gyr$ (i.e., a lookback time of $9\Gyr$) so that our models are compatible with the median stellar age of the thick disk of $9.14\pm0.05\Gyr$ \citep{pinsonneault_apokasc-3_2025}. \added{This value of $t_{\rm max}$ is sub-optimal for models with \yZ{2}, producing a poorer agreement with the APOGEE data in [O/Fe]--[Fe/H] space, so we also run models with $t_{\rm max}=3.2\Gyr$ (see Table \ref{tab:models}.) This change has only a small effect on the [Fe/H] and [O/Fe] abundance distributions.} \citet{spitoni_galactic_2019} discuss the effect of these parameters on the GCE model predictions in detail.
 
 \begin{figure}
     \centering
@@ -399,20 +399,20 @@ We run 11 multi-zone models at three different yield scales. For our \yZ{1} and 
     }
     \decimals
     \startdata
-        {\tt yZ1-fiducial}  & 1 & 0.2   & 4.0 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
-        {\tt yZ1-migration} & 1 & 0.2   & 4.0 & Equation \ref{eq:plateau-dtd}  & 5.0   & 0.12  & $-\infty$   \\
-        {\tt yZ1-diskratio} & 1 & 0.2   & 4.0 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.5   & $-\infty$   \\
-        {\tt yZ1-preenrich} & 1 & 0.6   & 4.0 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & -0.5      \\
-        {\tt yZ1-best}      & 1 & 0.4   & 4.0 & Equation \ref{eq:plateau-dtd}  & 3.6   & 0.25  & -0.7      \\
+        {\tt yZ1-fiducial}  & 1 & 0.2   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
+        {\tt yZ1-migration} & 1 & 0.2   & 4.2 & Equation \ref{eq:plateau-dtd}  & 5.0   & 0.12  & $-\infty$   \\
+        {\tt yZ1-diskratio} & 1 & 0.2   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.5   & $-\infty$   \\
+        {\tt yZ1-preenrich} & 1 & 0.6   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & -0.5      \\
+        {\tt yZ1-best}      & 1 & 0.4   & 4.2 & Equation \ref{eq:plateau-dtd}  & 3.6   & 0.25  & -0.7      \\
         \hline
-        {\tt yZ2-fiducial}  & 2 & 1.4   & 4.0 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
-        {\tt yZ2-earlyonset}& 2 & 1.4   & 3.0 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
-        {\tt yZ2-powerlaw}  & 2 & 1.4   & 3.0 & Equation \ref{eq:powerlaw-dtd} & 2.68  & 0.12  & $-\infty$   \\
-        {\tt yZ2-diskratio} & 2 & 1.4   & 3.0 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.5   & $-\infty$   \\
-        {\tt yZ2-preenrich} & 2 & 2.4   & 3.0 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & -0.5      \\
-        {\tt yZ2-best}      & 2 & 1.8   & 3.0 & Equation \ref{eq:plateau-dtd}  & 3.6   & 0.25  & -0.7      \\
+        {\tt yZ2-fiducial}  & 2 & 1.4   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
+        {\tt yZ2-earlyonset}& 2 & 1.4   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
+        {\tt yZ2-powerlaw}  & 2 & 1.4   & 4.2 & Equation \ref{eq:powerlaw-dtd} & 2.68  & 0.12  & $-\infty$   \\
+        {\tt yZ2-diskratio} & 2 & 1.4   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.5   & $-\infty$   \\
+        {\tt yZ2-preenrich} & 2 & 2.4   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & -0.5      \\
+        {\tt yZ2-best}      & 2 & 1.8   & 3.2 & Equation \ref{eq:plateau-dtd}  & 3.6   & 0.25  & -0.7      \\
         \hline
-        {\tt yZ3-fiducial}  & 3 & 2.4   & 4.0 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
+        {\tt yZ3-fiducial}  & 3 & 2.4   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
     \enddata
 \end{deluxetable*}
 \vspace{-24pt}
@@ -423,7 +423,10 @@ We run 11 multi-zone models at three different yield scales. For our \yZ{1} and 
 \begin{figure}
     \centering
     \includegraphics[width=\onecolumn]{\figpath{gas_abundance_evolution.pdf}}
-    \caption{The ISM abundance evolution at $R_{\rm gal}=8\kpc$ of three multi-zone models at different yield scales (see Table \ref{tab:yields}), each of which feature a major dilution event 9 Gyr ago. The dark gray (light gray) shaded region plots the 68\textsuperscript{th} (95\textsuperscript{th}) percentile of APOGEE abundances in the Solar neighborhood ($7\leq R_{\rm gal}<9\kpc$, $|z|<0.5\kpc$) with NN ages from \citet{leung_variational_2023}. The black line (black points) plots the median (mode) of the abundance data in 1 Gyr-wide age bins, and the gray error bars along the bottom of each panel indicate the median age and abundance errors as a function of age. The left-hand marginal panels show the predicted (blue, pink, and green) and observed (gray) stellar abundance distributions, which are boxcar-smoothed with a width of 0.05 dex for visual clarity.}
+    \caption{The ISM abundance evolution at $R_{\rm gal}=8\kpc$ of three multi-zone models at different yield scales (see Table \ref{tab:yields}), each of which feature a major dilution event 9 Gyr ago.
+    % The dark gray (light gray) shaded region plots the 68\textsuperscript{th} (95\textsuperscript{th}) percentile of APOGEE abundances in the Solar neighborhood ($7\leq R_{\rm gal}<9\kpc$, $|z|<0.5\kpc$) with NN ages from \citet{leung_variational_2023}. The black line (black points) plots the median (mode) of the abundance data in 1 Gyr-wide age bins, and the gray error bars along the bottom of each panel indicate the median age and abundance errors as a function of age. 
+    \added{The 2-D histograms show the APOGEE stellar age--abundance distributions in the Solar neighborhood ($7\leq R_{\rm gal}<9\kpc$, $|z|<0.5\kpc$), adopting the \citet{leung_variational_2023} ages. The black points plot the mode of the abundance data in 1 Gyr-wide age bins, and the gray error bars along the bottom of each panel indicate the median age and abundance errors as a function of age.}
+    The left-hand marginal panels show the predicted (blue, pink, and green) and observed (gray) stellar abundance distributions \added{in the same region}, which are boxcar-smoothed with a width of 0.05 dex for visual clarity.}
     \label{fig:yield-outflow}
 \end{figure}
 
