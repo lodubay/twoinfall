@@ -86,6 +86,10 @@ def main():
         )
         # Plot rolling median
         axs[i,1].plot(
+            rolling_medians[age_col], rolling_medians[abund], 'w-',
+            zorder=2, linewidth=2
+        )
+        axs[i,1].plot(
             rolling_medians[age_col], rolling_medians[abund], 'k-',
             zorder=2, label='Rolling median'
         )
@@ -182,7 +186,7 @@ def plot_abundance_history(axs, mzs, col, label='', c=None, ls='-', range=None, 
     axs[1].plot(hist['lookback'], hist[col], label=label, color=c, ls=ls, linewidth=1)
     # Plot MDFs
     mdf, mdf_bins = mzs.mdf(col, range=range, smoothing=smoothing, bins=100)
-    axs[0].plot(mdf / mdf.max(), get_bin_centers(mdf_bins), color='w', ls=ls, linewidth=2)
+    axs[0].plot(mdf / mdf.max(), get_bin_centers(mdf_bins), color='w', ls='-', linewidth=2)
     axs[0].plot(mdf / mdf.max(), get_bin_centers(mdf_bins), color=c, ls=ls, linewidth=1)
 
 
