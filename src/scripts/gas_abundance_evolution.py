@@ -18,7 +18,7 @@ import paths
 from colormaps import paultol
 
 OH_LIM = (-0.8, 0.6)
-FEH_LIM = (-0.9, 0.6)
+FEH_LIM = (-0.8, 0.6)
 OFE_LIM = (-0.2, 0.5)
 AGE_LIM = (-1, 14)
 GALR_LIM = (7, 9)
@@ -63,6 +63,9 @@ def main():
     data_color = '0.6'
     data_size = 1
     mode_color = 'k'
+    # Rolling median
+    sorted_ages = local_sample.data.sort_values(age_col)[[age_col, 'O_H', 'FE_H', 'O_FE']]
+    rolling_medians = sorted_ages.rolling(1000, min_periods=100, step=100).median()
     # Median age errors as a function of time
     big_age_bins = np.arange(0, 15, 4)
     median_age_errors = local_sample.binned_intervals(
@@ -75,58 +78,33 @@ def main():
     norm = Normalize(vmin=0, vmax=250)
     cmap = truncate_colormap(plt.get_cmap('binary'), minval=0., maxval=0.8)
     for i, abund in enumerate(['O_H', 'FE_H', 'O_FE']):
-        # Scatter plot of all stars
-        # axs[i,1].scatter(local_sample(age_col), local_sample(abund), 
-        #             marker='.', c=data_color, s=data_size, edgecolor='none', 
-        #             zorder=0, rasterized=True, label='Individual stars')
-        # 2-D histogram of APOGEE stars
-        # axs[i,1].hist2d(local_sample(age_col), local_sample(abund), cmap='binary', 
-        #            bins=[28, 28], range=[[0, 14], abund_range[i]], zorder=1, cmin=5)
         # Hexbin of APOGEE stars
         pcm = axs[i,1].hexbin(
             local_sample(age_col), local_sample(abund),
             gridsize=GRIDSIZE, cmap=cmap, norm=norm, linewidths=0.2, mincnt=1,
             extent=[AGE_LIM[0], AGE_LIM[1], abund_range[i][0], abund_range[i][1]]
         )
-        # 16th-84th percentile band
-        intervals = local_sample.binned_intervals(
-            abund, age_col, age_bins, quantiles=[0.025, 0.16, 0.5, 0.84, 0.975]
-        )
-        # duplicate first and last points to extend 1-sigma bounds from 0-14 Gyr
-        # low = intervals[0.025]
-        # high = intervals[0.975]
-        # axs[i,1].fill_between(
-        #     np.concatenate((age_bins[0:1], age_bin_centers, age_bins[-1:])), 
-        #     np.concatenate((low[0:1], low, low[-1:])),
-        #     np.concatenate((high[0:1], high, high[-1:])),
-        #     color='0.8', zorder=0,
-        #     # label='Percentile interval'
-        # )
-        # low = intervals[0.16]
-        # high = intervals[0.84]
-        # axs[i,1].fill_between(
-        #     np.concatenate((age_bins[0:1], age_bin_centers, age_bins[-1:])), 
-        #     np.concatenate((low[0:1], low, low[-1:])),
-        #     np.concatenate((high[0:1], high, high[-1:])),
-        #     color=data_color, zorder=1, #label='Percentile interval'
-        # )
+        # Plot rolling median
         axs[i,1].plot(
-            age_bin_centers, intervals[0.5], 'k-', zorder=2, label='Median'
+            rolling_medians[age_col], rolling_medians[abund], 'k-',
+            zorder=2, label='Rolling median'
         )
-        # Median errors at different age bins
-        median_abund_errors = local_sample.binned_intervals(
-            '%s_ERR' % abund, age_col, big_age_bins, quantiles=[0.5]
-        )
-        axs[i,1].errorbar(xval_err, yval_err[i] * np.ones(xval_err.shape), 
-                    xerr=median_age_errors[0.5], yerr=median_abund_errors[0.5],
-                    c=data_color, marker='.', ms=0, zorder=3, 
-                    linestyle='none', elinewidth=1, capsize=0)
         # Plot abundance modes in bins of stellar age
         abund_bins = local_sample.binned_modes(abund, age_col, age_bins)
         axs[i,1].errorbar(age_bin_centers, abund_bins['mode'], 
                     xerr=age_bin_width/2, yerr=abund_bins['error'],
                     linestyle='none', c=mode_color, capsize=1, marker='.',
-                    zorder=10, label='Mode')
+                    zorder=10, label='Binned mode')
+        # Median errors at different age bins
+        median_abund_errors = local_sample.binned_intervals(
+            '%s_ERR' % abund, age_col, big_age_bins, quantiles=[0.5]
+        )
+        axs[i,1].errorbar(
+            xval_err, yval_err[i] * np.ones(xval_err.shape), 
+            xerr=median_age_errors[0.5], yerr=median_abund_errors[0.5],
+            c=data_color, marker='.', ms=0, zorder=3, 
+            linestyle='none', elinewidth=1, capsize=0,
+        )
         # Plot APOGEE abundance distributions in marginal panels
         abund_df, bin_edges = local_sample.mdf(
             col=abund, range=abund_range[i], smoothing=SMOOTH_WIDTH
@@ -187,7 +165,7 @@ def main():
     # Legend for data
     handles, labels = ax1.get_legend_handles_labels()
     ax0.legend([handles[0], handles[-1]], [labels[0], labels[-1]],
-               loc='lower left', bbox_to_anchor=[0, 1], title='APOGEE ([C/N] ages)')
+               loc='lower left', bbox_to_anchor=[0, 1], title='APOGEE (NN ages)')
     # Legend for models
     ax1.legend(handles[1:4], labels[1:4], loc='lower right', bbox_to_anchor=[1, 1])
 
