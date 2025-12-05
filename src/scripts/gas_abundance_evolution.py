@@ -64,15 +64,19 @@ def main():
     data_size = 1
     mode_color = 'k'
     # Rolling median
-    sorted_ages = local_sample.data.sort_values(age_col)[[age_col, 'O_H', 'FE_H', 'O_FE']]
-    rolling_medians = sorted_ages.rolling(1000, min_periods=100, step=100).median()
+    sorted_ages = local_sample.data.sort_values(age_col)[
+        [age_col, 'O_H', 'FE_H', 'O_FE']
+    ]
+    rolling_medians = sorted_ages.rolling(
+        1000, min_periods=100, step=100, on=age_col, center=True
+    ).median()
     # Median age errors as a function of time
     big_age_bins = np.arange(0, 15, 4)
     median_age_errors = local_sample.binned_intervals(
         '%s_ERR' % age_col, age_col, big_age_bins, quantiles=[0.5]
     )
     xval_err = get_bin_centers(big_age_bins)
-    yval_err = [-0.7, -0.8, -0.15]
+    yval_err = [-0.7, -0.7, -0.15]
     abund_range = [OH_LIM, FEH_LIM, OFE_LIM]
     # Normalize colormap
     norm = Normalize(vmin=0, vmax=250)
