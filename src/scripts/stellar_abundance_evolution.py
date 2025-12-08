@@ -32,8 +32,11 @@ LABELS = [
 ]
 AXES_LIM = {
     '[o/h]': (-1.1, 0.4),
+    '[o/h]_res': (-0.7, 0.4),
     '[fe/h]': (-1.1, 0.4),
+    '[fe/h]_res': (-0.7, 0.4),
     '[o/fe]': (-0.15, 0.5),
+    '[o/fe]_res': (-0.4, 0.2),
     'age': (-1, 14.99)
 }
 GALR_LIM = (7, 9)
@@ -41,12 +44,19 @@ ABSZ_LIM = (0, 0.5)
 CMAP = 'viridis_r'
 
 
-def main(verbose=False, uncertainties=True, style='paper', cmap=CMAP, ages='L23'):
+def main(verbose=False, uncertainties=True, residuals=False, style='paper', cmap=CMAP, ages='L23'):
     plt.style.use(paths.styles / f'{style}.mplstyle')
+    if residuals:
+        figsize = (TWO_COLUMN_WIDTH, 1.0 * TWO_COLUMN_WIDTH)
+        titley = 0.95
+    else:
+        figsize = (TWO_COLUMN_WIDTH, 0.8 * TWO_COLUMN_WIDTH)
+        titley = 0.98
     fig, axs = compare_abundance_evolution(
         OUTPUT_NAMES, 
         LABELS,
-        (TWO_COLUMN_WIDTH, 0.8 * TWO_COLUMN_WIDTH),
+        figsize,
+        residuals=residuals,
         verbose=verbose,
         uncertainties=uncertainties,
         cmap=cmap,
@@ -54,7 +64,7 @@ def main(verbose=False, uncertainties=True, style='paper', cmap=CMAP, ages='L23'
         absz_lim=ABSZ_LIM,
         age_col='%s_AGE' % ages
     )
-    fig.suptitle(r'$y/Z_\odot=1$')
+    fig.suptitle(r'$y/Z_\odot=1$', y=titley)
     fig.savefig(paths.figures / 'stellar_abundance_evolution')
     plt.close()
 
@@ -63,6 +73,7 @@ def compare_abundance_evolution(
         output_names, 
         labels,
         figsize, 
+        residuals=True,
         uncertainties=True, 
         cmap='winter_r', 
         label_pads=[], 
@@ -72,18 +83,33 @@ def compare_abundance_evolution(
         absz_lim=(0, 0.5),
         age_col='L23_AGE'
     ):
-    # Import APOGEE and astroNN data
+    # Import APOGEE and age data
     apogee_sample = APOGEESample.load()
     solar_sample = apogee_sample.region(galr_lim=galr_lim, absz_lim=absz_lim)
     age_bins = {
         'L23_AGE': np.arange(0, 14.1, 2),
         'CN_AGE': np.arange(0, 10.1, 2)
     }[age_col]
+    # Sort by ascending age
+    apogee_sorted_ages = apogee_sample.data.dropna(subset=age_col).sort_values(age_col)[
+        [age_col, 'O_H', 'FE_H', 'O_FE']
+    ]
+    # Calculate APOGEE rolling median
+    rolling_params = dict(
+        min_periods=100, step=100, on=age_col, center=True
+    )
+    apogee_rolling_medians = apogee_sorted_ages.rolling(1000, **rolling_params).median()
 
     # Set up figure
+    if residuals:
+        nrows = 6
+        height_ratios = (2, 1, 2, 1, 2, 1)
+    else:
+        nrows = 3
+        height_ratios = None
     fig, axs = plt.subplots(
-        3, len(output_names), sharex=True, sharey='row', 
-        figsize=figsize,
+        nrows, len(output_names), sharex=True, sharey='row', 
+        figsize=figsize, height_ratios=height_ratios,
         gridspec_kw={'hspace': 0, 'wspace': 0}
     )
     fig.subplots_adjust(left=0.1, right=0.98)
@@ -119,38 +145,80 @@ def compare_abundance_evolution(
             mzs.model_uncertainty(
                 solar_sample.data, inplace=True, age_col=age_col
             )
+        ycols = ['[o/h]', '[fe/h]', '[o/fe]']
         for i, ycol in enumerate(['[o/h]', '[fe/h]', '[o/fe]']):
-            mzs.scatter_plot(axs[i,j], 'age', ycol, color='galr_origin',
+            apo_col = vice_to_apogee_col(ycol)
+            # Plot residuals in next panel down
+            if residuals:
+                row = 2*i
+                # Subtract APOGEE running median from VICE data
+                mzs.stars['%s_res' % ycol] = mzs.stars[ycol] - np.interp(
+                    mzs.stars['age'], 
+                    apogee_rolling_medians[age_col], 
+                    apogee_rolling_medians[apo_col]
+                )
+                # Scatter plot residual abundances
+                mzs.scatter_plot(
+                    axs[row+1,j], 'age', '%s_res' % ycol, color='galr_origin',
+                    cmap=cmap, norm=cbar.norm, markersize=0.5
+                )
+                # Running median of residuals
+                vice_running_median(
+                    axs[row+1,j], mzs, '%s_res' % ycol,
+                )
+                # Shade APOGEE 1-sigma region
+                apogee_running_median(
+                    axs[row+1,j], solar_sample, apo_col, residuals=True,
+                    age_col=age_col, label=data_label, color='r',
+                )
+                if age_col == 'CN_AGE':
+                    # Plot >10 Gyr ages with hatched region (worse fit)
+                    apogee_running_median(
+                        axs[row+1,j], solar_sample, apo_col, 
+                        age_col=age_col, color='r', residuals=True,
+                        hatch='///', facecolor='none', linestyle='--', alpha=0.3
+                    )
+                if j == 0:
+                    axs[row+1,j].set_ylabel('Residuals', size='small')
+                    axs[row+1,j].yaxis.set_major_locator(
+                        MultipleLocator(AXES_MAJOR_LOCATOR[ycol])
+                    )
+                    axs[row+1,j].yaxis.set_minor_locator(
+                        MultipleLocator(AXES_MINOR_LOCATOR[ycol])
+                    )
+                    axs[row+1,j].set_ylim(AXES_LIM['%s_res' % ycol])
+            else:
+                row = i
+            mzs.scatter_plot(axs[row,j], 'age', ycol, color='galr_origin',
                              cmap=cmap, norm=cbar.norm, markersize=0.5)
             lines = plot_gas_abundance(
-                axs[i,j], mzs, 'lookback', ycol, ls='--', lw=1,
+                axs[row,j], mzs, 'lookback', ycol, ls='--', lw=1,
                 label='Gas abundance'
             )
             stars = vice_running_median(
-                axs[i,j], mzs, ycol,
+                axs[row,j], mzs, ycol,
                 label='Median stellar abundance'
             )
             spatch, pcol = apogee_running_median(
-                axs[i,j], solar_sample, vice_to_apogee_col(ycol), 
+                axs[row,j], solar_sample, apo_col, 
                 age_col=age_col, label=data_label, color='r',
             )
             if age_col == 'CN_AGE':
                 # Plot >10 Gyr ages with hatched region (worse fit)
                 apogee_running_median(
-                    axs[i,j], solar_sample, vice_to_apogee_col(ycol), 
-                    np.arange(10, 14.1, 2.), 
-                    age_col=age_col, label=data_label, color='r', 
+                    axs[row,j], solar_sample, apo_col, 
+                    age_col=age_col, color='r', 
                     hatch='///', facecolor='none', linestyle='--', alpha=0.3
                 )
             if j == 0:
-                axs[i,j].set_ylabel(capitalize_abundance(ycol))
-                axs[i,j].yaxis.set_major_locator(
+                axs[row,j].set_ylabel(capitalize_abundance(ycol))
+                axs[row,j].yaxis.set_major_locator(
                     MultipleLocator(AXES_MAJOR_LOCATOR[ycol])
                 )
-                axs[i,j].yaxis.set_minor_locator(
+                axs[row,j].yaxis.set_minor_locator(
                     MultipleLocator(AXES_MINOR_LOCATOR[ycol])
                 )
-                axs[i,j].set_ylim(AXES_LIM[ycol])
+                axs[row,j].set_ylim(AXES_LIM[ycol])
 
     # Axes labels and formatting
     axs[0,0].set_xlim(AXES_LIM['age'])
@@ -179,6 +247,7 @@ def apogee_running_median(
         alpha=0.2, 
         linestyle='-', 
         marker='o', 
+        residuals=False,
         **kwargs):
     """
     Plot APOGEE stellar abundance medians and 1-sigma range binned by age.
@@ -199,6 +268,9 @@ def apogee_running_median(
         Rolling window size. The default is 1000.
     alpha : float, optional
         Transparency of the 1-sigma range. The default is 0.3.
+    residuals : bool, optional
+        If True, subtract running median from 1-sigma limits.
+        The default is False.
     **kwargs passed to matplotlib.pyplot.fill_between
     
     Returns
@@ -216,6 +288,10 @@ def apogee_running_median(
     # Rolling 16th and 84th percentiles
     rolling_low = sorted_ages.rolling(window, **rolling_params).quantile(0.16)
     rolling_high = sorted_ages.rolling(window, **rolling_params).quantile(0.84)
+    if residuals:
+        rolling_low[col] -= rolling_medians[col]
+        rolling_high[col] -= rolling_medians[col]
+        rolling_medians[col] -= rolling_medians[col]
     pcol = ax.fill_between(
         rolling_medians[age_col],
         rolling_low[col],
