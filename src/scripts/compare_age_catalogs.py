@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from matplotlib.colors import Normalize
 
+from utils import get_bin_centers
 from apogee_sample import APOGEESample
 import paths
 from _globals import TWO_COLUMN_WIDTH
@@ -44,6 +45,16 @@ def main(style='paper'):
     sorted_ages = all_shared_stars.data.sort_values('L23_AGE')[['L23_AGE', 'CN_AGE']]
     rolling_medians = sorted_ages.rolling(1000, min_periods=100, step=100).median()
     ax00.plot(rolling_medians['L23_AGE'], rolling_medians['CN_AGE'], 'k-')
+    # Binned median uncertainty
+    big_age_bins = np.linspace(AGE_LIM[0], AGE_LIM[1], 4)
+    median_age_errors = all_shared_stars.binned_intervals(
+        'L23_AGE_ERR', 'L23_AGE', big_age_bins, quantiles=[0.5]
+    )
+    ax00.errorbar(
+        get_bin_centers(big_age_bins), 12 * np.ones(median_age_errors[0.5].shape), 
+        xerr=median_age_errors[0.5], yerr=all_shared_stars('CN_AGE_ERR').median(),
+        c='w', marker='.', ms=0, linestyle='none', elinewidth=0.5, capsize=0,
+    )
     ax00.set_xlabel('NN age [Gyr]')
     ax00.set_ylabel('[C/N] age [Gyr]')
 
