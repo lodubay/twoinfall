@@ -126,17 +126,17 @@ def compare_abundance_evolution(
                 axs[i,j], mzs, 'lookback', ycol, ls='--', lw=1,
                 label='Gas abundance'
             )
-            stars = plot_vice_median_abundances(
-                axs[i,j], mzs, ycol, age_bins, 
+            stars = vice_running_median(
+                axs[i,j], mzs, ycol,
                 label='Median stellar abundance'
             )
-            spatch, pcol = plot_apogee_median_abundances(
-                axs[i,j], solar_sample, vice_to_apogee_col(ycol), age_bins, 
+            spatch, pcol = apogee_running_median(
+                axs[i,j], solar_sample, vice_to_apogee_col(ycol), 
                 age_col=age_col, label=data_label, color='r',
             )
             if age_col == 'CN_AGE':
                 # Plot >10 Gyr ages with hatched region (worse fit)
-                plot_apogee_median_abundances(
+                apogee_running_median(
                     axs[i,j], solar_sample, vice_to_apogee_col(ycol), 
                     np.arange(10, 14.1, 2.), 
                     age_col=age_col, label=data_label, color='r', 
@@ -166,6 +166,100 @@ def compare_abundance_evolution(
     )
 
     return fig, axs
+
+
+def apogee_running_median(
+        ax, 
+        apogee_sample, 
+        col, 
+        label=None, 
+        color='r', 
+        age_col='L23_AGE', 
+        window=1000,
+        alpha=0.2, 
+        linestyle='-', 
+        marker='o', 
+        **kwargs):
+    """
+    Plot APOGEE stellar abundance medians and 1-sigma range binned by age.
+    
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axis on which to plot the medians.
+    apogee_sample : APOGEESample instance
+        APOGEE sample data or subset of the sample.
+    col : str
+        Data column with abundance data.
+    label : str, optional
+        The main scatter plot / error bar label. The default is None.
+    age_col : str, optional
+        Name of column containing ages. The default is 'L23_AGE'.
+    window : int, optional
+        Rolling window size. The default is 1000.
+    alpha : float, optional
+        Transparency of the 1-sigma range. The default is 0.3.
+    **kwargs passed to matplotlib.pyplot.fill_between
+    
+    Returns
+    -------
+    spatch : matplotlib.patches.StepPatch
+    pcol : matplotlib.collections.FillBetweenPolyCollection
+    """
+    # Sort by ascending age
+    sorted_ages = apogee_sample.data.sort_values(age_col)[[age_col, col]]
+    # Calculate rolling median
+    rolling_params = dict(
+        min_periods=int(window/10), step=int(window/10), on=age_col, center=True
+    )
+    rolling_medians = sorted_ages.rolling(window, **rolling_params).median()
+    # Rolling 16th and 84th percentiles
+    rolling_low = sorted_ages.rolling(window, **rolling_params).quantile(0.16)
+    rolling_high = sorted_ages.rolling(window, **rolling_params).quantile(0.84)
+    pcol = ax.fill_between(
+        rolling_medians[age_col],
+        rolling_low[col],
+        rolling_high[col],
+        # step='post', 
+        color=color, alpha=alpha, label=label, edgecolor=color, linestyle=linestyle,
+        **kwargs
+    )
+    line2d = ax.plot(rolling_medians[age_col], rolling_medians[col], 
+                     color=color, linestyle=linestyle, marker='none')
+    return line2d[0], pcol
+
+
+def vice_running_median(ax, mzs, col, label=None, window=3000, color='k'):
+    """
+    Plot median stellar ages binned by abundance from VICE multi-zone output.
+    
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axis on which to plot the medians.
+    mzs : MultizoneStars instance
+        VICE multizone stars output.
+    col : str
+        Data column to group by.
+    window : int, optional
+        Rolling window size. The default is 1000.
+    color : str, optional
+        Plot color.
+    label : str, optional
+        The main scatter plot / error bar label. The default is None.
+    """
+    # Sort by ascending age
+    sorted_ages = mzs.stars[mzs.stars['mass'] > 0].sort_values('age')[['age', col]]
+    # Calculate rolling median
+    rolling_params = dict(
+        min_periods=int(window/10), step=int(window/10), on='age', center=True
+    )
+    rolling_medians = sorted_ages.rolling(window, **rolling_params).median()
+    line2d = ax.plot(
+        rolling_medians['age'], rolling_medians[col], 
+        color=color, linestyle='-', label=label
+    )
+    return line2d
 
 
 if __name__ == '__main__':
