@@ -387,7 +387,7 @@ class MultizoneStars:
         if apogee_data is None:
             apogee_data = pd.read_csv(paths.data/'APOGEE/sample.csv')
         absz_final = self.stars['zfinal'].abs()
-        bin_edges = np.linspace(absz_final.min(), absz_final.max(), 100)
+        bin_edges = np.linspace(absz_final.min(), absz_final.max(), 101, endpoint=True)
         # limit APOGEE data to VICE z-height range
         apogee_data = apogee_data[
             (apogee_data['GALZ'].abs() >= absz_final.min()) &
