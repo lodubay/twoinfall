@@ -73,7 +73,7 @@ def compare_abundance_evolution(
         output_names, 
         labels,
         figsize, 
-        residuals=True,
+        residuals=False,
         uncertainties=True, 
         cmap='winter_r', 
         label_pads=[], 
@@ -348,6 +348,11 @@ outputs with different parameters and APOGEE data.'
         '-v', '--verbose', 
         action='store_true',
         help='Print verbose output to terminal.'
+    )
+    parser.add_argument(
+        '-r', '--residuals', 
+        action='store_true',
+        help='Plot additional residuals panels.'
     )
     parser.add_argument(
         '--style', 
