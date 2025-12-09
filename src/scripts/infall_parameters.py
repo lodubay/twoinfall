@@ -9,7 +9,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import vice
 
-from multizone.src.yields import yZ1
 from apogee_sample import APOGEESample
 from utils import twoinfall_onezone, get_bin_centers
 from multizone.src import models, outflows
@@ -36,23 +35,30 @@ YLIM = (-0.14, 0.499)
 GRIDSIZE = 30
 SMOOTH_WIDTH = 0.05
 
-def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, verbose=False, style='paper'):
+def main(verbose=False, style='paper'):
     # Set up figure and subfigures
     plt.style.use(paths.styles / f'{style}.mplstyle')
-    fig = plt.figure(figsize=(TWO_COLUMN_WIDTH, 0.36*TWO_COLUMN_WIDTH))
-    gs = fig.add_gridspec(5, 16, wspace=0.)
-    subfigs = [
-        fig.add_subfigure(gs[:,i:i+w]) for i, w in zip((0, 6, 11), (6, 5, 5))
+    fig = plt.figure(figsize=(TWO_COLUMN_WIDTH, 0.72*TWO_COLUMN_WIDTH))
+    gs = fig.add_gridspec(15, 22, wspace=0., hspace=0.)
+
+    # First row of sub-figures: y/Zsun=1 yield scale
+    if verbose:
+        print('\ny/Zsun=1 yields')
+    from multizone.src.yields import yZ1
+    eta = outflows.yZ1(RADIUS)
+    subfigs1 = [
+        fig.add_subfigure(gs[:7,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))
     ]
     # First panel: vary tau_1
     if verbose:
         print('\nFirst timescale')
-    axs0 = vary_param(
-        subfigs[0], 
+    f1axs0 = vary_param(
+        subfigs1[0], 
         first_timescale=[0.1, 0.3, 1, 3], 
-        second_timescale=fiducial['second_timescale'], 
-        onset=fiducial['onset'],
-        xlim=xlim, ylim=ylim, 
+        second_timescale=FIDUCIAL['second_timescale'], 
+        onset=FIDUCIAL['onset'],
+        eta=eta,
+        xlim=XLIM, ylim=YLIM, 
         label_index=None, 
         cmap_name='autumn', 
         title='(a)',
@@ -61,12 +67,13 @@ def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, verbose=False, style='paper'):
     # Second panel: vary tau_2
     if verbose:
         print('\nSecond timescale')
-    axs1 = vary_param(
-        subfigs[1], 
+    f1axs1 = vary_param(
+        subfigs1[1], 
         second_timescale=[3, 5, 10, 30],
-        first_timescale=fiducial['first_timescale'], 
-        onset=fiducial['onset'],
-        xlim=xlim, ylim=ylim, 
+        first_timescale=FIDUCIAL['first_timescale'], 
+        onset=FIDUCIAL['onset'],
+        eta=eta,
+        xlim=XLIM, ylim=YLIM, 
         show_ylabel=False,
         label_index=0, 
         cmap_name='summer', 
@@ -76,24 +83,85 @@ def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, verbose=False, style='paper'):
     # Third panel: vary t_on
     if verbose:
         print('\nOnset time')
-    axs2 = vary_param(
-        subfigs[2], 
+    f1axs2 = vary_param(
+        subfigs1[2], 
         onset=[1, 2, 3, 4, 5],
-        first_timescale=fiducial['first_timescale'], 
-        second_timescale=fiducial['second_timescale'],
-        xlim=xlim, ylim=ylim, 
+        first_timescale=FIDUCIAL['first_timescale'], 
+        second_timescale=FIDUCIAL['second_timescale'],
+        eta=eta,
+        xlim=XLIM, ylim=YLIM, 
         show_ylabel=False,
         label_index=None, 
         cmap_name='winter', 
         title='(c)',
         verbose=verbose
     )
+    subfigs1[1].suptitle(r'$y/Z_\odot=1$', y=1, va='bottom')
+
+    # Second row of sub-figures: y/Zsun=2 yield scale
+    if verbose:
+        print('\ny/Zsun=2 yields')
+    from multizone.src.yields import yZ2
+    eta = outflows.yZ2(RADIUS)
+    subfigs2 = [
+        fig.add_subfigure(gs[8:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))
+    ]
+    FIDUCIAL['onset'] = 3.
+    # First panel: vary tau_1
+    if verbose:
+        print('\nFirst timescale')
+    f2axs0 = vary_param(
+        subfigs2[0], 
+        first_timescale=[0.1, 0.3, 1, 3], 
+        second_timescale=FIDUCIAL['second_timescale'], 
+        onset=FIDUCIAL['onset'],
+        eta=eta,
+        xlim=XLIM, ylim=YLIM, 
+        label_index=None, 
+        cmap_name='autumn', 
+        title='(d)',
+        verbose=verbose
+    )
+    # Second panel: vary tau_2
+    if verbose:
+        print('\nSecond timescale')
+    f2axs1 = vary_param(
+        subfigs2[1], 
+        second_timescale=[3, 5, 10, 30],
+        first_timescale=FIDUCIAL['first_timescale'], 
+        onset=FIDUCIAL['onset'],
+        eta=eta,
+        xlim=XLIM, ylim=YLIM, 
+        show_ylabel=False,
+        label_index=0, 
+        cmap_name='summer', 
+        title='(e)',
+        verbose=verbose
+    )
+    # Third panel: vary t_on
+    if verbose:
+        print('\nOnset time')
+    f2axs2 = vary_param(
+        subfigs2[2], 
+        onset=[1, 2, 3, 4, 5],
+        first_timescale=FIDUCIAL['first_timescale'], 
+        second_timescale=FIDUCIAL['second_timescale'],
+        eta=eta,
+        xlim=XLIM, ylim=YLIM, 
+        show_ylabel=False,
+        label_index=None, 
+        cmap_name='winter', 
+        title='(f)',
+        verbose=verbose
+    )
+    subfigs2[1].suptitle(r'$y/Z_\odot=2$', y=1, va='bottom')
+
     # Plot APOGEE data in each panel
     apogee_sample = APOGEESample.load()
     apogee_solar = apogee_sample.region(galr_lim=(7, 9), absz_lim=(0, 2))
     cmap_name = 'binary'
     data_color = '0.6'
-    for axs in [axs0, axs1, axs2]:
+    for axs in [f1axs0, f1axs1, f1axs2, f2axs0, f2axs1, f2axs2]:
         pcm = axs[0].hexbin(
             apogee_solar('FE_H'), apogee_solar('O_FE'),
             gridsize=GRIDSIZE,
@@ -115,15 +183,16 @@ def main(fiducial=FIDUCIAL, xlim=XLIM, ylim=YLIM, verbose=False, style='paper'):
             ofe_df / max(ofe_df), get_bin_centers(ofe_bin_edges),
             color=data_color, linestyle='-', linewidth=2, marker=None, zorder=0
         )
+    
     plt.subplots_adjust(
-        bottom=0.13, top=0.98, left=0.16, right=0.98, wspace=0.5
+        bottom=0.13, top=0.98, left=0.16, right=0.98
     )
-    fig.savefig(paths.figures / 'infall_parameters_yZ1')
+    fig.savefig(paths.extra / 'infall_parameters')
     plt.close()
 
 
 def vary_param(subfig, first_timescale=1., second_timescale=10., onset=4.,
-               local_disk_ratio=LOCAL_DISK_RATIO, label_index=None, 
+               eta=0.2, local_disk_ratio=LOCAL_DISK_RATIO, label_index=None, 
                cmap_name=None, verbose=False, **kwargs):
     """
     Plot a series of onezone model outputs, varying one parameter of the 
@@ -141,6 +210,8 @@ def vary_param(subfig, first_timescale=1., second_timescale=10., onset=4.,
         Timescale of the second infall in Gyr. The default is 3.
     onset : float, optional
         Onset time of the second infall in Gyr. The default is 3.
+    eta : float, optional
+        Outflow mass-loading factor. The default is 0.2.
     label_index : int, optional
         Index of track to add time labels to. If None, no time labels are added.
         The default is None.
@@ -178,9 +249,6 @@ def vary_param(subfig, first_timescale=1., second_timescale=10., onset=4.,
     diskmodel = models.diskmodel.two_component_disk.from_local_ratio(
         local_ratio = local_disk_ratio
     )
-    # Outflow mass-loading factor
-    eta_func = outflows.yZ1
-    eta = eta_func(RADIUS)
 
     for i, val in enumerate(values):
         param_dict[var] = val
@@ -197,7 +265,7 @@ def vary_param(subfig, first_timescale=1., second_timescale=10., onset=4.,
         ifr = twoinfall_onezone(
             RADIUS, 
             diskmodel=diskmodel,
-            mass_loading=eta_func, 
+            mass_loading=eta, 
             dt=dt, 
             dr=ZONE_WIDTH, 
             **param_dict

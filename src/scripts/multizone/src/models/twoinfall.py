@@ -34,8 +34,9 @@ class twoinfall(double_exponential):
     diskmodel : object [default: ``.diskmodel.BHG16()``]
         Instance of a disk model object which includes ``gradient`` and 
         ``thick_to_thin_ratio`` functions that take an argument for radius.
-    mass_loading : <function> [defualt: ``vice.milkyway.default_mass_loading``]
-        The dimensionless mass-loading factor as a function of radius.
+    mass_loading : float or <function> [default: ``..outflows.equilibrium()``]
+        The dimensionless mass-loading factor. Can be a single value or
+        a function of radius.
     onset : float [default: 4.2]
         The onset time of the second exponential infall in Gyr.
     first_timescale : float [default: 1.0]
@@ -92,7 +93,11 @@ class twoinfall(double_exponential):
         self.tau_star = twoinfall_sf_law(
             area, onset=self.onset, sfe1=sfe1, sfe2=sfe2,
         )
-        eta = mass_loading(radius)
+        # Mass loading factor
+        if callable(mass_loading):
+            eta = mass_loading(radius)
+        else:
+            eta = mass_loading
         # Run several times to converge
         for i in range(niter):
             # Calculate amplitude ratio
