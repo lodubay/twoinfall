@@ -55,7 +55,7 @@ def main(verbose=False, uncertainties=True, style='paper', cmap=CMAP, ages='L23'
         age_col='%s_AGE' % ages
     )
     fig.suptitle(r'$y/Z_\odot=1$ Residuals')
-    fig.savefig(paths.figures / 'stellar_abundance_residuals')
+    fig.savefig(paths.extra / 'stellar_abundance_residuals')
     plt.close()
 
 
