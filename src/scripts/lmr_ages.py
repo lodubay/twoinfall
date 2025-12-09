@@ -25,7 +25,7 @@ LABELS = [
 AGE_COL = 'L23_AGE'
 LMR_CUT = 0.1 # lower bound of locally metal-rich (LMR) stars
 CONTOUR_LEVELS = [0.9, 0.7, 0.5, 0.3, 0.1]
-PLOT_EXTENT = [-1.1, 0.6, -0.25, 0.55]
+PLOT_EXTENT = [-1.1, 0.6, -0.2, 0.55]
 GRIDSIZE = 30
 
 
