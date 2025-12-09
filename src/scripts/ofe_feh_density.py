@@ -36,10 +36,10 @@ GRIDSIZE = 30
 def main(style='paper'):
     # Setup figure
     plt.style.use(paths.styles / f'{style}.mplstyle')
-    fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 2.*ONE_COLUMN_WIDTH))
-    gs = fig.add_gridspec(22, 7, wspace=0., hspace=0.)
+    fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 1.33*ONE_COLUMN_WIDTH))
+    gs = fig.add_gridspec(15, 7, wspace=0., hspace=0.)
     subfigs = [
-        fig.add_subfigure(gs[i:i+w,:]) for i, w in zip((0, 7, 14), (7, 7, 8))
+        fig.add_subfigure(gs[i:i+w,:]) for i, w in zip((0, 7), (7, 8))
     ]
     inset_axes_bounds = [1.28, 0., 0.07, 1.]
     
@@ -48,10 +48,10 @@ def main(style='paper'):
     ofe_kwargs = {'bins': 100, 'range': OFE_LIM, 'smoothing': 0.05}
     feh_kwargs = {'bins': 100, 'range': FEH_LIM, 'smoothing': 0.2}
     cmap_name = 'winter'
-    for i, subfig in enumerate(subfigs[:-1]):
+    for i, subfig in enumerate(subfigs):
         axs = setup_axes(
             subfig, xlabel='[Fe/H]', xlim=FEH_LIM, ylim=OFE_LIM, 
-            show_xlabel=False,
+            show_xlabel=i,
         )
         axs[0].text(
             0.95, 0.95, LABELS[i], 
@@ -100,48 +100,18 @@ def main(style='paper'):
         axs[2].fill_betweenx(
             get_bin_centers(bin_edges), ofe_df / max(ofe_df), x2=0, color=color,
         )
-
-    # APOGEE panel
-    cmap_name = 'inferno'
-    axs = setup_axes(
-        subfigs[-1], xlabel='[Fe/H]', xlim=FEH_LIM, ylim=OFE_LIM, 
-    )
-    axs[0].text(
-        0.95, 0.95, LABELS[-1], 
-        ha='right', va='top', 
-        size=plt.rcParams['axes.titlesize'], transform=axs[0].transAxes,
-        bbox={
-            'facecolor': 'w',
-            'edgecolor': 'none',
-            'boxstyle': 'round',
-            'pad': 0.15,
-            'alpha': 1.,
-        }
-    )
-    axs[0].yaxis.set_major_locator(MultipleLocator(0.2))
-    axs[0].yaxis.set_minor_locator(MultipleLocator(0.05))
-    subset = apogee_sample.region(galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
-    pcm = axs[0].hexbin(
-        subset('FE_H'), subset('O_FE'),
-        C=np.ones(subset.nstars),
-        reduce_C_function=np.sum,
-        norm=LogNorm(),
-        gridsize=GRIDSIZE, cmap=cmap_name, linewidths=0.2,
-        extent=[FEH_LIM[0], FEH_LIM[1], OFE_LIM[0], OFE_LIM[1]],
-    )
-    cax = axs[0].inset_axes(inset_axes_bounds)
-    cbar = subfig.colorbar(pcm, cax=cax, orientation='vertical')
-    cbar.ax.set_ylabel('Number of stars')
-    # Marginal distributions
-    color = plt.get_cmap(cmap_name)(0.6)
-    feh_df, bin_edges = subset.mdf(col='FE_H', **feh_kwargs)
-    axs[1].fill_between(
-        get_bin_centers(bin_edges), feh_df / max(feh_df), y2=0, color=color
-    )
-    ofe_df, bin_edges = subset.mdf(col='O_FE', **ofe_kwargs)
-    axs[2].fill_betweenx(
-        get_bin_centers(bin_edges), ofe_df / max(ofe_df), x2=0, color=color
-    )
+        # APOGEE marginal distributions
+        color = '0.6'
+        feh_df, bin_edges = local_sample.mdf(col='FE_H', **feh_kwargs)
+        axs[1].plot(
+            get_bin_centers(bin_edges), feh_df / max(feh_df), 
+            color=color, linewidth=2, linestyle='-'
+        )
+        ofe_df, bin_edges = local_sample.mdf(col='O_FE', **ofe_kwargs)
+        axs[2].plot(
+            ofe_df / max(ofe_df), get_bin_centers(bin_edges), 
+            color=color, linewidth=2, linestyle='-'
+        )
     
     fig.subplots_adjust(top=0.98, right=0.75)
 
