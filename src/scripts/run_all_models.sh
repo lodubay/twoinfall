@@ -60,7 +60,7 @@ echo ""
 
 NAME="yZ2-best/diskmodel"
 echo $NAME
-python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --pre-enrichment=-0.7 --local-disk-ratio=0.25 --eta-solar=1.8 --migration-strength=3.6 --evol-params="onset=3.2"
+python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --pre-enrichment=-0.7 --local-disk-ratio=0.25 --eta-solar=1.8 --migration-strength=3.6 --evol-params="onset=2.2"
 echo ""
 
 NAME="yZ2-insideout/diskmodel"
