@@ -8,12 +8,17 @@ echo $NAME
 python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ1 --evolution=$EVOLUTION
 echo ""
 
+NAME="yZ1-earlyonset/diskmodel"
+echo $NAME
+python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ1 --evolution=$EVOLUTION --evol-params="onset=2.2"
+echo ""
+
 NAME="yZ1-migration/diskmodel"
 echo $NAME
 python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ1 --evolution=$EVOLUTION --migration-strength=5.0
 echo ""
 
-NAME="yZ1diskratio/diskmodel"
+NAME="yZ1-diskratio/diskmodel"
 echo $NAME
 python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ1 --evolution=$EVOLUTION --local-disk-ratio=0.5
 echo ""
@@ -35,7 +40,7 @@ echo ""
 
 NAME="yZ2-earlyonset/diskmodel"
 echo $NAME
-python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --evol-params="onset=3.2"
+python -m multizone -f --nstars=$NSTARS --name=$NAME --yields=yZ2 --evolution=$EVOLUTION --evol-params="onset=2.2"
 echo ""
 
 NAME="yZ2-powerlaw/diskmodel"

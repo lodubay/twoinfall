@@ -18,9 +18,9 @@ from .diskmodel import BHG16, two_component_disk
 from ..outflows import equilibrium
 import math as m
 
-FIRST_TIMESCALE = 1. # Gyr
+FIRST_TIMESCALE = 0.3 # Gyr
 SECOND_TIMESCALE = 15. # Gyr
-SECOND_ONSET = 4.2 # Gyr
+SECOND_ONSET = 3.2 # Gyr
 
 
 class twoinfall(double_exponential):
