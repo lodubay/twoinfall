@@ -193,7 +193,7 @@ def main(verbose=False, style='paper'):
     plt.subplots_adjust(
         bottom=0.13, top=0.98, left=0.16, right=0.98
     )
-    fig.savefig(paths.extra / 'infall_parameters')
+    fig.savefig(paths.figures / 'infall_parameters')
     plt.close()
 
 

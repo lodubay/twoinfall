@@ -13,21 +13,23 @@ python yields.py
 echo "Plotting Figure 1..."
 python smooth_vs_twoinfall.py
 echo "Plotting Figure 2..."
-python star_formation_history.py
+python compare_age_catalogs.py
 echo "Plotting Figure 3..."
-python gas_abundance_evolution.py
+python star_formation_history.py
 echo "Plotting Figure 4..."
-python stellar_abundance_evolution.py
+python gas_abundance_evolution.py
 echo "Plotting Figure 5..."
-python mdf_evolution.py
+python stellar_abundance_evolution.py
 echo "Plotting Figure 6..."
-python ofe_feh_density.py
+python mdf_evolution.py
 echo "Plotting Figure 7..."
-python ofe_distributions.py
+python ofe_feh_density.py
 echo "Plotting Figure 8..."
-python ofe_feh_best.py
+python ofe_distributions.py
 echo "Plotting Figure 9..."
-python lmr_ages.py
+python ofe_feh_best.py
 echo "Plotting Figure 10..."
-python sfe_hiatus.py
+python lmr_ages.py
+echo "Plotting Figure 11..."
+python infall_parameters.py
 echo "Done!"
