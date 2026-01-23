@@ -10,6 +10,7 @@ from matplotlib.colors import Normalize
 from matplotlib.cm import ScalarMappable
 import vice
 
+import CheapTools
 from apogee_sample import APOGEESample
 from multizone_stars import MultizoneStars
 from utils import get_bin_centers, truncate_colormap
@@ -27,8 +28,8 @@ SMOOTH_WIDTH = 0.05
 GRIDSIZE = 30
 
 OUTPUT_NAMES = [
-    'yZ3-fiducial/diskmodel',
-    'yZ2-fiducial/diskmodel',
+    # 'yZ3-fiducial/diskmodel',
+    'yZ2-earlyonset/diskmodel',
     'yZ1-fiducial/diskmodel'
 ]
 
@@ -129,22 +130,46 @@ def main():
     )
 
     # Plot multizone gas abundance
-    yZ = [3, 2, 1]
-    eta = [2.4, 1.4, 0.2]
+    yZ = [2, 1]
+    eta = [1.4, 0.2]
     for i, output_name in enumerate(OUTPUT_NAMES):
         mzs = MultizoneStars.from_output(output_name)
         mzs.model_uncertainty(apogee_sample.data, inplace=True)
         mzs_local = mzs.region(galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
         plot_abundance_history(
             axs[0], mzs_local, '[o/h]', range=OH_LIM, smoothing=SMOOTH_WIDTH,
+            zorder=5,
             label=r'$y/Z_\odot = %s$, $\eta_\odot=%s$' % (yZ[i], eta[i])
         )
         plot_abundance_history(
             axs[1], mzs_local, '[fe/h]', range=FEH_LIM, smoothing=SMOOTH_WIDTH,
+            zorder=5,
         )
         plot_abundance_history(
             axs[2], mzs_local, '[o/fe]', range=OFE_LIM, smoothing=SMOOTH_WIDTH,
+            zorder=5,
         )
+    
+    # Plot Palicio et al. (2023) model for comparison
+    # Model parameters
+    chemdict = dict()
+    chemdict["omega"] = 0.8
+    chemdict["R"] = 0.285
+    chemdict["nuL"] = 0.75
+    # Infall parameters
+    chemdict["tauj"] = np.array([0.4, 7.])
+    chemdict["tj"] = [0., 3.]
+    chemdict["sigma_gas_0"] = 1E-8 # Sigma_gas_0 should be very close to zero but not zero
+    chemdict["Aj"] =  [35.128, 10.207] # Makes 47 Msun/pc**2 today (McKee et al. 2015)
+    time, feh, ofe = analytic_model(chemdict)
+    zorder = 4
+    axs[0,1].plot(time[::-1], ofe + feh, 'w-', linewidth=2, zorder=zorder)
+    axs[0,1].plot(time[::-1], ofe + feh, linestyle='--', zorder=zorder, 
+                  label='Palicio et al. (2023)')
+    axs[1,1].plot(time[::-1], feh, 'w-', linewidth=2, zorder=zorder)
+    axs[1,1].plot(time[::-1], feh, linestyle='--', zorder=zorder)
+    axs[2,1].plot(time[::-1], ofe, 'w-', linewidth=2, zorder=zorder)
+    axs[2,1].plot(time[::-1], ofe, linestyle='--', zorder=zorder)
 
     # Format axes
     ax0.set_ylabel('[O/H]')
@@ -181,17 +206,57 @@ def main():
     plt.close()
 
 
-def plot_abundance_history(axs, mzs, col, label='', c=None, ls='-', range=None, smoothing=0.):
+def plot_abundance_history(axs, mzs, col, label='', c=None, ls='-', range=None, smoothing=0., **kwargs):
     # Plot gas abundance evolution
     zone = int(0.5 * (mzs.galr_lim[0] + mzs.galr_lim[1]) / mzs.zone_width)
     zone_path = str(mzs.fullpath / ('zone%d' % zone))
     hist = vice.history(zone_path)
-    axs[1].plot(hist['lookback'], hist[col], color='w', ls=ls, linewidth=2)
-    axs[1].plot(hist['lookback'], hist[col], label=label, color=c, ls=ls, linewidth=1)
+    axs[1].plot(hist['lookback'], hist[col], color='w', ls='-', linewidth=2, **kwargs)
+    axs[1].plot(hist['lookback'], hist[col], label=label, color=c, ls=ls, linewidth=1, **kwargs)
     # Plot MDFs
     mdf, mdf_bins = mzs.mdf(col, range=range, smoothing=smoothing, bins=100)
-    axs[0].plot(mdf / mdf.max(), get_bin_centers(mdf_bins), color='w', ls='-', linewidth=2)
-    axs[0].plot(mdf / mdf.max(), get_bin_centers(mdf_bins), color=c, ls=ls, linewidth=1)
+    axs[0].plot(mdf / mdf.max(), get_bin_centers(mdf_bins), color='w', ls='-', linewidth=2, **kwargs)
+    axs[0].plot(mdf / mdf.max(), get_bin_centers(mdf_bins), color=c, ls=ls, linewidth=1, **kwargs)
+
+
+def analytic_model(
+        chemdict,
+        TypeIa_SNe_ratio = 0.54/100.*1E9,
+        Area = np.pi*(20.**2-3.**2)*1E6,
+        today = 13.8,
+        Solar_values = {"FeH":-2.752, "OFe":0.646, "SiFe":-0.291}
+    ):
+    """Run analytic model from Palicio et al. (2023)."""
+    # Integration time
+    t_gyr = np.arange(0.01, today, 0.00125)# Gyr
+    t_gyr = t_gyr[t_gyr<today]
+
+    # DTD parameters:
+    chemdict = CheapTools.Load_MR01_dict( chemdict )# For example, let's use the MR01 DTD
+    # Using "chemdict" as input, the output will have all the key-values of the input
+
+    # Now we have to provide a value for CIa, but instead of setting CIa directly we make
+    # use of the present-day Type Ia ratio:
+    chemdict["CIa"] = CheapTools.Get_CIa(TypeIa_SNe_ratio, Area, chemdict, present_day_time=today)# This computes CIa
+
+    # Now add the parameters associated with the iron element, with zero initial density.
+    # using the add_element() function for the values considered in Palicio et al. (submitted).
+    chemdict_Fe = CheapTools.add_element(chemdict, "Fe", 0.0)# For the moment, this function only works for Fe, O and Si,
+    chemdict_O = CheapTools.add_element(chemdict, "O", 0.0)
+
+    # Solve the Chemical Evolution Model equation:
+    Sigma_MR01_Fe = CheapTools.SolveChemEvolModel( t_gyr, chemdict_Fe)# The output is the density of iron as a function of time
+    Sigma_MR01_O = CheapTools.SolveChemEvolModel( t_gyr, chemdict_O)
+
+    # It is more intuitive to work with [Fe/H] rather than sigma_Fe:
+    Abund_MR01_Fe = CheapTools.FromSigmaToAbundance(t_gyr, Sigma_MR01_Fe, chemdict_Fe)# From sigma (surface density) to abundance:
+    Abund_MR01_O = CheapTools.FromSigmaToAbundance(t_gyr, Sigma_MR01_O, chemdict_O)
+
+    # We have to implement the correction due to the solar values for the iron:
+    FeH_MR01 = Abund_MR01_Fe -Solar_values["FeH"] + 0.125 # The factor 0.125 comes from log10(0.75), since 3/4 of the gas is made by Hydrogen
+    OFe_MR01 = Abund_MR01_O-Abund_MR01_Fe-Solar_values["OFe"]
+
+    return t_gyr, FeH_MR01, OFe_MR01
 
 
 if __name__ == '__main__':
