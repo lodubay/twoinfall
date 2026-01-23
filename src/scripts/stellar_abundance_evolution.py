@@ -9,8 +9,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
-from age_abundance_grid import plot_apogee_median_abundances, \
-    plot_vice_median_abundances, AXES_MAJOR_LOCATOR, AXES_MINOR_LOCATOR
 from scatter_plot_grid import plot_gas_abundance, setup_colorbar
 from _globals import ONE_COLUMN_WIDTH, TWO_COLUMN_WIDTH
 from utils import vice_to_apogee_col, capitalize_abundance
@@ -31,32 +29,38 @@ LABELS = [
     '(d)\n' + r'${\rm [X/H]}_{\rm CGM}=-0.5$',
 ]
 AXES_LIM = {
-    '[o/h]': (-1.1, 0.4),
-    '[o/h]_res': (-0.7, 0.4),
-    '[fe/h]': (-1.1, 0.4),
-    '[fe/h]_res': (-0.7, 0.4),
-    '[o/fe]': (-0.15, 0.5),
-    '[o/fe]_res': (-0.4, 0.2),
+    '[o/h]': (-0.9, 0.5),
+    '[fe/h]': (-0.9, 0.5),
+    '[o/fe]': (-0.2, 0.5),
     'age': (-1, 14.99)
+}
+AXES_MAJOR_LOCATOR = {
+    '[o/h]': 0.5,
+    '[fe/h]': 0.5,
+    '[o/fe]': 0.2,
+    '[fe/o]': 0.2,
+    'galr_origin': 2,
+}
+AXES_MINOR_LOCATOR = {
+    '[o/h]': 0.1,
+    '[fe/h]': 0.1,
+    '[o/fe]': 0.05,
+    '[fe/o]': 0.05,
+    'galr_origin': 0.5,
 }
 GALR_LIM = (7, 9)
 ABSZ_LIM = (0, 0.5)
 CMAP = 'viridis_r'
 
 
-def main(verbose=False, uncertainties=True, residuals=False, style='paper', cmap=CMAP, ages='L23'):
+def main(verbose=False, uncertainties=True, style='paper', cmap=CMAP, ages='L23'):
     plt.style.use(paths.styles / f'{style}.mplstyle')
-    if residuals:
-        figsize = (TWO_COLUMN_WIDTH, 1.0 * TWO_COLUMN_WIDTH)
-        titley = 0.95
-    else:
-        figsize = (TWO_COLUMN_WIDTH, 0.8 * TWO_COLUMN_WIDTH)
-        titley = 0.98
+    figsize = (TWO_COLUMN_WIDTH, 0.8 * TWO_COLUMN_WIDTH)
+    titley = 0.98
     fig, axs = compare_abundance_evolution(
         OUTPUT_NAMES, 
         LABELS,
         figsize,
-        residuals=residuals,
         verbose=verbose,
         uncertainties=uncertainties,
         cmap=cmap,
@@ -73,7 +77,6 @@ def compare_abundance_evolution(
         output_names, 
         labels,
         figsize, 
-        residuals=False,
         uncertainties=True, 
         cmap='winter_r', 
         label_pads=[], 
@@ -101,12 +104,8 @@ def compare_abundance_evolution(
     apogee_rolling_medians = apogee_sorted_ages.rolling(1000, **rolling_params).median()
 
     # Set up figure
-    if residuals:
-        nrows = 6
-        height_ratios = (2, 1, 2, 1, 2, 1)
-    else:
-        nrows = 3
-        height_ratios = None
+    nrows = 3
+    height_ratios = None
     fig, axs = plt.subplots(
         nrows, len(output_names), sharex=True, sharey='row', 
         figsize=figsize, height_ratios=height_ratios,
@@ -145,50 +144,8 @@ def compare_abundance_evolution(
             mzs.model_uncertainty(
                 solar_sample.data, inplace=True, age_col=age_col
             )
-        ycols = ['[o/h]', '[fe/h]', '[o/fe]']
-        for i, ycol in enumerate(['[o/h]', '[fe/h]', '[o/fe]']):
+        for row, ycol in enumerate(['[o/h]', '[fe/h]', '[o/fe]']):
             apo_col = vice_to_apogee_col(ycol)
-            # Plot residuals in next panel down
-            if residuals:
-                row = 2*i
-                # Subtract APOGEE running median from VICE data
-                mzs.stars['%s_res' % ycol] = mzs.stars[ycol] - np.interp(
-                    mzs.stars['age'], 
-                    apogee_rolling_medians[age_col], 
-                    apogee_rolling_medians[apo_col]
-                )
-                # Scatter plot residual abundances
-                mzs.scatter_plot(
-                    axs[row+1,j], 'age', '%s_res' % ycol, color='galr_origin',
-                    cmap=cmap, norm=cbar.norm, markersize=0.5
-                )
-                # Running median of residuals
-                vice_running_median(
-                    axs[row+1,j], mzs, '%s_res' % ycol,
-                )
-                # Shade APOGEE 1-sigma region
-                apogee_running_median(
-                    axs[row+1,j], solar_sample, apo_col, residuals=True,
-                    age_col=age_col, label=data_label, color='r',
-                )
-                if age_col == 'CN_AGE':
-                    # Plot >10 Gyr ages with hatched region (worse fit)
-                    apogee_running_median(
-                        axs[row+1,j], solar_sample, apo_col, 
-                        age_col=age_col, color='r', residuals=True,
-                        hatch='///', facecolor='none', linestyle='--', alpha=0.3
-                    )
-                if j == 0:
-                    axs[row+1,j].set_ylabel('Residuals', size='small')
-                    axs[row+1,j].yaxis.set_major_locator(
-                        MultipleLocator(AXES_MAJOR_LOCATOR[ycol])
-                    )
-                    axs[row+1,j].yaxis.set_minor_locator(
-                        MultipleLocator(AXES_MINOR_LOCATOR[ycol])
-                    )
-                    axs[row+1,j].set_ylim(AXES_LIM['%s_res' % ycol])
-            else:
-                row = i
             mzs.scatter_plot(axs[row,j], 'age', ycol, color='galr_origin',
                              cmap=cmap, norm=cbar.norm, markersize=0.5)
             lines = plot_gas_abundance(
@@ -348,11 +305,6 @@ outputs with different parameters and APOGEE data.'
         '-v', '--verbose', 
         action='store_true',
         help='Print verbose output to terminal.'
-    )
-    parser.add_argument(
-        '-r', '--residuals', 
-        action='store_true',
-        help='Plot additional residuals panels.'
     )
     parser.add_argument(
         '--style', 
