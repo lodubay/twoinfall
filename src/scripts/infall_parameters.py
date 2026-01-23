@@ -12,17 +12,23 @@ import vice
 from apogee_sample import APOGEESample
 from utils import twoinfall_onezone, get_bin_centers
 from multizone.src import models, outflows
-from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH
+from _globals import END_TIME, ONEZONE_DEFAULTS, TWO_COLUMN_WIDTH, ZONE_WIDTH
 from track_and_mdf import setup_axes, plot_vice_onezone
 import paths
 
 RADIUS = 8.
-ZONE_WIDTH = 2.
 LOCAL_DISK_RATIO = 0.12 # local thick-to-thin disk mass ratio
+# Fiducial parameter values
 FIDUCIAL = {
-    'first_timescale': 1.,
-    'second_timescale': 10.,
-    'onset': 4.
+    'first_timescale': 0.3,
+    'second_timescale': 15.,
+    'onset': 3.2
+}
+# Full range of parameter values to explore
+ALTERNATIVES = {
+    'first_timescale': [0.1, 0.3, 1, 3],
+    'second_timescale': [5, 10, 15, 30],
+    'onset': [1.2, 2.2, 3.2, 4.2]
 }
 # convert between parameter keyword names and fancy labels
 LABELS = {
@@ -30,8 +36,8 @@ LABELS = {
     'second_timescale': '\\tau_2',
     'onset': 't_{\\rm max}'
 }
-XLIM = (-1.4, 0.7)
-YLIM = (-0.14, 0.499)
+XLIM = (-1.6, 0.7)
+YLIM = (-0.12, 0.499)
 GRIDSIZE = 30
 SMOOTH_WIDTH = 0.05
 
@@ -54,7 +60,7 @@ def main(verbose=False, style='paper'):
         print('\nFirst timescale')
     f1axs0 = vary_param(
         subfigs1[0], 
-        first_timescale=[0.1, 0.3, 1, 3], 
+        first_timescale=ALTERNATIVES['first_timescale'], 
         second_timescale=FIDUCIAL['second_timescale'], 
         onset=FIDUCIAL['onset'],
         eta=eta,
@@ -69,7 +75,7 @@ def main(verbose=False, style='paper'):
         print('\nSecond timescale')
     f1axs1 = vary_param(
         subfigs1[1], 
-        second_timescale=[3, 5, 10, 30],
+        second_timescale=ALTERNATIVES['second_timescale'],
         first_timescale=FIDUCIAL['first_timescale'], 
         onset=FIDUCIAL['onset'],
         eta=eta,
@@ -85,7 +91,7 @@ def main(verbose=False, style='paper'):
         print('\nOnset time')
     f1axs2 = vary_param(
         subfigs1[2], 
-        onset=[1, 2, 3, 4, 5],
+        onset=ALTERNATIVES['onset'],
         first_timescale=FIDUCIAL['first_timescale'], 
         second_timescale=FIDUCIAL['second_timescale'],
         eta=eta,
@@ -106,13 +112,13 @@ def main(verbose=False, style='paper'):
     subfigs2 = [
         fig.add_subfigure(gs[8:,i:i+w]) for i, w in zip((0, 8, 15), (8, 7, 7))
     ]
-    FIDUCIAL['onset'] = 3.
+    FIDUCIAL['onset'] = 2.2
     # First panel: vary tau_1
     if verbose:
         print('\nFirst timescale')
     f2axs0 = vary_param(
         subfigs2[0], 
-        first_timescale=[0.1, 0.3, 1, 3], 
+        first_timescale=ALTERNATIVES['first_timescale'], 
         second_timescale=FIDUCIAL['second_timescale'], 
         onset=FIDUCIAL['onset'],
         eta=eta,
@@ -127,7 +133,7 @@ def main(verbose=False, style='paper'):
         print('\nSecond timescale')
     f2axs1 = vary_param(
         subfigs2[1], 
-        second_timescale=[3, 5, 10, 30],
+        second_timescale=ALTERNATIVES['second_timescale'],
         first_timescale=FIDUCIAL['first_timescale'], 
         onset=FIDUCIAL['onset'],
         eta=eta,
@@ -143,7 +149,7 @@ def main(verbose=False, style='paper'):
         print('\nOnset time')
     f2axs2 = vary_param(
         subfigs2[2], 
-        onset=[1, 2, 3, 4, 5],
+        onset=ALTERNATIVES['onset'],
         first_timescale=FIDUCIAL['first_timescale'], 
         second_timescale=FIDUCIAL['second_timescale'],
         eta=eta,
@@ -244,7 +250,7 @@ def vary_param(subfig, first_timescale=1., second_timescale=10., onset=4.,
 
     dt = ONEZONE_DEFAULTS['dt']
     simtime = np.arange(0, END_TIME + dt, dt)
-    area = np.pi * ((RADIUS + ZONE_WIDTH/2)**2 - (RADIUS - ZONE_WIDTH/2)**2)
+    area = np.pi * ((RADIUS + ZONE_WIDTH)**2 - RADIUS**2)
     # Prescription for disk surface density as a function of radius
     diskmodel = models.diskmodel.two_component_disk.from_local_ratio(
         local_ratio = local_disk_ratio
