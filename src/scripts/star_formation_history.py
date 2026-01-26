@@ -27,15 +27,21 @@ def main(output_name=OUTPUT_NAME, style='paper', cmap=CMAP, verbose=False):
         gridspec_kw={'hspace': 0.}
     )
     multioutput = vice.output(str(paths.multizone / output_name))
-    axs[0].set_ylabel(r'$\dot \Sigma_{\rm in}$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
-    axs[0].set_yscale('log')
-    axs[0].set_ylim((5e-6, 0.8))
-    axs[1].set_ylabel(r'$\dot \Sigma_\star$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
-    axs[1].set_yscale('log')
-    axs[1].set_ylim((1e-5, 0.3))
-    axs[2].set_ylabel(r'$\Sigma_g$ [M$_{\odot}\,\rm{kpc}^{-2}$]')
-    axs[2].set_yscale('log')
-    axs[2].set_ylim((1e5, 3e8))
+    axs[0].set_ylabel(r'$\log \dot \Sigma_{\rm in}$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
+    # axs[0].set_yscale('log')
+    axs[0].set_ylim((-7.5, 0.5))
+    axs[0].yaxis.set_major_locator(MultipleLocator(2))
+    axs[0].yaxis.set_minor_locator(MultipleLocator(0.5))
+    axs[1].set_ylabel(r'$\log \dot \Sigma_\star$ [M$_{\odot}\,\rm{yr}^{-1}\,\rm{kpc}^{-2}$]')
+    # axs[1].set_yscale('log')
+    axs[1].set_ylim((-5, -0.5))
+    axs[1].yaxis.set_major_locator(MultipleLocator(1))
+    axs[1].yaxis.set_minor_locator(MultipleLocator(0.25))
+    axs[2].set_ylabel(r'$\log \Sigma_g$ [M$_{\odot}\,\rm{kpc}^{-2}$]')
+    # axs[2].set_yscale('log')
+    axs[2].set_ylim((5, 8.5))
+    axs[2].yaxis.set_major_locator(MultipleLocator(1))
+    axs[2].yaxis.set_minor_locator(MultipleLocator(0.25))
     axs[3].set_ylabel(r'$\tau_\star\equiv\Sigma_g/\dot\Sigma_\star$ [Gyr]')
     axs[3].set_ylim((0, 13))
     axs[3].yaxis.set_major_locator(MultipleLocator(5))
@@ -53,47 +59,40 @@ def main(output_name=OUTPUT_NAME, style='paper', cmap=CMAP, verbose=False):
 
     # Annotations in top panel
     axs[0].annotate(
-        r'$\tau_1$', (1, 5e-2), xytext=(3, 5e-3), 
+        r'$\tau_1$', (0.5, -0.5), xytext=(2, -3), 
         arrowprops={'arrowstyle': '<-'}, size=plt.rcParams['axes.labelsize']
     )
     axs[0].text(
-        4.0, 0.13, r'$t_{\rm max}$', ha='right', va='bottom',
+        3.5, -1, r'$t_{\rm max}$', ha='left', va='bottom',
         size=plt.rcParams['axes.labelsize']
     )
     axs[0].annotate(
-        '', (4.2, 0.07), xytext=(4.2, 0.5), arrowprops={'arrowstyle': '->'}
+        '', (3.2, -1.3), xytext=(3.2, 0.2), arrowprops={'arrowstyle': '->'}
     )
     axs[0].annotate(
-        r'$\tau_2$', (6, 0.1), xytext=(11, 4e-2),
+        r'$\tau_2$', (5.5, -0.8), xytext=(11, -1.3),
         arrowprops={'arrowstyle': '<-'}, size=plt.rcParams['axes.labelsize']
     )
 
     zones = [int(galr / ZONE_WIDTH) for galr in get_bin_centers(GALR_BINS)]
     colors = get_color_list(plt.get_cmap(cmap), GALR_BINS)
-    linestyle = '-'
     for zone, color in zip(zones, colors):
         radius = (zone + 0.5) * ZONE_WIDTH
         area = np.pi * ((radius + ZONE_WIDTH)**2 - radius**2)
         label = f'{zone * ZONE_WIDTH:.0f}'
+        kwargs = dict(label=label, color=color, ls='-')
         history = multioutput.zones[f'zone{zone}'].history
         time = np.array(history['time'])
         infall_surface = np.array(history['ifr']) / area
-        axs[0].plot(time, infall_surface, color=color, label=label, ls=linestyle)
+        axs[0].plot(time, np.log10(infall_surface), **kwargs)
         sf_surface = np.array(history['sfr']) / area
-        axs[1].plot(time[1:], sf_surface[1:], color=color, ls=linestyle, label=label)
+        axs[1].plot(time[1:], np.log10(sf_surface[1:]), **kwargs)
         gas_surface = np.array(history['mgas']) / area
-        axs[2].plot(time, gas_surface, color=color, ls=linestyle, label=label)
+        axs[2].plot(time, np.log10(gas_surface), **kwargs)
         tau_star = [history['mgas'][i+1] / history['sfr'][i+1] * 1e-9 for i in range(
                     len(history['time']) - 1)]
-        axs[3].plot(history['time'][1:], tau_star, color=color, ls=linestyle,
-                    label=label)
+        axs[3].plot(history['time'][1:], tau_star, **kwargs)
     axs[0].legend(title=r'$R_{\rm gal}$ [kpc]', ncols=3, loc='lower right')
-    # leg = axs[0].legend(
-        # loc='center left', bbox_to_anchor=(0., 0.6), frameon=True, ncols=1, 
-        #                   handlelength=0, columnspacing=1.5, handletextpad=0,
-        #                   facecolor='#ffffff', fancybox=False, framealpha=0.,
-        #                   edgecolor='none', labelspacing=0.1)
-    # plt.subplots_adjust(left=0.1, right=0.95, bottom=0.12, top=0.9)
     # Save
     savedir = {
         'paper': paths.figures,
