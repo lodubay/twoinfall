@@ -13,14 +13,14 @@ def main():
     yZ1_yields, yZ1_labels = make_column(eta=outflows.yZ1)
     from multizone.src.yields import yZ2
     yZ2_yields, yZ2_labels = make_column(eta=outflows.yZ2)
-    from multizone.src.yields import yZ3
-    yZ3_yields, yZ3_labels = make_column(eta=outflows.yZ3)
+    # from multizone.src.yields import yZ3
+    # yZ3_yields, yZ3_labels = make_column(eta=outflows.yZ3)
     df = pd.DataFrame({
         '$y/Z_\\odot=1$': ['(empirical)'] + yZ1_yields,
         '$y/Z_\\odot=2$': ['(theoretical)'] + yZ2_yields,
-        '$y/Z_\\odot=3$': ['(extreme)'] + yZ3_yields,
+        # '$y/Z_\\odot=3$': ['(extreme)'] + yZ3_yields,
     }, index=[''] + yZ1_labels)
-    latex_table = df.to_latex(column_format='c|ccc', index=True)
+    latex_table = df.to_latex(column_format='c|cc', index=True)
     # Replace float 0s with int
     latex_table = latex_table.replace('0.00e+00', '0')
     # Replace \toprule, \midrule, \bottomrule with \hline
