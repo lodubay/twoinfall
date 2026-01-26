@@ -398,20 +398,20 @@ We run 12 multi-zone models at three different yield scales. For our \yZ{1} and 
     }
     \decimals
     \startdata
-        {\tt yZ1-fiducial}  & 1 & 0.2   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
-        {\tt yZ1-migration} & 1 & 0.2   & 4.2 & Equation \ref{eq:plateau-dtd}  & 5.0   & 0.12  & $-\infty$   \\
-        {\tt yZ1-diskratio} & 1 & 0.2   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.5   & $-\infty$   \\
-        {\tt yZ1-preenrich} & 1 & 0.6   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & -0.5      \\
-        {\tt yZ1-best}      & 1 & 0.4   & 4.2 & Equation \ref{eq:plateau-dtd}  & 3.6   & 0.25  & -0.7      \\
+        {\tt yZ1-fiducial}  & 1 & 0.2   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
+        {\tt yZ1-migration} & 1 & 0.2   & 3.2 & Equation \ref{eq:plateau-dtd}  & 5.0   & 0.12  & $-\infty$   \\
+        {\tt yZ1-diskratio} & 1 & 0.2   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.5   & $-\infty$   \\
+        {\tt yZ1-preenrich} & 1 & 0.6   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & -0.5      \\
+        {\tt yZ1-best}      & 1 & 0.4   & 3.2 & Equation \ref{eq:plateau-dtd}  & 3.6   & 0.25  & -0.7      \\
         \hline
-        {\tt yZ2-fiducial}  & 2 & 1.4   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
-        {\tt yZ2-earlyonset}& 2 & 1.4   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
-        {\tt yZ2-powerlaw}  & 2 & 1.4   & 4.2 & Equation \ref{eq:powerlaw-dtd} & 2.68  & 0.12  & $-\infty$   \\
-        {\tt yZ2-diskratio} & 2 & 1.4   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.5   & $-\infty$   \\
-        {\tt yZ2-preenrich} & 2 & 2.4   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & -0.5      \\
-        {\tt yZ2-best}      & 2 & 1.8   & 3.2 & Equation \ref{eq:plateau-dtd}  & 3.6   & 0.25  & -0.7      \\
-        \hline
-        {\tt yZ3-fiducial}  & 3 & 2.4   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
+        {\tt yZ2-fiducial}  & 2 & 1.4   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
+        {\tt yZ2-earlyonset}& 2 & 1.4   & 2.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
+        {\tt yZ2-powerlaw}  & 2 & 1.4   & 3.2 & Equation \ref{eq:powerlaw-dtd} & 2.68  & 0.12  & $-\infty$   \\
+        {\tt yZ2-diskratio} & 2 & 1.4   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.5   & $-\infty$   \\
+        {\tt yZ2-preenrich} & 2 & 2.4   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & -0.5      \\
+        {\tt yZ2-best}      & 2 & 1.8   & 2.2 & Equation \ref{eq:plateau-dtd}  & 3.6   & 0.25  & -0.7      \\
+        % \hline
+        % {\tt yZ3-fiducial}  & 3 & 2.4   & 4.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
     \enddata
 \end{deluxetable*}
 
@@ -664,6 +664,12 @@ The figures, tables, and models in this paper are reproducible. The git reposito
 \section{Infall Parameters}
 \label{app:infall-parameters}
 
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{\figpath{infall_parameters.pdf}}
+    \caption{Gas abundance tracks in the [O/Fe]--[Fe/H] plane for one-zone chemical evolution models with different values for the infall parameters (see Section \ref{sec:infall-parameters}). In each panel, one parameter is varied according to the legend while the other two are held fixed. The open symbols along each curve mark points in time, as denoted in panels (b) and (e). The marginal panels show the corresponding stellar abundance distributions, which are convolved with a Gaussian kernel with a width of 0.02 dex for visual clarity. All models use the same fiducial parameters as the $R_{\rm gal}=8\kpc$ ring in the multi-zone models. The black lines represent the same set of parameters in each panel. Top row: models adopting the \yZ{1} yields and $\eta=0.2$. Bottom row: models adopting the \yZ{2} yields and $\eta=1.4$.}
+    \label{fig:infall-parameters}
+\end{figure*}
 
 }
 
