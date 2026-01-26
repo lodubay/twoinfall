@@ -40,7 +40,7 @@ def main():
     plt.rcParams['axes.prop_cycle'] = plt.cycler(
         'color', paultol.bright.colors)
 
-    fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 2.2*ONE_COLUMN_WIDTH))
+    fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 2*ONE_COLUMN_WIDTH))
     gs = fig.add_gridspec(3, 2, width_ratios=(1, 4), wspace=0., hspace=0.)
     ax0 = fig.add_subplot(gs[0,0])
     ax0.tick_params(axis='x', labelbottom=False)
