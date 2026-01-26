@@ -30,6 +30,7 @@ GRIDSIZE = 30
 OUTPUT_NAMES = [
     # 'yZ3-fiducial/diskmodel',
     'yZ2-earlyonset/diskmodel',
+    'yZ2-fiducial/diskmodel',
     'yZ1-fiducial/diskmodel'
 ]
 
@@ -96,14 +97,14 @@ def main():
         )
         axs[i,1].plot(
             rolling_medians[age_col], rolling_medians[abund], 'k-',
-            zorder=2, label='Rolling median'
+            zorder=2, label='APOGEE median'
         )
         # Plot abundance modes in bins of stellar age
         abund_bins = local_sample.binned_modes(abund, age_col, age_bins)
         axs[i,1].errorbar(age_bin_centers, abund_bins['mode'], 
                     xerr=age_bin_width/2, yerr=abund_bins['error'],
                     linestyle='none', c=mode_color, capsize=1, marker='.',
-                    zorder=10, label='Binned mode')
+                    zorder=10, label='APOGEE mode')
         # Median errors at different age bins
         median_abund_errors = local_sample.binned_intervals(
             '%s_ERR' % abund, age_col, big_age_bins, quantiles=[0.5]
@@ -130,8 +131,8 @@ def main():
     )
 
     # Plot multizone gas abundance
-    yZ = [2, 1]
-    eta = [1.4, 0.2]
+    yZ = [3, 2, 1]
+    eta = [2.4, 1.4, 0.2]
     for i, output_name in enumerate(OUTPUT_NAMES):
         mzs = MultizoneStars.from_output(output_name)
         mzs.model_uncertainty(apogee_sample.data, inplace=True)
@@ -139,7 +140,8 @@ def main():
         plot_abundance_history(
             axs[0], mzs_local, '[o/h]', range=OH_LIM, smoothing=SMOOTH_WIDTH,
             zorder=5,
-            label=r'$y/Z_\odot = %s$, $\eta_\odot=%s$' % (yZ[i], eta[i])
+            # label=r'$y/Z_\odot = %s$, $\eta_\odot=%s$' % (yZ[i], eta[i])
+            label=output_name.replace('/diskmodel', '')
         )
         plot_abundance_history(
             axs[1], mzs_local, '[fe/h]', range=FEH_LIM, smoothing=SMOOTH_WIDTH,
@@ -163,13 +165,14 @@ def main():
     chemdict["Aj"] =  [35.128, 10.207] # Makes 47 Msun/pc**2 today (McKee et al. 2015)
     time, feh, ofe = analytic_model(chemdict)
     zorder = 4
+    color = 'gray'
     axs[0,1].plot(time[::-1], ofe + feh, 'w-', linewidth=2, zorder=zorder)
-    axs[0,1].plot(time[::-1], ofe + feh, linestyle='--', zorder=zorder, 
+    axs[0,1].plot(time[::-1], ofe + feh, linestyle='--', c=color, zorder=zorder, 
                   label='Palicio et al. (2023)')
     axs[1,1].plot(time[::-1], feh, 'w-', linewidth=2, zorder=zorder)
-    axs[1,1].plot(time[::-1], feh, linestyle='--', zorder=zorder)
+    axs[1,1].plot(time[::-1], feh, linestyle='--', c=color, zorder=zorder)
     axs[2,1].plot(time[::-1], ofe, 'w-', linewidth=2, zorder=zorder)
-    axs[2,1].plot(time[::-1], ofe, linestyle='--', zorder=zorder)
+    axs[2,1].plot(time[::-1], ofe, linestyle='--', c=color, zorder=zorder)
 
     # Format axes
     ax0.set_ylabel('[O/H]')
@@ -197,8 +200,14 @@ def main():
 
     # Legend for data
     handles, labels = ax1.get_legend_handles_labels()
-    ax0.legend([handles[0], handles[-1]], [labels[0], labels[-1]],
-               loc='lower left', bbox_to_anchor=[0, 1], title='APOGEE (NN ages)')
+    print(labels)
+    ax0.legend(
+        [handles[0], handles[-1], handles[-2]], 
+        [labels[0], labels[-1], labels[-2]],
+        loc='lower left', 
+        bbox_to_anchor=[0, 1], 
+        # title='APOGEE (NN ages)'
+    )
     # Legend for models
     ax1.legend(handles[1:4], labels[1:4], loc='lower right', bbox_to_anchor=[1, 1])
 
