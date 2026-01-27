@@ -28,10 +28,14 @@ SMOOTH_WIDTH = 0.05
 GRIDSIZE = 30
 
 OUTPUT_NAMES = [
-    # 'yZ3-fiducial/diskmodel',
-    'yZ2-earlyonset/diskmodel',
+    'yZ1-fiducial/diskmodel',
     'yZ2-fiducial/diskmodel',
-    'yZ1-fiducial/diskmodel'
+    'yZ2-earlyonset/diskmodel',
+]
+LABELS = [
+    r'$y/Z_\odot=1$ (fiducial)',
+    r'$y/Z_\odot=2$ (fiducial)',
+    r'$y/Z_\odot=2$ ($t_{\rm max}=2.2$ Gyr)',
 ]
 
 
@@ -131,8 +135,6 @@ def main():
     )
 
     # Plot multizone gas abundance
-    yZ = [3, 2, 1]
-    eta = [2.4, 1.4, 0.2]
     for i, output_name in enumerate(OUTPUT_NAMES):
         mzs = MultizoneStars.from_output(output_name)
         mzs.model_uncertainty(apogee_sample.data, inplace=True)
@@ -140,8 +142,7 @@ def main():
         plot_abundance_history(
             axs[0], mzs_local, '[o/h]', range=OH_LIM, smoothing=SMOOTH_WIDTH,
             zorder=5,
-            # label=r'$y/Z_\odot = %s$, $\eta_\odot=%s$' % (yZ[i], eta[i])
-            label=output_name.replace('/diskmodel', '')
+            label=LABELS[i]
         )
         plot_abundance_history(
             axs[1], mzs_local, '[fe/h]', range=FEH_LIM, smoothing=SMOOTH_WIDTH,
@@ -200,16 +201,22 @@ def main():
 
     # Legend for data
     handles, labels = ax1.get_legend_handles_labels()
-    print(labels)
     ax0.legend(
         [handles[0], handles[-1], handles[-2]], 
         [labels[0], labels[-1], labels[-2]],
         loc='lower left', 
-        bbox_to_anchor=[0, 1], 
+        bbox_to_anchor=[-0.5, 1], 
+        borderaxespad=0.
         # title='APOGEE (NN ages)'
     )
     # Legend for models
-    ax1.legend(handles[1:4], labels[1:4], loc='lower right', bbox_to_anchor=[1, 1])
+    ax1.legend(
+        handles[1:4], 
+        labels[1:4], 
+        loc='lower right', 
+        bbox_to_anchor=[1, 1],
+        borderaxespad=0.,
+    )
 
     fig.savefig(paths.figures / 'gas_abundance_evolution')
     plt.close()
