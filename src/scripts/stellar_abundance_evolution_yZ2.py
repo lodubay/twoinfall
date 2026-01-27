@@ -1,22 +1,14 @@
 """
-This script compares the stellar age-abundance relations predicted by several
-multi-zone models against APOGEE DR17 data.
+Similar to stellar_abundance_evolution.py but for the y/Zsun=2 models.
 """
 
 import argparse
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator
 
 from stellar_abundance_evolution import compare_abundance_evolution
-from age_abundance_grid import plot_apogee_median_abundances, \
-    plot_vice_median_abundances, AXES_MAJOR_LOCATOR, AXES_MINOR_LOCATOR
-from scatter_plot_grid import plot_gas_abundance, setup_colorbar
-from _globals import ONE_COLUMN_WIDTH, TWO_COLUMN_WIDTH
-from utils import vice_to_apogee_col, capitalize_abundance
-from apogee_sample import APOGEESample
-from multizone_stars import MultizoneStars
+from _globals import TWO_COLUMN_WIDTH
 import paths
 
 OUTPUT_NAMES = [
@@ -52,7 +44,7 @@ def main(verbose=False, uncertainties=True, style='paper', cmap=CMAP, ages='L23'
         age_col='%s_AGE' % ages
     )
     fig.suptitle(r'$y/Z_\odot=2$', y=titley)
-    fig.savefig(paths.figures / 'stellar_abundance_evolution_yZ2')
+    fig.savefig(paths.extra / 'stellar_abundance_evolution_yZ2.png')
     plt.close()
 
 
