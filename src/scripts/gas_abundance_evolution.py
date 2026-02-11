@@ -6,7 +6,7 @@ multi-zone models with different yields and mass-loading factors.
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
-from matplotlib.colors import Normalize
+from matplotlib.colors import Normalize, LogNorm
 from matplotlib.cm import ScalarMappable
 import vice
 
@@ -85,13 +85,13 @@ def main():
     yval_err = [-0.7, -0.7, -0.15]
     abund_range = [OH_LIM, FEH_LIM, OFE_LIM]
     # Normalize colormap
-    norm = Normalize(vmin=0, vmax=250)
+    norm = LogNorm(vmin=3, vmax=250)
     cmap = truncate_colormap(plt.get_cmap('binary'), minval=0., maxval=0.8)
     for i, abund in enumerate(['O_H', 'FE_H', 'O_FE']):
         # Hexbin of APOGEE stars
         pcm = axs[i,1].hexbin(
             local_sample(age_col), local_sample(abund),
-            gridsize=GRIDSIZE, cmap=cmap, norm=norm, linewidths=0.2, mincnt=1,
+            gridsize=GRIDSIZE, cmap=cmap, norm=norm, linewidths=0.2, mincnt=3,
             extent=[AGE_LIM[0], AGE_LIM[1], abund_range[i][0], abund_range[i][1]]
         )
         # Plot rolling median
