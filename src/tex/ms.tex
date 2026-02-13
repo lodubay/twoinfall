@@ -391,25 +391,25 @@ An important distinction between our method and that of \citet{spitoni_effect_20
 \section{Multi-Zone Model Results}
 \label{sec:multizone-results}
 
-We run 12 multi-zone models at the \yZ{1} and \yZ{2} yield scales. We vary the SN Ia DTD, the migration strength $\sigma_{\rm RM8}$, the thick-to-thin disk mass ratio $f_\Sigma(R_\odot)$, and the enrichment of the infalling gas ${\rm [X/H]}_{\rm CGM}$. Our models and relevant parameters are summarized in Table \ref{tab:models}. In the remainder of this Section, we present results from these models and compare against APOGEE data and stellar age estimates.
+We run \added{11} multi-zone models at the \yZ{1} and \yZ{2} yield scales. We vary the SN Ia DTD, the migration strength $\sigma_{\rm RM8}$, the thick-to-thin disk mass ratio $f_\Sigma(R_\odot)$, and the enrichment of the infalling gas ${\rm [X/H]}_{\rm CGM}$. Our models and relevant parameters are summarized in Table \ref{tab:models}. In the remainder of this Section, we present results from these models and compare against APOGEE data and stellar age estimates.
 
-\begin{deluxetable*}{lCCCcDDD}
+\begin{deluxetable*}{lCCCcDDC}
     \tablecaption{Summary of our multi-zone models and relevant parameters.\label{tab:models}}
     \tablehead{
-        \colhead{Name} & \colhead{$y/Z_\odot$} & \colhead{$\eta_\odot$} & \colhead{$t_{\rm max}$ [Gyr]} & \colhead{SN Ia DTD} & \multicolumn2c{$\sigma_{\rm RM8}$ [kpc]} & \multicolumn2c{$f_\Sigma(R_\odot)$} & \multicolumn2c{${\rm [X/H]}_{\rm CGM}$}
+        \colhead{Name} & \colhead{$y/Z_\odot$} & \colhead{$\eta_\odot$} & \colhead{$t_{\rm max}$ [Gyr]} & \colhead{SN Ia DTD} & \multicolumn2c{$\sigma_{\rm RM8}$ [kpc]} & \multicolumn2c{$f_\Sigma(R_\odot)$} & \colhead{${\rm [X/H]}_{\rm CGM}$}
     }
     \decimals
     \startdata
         {\tt yZ1-fiducial}  & 1 & 0.2   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
         {\tt yZ1-migration} & 1 & 0.2   & 3.2 & Equation \ref{eq:plateau-dtd}  & 5.0   & 0.12  & $-\infty$   \\
-        {\tt yZ1-diskratio} & 1 & 0.2   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.5   & $-\infty$   \\
+        {\tt yZ1-diskratio} & 1 & 0.2   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.50  & $-\infty$   \\
         {\tt yZ1-preenrich} & 1 & 0.6   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & -0.5      \\
         {\tt yZ1-best}      & 1 & 0.4   & 3.2 & Equation \ref{eq:plateau-dtd}  & 3.6   & 0.25  & -0.7      \\
         \hline
         {\tt yZ2-fiducial}  & 2 & 1.4   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
         {\tt yZ2-earlyonset}& 2 & 1.4   & 2.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & $-\infty$   \\
         {\tt yZ2-powerlaw}  & 2 & 1.4   & 3.2 & Equation \ref{eq:powerlaw-dtd} & 2.68  & 0.12  & $-\infty$   \\
-        {\tt yZ2-diskratio} & 2 & 1.4   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.5   & $-\infty$   \\
+        {\tt yZ2-diskratio} & 2 & 1.4   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.50  & $-\infty$   \\
         {\tt yZ2-preenrich} & 2 & 2.4   & 3.2 & Equation \ref{eq:plateau-dtd}  & 2.68  & 0.12  & -0.5      \\
         {\tt yZ2-best}      & 2 & 1.8   & 2.2 & Equation \ref{eq:plateau-dtd}  & 3.6   & 0.25  & -0.7      \\
     \enddata
@@ -531,7 +531,7 @@ We further highlight the discrepant age patterns in the bottom panels of Figure 
     While the amplitude of the peaks is sensitive to the precise location of the LMR cutoff, the dearth of intermediate-age stars is insensitive to adjustments of $\pm0.05\dex$.
 } For APOGEE, the distributions of all stars and only LMR stars are similar, both peaking near $\sim5\Gyr$, although very few of the LMR stars have ages $\gtrsim10\Gyr$. Our two-infall models predict an overall age distribution that is similar to the data, but both models predict a distinctly different age distribution for LMR stars. For the \yZ{1} model, the LMR age distribution is strongly bimodal; the two populations reflect the metal-rich endpoints of the two successive infall epochs. For the \yZ{2} model, the LMR ages are not bimodal but are heavily skewed to younger ($\lesssim6\Gyr$) ages (note that the models have different values of $t_{\rm max}$, which affects the predicted age distributions). Both models predict few LMR stars with intermediate ($\sim4-8\Gyr$) ages, whereas these stars dominate the LMR population in APOGEE. A dearth of intermediate-age, high-metallicity stars is a natural outcome of a substantial dilution event, which is a defining feature of the two-infall scenario. None of the adjustments that we explored in Sections \ref{sec:age-abundance} or \ref{sec:abundance-distributions} substantially increase the proportion of intermediate-age stars.
 
-Other discrepancies between the models and data in Figure \ref{fig:lmr-ages} reflect our specific parameter choices, not intrinsic limitations of the two-infall framework. First, the predicted ages of high-$\alpha$ stars are \added{$\sim2$ Gyr} older than observed in APOGEE. Delaying the onset of thick disk formation (e.g., by introducing an early ``simmering'' phase of low star formation efficiency proposed by \citealt{conroy_birth_2022}) \added{or delaying $t_{\rm max}$} could alleviate this tension, but it would not improve the dearth of intermediate-aged LMR stars. Second, the \added{some of} youngest APOGEE stars have [O/Fe] ratios $\sim0.05-0.1\dex$ lower than predicted by the models (see also the bottom panel of Figure \ref{fig:yield-outflow}). Increasing $y_{\rm Fe}^{\rm Ia}$ by a factor of $10^{0.05}\approx1.1$ brings the present-day gas abundance in line with the data but worsens agreement with the overall stellar [O/Fe] distribution. \added{Finally, there is a population of $\sim8-10\Gyr$ old stars at sub-Solar [O/Fe], formed during the period of rapid dilution immediately after $t_{\rm max}$. These stars form a small percentage of the overall distribution \citep[Figure \ref{fig:ofe-feh-best}; see also Figure 11 from][]{spitoni_remind_2024} but they occupy a unique part of abundance space. Adopting a longer $\tau_1$ or smaller $t_{\rm max}$ could shift this population to higher [O/Fe], where it would be obscured by the rest of the low-$\alpha$ sequence (see Appendix \ref{app:infall-parameters}).}
+Other discrepancies between the models and data in Figure \ref{fig:lmr-ages} reflect our specific parameter choices, not intrinsic limitations of the two-infall framework. First, the predicted ages of high-$\alpha$ stars are \added{$\sim2$ Gyr} older than observed in APOGEE. Delaying the onset of thick disk formation (e.g., by introducing an early ``simmering'' phase of low star formation efficiency proposed by \citealt{conroy_birth_2022}) \added{or delaying $t_{\rm max}$} could alleviate this tension, but it would not improve the dearth of intermediate-aged LMR stars. Second, \added{some of} the youngest APOGEE stars have [O/Fe] ratios $\sim0.05-0.1\dex$ lower than predicted by the models (see also the bottom panel of Figure \ref{fig:yield-outflow}). Increasing $y_{\rm Fe}^{\rm Ia}$ by a factor of $10^{0.05}\approx1.1$ brings the present-day gas abundance in line with the data but worsens agreement with the overall stellar [O/Fe] distribution. \added{Finally, there is a population of $\sim8-10\Gyr$ old stars at sub-Solar [O/Fe], formed during the period of rapid dilution immediately after $t_{\rm max}$. These stars form a small percentage of the overall distribution \citep[Figure \ref{fig:ofe-feh-best}; see also Figure 11 from][]{spitoni_remind_2024} but they occupy a unique part of abundance space. Adopting a longer $\tau_1$ or smaller $t_{\rm max}$ could shift this population to higher [O/Fe], where it would be obscured by the rest of the low-$\alpha$ sequence (see Appendix \ref{app:infall-parameters}).}
 
 \section{Discussion}
 \label{sec:discussion}
