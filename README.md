@@ -55,3 +55,14 @@ To run a single multi-zone model with custom parameters, run the following:
 $ cd src/scripts
 $ python -m multizone [OPTIONS...]
 ```
+
+## Software Dependencies
+
+This code is built on the [Versatile Integrator for Chemical Evolution (VICE)](https://github.com/giganano/vice)
+package [(Johnson & Weinberg 2020)](https://doi.org/10.1093/mnras/staa2431). VICE is necessary for the code
+to run, and should be installed automatically using `environment.yml`.
+
+We also include a copy of the [Chemical Evolution Analysis Package (ChEAP)](https://bitbucket.org/pedroap/cheap/)
+developed by [Palicio et al. (2023)](https://doi.org/10.1051/0004-6361/202346567). This is included at
+[src/scripts/CheapTools.py](src/scripts/CheapTools.py) for convenience, so it does not need to be
+installed separately.
