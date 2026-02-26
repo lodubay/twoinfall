@@ -1,7 +1,3 @@
-# Snakemake temporaries
-**/.snakemake
-**/.showyourwork*
-
 # Latex output files
 ms.pdf
 report.html
