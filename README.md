@@ -30,7 +30,24 @@ To re-create all the plots and tables in the paper, run the following:
 $ bash all_paper_plots.sh
 ```
 
-Source code for the models is located within the [src/scripts/multizone/](/src/scripts/multizone/) directory.
+## Repository Structure
+
+```
+.
+├── src
+│   ├── data                # Catalog files and model outputs (ignored by git)
+│   ├── extra               # Non-paper figures and other outputs (ignored by git)
+│   ├── scripts             # Python scripts for figures and models
+│   ├── ├── multizone       # Source code for multi-zone chemical evolution models
+│   ├── tex                 # LaTeX files
+│   ├── ├── figures         # Programatically-generated figures
+│   ├── ├── output          # Programatically-generated tables and other outputs
+├── environment.yml         # Package dependencies
+├── LICENSE
+└── README.md
+```
+
+Source code for the models is located within the [multizone](/src/scripts/multizone/) directory.
 To run a single multi-zone model with custom parameters, run the following:
 ```
 $ cd src/scripts
