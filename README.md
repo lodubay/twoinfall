@@ -42,6 +42,8 @@ $ bash all_paper_plots.sh
 │   ├── tex                 # LaTeX files
 │   ├── ├── figures         # Programatically-generated figures
 │   ├── ├── output          # Programatically-generated tables and other outputs
+├── all_paper_plots.sh      # Script to produce all paper figures
+├── run_all_models.sh       # Script to run all multi-zone models
 ├── environment.yml         # Package dependencies
 ├── LICENSE
 └── README.md
