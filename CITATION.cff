@@ -1,0 +1,30 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Two-Infall Chemical Evolution Models
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file, and also cite the related journal
+  article.
+type: software
+authors:
+  - given-names: Liam
+    family-names: Dubay
+    email: liam.dubay@gmail.com
+    affiliation: The Ohio State University
+    orcid: 'https://orcid.org/0000-0003-3781-0747'
+identifiers:
+  - type: url
+    value: 'https://arxiv.org/abs/2508.00988'
+    description: arXiv pre-print
+  - type: doi
+    value: ''
+repository-code: 'https://github.com/lodubay/twoinfall'
+abstract: >-
+  Source code for the manuscript, figures, and models in
+  Dubay et al. (2026; accepted by The Astrophysical
+  Journal).
+license: MIT
+version: 1.1.0
+date-released: '2026-02-26'
