@@ -1,7 +1,7 @@
 # Challenges to the Two-Infall Scenario
 
 Welcome to the repository for **Dubay et al. (2026), "Challenges
-to the Two-Infall Scenario by Large Stellar Age Catalogues"** (accepted
+to the Two-Infall Scenario by Large Stellar Age Catalogs"** (accepted
 for publication in The Astrophysical Journal).
 Read the paper at [arXiv:2508.00988](https://arxiv.org/abs/2508.00988).
 
