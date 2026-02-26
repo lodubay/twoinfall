@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Navigate to src/scripts directory
+cd ./src/scripts/
+
 NSTARS=8
 EVOLUTION=twoinfall_expvar
 

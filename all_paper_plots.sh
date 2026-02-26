@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Move to src/scripts directory
+cd ./src/scripts/
+
 # Generate APOGEE sample data table
 python apogee_sample.py
 
