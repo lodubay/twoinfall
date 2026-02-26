@@ -49,6 +49,10 @@ $ bash all_paper_plots.sh
 └── README.md
 ```
 
+Note that some scripts, such as [multizone_plots.py](src/scripts/multizone_plots.py), generate
+additional figures for multi-zone model outputs that not included in the manuscript.
+The output of these scripts is saved in [src/extra](src/extra).
+
 Source code for the models is located within the [multizone](/src/scripts/multizone/) directory.
 To run a single multi-zone model with custom parameters, run the following:
 ```
