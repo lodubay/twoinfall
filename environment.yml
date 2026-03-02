@@ -10,6 +10,7 @@ dependencies:
     - astropy
     - jupyterlab
     - scipy
+    - tqdm
     - pip
     - pip:
         - vice>=1.3.1
