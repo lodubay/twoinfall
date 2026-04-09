@@ -2,6 +2,8 @@
 This script compares the age distributions of locally metal-rich stars
 between a two-infall VICE output and APOGEE.
 """
+import argparse
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
@@ -154,4 +156,22 @@ def main(style='paper', cmap='Spectral_r'):
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        prog='lmr_ages.py',
+        description='Plot age distributions of local metal-rich stars.'
+    )
+    parser.add_argument('--style', 
+        metavar='STYLE', 
+        type=str,
+        default='paper',
+        choices=('paper', 'poster'),
+        help='Plot style to use ("paper" or "poster", default: "paper").'
+    )
+    parser.add_argument('--cmap',
+        metavar='COLORMAP',
+        type=str,
+        default='Spectral_r',
+        help='Matplotlib colormap to use.'
+    )
+    args = parser.parse_args()
+    main(**vars(args))

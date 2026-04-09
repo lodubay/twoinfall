@@ -3,6 +3,8 @@ This script plots the evolution of gas abundance in the Solar ring for
 multi-zone models with different yields and mass-loading factors.
 """
 
+import argparse
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
@@ -27,22 +29,25 @@ ABSZ_LIM = (0, 0.5)
 SMOOTH_WIDTH = 0.05
 GRIDSIZE = 30
 
-OUTPUT_NAMES = [
-    'yZ1-fiducial/diskmodel',
-    'yZ2-fiducial/diskmodel',
-    'yZ2-earlyonset/diskmodel',
-]
-LABELS = [
-    r'$y/Z_\odot=1$ (fiducial)',
-    r'$y/Z_\odot=2$ (fiducial)',
-    r'$y/Z_\odot=2$ ($t_{\rm max}=2.2$ Gyr)',
-]
 
-
-def main():
-    plt.style.use(paths.styles / 'paper.mplstyle')
+def main(style='paper', simple=False):
+    plt.style.use(paths.styles / f'{style}.mplstyle')
     plt.rcParams['axes.prop_cycle'] = plt.cycler(
         'color', paultol.bright.colors)
+    
+    output_names = [
+        'yZ1-fiducial/diskmodel',
+        'yZ2-fiducial/diskmodel',
+        'yZ2-earlyonset/diskmodel',
+    ]
+    labels = [
+        r'$y/Z_\odot=1$ (fiducial)',
+        r'$y/Z_\odot=2$ (fiducial)',
+        r'$y/Z_\odot=2$ ($t_{\rm max}=2.2$ Gyr)',
+    ]
+    if simple:
+        output_names = output_names[:-1]
+        labels = labels[:-1]
 
     fig = plt.figure(figsize=(ONE_COLUMN_WIDTH, 2*ONE_COLUMN_WIDTH))
     gs = fig.add_gridspec(3, 2, width_ratios=(1, 4), wspace=0., hspace=0.)
@@ -135,14 +140,14 @@ def main():
     )
 
     # Plot multizone gas abundance
-    for i, output_name in enumerate(OUTPUT_NAMES):
+    for i, output_name in enumerate(output_names):
         mzs = MultizoneStars.from_output(output_name)
         mzs.model_uncertainty(apogee_sample.data, inplace=True)
         mzs_local = mzs.region(galr_lim=GALR_LIM, absz_lim=ABSZ_LIM)
         plot_abundance_history(
             axs[0], mzs_local, '[o/h]', range=OH_LIM, smoothing=SMOOTH_WIDTH,
             zorder=5,
-            label=LABELS[i]
+            label=labels[i]
         )
         plot_abundance_history(
             axs[1], mzs_local, '[fe/h]', range=FEH_LIM, smoothing=SMOOTH_WIDTH,
@@ -154,26 +159,27 @@ def main():
         )
     
     # Plot Palicio et al. (2023) model for comparison
-    # Model parameters
-    chemdict = dict()
-    chemdict["omega"] = 0.8
-    chemdict["R"] = 0.285
-    chemdict["nuL"] = 0.75
-    # Infall parameters
-    chemdict["tauj"] = np.array([0.4, 7.])
-    chemdict["tj"] = [0., 3.]
-    chemdict["sigma_gas_0"] = 1E-8 # Sigma_gas_0 should be very close to zero but not zero
-    chemdict["Aj"] =  [35.128, 10.207] # Makes 47 Msun/pc**2 today (McKee et al. 2015)
-    time, feh, ofe = analytic_model(chemdict)
-    zorder = 4
-    color = 'gray'
-    axs[0,1].plot(time[::-1], ofe + feh, 'w-', linewidth=2, zorder=zorder)
-    axs[0,1].plot(time[::-1], ofe + feh, linestyle='--', c=color, zorder=zorder, 
-                  label='Palicio et al. (2023)')
-    axs[1,1].plot(time[::-1], feh, 'w-', linewidth=2, zorder=zorder)
-    axs[1,1].plot(time[::-1], feh, linestyle='--', c=color, zorder=zorder)
-    axs[2,1].plot(time[::-1], ofe, 'w-', linewidth=2, zorder=zorder)
-    axs[2,1].plot(time[::-1], ofe, linestyle='--', c=color, zorder=zorder)
+    if not simple:
+    # Model parameters  
+        chemdict = dict()
+        chemdict["omega"] = 0.8
+        chemdict["R"] = 0.285
+        chemdict["nuL"] = 0.75
+        # Infall parameters
+        chemdict["tauj"] = np.array([0.4, 7.])
+        chemdict["tj"] = [0., 3.]
+        chemdict["sigma_gas_0"] = 1E-8 # Sigma_gas_0 should be very close to zero but not zero
+        chemdict["Aj"] =  [35.128, 10.207] # Makes 47 Msun/pc**2 today (McKee et al. 2015)
+        time, feh, ofe = analytic_model(chemdict)
+        zorder = 4
+        color = 'gray'
+        axs[0,1].plot(time[::-1], ofe + feh, 'w-', linewidth=2, zorder=zorder)
+        axs[0,1].plot(time[::-1], ofe + feh, linestyle='--', c=color, zorder=zorder, 
+                    label='Palicio et al. (2023)')
+        axs[1,1].plot(time[::-1], feh, 'w-', linewidth=2, zorder=zorder)
+        axs[1,1].plot(time[::-1], feh, linestyle='--', c=color, zorder=zorder)
+        axs[2,1].plot(time[::-1], ofe, 'w-', linewidth=2, zorder=zorder)
+        axs[2,1].plot(time[::-1], ofe, linestyle='--', c=color, zorder=zorder)
 
     # Format axes
     ax0.set_ylabel('[O/H]')
@@ -201,18 +207,30 @@ def main():
 
     # Legend for data
     handles, labels = ax1.get_legend_handles_labels()
+    if simple:
+        data_handles = [handles[0], handles[-1]]
+        data_labels = [labels[0], labels[-1]]
+        model_handles = handles[1:3]
+        model_labels = labels[1:3]
+        left_pad = 0
+    else:
+        data_handles = [handles[0], handles[-1], handles[-2]]
+        data_labels = [labels[0], labels[-1], labels[-2]]
+        model_handles = handles[1:4]
+        model_labels = labels[1:4]
+        left_pad = -0.5
     ax0.legend(
-        [handles[0], handles[-1], handles[-2]], 
-        [labels[0], labels[-1], labels[-2]],
+        data_handles, 
+        data_labels,
         loc='lower left', 
-        bbox_to_anchor=[-0.5, 1], 
+        bbox_to_anchor=[left_pad, 1], 
         borderaxespad=0.
         # title='APOGEE (NN ages)'
     )
     # Legend for models
     ax1.legend(
-        handles[1:4], 
-        labels[1:4], 
+        model_handles, 
+        model_labels, 
         loc='lower right', 
         bbox_to_anchor=[1, 1],
         borderaxespad=0.,
@@ -276,4 +294,20 @@ def analytic_model(
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        prog='gas_abundance_evolution.py',
+        description='Plot Solar neighborhood two-infall gas abundance tracks.'
+    )
+    parser.add_argument('--style', 
+        metavar='STYLE', 
+        type=str,
+        default='paper',
+        choices=('paper', 'poster'),
+        help='Plot style to use ("paper" or "poster", default: "paper").'
+    )
+    parser.add_argument('--simple',
+        action='store_true',
+        help='Reduce the number of models and the plot complexity.'
+    )
+    args = parser.parse_args()
+    main(**vars(args))

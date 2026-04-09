@@ -2,6 +2,8 @@
 This script plots 2D density histograms of multi-zone models.
 """
 
+import argparse
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
@@ -88,4 +90,16 @@ def main(style='paper'):
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        prog='smooth_vs_twoinfall.py',
+        description='Plot smooth vs two-infall chemical evolution tracks.'
+    )
+    parser.add_argument('--style', 
+        metavar='STYLE', 
+        type=str,
+        default='paper',
+        choices=('paper', 'poster'),
+        help='Plot style to use ("paper" or "poster", default: "paper").'
+    )
+    args = parser.parse_args()
+    main(**vars(args))
